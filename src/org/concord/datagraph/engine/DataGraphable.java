@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.14 $
- * $Date: 2004-10-26 17:27:25 $
+ * $Revision: 1.15 $
+ * $Date: 2004-10-27 23:24:04 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -43,6 +43,8 @@ public class DataGraphable extends DefaultGraphable
 	protected Color lineColor = Color.black;
 	protected float lineWidth = 2;
 	
+	protected Stroke stroke;
+	
 	protected GeneralPath path;
 	protected GeneralPath crossPath;
 
@@ -71,7 +73,8 @@ public class DataGraphable extends DefaultGraphable
 		path = new GeneralPath();
 		crossPath = new GeneralPath();
 		dataStoreListeners = new Vector();
-
+		updateStroke();
+		
 		minXValue = Float.NaN;
 		maxXValue = Float.NaN;
 		minYValue = Float.NaN;
@@ -185,14 +188,23 @@ public class DataGraphable extends DefaultGraphable
 	public void setLineWidth(float width)
 	{
 		lineWidth = width;
+		updateStroke();
 	}
 
     /**
+	 * 
+	 */
+	private void updateStroke()
+	{
+		stroke = new BasicStroke(lineWidth, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_ROUND);
+	}
+
+	/**
      *  Draws this object on Graphics g 
      **/
     public void draw(Graphics2D g)
 	{
-		long b = System.currentTimeMillis();
+		//long b = System.currentTimeMillis();
 		if (needUpdate){
 			update();
 		}
@@ -203,7 +215,7 @@ public class DataGraphable extends DefaultGraphable
 		
 		graphArea.clipGraphics(g);
 		g.setColor(lineColor);
-		g.setStroke(new BasicStroke(lineWidth));
+		g.setStroke(stroke);
 		
 		if (!connectPoints && showCrossPoint){
 		}
@@ -211,7 +223,6 @@ public class DataGraphable extends DefaultGraphable
 			g.draw(path);
 		}
 		if (showCrossPoint){
-			g.setStroke(new BasicStroke(1.0f));
 			g.draw(crossPath);
 		}
 		
@@ -219,7 +230,7 @@ public class DataGraphable extends DefaultGraphable
 		g.setStroke(oldStroke);
 		g.setClip(oldClip);
 
-		long a = System.currentTimeMillis();		
+		//long a = System.currentTimeMillis();		
 		//System.out.println(a-b);
 	}
 
@@ -232,6 +243,7 @@ public class DataGraphable extends DefaultGraphable
 		float px, py;
 		int initialI;
 		boolean movePoint = false;
+		Point2D lastMovePoint = null;
 		
 		Point2D lastPathPoint;
 
@@ -247,27 +259,51 @@ public class DataGraphable extends DefaultGraphable
     		lastValueCalculated = -1;
     	}
    		initialI = lastValueCalculated + 1;
-    	
-    	//System.out.println("dataStore.getTotalNumSamples():"+dataStore.getTotalNumSamples());    	
-    	
+    	    	
 		for(int i=initialI; i < dataStore.getTotalNumSamples(); i++){
 			
-			Float xFloat = (Float)dataStore.getValueAt(i, channelX);
+			Object objVal;
+			
+			objVal = dataStore.getValueAt(i, channelX);
+			//Handling non null objects different than Floats
+			if (objVal != null && !(objVal instanceof Float)){
+				System.err.println("Warning! The value is not a Float object: "+objVal);
+				movePoint = true;
+				continue;
+			}
+			Float xFloat = (Float)objVal;
 			if (xFloat != null && !xFloat.isNaN()){
 				px = xFloat.floatValue(); 
 			}
 			else{
 				px = Float.NaN;
+				//When connecting points and not drawing crosses, it should draw a point 
+				if (connectPoints && !showCrossPoint && lastMovePoint != null){
+					drawPoint(lastMovePoint);
+					lastMovePoint = null;
+				}
 				movePoint = true;
 				continue;
 			}
 			
-			Float yFloat = (Float)dataStore.getValueAt(i, channelY);
+			objVal = dataStore.getValueAt(i, channelY);
+			//Handling non null objects different than Floats
+			if (objVal != null && !(objVal instanceof Float)){
+				System.err.println("Warning! The value is not a Float object: "+objVal);
+				movePoint = true;
+				continue;
+			}
+			Float yFloat = (Float)objVal;
 			if (yFloat != null && !yFloat.isNaN()){
 				py = yFloat.floatValue();
 			}
 			else{
 				py = Float.NaN;
+				//When connecting points and not drawing crosses, it should draw a point 
+				if (connectPoints && !showCrossPoint && lastMovePoint != null){
+					drawPoint(lastMovePoint);
+					lastMovePoint = null;
+				}
 				movePoint = true;
 				continue;
 			}
@@ -296,6 +332,7 @@ public class DataGraphable extends DefaultGraphable
 			lastPathPoint = path.getCurrentPoint();
 			
 			double thresholdPointTheSame = lineWidth/2 - 0.01;
+			
 			float dy = 0;
 			if (!connectPoints){
 				dy = 1;//TODO dy is 1 because of MAC OS X
@@ -311,6 +348,9 @@ public class DataGraphable extends DefaultGraphable
 				if (connectPoints){
 					if (i==0 || movePoint){
 						path.moveTo(ppx, ppy);
+						if (lastMovePoint == null){
+							lastMovePoint = path.getCurrentPoint();
+						}
 						movePoint = false;
 					}
 					else{
@@ -318,16 +358,11 @@ public class DataGraphable extends DefaultGraphable
 					}
 				}
 				else{
-					//Make a vertical "dot" of 1 pixel
-					path.moveTo(ppx, ppy);
-					path.lineTo(ppx, ppy + dy);//TODO dy is 1 because of MAC OS X
+					drawPoint(ppx, ppy);
 				}
 				
 				if (showCrossPoint){
-					crossPath.moveTo(ppx - crossSize, ppy - crossSize);
-					crossPath.lineTo(ppx + crossSize, ppy + crossSize);
-					crossPath.moveTo(ppx - crossSize, ppy + crossSize);
-					crossPath.lineTo(ppx + crossSize, ppy - crossSize);
+					drawCrossPoint(ppx, ppy);
 				}
 				
 			}
@@ -336,12 +371,51 @@ public class DataGraphable extends DefaultGraphable
 			
 		}
 			
+		//When connecting points and not drawing crosses, it should draw a point 
+		if (connectPoints && !showCrossPoint && lastMovePoint != null){
+			drawPoint(lastMovePoint);
+			lastMovePoint = null;
+		}
+		
 		//System.out.println("size:"+yValues.size());
 		
 		needUpdateDataReceived = false;
 		needUpdate = false;
 	}
 
+	/**
+	 * @param ppx
+	 * @param ppy
+	 */
+	private void drawCrossPoint(float ppx, float ppy)
+	{
+		crossPath.moveTo(ppx - crossSize, ppy - crossSize);
+		crossPath.lineTo(ppx + crossSize, ppy + crossSize);
+		crossPath.moveTo(ppx - crossSize, ppy + crossSize);
+		crossPath.lineTo(ppx + crossSize, ppy - crossSize);
+	}
+
+	/**
+	 * @param ppx
+	 * @param ppy
+	 */
+	private void drawPoint(float ppx, float ppy)
+	{
+		//Make a vertical "dot" of 1 pixel
+		path.moveTo(ppx, ppy);
+		path.lineTo(ppx, ppy + 1);//TODO Is 1 because of MAC OS X
+	}
+
+	/**
+	 * @param ppx
+	 * @param ppy
+	 */
+	private void drawPoint(Point2D p)
+	{
+		//Make a vertical "dot" of 1 pixel
+		drawPoint((float)p.getX(), (float)p.getY());
+	}
+	
 	/** 
 	 * Returns a copy of itself 
 	 */
@@ -446,7 +520,11 @@ getDataChannelDescription(int numChannel):
 	 */
 	public void setConnectPoints(boolean connectPoints)
 	{
+		if (this.connectPoints == connectPoints) return;
 		this.connectPoints = connectPoints;
+		needUpdate = true;
+		needUpdateDataReceived = false;
+		notifyChange();
 	}
 	
 /*	//Debugging purposes
@@ -508,7 +586,11 @@ getDataChannelDescription(int numChannel):
 	 */
 	public void setShowCrossPoint(boolean showCrossPoint)
 	{
+		if (this.showCrossPoint == showCrossPoint) return;
 		this.showCrossPoint = showCrossPoint;
+		needUpdate = true;
+		needUpdateDataReceived = false;
+		notifyChange();
 	}
 	
 	/**
@@ -622,6 +704,25 @@ getDataChannelDescription(int numChannel):
 		
 		return null;
 	}
+	
+	/**
+	 * Only works with a Writable Data Store!
+	 * @param numSample
+	 * @param numChannel
+	 * @param value
+	 */
+	public void setValueAt(int numSample, int numChannel, Object value)
+	{
+		//Only works with a Writable Data Store!
+		if (!(dataStore instanceof WritableDataStore)) return;
+		
+		if (numChannel == 0){
+			((WritableDataStore)dataStore).setValueAt(numSample, channelX, value);
+		}
+		else if (numChannel == 1){
+			((WritableDataStore)dataStore).setValueAt(numSample, channelY, value);
+		}
+	}
 
 	/**
 	 * @see org.concord.framework.data.stream.DataStore#addDataStoreListener(org.concord.framework.data.stream.DataStoreListener)
@@ -663,4 +764,16 @@ getDataChannelDescription(int numChannel):
 	{
 		reset();
 	}
+	
+	/*
+	//It would be nice to have something like this:
+	
+	public float[] getYValue(float xValue)
+	{
+	}
+
+	public float[] getYValue(float xValue)
+	{
+	}
+	*/
 }
