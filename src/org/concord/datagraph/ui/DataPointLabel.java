@@ -24,9 +24,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.8 $
- * $Date: 2005-03-09 17:14:12 $
- * $Author: scytacki $
+ * $Revision: 1.9 $
+ * $Date: 2005-03-10 07:32:42 $
+ * $Author: imoncada $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -38,6 +38,8 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 
 import org.concord.datagraph.engine.DataGraphable;
+import org.concord.framework.data.stream.DataStoreEvent;
+import org.concord.framework.data.stream.DataStoreListener;
 import org.concord.graph.engine.CoordinateSystem;
 import org.concord.graph.engine.GraphableList;
 import org.concord.graph.util.ui.PointTextLabel;
@@ -52,11 +54,19 @@ import org.concord.graph.util.ui.PointTextLabel;
  * @author imoncada<p>
  *
  */
-public class DataPointLabel extends PointTextLabel
+public class DataPointLabel extends PointTextLabel 
+	implements DataStoreListener
 {
+	//
+	//Variables to watch the graphables that it's mousing over
 	private GraphableList objList;
 	private int indexPointOver = -1;
 	private DataGraphable graphableOver = null;
+	//
+	
+	//Actual graphable that the label is linked to 
+	//(this is temporary because it should be a data point)
+	private DataGraphable dataGraphable;
 	
 	/**
 	 * 
@@ -183,11 +193,13 @@ public class DataPointLabel extends PointTextLabel
 	protected boolean addAtPoint(Point2D pD, Point2D pW)
 	{
 		if (indexPointOver != -1 && graphableOver != null){
+			setDataGraphable(graphableOver);
 			Point2D p = getPointDataGraphable(graphableOver, indexPointOver);
 			return super.addAtPoint(null, p);
 		}
 		else{
 			//super.addAtPoint(pD, pW);
+			setDataGraphable(null);
 			return false;
 		}
 	}
@@ -234,5 +246,71 @@ public class DataPointLabel extends PointTextLabel
 			}
 		}
 		super.draw(g);
+	}
+	
+	/**
+	 * @return Returns the dataGraphable.
+	 */
+	public DataGraphable getDataGraphable()
+	{
+		return dataGraphable;
+	}
+	
+	/**
+	 * @param dataGraphable The dataGraphable to set.
+	 */
+	protected void setDataGraphable(DataGraphable dataGraphable)
+	{
+		if (this.dataGraphable == dataGraphable) return;
+		
+		if (this.dataGraphable != null){
+			this.dataGraphable.removeDataStoreListener(this);
+		}
+		this.dataGraphable = dataGraphable;
+		if (this.dataGraphable != null){
+			this.dataGraphable.addDataStoreListener(this);
+		}
+	}
+	
+	/**
+	 * @see org.concord.graph.util.ui.BoxTextLabel#doRemove()
+	 */
+	protected void doRemove()
+	{
+		setDataGraphable(null);
+		super.doRemove();
+	}
+	
+	/**
+	 * @see org.concord.framework.data.stream.DataStoreListener#dataAdded(org.concord.framework.data.stream.DataStoreEvent)
+	 */
+	public void dataAdded(DataStoreEvent evt)
+	{
+	}
+	
+	/**
+	 * @see org.concord.framework.data.stream.DataStoreListener#dataChanged(org.concord.framework.data.stream.DataStoreEvent)
+	 */
+	public void dataChanged(DataStoreEvent evt)
+	{
+	}
+		
+	/**
+	 * @see org.concord.framework.data.stream.DataStoreListener#dataRemoved(org.concord.framework.data.stream.DataStoreEvent)
+	 */
+	public void dataRemoved(DataStoreEvent evt)
+	{
+		//FIXME See if the point is still in the DataGraphable?
+		//For now, I'll check if the graphable is empty
+		if (this.dataGraphable.getTotalNumSamples() == 0){
+			remove();
+		}
+	}
+
+	/**
+	 * @see org.concord.framework.data.stream.DataStoreListener#dataChannelDescChanged(org.concord.framework.data.stream.DataStoreEvent)
+	 */
+	public void dataChannelDescChanged(DataStoreEvent evt)
+	{
 	}
 }
