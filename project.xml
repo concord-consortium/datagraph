@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
   <!-- Inherit main project xml file -->
-  <extend>../project.xml</extend>
+  <extend>../Builds/project.xml</extend>
 
   <!-- Project specific parameters -->
   <artifactId>datagraph</artifactId>
