@@ -24,9 +24,9 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.20 $
- * $Date: 2004-11-12 21:18:03 $
- * $Author: eblack $
+ * $Revision: 1.21 $
+ * $Date: 2004-11-23 22:24:46 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -196,6 +196,8 @@ public class DataGraph extends JPanel
 		
 		gr.getXGrid().setDrawGridOnAxis(true);
 		gr.getYGrid().setDrawGridOnAxis(true);
+		
+		gr.useAutoTickScaling();
 		
 		return gr;
 	}
