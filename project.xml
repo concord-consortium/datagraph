@@ -16,6 +16,7 @@
       <version>SNAPSHOT</version>
       <type>jar</type>
       <properties>
+        <cc.path>Framework</cc.path>
         <eclipse.dependency>true</eclipse.dependency>
       </properties>
     </dependency>
@@ -25,6 +26,7 @@
       <version>SNAPSHOT</version>
       <type>jar</type>
       <properties>
+        <cc.path>Data</cc.path>
         <eclipse.dependency>true</eclipse.dependency>
       </properties>
     </dependency>
@@ -34,6 +36,7 @@
       <version>SNAPSHOT</version>
       <type>jar</type>
       <properties>
+        <cc.path>Graph</cc.path>
         <eclipse.dependency>true</eclipse.dependency>
       </properties>
     </dependency>
@@ -43,6 +46,7 @@
       <version>SNAPSHOT</version>
       <type>jar</type>
       <properties>
+        <cc.path>Swing</cc.path>
         <eclipse.dependency>true</eclipse.dependency>
       </properties>
     </dependency>

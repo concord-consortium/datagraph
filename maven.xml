@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+
+<project 
+  xmlns:j="jelly:core"
+  xmlns:ant="jelly:ant">
+
+  <preGoal name="jar:jar">
+    <attainGoal name="mklib" />
+
+    <ant:available property="maven.jar.manifest.available" file="${maven.jar.manifest}" />
+
+    <j:if test="${maven.jar.manifest.available}">
+      <ant:setProperty name="manifest" value="${maven.jar.manifest}" />
+    </j:if>
+                                                                                                            
+    <j:set var="maven.jar.classpath" value="" />
+
+    <j:forEach var="dep" items="${pom.dependencies}">
+      <j:if test="${dep.getProperty('war.manifest.classpath')=='true'}">
+        <j:set var="maven.war.classpath" value="${maven.war.classpath} ${dep.artifact}"/>
+      </j:if>
+    </j:forEach>
+                                                                                                            
+                                                                                                       
+    <j:forEach var="externJar" items="${pom.artifacts}">
+      <ant:echo message="External Jar: ${externJar.name}" />
+      <ant:echo message="  Path: ${externJar.path}" />
+      <ant:echo message="  Dependency: ${externJar.dependency.getProperty('cc.path')}" />
+      <j:set var="ccPath" value="${externJar.dependency.getProperty('cc.path')}" />
+      <j:if test="${!empty(ccPath)}">
+        <j:set var="maven.jar.classpath" value="${maven.jar.classpath} ${ccPath}/lib/${externJar.name}" />
+      </j:if>
+    </j:forEach>
+
+    <ant:manifest file="${maven.jar.manifest}">
+      <j:set var="classPath" value="${maven.jar.classpath}"/>
+      <j:if test="${!empty(classPath)}">
+          <ant:attribute name="Class-Path" value="${maven.jar.classpath}"/>
+      </j:if>
+    </ant:manifest>
+  </preGoal>
+
+  <!--
+     Since setting maven.build.dir or maven.build.dest will effect most built
+     residuals, create this post gaol to get just the jar file into the lib directory
+  -->
+  <postGoal name="jar:jar">
+    <attainGoal name="mklib" />
+    <!-- Copy the jar file to the lib directory -->
+    <ant:copy file="${maven.build.dir}/${maven.final.name}.jar" todir="${basedir}/lib" />
+  </postGoal>
+
+  <!--
+     Extend the cleanup to remove the extra 'lib' directory
+  -->
+  <postGoal name="clean:clean">
+    <!-- Create the lib directory -->
+    <ant:delete dir="${basedir}/lib" />
+  </postGoal>
+
+  <goal name="mklib">
+    <!-- Create the lib directory -->
+    <ant:mkdir dir="${basedir}/lib" />
+  </goal>
+</project>
