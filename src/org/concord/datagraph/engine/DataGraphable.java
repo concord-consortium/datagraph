@@ -24,9 +24,9 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.26 $
- * $Date: 2005-02-23 12:32:18 $
- * $Author: scytacki $
+ * $Revision: 1.27 $
+ * $Date: 2005-03-06 06:10:45 $
+ * $Author: imoncada $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -51,6 +51,7 @@ package org.concord.datagraph.engine;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.GeneralPath;
@@ -892,6 +893,41 @@ getDataChannelDescription(int numChannel):
 	public void clearValues()
 	{
 		reset();
+	}
+	
+	/**
+	 * @param p
+	 * @return
+	 */
+	public int getIndexValueAtDisplay(Point p, int threshold)
+	{
+		Point2D pW, pD;
+		float x, y;
+		Object objVal;
+		
+		CoordinateSystem cs = getGraphArea().getCoordinateSystem();
+		
+		for (int i=0; i<getTotalNumSamples(); i++){
+			
+			objVal = getValueAt(i, 0);
+			if (!(objVal instanceof Float)) continue;
+			x = ((Float)objVal).floatValue();
+			
+			objVal = getValueAt(i, 1);
+			if (!(objVal instanceof Float)) continue;
+			y = ((Float)objVal).floatValue();
+			
+			pW = new Point2D.Double(x,y);
+			pD = cs.transformToDisplay(pW);
+			
+			//Threshold
+			if (Math.abs(pD.getX() - p.getX()) <= threshold &&
+					Math.abs(pD.getY() - p.getY()) <= threshold){
+				return i;
+			}
+		}
+		
+		return -1;
 	}
 	
 	/*

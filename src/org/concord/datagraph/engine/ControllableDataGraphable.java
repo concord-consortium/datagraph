@@ -24,9 +24,9 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.4 $
- * $Date: 2004-11-12 21:18:03 $
- * $Author: eblack $
+ * $Revision: 1.5 $
+ * $Date: 2005-03-06 06:10:45 $
+ * $Author: imoncada $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -61,6 +61,11 @@ public class ControllableDataGraphable extends DataGraphable
 	public final static int DRAGMODE_REMOVEPOINTS = 4;
 	
 	protected int dragMode = DRAGMODE_MOVEPOINTS;
+	
+	public final static int LINETYPE_FREE = 0;
+	public final static int LINETYPE_FUNCTION = 1;
+	
+	protected int lineType = LINETYPE_FREE;	
 	
 	private boolean mouseClicked = false;
 	private int indexPointClicked = -1;
@@ -108,6 +113,9 @@ public class ControllableDataGraphable extends DataGraphable
 		if (dragMode == DRAGMODE_ADDPOINTS || dragMode == DRAGMODE_ADDMULTIPLEPOINTS){
 			//Add a new point
 			addPoint(pW.getX(), pW.getY());
+			
+			//Sort the points 
+			
 		}
 		else if (dragMode == DRAGMODE_REMOVEPOINTS){
 			//Remove the current point
@@ -192,35 +200,13 @@ public class ControllableDataGraphable extends DataGraphable
 	 */
 	private boolean isPointAValue(Point p)
 	{
-		Point2D pW, pD;
-		float x, y;
-		int threshold = 5;
-		Object objVal;
-		
-		CoordinateSystem cs = graphArea.getCoordinateSystem();
-		
-		for (int i=0; i<getTotalNumSamples(); i++){
-			
-			objVal = getValueAt(i, 0);
-			if (!(objVal instanceof Float)) continue;
-			x = ((Float)objVal).floatValue();
-			
-			objVal = getValueAt(i, 1);
-			if (!(objVal instanceof Float)) continue;
-			y = ((Float)objVal).floatValue();
-			
-			pW = new Point2D.Double(x,y);
-			pD = cs.transformToDisplay(pW);
-			
-			//Threshold
-			if (Math.abs(pD.getX() - p.getX()) <= threshold &&
-					Math.abs(pD.getY() - p.getY()) <= threshold){
-				indexPointClicked = i;
-				return true;
-			}
+		indexPointClicked = getIndexValueAtDisplay(p, 5);
+		if (indexPointClicked == -1){
+			return false;
 		}
-		
-		return false;
+		else{
+			return true;
+		}
 	}
 
 	/**
