@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.5 $
- * $Date: 2004-09-10 19:20:50 $
+ * $Revision: 1.6 $
+ * $Date: 2004-09-14 18:49:39 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -154,6 +154,7 @@ public class DataGraphable extends DefaultGraphable
 		yValues.removeAllElements();
 		needUpdate = true;
 		needUpdateDataReceived = false;
+		lastTime = 0;
 		notifyChange();
 	}
 
@@ -236,14 +237,14 @@ public class DataGraphable extends DefaultGraphable
 		float time;
 		int initialI;
 		
-    	if (needUpdateDataReceived){
-    		time = lastTime;
-    		initialI = lastValueCalculated;
-    	}
-    	else{
+    	if (!needUpdateDataReceived || lastTime == 0){
     		path.reset();
     		time = 0;
     		initialI = 0;
+    	}
+    	else{
+    		time = lastTime;
+    		initialI = lastValueCalculated;
     	}
 
 		for(int i=initialI; i<yValues.size(); i++){
