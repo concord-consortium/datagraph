@@ -24,9 +24,9 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.31 $
- * $Date: 2005-03-10 06:04:54 $
- * $Author: imoncada $
+ * $Revision: 1.32 $
+ * $Date: 2005-03-16 19:00:12 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -772,6 +772,8 @@ public class DataGraphable extends DefaultGraphable
 	        setChannelX(0);
 	        setChannelY(getChannelY() + 1);
 	    }
+	    
+	    notifyChange();
 	}
 	
 	/**

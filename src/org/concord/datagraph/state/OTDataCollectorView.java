@@ -32,7 +32,9 @@ package org.concord.datagraph.state;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.EventObject;
@@ -42,6 +44,9 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
+import javax.swing.JToggleButton;
+import javax.swing.SwingUtilities;
+import javax.swing.text.ComponentView;
 
 import org.concord.data.state.OTDataStore;
 import org.concord.data.ui.DataFlowControlAction;
@@ -52,8 +57,10 @@ import org.concord.data.ui.DataValueLabel;
 import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.datagraph.ui.DataGraph;
+import org.concord.datagraph.ui.DrawDataGraphableAction;
 import org.concord.datagraph.ui.SingleDataAxisGrid;
 import org.concord.framework.data.stream.DataProducer;
+import org.concord.framework.data.stream.ProducerDataStore;
 import org.concord.framework.otrunk.OTObjectList;
 import org.concord.framework.otrunk.view.OTObjectView;
 import org.concord.framework.otrunk.view.OTViewContainer;
@@ -63,6 +70,7 @@ import org.concord.graph.event.GraphableListListener;
 import org.concord.graph.examples.GraphWindowToolBar;
 import org.concord.graph.ui.Grid2D;
 import org.concord.graph.ui.SingleAxisGrid;
+import org.concord.swing.SelectableToggleButton;
 
 /**
  * @author scott
@@ -152,7 +160,7 @@ public class OTDataCollectorView
 			realGraphable.setShowCrossPoint(otGraphable.getDrawMarks());
 			realGraphable.setLabel(otGraphable.getName());
 			realGraphables.add(realGraphable);
-			dataGraph.addDataGraphable(realGraphable);
+			dataGraph.addBackgroundDataGraphable(realGraphable);
 		}
 
 		OTDataGraphable source = dataCollector.getSource();
@@ -175,15 +183,35 @@ public class OTDataCollectorView
 				sourceGraphable.setDataStore(dataStore, 
 						source.getXColumn(), 
 						source.getYColumn());
+
 				// TODO need to add the sketch components here
+			    JPanel bottomPanel = new JPanel(new FlowLayout());
+			    JButton clearButton = new JButton("Clear");
+			    clearButton.addActionListener(new ActionListener(){
+			       public void actionPerformed(ActionEvent e){
+			           dataGraph.reset();			           
+			       }
+			    });
+			    
+				DrawDataGraphableAction a = new DrawDataGraphableAction();
+				a.setDataGraphable((ControllableDataGraphable)sourceGraphable);
+				gwToolbar.addButton(new SelectableToggleButton(a), "Draw a function");
+				
+			    bottomPanel.add(clearButton);
+
+			    dataGraph.add(bottomPanel, BorderLayout.SOUTH);  			    			    
 			} else if(sourceProducer != null) {
 			    // need to set the data store to be the data store for this
 			    // graphable
 			    if(dataStore != null && !dataCollector.getSingleValue()){
 			        dataStore.setDataProducer(sourceProducer);
-					sourceGraphable = dataGraph.createDataGraphable(dataStore);
+					sourceGraphable = dataGraph.createDataGraphable(dataStore,
+							source.getXColumn(), 
+							source.getYColumn());
 			    } else {
-			        sourceGraphable = dataGraph.createDataGraphable(sourceProducer);
+			        sourceGraphable = dataGraph.createDataGraphable(sourceProducer,
+							source.getXColumn(), 
+							source.getYColumn());
 			    }
 			    
 			    JPanel bottomPanel = new JPanel(new FlowLayout());
@@ -272,22 +300,29 @@ public class OTDataCollectorView
                     boolean needPack = false;
                     if(dialog == null) {
                         dialog = new JDialog();
+                        dialog.setSize(400,400);
                         needPack = true;
                     }
                     dialog.getContentPane().setLayout(new BorderLayout());
                     dialog.getContentPane().removeAll();
                     dialog.getContentPane().add(dataGraph, BorderLayout.CENTER);
+                    /*
                     if(needPack){
                         dialog.pack();
                     }
+                    */
+                    
                     dialog.show();
                     sourceProducer.start();
+                    dataGraph.start();
                 }                
             });
             svPanel.add(cDataButton);
             return svPanel;
         }
         
+		dataGraph.setPreferredSize(new Dimension(400,320));
+		
 		return dataGraph;
     }
 
@@ -344,7 +379,8 @@ public class OTDataCollectorView
 		source.setColor(c.getRGB());
 		source.setConnectPoints(sourceGraphable.isConnectPoints());
 		source.setDrawMarks(sourceGraphable.isShowCrossPoint());
-		
+		source.setXColumn(sourceGraphable.getChannelX());
+		source.setYColumn(sourceGraphable.getChannelY());		
 	}
 	
 	/* (non-Javadoc)

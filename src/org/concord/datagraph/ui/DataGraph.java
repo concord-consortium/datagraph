@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.31 $
- * $Date: 2005-03-09 17:14:12 $
+ * $Revision: 1.32 $
+ * $Date: 2005-03-16 19:00:12 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -105,6 +105,7 @@ public class DataGraph extends JPanel
 	protected Hashtable producers = new Hashtable();
 
 	protected GraphableList objList;
+	protected GraphableList backgroundList;
 	
 	protected DefaultCoordinateSystem2D defaultCS;
 	protected GraphArea defaultGA;
@@ -167,13 +168,16 @@ public class DataGraph extends JPanel
 		selectionBox = new DashedBox();
 		selectionBox.setVisible(false);
 		graph.add(selectionBox);
+
+		backgroundList = new SelectableList();
+		graph.add(backgroundList);
 		
 		////////
 		// List of Graphable Objects
 		objList = new SelectableList();
 		graph.add(objList);
 		////////
-
+		
 		setLayout(new BorderLayout());
 		add(graph);
 
@@ -647,7 +651,7 @@ public class DataGraph extends JPanel
 		}
 		objList.add(graphable);
 	}
-	
+		
 	/**
 	 * Removes a data graphable from the list of graphables
 	 * @param graphable data graphable to remove
@@ -658,7 +662,29 @@ public class DataGraph extends JPanel
 	}
 	
 	/**
-	 * Returns the top-level list of graphables of this graph 
+	 * Adds a data graphable to the list of background graphables
+	 * @param graphable data graphable to add
+	 */
+	public void addBackgroundDataGraphable(DataGraphable graphable)
+	{
+		if (graphable.getGraphArea() == null){
+			graphable.setGraphArea(defaultGA);
+		}
+		backgroundList.add(graphable);
+	}
+		
+	/**
+	 * Removes a data graphable from the list of background 
+	 * graphables
+	 * @param graphable data graphable to remove
+	 */
+	public void removeBackgroundDataGraphable(DataGraphable graphable)
+	{
+		backgroundList.remove(graphable);
+	}
+
+	/**
+	 * Returns the top-level list of foreground graphables of this graph 
 	 * @return
 	 */
 	public GraphableList getObjList()

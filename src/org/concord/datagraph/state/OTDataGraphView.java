@@ -24,8 +24,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.7 $
- * $Date: 2005-03-09 17:14:12 $
+ * $Revision: 1.8 $
+ * $Date: 2005-03-16 19:00:12 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -34,6 +34,7 @@
 package org.concord.datagraph.state;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -81,16 +82,10 @@ public class OTDataGraphView
 				
 		dataGraph.setAutoFitMode(DataGraph.AUTO_SCROLL_RUNNING_MODE);
 		
-		JPanel graphWrapper = new JPanel(){
-		  public void removeNotify()
-		  {
-		      System.err.println("got remove notify");
-		      dataGraph.reset();
-		  }
-		};
+		JPanel graphWrapper;
 		
-		graphWrapper.setLayout(new BorderLayout());
-		graphWrapper.add(dataGraph, BorderLayout.CENTER);
-		return graphWrapper;
+		dataGraph.setPreferredSize(new Dimension(400,320));
+		
+		return dataGraph;				    
 	}
 }

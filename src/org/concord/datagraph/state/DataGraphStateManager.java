@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.7 $
- * $Date: 2005-03-07 04:53:33 $
+ * $Revision: 1.8 $
+ * $Date: 2005-03-16 19:00:12 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -248,6 +248,7 @@ public class DataGraphStateManager
 					System.err.println("Can't control a graphable with a data producer");
 				}
 				
+				dataProducer.reset();
 				realGraphable = dataGraph.createDataGraphable(dataProducer);
 				if(toolBar == null) {					
 					toolBar = createFlowToolBar();
@@ -351,6 +352,8 @@ public class DataGraphStateManager
 			pfGraphable.setColor(c.getRGB());
 			pfGraphable.setConnectPoints(dGraphable.isConnectPoints());
 			pfGraphable.setDrawMarks(dGraphable.isShowCrossPoint());
+			pfGraphable.setXColumn(dGraphable.getChannelX());
+			pfGraphable.setYColumn(dGraphable.getChannelY());
 		}
 		
 	}
