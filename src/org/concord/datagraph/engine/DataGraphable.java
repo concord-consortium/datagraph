@@ -24,9 +24,9 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.29 $
- * $Date: 2005-03-09 17:14:12 $
- * $Author: scytacki $
+ * $Revision: 1.30 $
+ * $Date: 2005-03-10 03:04:29 $
+ * $Author: imoncada $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -839,14 +839,14 @@ public class DataGraphable extends DefaultGraphable
 	 * Only works with a Writable Data Store!
 	 * @param numSample
 	 */
-	public void removeValueAt(int numSample)
+	public void removeSampleAt(int numSample)
 	{
 		//Only works with a Writable Data Store!
 		if (!(dataStore instanceof WritableDataStore)) {
 			throw new IllegalArgumentException("The Data Store "+dataStore+" is not Writable!");
 		}
 		
-		((WritableDataStore)dataStore).removeValueAt(numSample);
+		((WritableDataStore)dataStore).removeSampleAt(numSample);
 	}
 	
 	public void addPoint(double x, double y)

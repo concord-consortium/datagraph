@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.6 $
- * $Date: 2005-03-08 08:54:55 $
+ * $Revision: 1.7 $
+ * $Date: 2005-03-10 03:04:29 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -133,7 +133,7 @@ public class ControllableDataGraphable extends DataGraphable
 		}
 		else if (dragMode == DRAGMODE_REMOVEPOINTS){
 			//Remove the current point
-			removeValueAt(indexPointClicked);
+			removeSampleAt(indexPointClicked);
 		}
 		
 		return true;
