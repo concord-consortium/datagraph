@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.2 $
- * $Date: 2004-09-07 17:30:54 $
+ * $Revision: 1.3 $
+ * $Date: 2004-09-07 17:59:21 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -40,8 +40,8 @@ public class MultipleGrid2D extends Grid2D
 		super();
 		
 		//By default, the grids draw the axis at the beginning
-		xGrid.setAxisDrawMode(SingleAxisGrid.AXIS_BEGINNING);
-		yGrid.setAxisDrawMode(SingleAxisGrid.AXIS_BEGINNING);
+		xGrid.setAxisDrawMode(SingleAxisGrid.BEGINNING);
+		yGrid.setAxisDrawMode(SingleAxisGrid.BEGINNING);
 		
 		xGrids = new Vector();
 		yGrids = new Vector();
