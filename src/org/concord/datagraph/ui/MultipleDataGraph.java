@@ -24,9 +24,9 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.6 $
- * $Date: 2005-04-01 17:52:47 $
- * $Author: scytacki $
+ * $Revision: 1.7 $
+ * $Date: 2005-04-03 07:47:39 $
+ * $Author: imoncada $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -61,21 +61,44 @@ import org.concord.graph.ui.Grid2D;
 public class MultipleDataGraph extends DataGraph
 	implements DataConsumer
 {
-	protected Vector subGraphAreas;	//GraphArea objects
+	public static final int TYPE_HORIZONTAL = 1;
+	public static final int TYPE_VERTICAL = 2;
+	
+	protected int type = TYPE_HORIZONTAL;
+	
+	protected Vector subGraphAreas;	//GraphArea objects	
 	
 	public MultipleDataGraph()
 	{
-		super();
-		
-		////////
-		defaultGA.setYCentered(true);
-		////////
+		this(-1, TYPE_HORIZONTAL);
 	}
 	
 	public MultipleDataGraph(int numGraphAreas)
 	{
-		this();
-		initGraphAreas(numGraphAreas);
+		this(numGraphAreas, TYPE_HORIZONTAL);
+	}
+	
+	public MultipleDataGraph(int numGraphAreas, int type)
+	{
+		super();
+		this.type = type;
+		
+		////////
+		if (type == TYPE_HORIZONTAL){
+			getGraphArea().setYCentered(true);
+			grid.getXGrid().setVisible(false);
+		}
+		else{
+			getGraphArea().setXCentered(true);
+			grid.getYGrid().setVisible(false);
+			//getGraphArea().setOriginPositionPercentage(-1, -1);
+			//getGraphArea().setAutoResize(false);
+		}
+		////////
+		
+		if (numGraphAreas >= 0){
+			initGraphAreas(numGraphAreas);
+		}
 	}
 	
 	protected void initGraphAreas(int numGraphAreas)
@@ -102,8 +125,7 @@ public class MultipleDataGraph extends DataGraph
 		//gr.setLabelFormat(new DecimalFormat("#"));
 		gr.getXGrid().setAxisLabelSize(12);
 		gr.getYGrid().setAxisLabelSize(12);
-		gr.getXGrid().setVisible(false);
-		
+				
 		return gr;
 	}
 
@@ -113,19 +135,47 @@ public class MultipleDataGraph extends DataGraph
 	
 	public void addGraphArea()
 	{
-		int defaultGASize = 230;
+		int defaultGASize;
 		int defaultGAGap = 10;
 		
-		//Create a new graph area that share the same y axis
-		GraphArea ga = new GraphArea(new DefaultCoordinateSystem2D(null, defaultCS.getYAxis()));
-		ga.setSize(new Dimension(defaultGASize,0));
-		Insets ins = defaultGA.getInsets();
-		ga.setInsets(new Insets(ins.top, ins.left + ((defaultGASize + defaultGAGap)*subGraphAreas.size()), ins.bottom, ins.right));
-		ga.setAutoResizeLeft(true);
-		ga.setAutoResizeRight(false);
-		ga.setAutoResizeY(true);
-		ga.setOriginPositionPercentage(0, defaultGA.getOriginPositionY());
+		//Create a new graph area that shares the same x or y axis
+		GraphArea ga;
+		Insets ins = getGraphArea().getInsets();
 		
+		if (type == TYPE_HORIZONTAL){
+			defaultGASize = 230;
+			ga = new GraphArea(new DefaultCoordinateSystem2D(null, getCoordinateSystem().getYAxis()));
+			ga.setSize(new Dimension(defaultGASize,0));
+			ga.setInsets(new Insets(ins.top, ins.left + ((defaultGASize + defaultGAGap)*subGraphAreas.size()), ins.bottom, ins.right));
+			ga.setAutoResizeLeft(true);
+			ga.setAutoResizeRight(false);
+			ga.setAutoResizeY(true);
+
+			ga.setOriginPositionPercentage(0, getGraphArea().getOriginPositionY());
+		}
+		else if (type == TYPE_VERTICAL){
+			defaultGASize = 280;
+			ga = new GraphArea(new DefaultCoordinateSystem2D(getCoordinateSystem().getXAxis(), null));			
+			ga.setSize(new Dimension(100, defaultGASize));
+			ga.setInsets(new Insets(
+					600 - ((defaultGASize + defaultGAGap)*(subGraphAreas.size()+1)), 
+					ins.left, 
+					ins.bottom + ((defaultGASize - ins.bottom )*(subGraphAreas.size())), 
+					ins.right));
+/*			ga.setInsets(new Insets(
+					ins.top + ((defaultGASize + defaultGAGap)*(subGraphAreas.size())), 
+					ins.left, 
+					ins.bottom,// + ((defaultGASize + defaultGAGap)*(subGraphAreas.size())), 
+					ins.right));
+*/			ga.setOriginPositionPercentage(0, 0.5);
+			ga.setAutoResizeX(true);
+			ga.setAutoResizeTop(true);
+			ga.setAutoResizeBottom(true);
+		}
+		else{
+			return;
+		}
+				
 		addGraphArea(ga);		
 
 		//Just in case
@@ -146,7 +196,7 @@ public class MultipleDataGraph extends DataGraph
 		subGraphAreas.add(ga);
 		
 		//Add another grid for this new graph area
-		((MultipleGrid2D)grid).addGrid(ga);
+		((MultipleGrid2D)grid).addGrid(ga, (type == TYPE_HORIZONTAL), (type == TYPE_VERTICAL));
 	}
 	
 	protected void resetGraphArea()
@@ -172,24 +222,30 @@ public class MultipleDataGraph extends DataGraph
 	 */
 	public void addDataProducer(DataProducer source, int graphAreaIndex)
 	{
-		if (graphAreaIndex < 0 || graphAreaIndex >= subGraphAreas.size()) return;
-		
-		GraphArea ga = (GraphArea)subGraphAreas.elementAt(graphAreaIndex);
-		addDataProducer(source, ga);
+		GraphArea ga = getGraphArea(graphAreaIndex);
+		if (ga != null){
+			addDataProducer(source, ga);
+		}
 	}
 	
+	/**
+	 * @param graphAreaIndex
+	 * @return
+	 */
+	public GraphArea getGraphArea(int graphAreaIndex)
+	{
+		if (graphAreaIndex < 0 || graphAreaIndex >= subGraphAreas.size()) return null;
+		return (GraphArea)subGraphAreas.elementAt(graphAreaIndex);
+	}
+
 	//Testing purposes
     public static void main(String args[]) {
 		final JFrame frame = new JFrame();
 		final JPanel fa = new MultipleDataGraph(1);
 		frame.getContentPane().add(fa);
 		frame.setSize(800,600);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.show();
-		
-		frame.addWindowListener( new WindowAdapter() {
-			public void windowClosing(WindowEvent e){				
-				System.exit(0);
-			}			
-		});
 	}
+    
 }

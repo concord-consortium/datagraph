@@ -24,9 +24,9 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.4 $
- * $Date: 2004-11-12 21:18:04 $
- * $Author: eblack $
+ * $Revision: 1.5 $
+ * $Date: 2005-04-03 07:47:39 $
+ * $Author: imoncada $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -170,20 +170,28 @@ public class MultipleGrid2D extends Grid2D
 	 * Adds a new xgrid to the grids
 	 * @param grid
 	 */
-	public void addGrid(GraphArea ga)
+	public void addGrid(GraphArea ga, boolean showXAxis, boolean showYAxis)
 	{
 		SingleAxisGrid grid;
 		
 		grid = (SingleAxisGrid)xGrid.getCopy();	//new SingleAxisGrid(1);
 		grid.setGraphArea(ga);
+		if (!showXAxis){
+			grid.setShowAxisLabels(false);
+			grid.setShowGridLabels(false);
+			grid.setShowGridLines(false);
+			grid.setShowTickMarks(false);
+		}
 		addXGrid(grid);
 		
 		grid = (SingleAxisGrid)yGrid.getCopy();	//new SingleAxisGrid(2);
 		grid.setGraphArea(ga);
-		grid.setShowAxisLabels(false);
-		grid.setShowGridLabels(false);
-		grid.setShowGridLines(false);
-		grid.setShowTickMarks(false);
+		if (!showYAxis){
+			grid.setShowAxisLabels(false);
+			grid.setShowGridLabels(false);
+			grid.setShowGridLines(false);
+			grid.setShowTickMarks(false);
+		}
 		addYGrid(grid);
 	}
 

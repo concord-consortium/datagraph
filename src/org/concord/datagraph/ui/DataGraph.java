@@ -24,9 +24,9 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.36 $
- * $Date: 2005-04-01 17:52:47 $
- * $Author: scytacki $
+ * $Revision: 1.37 $
+ * $Date: 2005-04-03 07:47:39 $
+ * $Author: imoncada $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -102,9 +102,6 @@ public class DataGraph extends JPanel
 	protected GraphableList objList;
 	protected GraphableList backgroundList;
 	
-	protected DefaultCoordinateSystem2D defaultCS;
-	protected GraphArea defaultGA;
-	
 	protected boolean adjustOriginOnReset = true;
 	
 	protected DashedBox selectionBox;
@@ -114,6 +111,16 @@ public class DataGraph extends JPanel
     private boolean running;
     private int autoFitMode;
     private JLabel titleLabel;		
+	
+	/**
+	 * Creates a default data graph with or without a tool bar
+	 * @param showToolbar	indicates if the toolbar should be visible or not
+	 */
+	public DataGraph(boolean showToolbar)
+	{
+		this();
+		toolBar.setVisible(showToolbar);
+	}
 	
 	/**
 	 * Creates a default data graph that will have: a GraphWindow with a Grid2D that displays
@@ -129,10 +136,10 @@ public class DataGraph extends JPanel
 		// Graph
 		//Create the graph
 		graph = new GraphWindow();
-		defaultGA = graph.getDefaultGraphArea();
-		CoordinateSystem cs = defaultGA.getCoordinateSystem();
+		GraphArea defaultGA = graph.getDefaultGraphArea();
+		CoordinateSystem defaultCS = defaultGA.getCoordinateSystem();
 		//Make sure we are using a DefaultCoordinateSystem2D
-		if (!(cs instanceof DefaultCoordinateSystem2D)){
+		if (!(defaultCS instanceof DefaultCoordinateSystem2D)){
 			graph.setDefaultGraphArea(new GraphArea(new DefaultCoordinateSystem2D()));
 		}
 		defaultGA = graph.getDefaultGraphArea();
@@ -209,17 +216,7 @@ public class DataGraph extends JPanel
 				
 		setToolBar(dgToolbar);
 	}
-	
-	/**
-	 * Creates a default data graph with or without a tool bar
-	 * @param showToolbar	indicates if the toolbar should be visible or not
-	 */
-	public DataGraph(boolean showToolbar)
-	{
-		this();
-		toolBar.setVisible(showToolbar);
-	}
-	
+		
 	protected Grid2D createGrid()
 	{		
 		Grid2D gr = new Grid2D(new SingleDataAxisGrid(1), 
@@ -242,7 +239,7 @@ public class DataGraph extends JPanel
 
 	protected void initScaleObject()
 	{
-		addScaleAxis(defaultGA);
+		addScaleAxis(getGraphArea());
 	}
 	
 	protected void addScaleAxis(GraphArea ga)
@@ -278,6 +275,34 @@ public class DataGraph extends JPanel
 		return grid;
 	}
 
+	public GraphArea getGraphArea()
+	{
+		return graph.getDefaultGraphArea();
+	}
+	
+	public DefaultCoordinateSystem2D getCoordinateSystem()
+	{
+		CoordinateSystem cs = getGraphArea().getCoordinateSystem();
+		if (!(cs instanceof DefaultCoordinateSystem2D)) return null;
+		return (DefaultCoordinateSystem2D)cs;
+	}
+	
+	public void setGraphArea(GraphArea ga)
+	{
+		graph.setDefaultGraphArea(ga);
+		
+		//Correct the grid
+		grid.setGraphArea(ga);
+		
+		//Correct the graphables?? NO for now
+		
+		//Correct the axis scale objects
+		for (int i=0; i<axisScaleObjs.size(); i++){
+			AxisScale ax = (AxisScale)axisScaleObjs.elementAt(i);
+			ax.setGraphArea(ga);
+		}
+	}
+	
 	/**
 	 * Sets the selection on this data graph
 	 */
@@ -352,11 +377,11 @@ public class DataGraph extends JPanel
 		setOriginOffsetPercentage(-1, -1);
 
 		//xPos and yPos are relative to the UPPER LEFT CORNER of the window
-		xPos = xPos + defaultGA.getInsets().left;
-		yPos = yPos + defaultGA.getInsets().top;
+		xPos = xPos + getGraphArea().getInsets().left;
+		yPos = yPos + getGraphArea().getInsets().top;
 		
 		Point2D.Double origin = new Point2D.Double(xPos, yPos);
-		defaultCS.setOriginOffsetDisplay(origin);
+		getCoordinateSystem().setOriginOffsetDisplay(origin);
 	}
 	
 	/**
@@ -385,7 +410,7 @@ public class DataGraph extends JPanel
 		double xPos = coord.getOriginOffsetDisplay().getX();
 		
 		//xPos is relative to the UPPER LEFT CORNER of the window
-		xPos = xPos - defaultGA.getInsets().left;
+		xPos = xPos - getGraphArea().getInsets().left;
 		
 		return xPos;		
 	}
@@ -397,7 +422,7 @@ public class DataGraph extends JPanel
 		double yPos = coord.getOriginOffsetDisplay().getY(); 
 			
 		//yPos is relative to the UPPER LEFT CORNER of the window
-		yPos = yPos - defaultGA.getInsets().top;
+		yPos = yPos - getGraphArea().getInsets().top;
 		
 		return yPos;		
 	}
@@ -437,7 +462,7 @@ public class DataGraph extends JPanel
 	 */
 	public double getMinXAxisWorld()
 	{
-		return defaultGA.getLowerLeftCornerWorld().getX();
+		return getGraphArea().getLowerLeftCornerWorld().getX();
 	}
 	
 	/**
@@ -446,7 +471,7 @@ public class DataGraph extends JPanel
 	 */
 	public double getMaxXAxisWorld()
 	{
-		return defaultGA.getUpperRightCornerWorld().getX();
+		return getGraphArea().getUpperRightCornerWorld().getX();
 	}
 
 	/**
@@ -455,7 +480,7 @@ public class DataGraph extends JPanel
 	 */
 	public double getMinYAxisWorld()
 	{
-		return defaultGA.getLowerLeftCornerWorld().getY();
+		return getGraphArea().getLowerLeftCornerWorld().getY();
 	}
 	
 	/**
@@ -464,7 +489,7 @@ public class DataGraph extends JPanel
 	 */
 	public double getMaxYAxisWorld()
 	{
-		return defaultGA.getUpperRightCornerWorld().getY();
+		return getGraphArea().getUpperRightCornerWorld().getY();
 	}
 	
 	/**
@@ -477,7 +502,7 @@ public class DataGraph extends JPanel
 	 */
 	public void addDataProducer(DataProducer dataProducer)
 	{
-		addDataProducer(dataProducer, defaultGA);		
+		addDataProducer(dataProducer, getGraphArea());		
 	}
 
 	/**
@@ -633,7 +658,7 @@ public class DataGraph extends JPanel
 	public void addDataGraphable(DataGraphable graphable)
 	{
 		if (graphable.getGraphArea() == null){
-			graphable.setGraphArea(defaultGA);
+			graphable.setGraphArea(getGraphArea());
 		}
 		objList.add(graphable);
 	}
@@ -654,7 +679,7 @@ public class DataGraph extends JPanel
 	public void addBackgroundDataGraphable(DataGraphable graphable)
 	{
 		if (graphable.getGraphArea() == null){
-			graphable.setGraphArea(defaultGA);
+			graphable.setGraphArea(getGraphArea());
 		}
 		backgroundList.add(graphable);
 	}
@@ -696,7 +721,7 @@ public class DataGraph extends JPanel
 	 * 
 	 * @param gwToolbar
 	 */
-	public void setToolBar(GraphWindowToolBar gwToolbar)
+	public void setToolBar(GraphWindowToolBar gwToolbar, boolean bAddToPanel)
 	{
 	    Vector axisScaleControls = null;
 	    if(toolBar != null) {
@@ -716,7 +741,23 @@ public class DataGraph extends JPanel
 		    toolBar.addAxisScale((AxisScale)axisScaleObjs.get(i));
 		}
 		
-		add(toolBar, BorderLayout.EAST);				
+		if (bAddToPanel){
+			add(toolBar, BorderLayout.EAST);
+		}
+	}
+	
+	/**
+	 * Sets the tool bar of this graph
+	 * this sets the graphwindow and grid of the 
+	 * tool bar to be the graphwindow and grid
+	 * of this data graph.
+	 * It also adds the toolbar to this panel.
+	 * 
+	 * @param gwToolbar
+	 */
+	public void setToolBar(GraphWindowToolBar gwToolbar)
+	{
+		setToolBar(gwToolbar, true);
 	}
 	
 	/**
@@ -788,7 +829,7 @@ public class DataGraph extends JPanel
 		}
 		
 		if (adjustOriginOnReset){
-		    resetGraphArea(defaultGA);
+		    resetGraphArea(getGraphArea());
 		}
 	}
 
