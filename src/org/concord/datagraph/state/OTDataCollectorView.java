@@ -364,6 +364,7 @@ public class OTDataCollectorView
 			else{
 				l.setLocation(dataPoint);
 			}
+			l.setSelectionEnabled(otDPLabel.getSelectable());
         }
         //
         

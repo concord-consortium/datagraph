@@ -24,9 +24,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.2 $
- * $Date: 2005-03-18 09:57:07 $
- * $Author: maven $
+ * $Revision: 1.3 $
+ * $Date: 2005-03-18 14:14:15 $
+ * $Author: imoncada $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -66,5 +66,9 @@ public interface OTDataPointLabel
 
 	public static boolean DEFAULT_isDataPoint = true;
 	public boolean getIsDataPoint();
-	public void setIsDataPoint(boolean y);
+	public void setIsDataPoint(boolean b);
+
+	public static boolean DEFAULT_selectable = true;
+	public boolean getSelectable();
+	public void setSelectable(boolean b);
 }
