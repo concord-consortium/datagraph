@@ -24,9 +24,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.5 $
- * $Date: 2005-04-05 00:13:23 $
- * $Author: imoncada $
+ * $Revision: 1.6 $
+ * $Date: 2005-04-05 04:51:27 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -44,8 +44,6 @@ import java.util.Enumeration;
 import java.util.EventObject;
 import java.util.Vector;
 
-import org.concord.framework.data.stream.DataStore;
-import org.concord.framework.data.stream.WritableDataStore;
 import org.concord.graph.engine.CoordinateSystem;
 import org.concord.graph.engine.Graphable;
 import org.concord.graph.engine.MathUtil;

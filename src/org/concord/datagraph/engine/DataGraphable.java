@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.36 $
- * $Date: 2005-04-01 17:52:47 $
+ * $Revision: 1.37 $
+ * $Date: 2005-04-05 04:51:27 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -755,6 +755,8 @@ public class DataGraphable extends DefaultGraphable
 	}
 	
 	/**
+	 * This returns the data producer of this graphable. 
+	 * 
 	 * @return Returns the data producer.
 	 */
 	public DataProducer getDataProducer()
@@ -764,6 +766,25 @@ public class DataGraphable extends DefaultGraphable
 			return pDataStore.getDataProducer();
 		}
 		return null;
+	}
+	
+	/**
+	 * This will return a data producer related to this graphable.
+	 * If setDataProducer was called then that prodcuer will be returned.
+	 * If setDataStore was called with a ProducerDataStore, then the
+	 * producer of that datastore will be returned.
+	 * 
+	 * @return
+	 */
+	public DataProducer findDataProducer()
+	{
+	    // This class internally creates a producer data store when
+	    // the setDataProducer method is called.  So we just need
+	    // to check for those types of dataStores	    
+	    if(dataStore instanceof ProducerDataStore) {
+	        return ((ProducerDataStore)dataStore).getDataProducer();
+	    }
+	    return null;
 	}
 	
 	public float getMinXValue()
@@ -847,6 +868,11 @@ public class DataGraphable extends DefaultGraphable
 	}
 	
 	/**
+	 * Even if setDataStore has not been call this might return
+	 * a non null value.  If setDataProducer was called then an
+	 * internal ProducerDataStore was created, and that would be
+	 * returned here.  
+	 * 
 	 * @return Returns the dataStore.
 	 */
 	public DataStore getDataStore()
