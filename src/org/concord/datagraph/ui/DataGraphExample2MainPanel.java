@@ -1,6 +1,6 @@
 /*
  * Last modification information:
- * $Revision: 1.3 $
+ * $Revision: 1.1 $
  * $Date: 2004-09-02 21:14:41 $
  * $Author: imoncada $
  *
@@ -24,6 +24,8 @@ import javax.swing.Timer;
 
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.DefaultDataProducer;
+import org.concord.graph.ui.Grid2D;
+import org.concord.graph.ui.SingleAxisGrid;
 import org.concord.data.ui.DataTableCellRenderer;
 import org.concord.data.ui.DataTableModel;
 import org.concord.data.ui.DataTablePanel;
@@ -38,16 +40,13 @@ import org.concord.data.ui.TableCellColorModel;
  * @author imoncada<p>
  *
  */
-public class DataGraphExampleMainPanel extends JPanel
+public class DataGraphExample2MainPanel extends JPanel
 {
 	Timer timer;
-	MultipleDataGraph graph;
+	DataGraph graph;
 	
 	DataProducer dp1;
 	DataProducer dp2;
-	DataProducer dp3;
-	DataProducer dp4;
-	DataProducer dp5;
 	
 	JButton startButton;
 	JButton stopButton;
@@ -58,35 +57,28 @@ public class DataGraphExampleMainPanel extends JPanel
 	
 	float t;
 	
-	public DataGraphExampleMainPanel()
+	public DataGraphExample2MainPanel()
 	{
 		timer = new Timer(100, timerListener);	
 		
-		graph = new MultipleDataGraph(4);
+		graph = new DataGraph();
 		
-		MultipleGrid2D mgrid = (MultipleGrid2D)graph.getGrid();
-		mgrid.getXGrid(1).setAxisLabel("Time (s)");
-		mgrid.getXGrid(2).setAxisLabel("Time (s)");
-		mgrid.getXGrid(3).setAxisLabel("Time (s)");
-		mgrid.getXGrid(4).setAxisLabel("Time (s)");
-				
-		graph.getGrid().getYGrid().setAxisLabel("Y Value");
+		Grid2D mgrid = (Grid2D)graph.getGrid();
+		mgrid.getXGrid().setAxisLabel("X Axis");
+		mgrid.getYGrid().setAxisLabel("Y Axis");
+		
+		mgrid.getXGrid().setAxisDrawMode(SingleAxisGrid.ORIGIN_AXISVISIBLE);
+		mgrid.getYGrid().setAxisDrawMode(SingleAxisGrid.ORIGIN_AXISVISIBLE);
+		
+		graph.getGraph().getDefaultGraphArea().setOriginCentered(true);
 		
 		dp1 = createNewDataProducer();
 		dp2 = createNewDataProducer();
-		dp3 = createNewDataProducer();
-		dp4 = createNewDataProducer();
-		dp5 = createNewDataProducer();
 		
-		graph.addDataProducer(dp1,0);
-		graph.addDataProducer(dp2,0);
-		graph.addDataProducer(dp3,1);
-		graph.addDataProducer(dp4,1);
-		graph.addDataProducer(dp5,2);
+		graph.addDataProducer(dp1);
+		graph.addDataProducer(dp2);
 		graph.getGraphable(dp1).setColor(Color.red);
 		graph.getGraphable(dp2).setColor(Color.blue);
-		graph.getGraphable(dp3).setColor(new Color(255, 255, 255));
-		graph.getGraphable(dp4).setColor(Color.orange);
 		
 		JPanel mainPanel = new JPanel();
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
@@ -108,9 +100,6 @@ public class DataGraphExampleMainPanel extends JPanel
 		tableModel.addDataColumn(graph.getGraphable(dp1), 0);
 		tableModel.addDataColumn(graph.getGraphable(dp1), 1);
 		tableModel.addDataColumn(graph.getGraphable(dp2), 1);
-		tableModel.addDataColumn(graph.getGraphable(dp3), 1);
-		tableModel.addDataColumn(graph.getGraphable(dp4), 1);
-		tableModel.addDataColumn(graph.getGraphable(dp5), 1, "Ha! the last one", null);
 		
 		tableModel.setDataStep(5);
 		
@@ -211,20 +200,6 @@ public class DataGraphExampleMainPanel extends JPanel
 			
 			((DefaultDataProducer)dp1).addValue((float)Math.sin(t));
 			((DefaultDataProducer)dp2).addValue((float)Math.cos(4*t)-1.5f);
-			((DefaultDataProducer)dp3).addValue(t);
-			((DefaultDataProducer)dp4).addValue(4-t);
-			((DefaultDataProducer)dp5).addValue(t*t - 5*t + 2);			
-			
-			//weird:
-			//((DefaultDataProducer)dp4).addValue((float)Math.cos(t));
-			//((DefaultDataProducer)dp4).addValue(6-t);
-			
-			//dataTable.setPreferredSize(new Dimension(500,(int)(t*40)));
-//			dataTable.revalidate();
-			//dataTable.updateUI();
-//			tablePanel.getScrollPane().getVerticalScrollBar().setValue(tablePanel.getScrollPane().getVerticalScrollBar().getMaximum());
-//			tablePanel.getTable().scrollRectToVisible(tablePanel.getTable().getCellRect(tablePanel.getTable().getRowCount()-1, -1, true));
-			
 			t+=0.1;
 		}
 	};
@@ -240,7 +215,7 @@ public class DataGraphExampleMainPanel extends JPanel
 	public static void main(String[] args)
 	{
 		final JFrame frame = new JFrame();
-		DataGraphExampleMainPanel p = new DataGraphExampleMainPanel();
+		DataGraphExample2MainPanel p = new DataGraphExample2MainPanel();
 		frame.getContentPane().add(p);
 		frame.setSize(800,600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
