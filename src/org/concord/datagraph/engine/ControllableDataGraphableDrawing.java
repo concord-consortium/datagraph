@@ -24,17 +24,20 @@
 
 /*
  * Last modification information:
- * $Revision: 1.2 $
- * $Date: 2005-03-21 08:25:29 $
- * $Author: maven $
+ * $Revision: 1.3 $
+ * $Date: 2005-03-25 06:03:30 $
+ * $Author: imoncada $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
 */
 package org.concord.datagraph.engine;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Shape;
+import java.awt.Stroke;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Enumeration;
@@ -68,6 +71,7 @@ public class ControllableDataGraphableDrawing extends ControllableDataGraphable
 	protected Vector selectableListeners;
 	
 	private Rectangle2D boundingBox;
+	private Color boundingBoxColor;
 	
 	private boolean clickOnBoundingBox = false;
 	
@@ -79,6 +83,7 @@ public class ControllableDataGraphableDrawing extends ControllableDataGraphable
 		super();
 		selectableListeners = new Vector();
 		boundingBox = new Rectangle2D.Double();
+		boundingBoxColor = new Color(100, 100, 100);
 	}
 
 	/**
@@ -86,23 +91,48 @@ public class ControllableDataGraphableDrawing extends ControllableDataGraphable
 	 */
 	public void draw(Graphics2D g)
 	{
+		Shape oldClip = g.getClip();
+		Color oldColor = g.getColor();
+		Stroke oldStroke = g.getStroke();
+		
+		if (needUpdate){
+			update();
+			needUpdate = false;
+		}
+		
+		//Draw a bounding box around the graphable
+		if (isShowBoundingBox()){
+			g.setColor(boundingBoxColor);
+			g.draw(boundingBox);
+		}
+		
 		super.draw(g);
 
-		if (isSelected()){
-			//draw a bounding box around the graphable
-			drawBoundingBox(g);
+		//Draw the little squares in the corners
+		if (isShowBoundingBox()){
+			g.setColor(boundingBoxColor);
+
+			g.fillRect((int)(boundingBox.getX()) - 2, (int)(boundingBox.getY()) - 2, 5, 5);
+			g.fillRect((int)(boundingBox.getX() + boundingBox.getWidth()) - 2, (int)(boundingBox.getY()) - 2, 5, 5);
+			g.fillRect((int)(boundingBox.getX()) - 2, (int)(boundingBox.getY() + boundingBox.getHeight()) - 2, 5, 5);
+			g.fillRect((int)(boundingBox.getX() + boundingBox.getWidth()) - 2, (int)(boundingBox.getY() + boundingBox.getHeight()) - 2, 5, 5);
 		}
+
+		g.setColor(oldColor);
+		g.setStroke(oldStroke);
+		g.setClip(oldClip);
 	}
 
 	/**
-	 * @param g
+	 * @return
 	 */
-	protected void drawBoundingBox(Graphics2D g)
+	public boolean isShowBoundingBox()
 	{
-		//draw a bounding box around the graphable
-		g.draw(boundingBox);
+		//if (isMouseControlled()){
+		//if (isSelected()){
+		return isSelected();
 	}
-
+	
 	/**
 	 * @see org.concord.graph.engine.Graphable#update()
 	 */
@@ -162,15 +192,16 @@ public class ControllableDataGraphableDrawing extends ControllableDataGraphable
 		}
 		
 		//System.out.println("drag mode: "+dragMode);
-		if (dragMode == DrawingObject.DRAWING_DRAG_MODE_SELECT){
+		if (dragMode == DrawingObject.DRAWING_DRAG_MODE_SELECT ||
+				dragMode == DRAGMODE_NONE){
 			if (isPointAValue(p)){
 				return true;
 			}
 		}
 		else if (dragMode == DrawingObject.DRAWING_DRAG_MODE_MOVE){
 			if (isSelected()){
-				//return isPointInBoundingBox(p);
-				return true;
+				return isPointInBoundingBox(p);
+				//return true;
 			}
 		}
 		
@@ -272,6 +303,10 @@ public class ControllableDataGraphableDrawing extends ControllableDataGraphable
 	{
 		if (!selected){
 			selected = true;
+			if (dragMode == DrawingObject.DRAWING_DRAG_MODE_SELECT ||
+					dragMode == DRAGMODE_NONE){
+				dragMode = DrawingObject.DRAWING_DRAG_MODE_MOVE;
+			}
 			notifySelect();
 		}
 	}
@@ -283,6 +318,7 @@ public class ControllableDataGraphableDrawing extends ControllableDataGraphable
 	{
 		if (selected){
 			selected = false;
+			dragMode = DrawingObject.DRAWING_DRAG_MODE_SELECT;
 			notifyDeselect();
 		}
 	}

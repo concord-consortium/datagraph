@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.33 $
- * $Date: 2005-03-21 08:18:01 $
+ * $Revision: 1.34 $
+ * $Date: 2005-03-25 06:03:30 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -266,6 +266,7 @@ public class DataGraphable extends DefaultGraphable
 		//long b = System.currentTimeMillis();
 		if (needUpdate){
 			update();
+			needUpdate = false;
 		}
 		
 		Shape oldClip = g.getClip();
