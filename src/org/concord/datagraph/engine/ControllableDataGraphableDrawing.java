@@ -24,8 +24,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.3 $
- * $Date: 2005-03-25 06:03:30 $
+ * $Revision: 1.4 $
+ * $Date: 2005-04-03 19:41:47 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -48,6 +48,7 @@ import org.concord.framework.data.stream.DataStore;
 import org.concord.framework.data.stream.WritableDataStore;
 import org.concord.graph.engine.CoordinateSystem;
 import org.concord.graph.engine.Graphable;
+import org.concord.graph.engine.MathUtil;
 import org.concord.graph.engine.Selectable;
 import org.concord.graph.event.GraphableListener;
 import org.concord.graph.event.SelectableListener;
@@ -129,8 +130,13 @@ public class ControllableDataGraphableDrawing extends ControllableDataGraphable
 	public boolean isShowBoundingBox()
 	{
 		//if (isMouseControlled()){
-		//if (isSelected()){
-		return isSelected();
+		if (isSelected()){
+			if (!MathUtil.equalsDouble(boundingBox.getHeight(), 0) && 
+					!MathUtil.equalsDouble(boundingBox.getWidth(), 0)){
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	/**
@@ -150,6 +156,8 @@ public class ControllableDataGraphableDrawing extends ControllableDataGraphable
 		//System.out.println("bounding box update");
 		
 		CoordinateSystem cs = graphArea.getCoordinateSystem();
+		
+		if (getTotalNumSamples() == 0) return;
 		
 		Point2D p1 = new Point2D.Double(getMinXValue(), getMaxYValue());
 		Point2D p2 = new Point2D.Double(getMaxXValue(), getMinYValue());
