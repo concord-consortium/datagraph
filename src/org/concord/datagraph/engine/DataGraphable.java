@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.22 $
- * $Date: 2004-11-23 16:11:12 $
+ * $Revision: 1.23 $
+ * $Date: 2004-11-24 01:22:30 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -724,7 +724,7 @@ getDataChannelDescription(int numChannel):
 	{
 		needUpdate = true;
 		needUpdateDataReceived = false;
-//		lastValueCalculated = -1;
+		lastValueCalculated = -1;
 		
 		notifyChange();
 	}
@@ -736,7 +736,7 @@ getDataChannelDescription(int numChannel):
 	{
 		needUpdate = true;
 		needUpdateDataReceived = false;
-//		lastValueCalculated = -1;
+		lastValueCalculated = -1;
 		
 		notifyChange();
 	}
