@@ -41,6 +41,7 @@ import java.awt.event.ActionListener;
 import java.util.EventObject;
 import java.util.Vector;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -218,6 +219,7 @@ public class OTDataCollectorView
 			    
 			    JPanel bottomPanel = new JPanel(new FlowLayout());
 			    valueLabel = new DataValueLabel(sourceProducer);
+			    valueLabel.setColumns(4);
 			    bottomPanel.add(valueLabel);
 			    if(!dataCollector.getSingleValue()) {
 			        toolBar = createFlowToolBar();
@@ -296,9 +298,12 @@ public class OTDataCollectorView
             if(!editable) return dataLabel;
             
             JPanel svPanel = new JPanel(new FlowLayout());
+            dataLabel.setColumns(4);
             svPanel.add(dataLabel);
-            JButton cDataButton = new JButton(); 
-            cDataButton.setIcon(ResourceLoader.getImageIcon("data_graph_button.gif", "Collect Data"));
+            JButton cDataButton = new JButton();
+            ImageIcon icon = ResourceLoader.getImageIcon("data_graph_button.gif", "Collect Data");
+            cDataButton.setIcon(icon);
+            cDataButton.setToolTipText(icon.getDescription());
             cDataButton.setMargin(new Insets(2,2,2,2));
             cDataButton.addActionListener(new ActionListener(){
                 public void actionPerformed(ActionEvent event)
