@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.25 $
- * $Date: 2005-02-14 06:19:19 $
+ * $Revision: 1.26 $
+ * $Date: 2005-02-19 14:08:01 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -131,7 +131,7 @@ public class DataGraph extends JPanel
 		defaultGA = graph.getDefaultGraphArea();
 		defaultCS = (DefaultCoordinateSystem2D)defaultGA.getCoordinateSystem();
 
-		defaultGA.setInsets(new Insets(10,50,40,5));
+		defaultGA.setInsets(new Insets(10,50,40,10));
 		
 		graph.addGraphWindowListener(this);
 		
@@ -189,8 +189,9 @@ public class DataGraph extends JPanel
 	}
 	
 	protected Grid2D createGrid()
-	{
-		Grid2D gr = new Grid2D();
+	{		
+		Grid2D gr = new Grid2D(new SingleDataAxisGrid(1), 
+				new SingleDataAxisGrid(2));
 		//gr.setInterval(1.0,1.0);
 		//gr.setLabelFormat(new DecimalFormat("#"));
 		gr.getXGrid().setAxisLabelSize(12);

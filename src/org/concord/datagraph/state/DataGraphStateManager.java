@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.5 $
- * $Date: 2005-02-14 06:19:19 $
+ * $Revision: 1.6 $
+ * $Date: 2005-02-19 14:08:01 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -36,12 +36,16 @@ package org.concord.datagraph.state;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.util.EventObject;
+import java.util.Vector;
 
+import org.concord.data.Unit;
 import org.concord.data.state.OTDataStore;
 import org.concord.data.ui.DataFlowControlToolBar;
 import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.datagraph.ui.DataGraph;
+import org.concord.datagraph.ui.SingleDataAxisGrid;
+import org.concord.framework.data.DataDimension;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.DataProducerProxy;
 import org.concord.framework.data.stream.DataStore;
@@ -77,26 +81,62 @@ public class DataGraphStateManager
 		this.dataGraph = dataGraph;
 	}
 
-	public static void setupAxisLabel(SingleAxisGrid sAxis, OTDataAxis axis)
+	public static void setupAxisLabel(SingleDataAxisGrid sAxis, OTDataAxis axis)
 	{
-		String axisLabel = "";
-		
 		if(axis.getLabel() != null) {
-			axisLabel += axis.getLabel();
+			sAxis.setAxisLabel(axis.getLabel());
 		}
 	
 		if(axis.getUnits() != null) {
-			axisLabel += "(" + axis.getUnits() + ")";
+			String unitStr = axis.getUnits();
+			Unit unit = Unit.findUnit(unitStr);
+			if(unit == null) {
+				System.err.println("Can't find unit: " + unitStr);
+				sAxis.setUnit(new UnknownUnit(unitStr)); 
+			} 
+			else {
+				sAxis.setUnit(unit);
+			}
+		}		
+	}
+		
+	public static class UnknownUnit implements DataDimension
+	{
+		String unit;
+		
+		public UnknownUnit(String unit)
+		{
+			this.unit = unit;
 		}
 		
-		if(axisLabel.length() > 0) {
-			sAxis.setAxisLabel(axisLabel);
-		}		
+		/* (non-Javadoc)
+		 * @see org.concord.framework.data.DataDimension#getDimension()
+		 */
+		public String getDimension() 
+		{
+			return unit;
+		}
+		
+		/* (non-Javadoc)
+		 * @see org.concord.framework.data.DataDimension#setDimension(java.lang.String)
+		 */
+		public void setDimension(String dimension) 
+		{
+			unit = dimension;
+		}
 	}
 	
 	public void initialize()
 	{
 		initialize(true);
+	}
+
+	public class GraphAreaMap
+	{
+		OTDataAxis xAxis = null;
+		OTDataAxis yAxis = null;
+		Vector graphables = new Vector();
+		boolean duplicate = false;
 	}
 	
 	/* (non-Javadoc)
@@ -104,14 +144,67 @@ public class DataGraphStateManager
 	 */
 	public void initialize(boolean showToolbar)
 	{
+		Vector areaMap = new Vector();
+		
 		OTObjectList xAxisList = pfObject.getXDataAxis();
 		OTObjectList yAxisList = pfObject.getYDataAxis();
 
+		pfGraphables = pfObject.getGraphables();
+/*
+		
+		for (int i=0; i<xAxisList.size(); i++){
+			OTDataAxis currAxis = (OTDataAxis)xAxisList.get(i);
+			OTObjectList axisGraphables = currAxis.getGraphables();
+			for (int j=0; j<axisGraphables.size(); j++){
+				GraphAreaMap gMap = new GraphAreaMap();
+				gMap.xAxis = (OTDataAxis)xAxisList.get(i);
+				gMap.graphables.add(axisGraphables.get(j));
+				areaMap.add(gMap);
+			}
+		}
+
+		for (int i=0; i<yAxisList.size(); i++){
+			OTDataAxis currAxis = (OTDataAxis)yAxisList.get(i);
+			OTObjectList axisGraphables = currAxis.getGraphables();
+			for (int j=0; j<axisGraphables.size(); j++){
+				OTDataGraphable currGraphable = 
+					(OTDataGraphable)axisGraphables.get(j);
+				for (int k=0; k<areaMap.size(); k++){
+					GraphAreaMap gMap = (GraphAreaMap)areaMap.get(k);
+					OTDataGraphable mapGraphable = (OTDataGraphable)(gMap.graphables.get(0));
+					if (mapGraphable.equals(currGraphable)){
+						gMap.yAxis = currAxis;
+					}
+				}
+			}
+		}
+
+		for (int i=0; i<areaMap.size(); i++){
+			GraphAreaMap gMap = (GraphAreaMap)areaMap.get(i);
+			if(gMap.duplicate) continue;
+			for (int j=i; j<areaMap.size(); j++){
+				GraphAreaMap gMap2 = (GraphAreaMap)areaMap.get(j);
+				if(gMap.xAxis == gMap2.xAxis  &&
+						gMap.yAxis == gMap2.yAxis){
+					gMap2.duplicate = true;
+					gMap.graphables.add(gMap2.graphables.get(0));
+				}
+			}
+		}
+		
+		for (int i=0; i<areaMap.size(); i++){
+		}
+
+		GraphAreaMap gMap = (GraphAreaMap)areaMap.get(0);
+		xAxis = gMap.xAxis;
+		yAxis = gMap.yAxis;
+		
+	*/
+		
+		// we are ignoring the complicated code above for now
 		xAxis = (OTDataAxis)xAxisList.get(0);
 		yAxis = (OTDataAxis)yAxisList.get(0);
 		
-		pfGraphables = pfObject.getGraphables();
-
 		// OTObjectList dataProducers = pfObject.getDataProducers();				
 		DataFlowControlToolBar toolBar = null;
 		
@@ -125,13 +218,20 @@ public class DataGraphStateManager
 		
 		Grid2D grid = dataGraph.getGrid();
 
-		SingleAxisGrid sXAxis = grid.getXGrid();
+		SingleDataAxisGrid sXAxis = (SingleDataAxisGrid)grid.getXGrid();
+		//sXAxis.setMajorInterval(5);
+		//sXAxis.setShowLabelsOnMajorOnly(true);
+		//sXAxis.setBestPercentageInterval(0.02);
+		//sXAxis.setIntervalFixedPercentage(0.02);
+		//sXAxis.setIntervalFixedWorld(0.2);
 		setupAxisLabel(sXAxis, xAxis);
 		
-		SingleAxisGrid sYAxis = grid.getYGrid();
+		SingleDataAxisGrid sYAxis = (SingleDataAxisGrid)grid.getYGrid();
 		setupAxisLabel(sYAxis, yAxis);
+		//sYAxis.setMajorInterval(5);
+		//sYAxis.setShowLabelsOnMajorOnly(true);
 		
-
+		
 		// for each list item get the data producer object
 		// add it to the data graph
 		for(int i=0; i<pfGraphables.size(); i++) {

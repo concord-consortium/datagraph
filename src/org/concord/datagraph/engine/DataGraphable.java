@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.23 $
- * $Date: 2004-11-24 01:22:30 $
+ * $Revision: 1.24 $
+ * $Date: 2005-02-19 14:08:01 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -62,6 +62,8 @@ import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.DataStore;
 import org.concord.framework.data.stream.DataStoreEvent;
 import org.concord.framework.data.stream.DataStoreListener;
+import org.concord.framework.data.stream.DataStreamDescription;
+import org.concord.framework.data.stream.DataStreamEvent;
 import org.concord.framework.data.stream.ProducerDataStore;
 import org.concord.framework.data.stream.WritableDataStore;
 import org.concord.graph.engine.CoordinateSystem;
@@ -133,7 +135,7 @@ public class DataGraphable extends DefaultGraphable
 		maxYValue = Float.NaN;
 	}
 	
-	/*
+	/**
 	 * Sets the data producer of this graphable.
 	 * By default it will graph dt vs channel 0
      * If the data will be shared by more components, this method is not recommended.
@@ -141,15 +143,8 @@ public class DataGraphable extends DefaultGraphable
      * components. Use setDataStore() instead
 	 */
 	public void setDataProducer(DataProducer dataProducer)
-	{		
-		// Create a default data store for this data producer
-		ProducerDataStore pDataStore = new ProducerDataStore(dataProducer);
-		
-		// This sets the internal producer data store to false
-		setDataStore(pDataStore);
-		
-		// We just created an internal datastore so we need to remember it 
-		internalProducerDataStore = true;
+	{
+	    setDataProducer(dataProducer, -1, 0);
 	}
 	
 	/**
@@ -162,7 +157,15 @@ public class DataGraphable extends DefaultGraphable
 	 */
 	public void setDataProducer(DataProducer dataProducer, int channelXAxis, int channelYAxis)
 	{
-		setDataProducer(dataProducer);
+		// Create a default data store for this data producer
+		ProducerDataStore pDataStore = new ProducerDataStore(dataProducer);
+		
+		// This sets the internal producer data store to false
+		setDataStore(pDataStore);
+		
+		// We just created an internal datastore so we need to remember it 
+		internalProducerDataStore = true;
+	    
 		setChannelX(channelXAxis);
 		setChannelY(channelYAxis);
 	}
@@ -746,7 +749,21 @@ getDataChannelDescription(int numChannel):
 	 */
 	public void dataChannelDescChanged(DataStoreEvent evt)
 	{
-		//TODO ?
+	    DataStore source = evt.getSource();
+	    if(!(source instanceof ProducerDataStore)){
+	        return;
+	    }
+
+	    ProducerDataStore pDataStore = (ProducerDataStore)source;
+	    // we really need something in the pdata store that will
+	    // tell us which channel is x and which is y
+	    if(pDataStore.isUseDtAsChannel() && getChannelX() == 0){
+	        setChannelX(-1);
+	        setChannelY(getChannelY() - 1);
+	    } else if(getChannelX() == -1){
+	        setChannelX(0);
+	        setChannelY(getChannelY() + 1);
+	    }
 	}
 	
 	/**
