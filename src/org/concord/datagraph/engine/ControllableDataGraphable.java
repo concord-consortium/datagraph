@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.12 $
- * $Date: 2005-03-22 05:11:28 $
+ * $Revision: 1.13 $
+ * $Date: 2005-04-04 02:05:57 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -270,7 +270,10 @@ public class ControllableDataGraphable extends DataGraphable
 	 */
 	public void setDragMode(int dragMode)
 	{
-		this.dragMode = dragMode;
+		if (this.dragMode != dragMode){
+			this.dragMode = dragMode;
+			notifyChange();
+		}
 	}
 	
 	/* Function stuff */
