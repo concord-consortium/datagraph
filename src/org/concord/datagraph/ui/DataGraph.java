@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.24 $
- * $Date: 2005-01-15 16:02:21 $
+ * $Revision: 1.25 $
+ * $Date: 2005-02-14 06:19:19 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -131,7 +131,7 @@ public class DataGraph extends JPanel
 		defaultGA = graph.getDefaultGraphArea();
 		defaultCS = (DefaultCoordinateSystem2D)defaultGA.getCoordinateSystem();
 
-		defaultGA.setInsets(new Insets(5,40,40,5));
+		defaultGA.setInsets(new Insets(10,50,40,5));
 		
 		graph.addGraphWindowListener(this);
 		
@@ -145,6 +145,8 @@ public class DataGraph extends JPanel
 		////////
 		// Grid
 		grid = createGrid();
+		grid.getXGrid().setAutoFormatLabels(true);
+		grid.getYGrid().setAutoFormatLabels(true);
 		
 		//Add the grid to the graph
 		graph.addDecoration(grid);

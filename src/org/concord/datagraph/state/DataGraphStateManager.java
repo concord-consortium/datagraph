@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.4 $
- * $Date: 2005-01-31 17:41:33 $
+ * $Revision: 1.5 $
+ * $Date: 2005-02-14 06:19:19 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -35,15 +35,9 @@ package org.concord.datagraph.state;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.StringReader;
 import java.util.EventObject;
 
 import org.concord.data.state.OTDataStore;
-import org.concord.data.stream.DataStoreUtil;
-import org.concord.data.stream.PointsDataStore;
 import org.concord.data.ui.DataFlowControlToolBar;
 import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.DataGraphable;
@@ -51,11 +45,10 @@ import org.concord.datagraph.ui.DataGraph;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.DataProducerProxy;
 import org.concord.framework.data.stream.DataStore;
-import org.concord.framework.data.stream.DefaultDataStore;
-import org.concord.framework.data.stream.WritableDataStore;
 import org.concord.framework.otrunk.OTObjectList;
 import org.concord.graph.engine.GraphableList;
 import org.concord.graph.event.GraphableListListener;
+import org.concord.graph.examples.GraphWindowToolBar;
 import org.concord.graph.ui.Grid2D;
 import org.concord.graph.ui.SingleAxisGrid;
 
@@ -101,10 +94,15 @@ public class DataGraphStateManager
 		}		
 	}
 	
+	public void initialize()
+	{
+		initialize(true);
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.concord.portfolio.views.PortfolioView#getComponent(boolean)
 	 */
-	public void initialize()
+	public void initialize(boolean showToolbar)
 	{
 		OTObjectList xAxisList = pfObject.getXDataAxis();
 		OTObjectList yAxisList = pfObject.getYDataAxis();
@@ -120,6 +118,11 @@ public class DataGraphStateManager
 		dataGraph.setLimitsAxisWorld(xAxis.getMin(), xAxis.getMax(),
 				yAxis.getMin(), yAxis.getMax());
 
+		GraphWindowToolBar gwToolbar = dataGraph.getToolBar();
+		if(gwToolbar != null) {
+			gwToolbar.setVisible(showToolbar);
+		}
+		
 		Grid2D grid = dataGraph.getGrid();
 
 		SingleAxisGrid sXAxis = grid.getXGrid();

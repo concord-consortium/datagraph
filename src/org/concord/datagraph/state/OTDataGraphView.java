@@ -24,9 +24,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.2 $
- * $Date: 2005-01-29 20:42:38 $
- * $Author: maven $
+ * $Revision: 1.3 $
+ * $Date: 2005-02-14 06:19:19 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -70,7 +70,7 @@ public class OTDataGraphView
 		dataGraph = new DataGraph();
 
 		DataGraphStateManager manager = new DataGraphStateManager(pfObject, dataGraph);
-		manager.initialize();
+		manager.initialize(editable);
 				
 		return dataGraph;
 	}
