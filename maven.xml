@@ -5,6 +5,13 @@
   xmlns:ant="jelly:ant">
 
   <!--
+     Set pre goal for manifest
+  -->
+  <preGoal name="jar:jar">
+    <attainGoal name="ccmanifest" />
+  </preGoal>
+
+  <!--
      Since setting maven.build.dir or maven.build.dest will effect most built
      residuals, create this post goal to get just the jar file into the lib directory
   -->
