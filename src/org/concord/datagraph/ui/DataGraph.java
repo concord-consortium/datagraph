@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.7 $
- * $Date: 2004-09-09 19:10:58 $
+ * $Revision: 1.8 $
+ * $Date: 2004-09-09 21:46:40 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -421,6 +421,14 @@ public class DataGraph extends JPanel
 	 */
 	public void addDataGraphable(DataProducer source, int channelXAxis, int channelYAxis)
 	{
+		// Create a graphable for this datasource
+		// add it to the graph
+		DataGraphable dGraphable = new DataGraphable();
+		dGraphable.setDataProducer(source);
+		dGraphable.setChannelX(channelXAxis);
+		dGraphable.setChannelY(channelYAxis);
+		
+		addDataGraphable(dGraphable);
 	}
 	
 	/**

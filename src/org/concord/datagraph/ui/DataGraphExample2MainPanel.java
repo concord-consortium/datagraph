@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.4 $
- * $Date: 2004-09-09 19:05:38 $
+ * $Revision: 1.5 $
+ * $Date: 2004-09-09 21:46:40 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -24,6 +24,7 @@ import javax.swing.Timer;
 
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.DefaultDataProducer;
+import org.concord.framework.data.stream.DefaultMultipleDataProducer;
 import org.concord.graph.ui.Grid2D;
 import org.concord.graph.ui.SingleAxisGrid;
 import org.concord.data.ui.DataTableCellRenderer;
@@ -47,6 +48,7 @@ public class DataGraphExample2MainPanel extends JPanel
 	
 	DataProducer dp1;
 	DataProducer dp2;
+	DataProducer dp3;
 	
 	JButton startButton;
 	JButton stopButton;
@@ -56,6 +58,7 @@ public class DataGraphExample2MainPanel extends JPanel
 	DataTablePanel tablePanel;
 	
 	float t;
+	float r = 4;
 	
 	public DataGraphExample2MainPanel()
 	{
@@ -70,16 +73,19 @@ public class DataGraphExample2MainPanel extends JPanel
 		//mgrid.getXGrid().setAxisDrawMode(SingleAxisGrid.ALWAYSVISIBLE);
 		//mgrid.getYGrid().setAxisDrawMode(SingleAxisGrid.ALWAYSVISIBLE);
 		
-		//graph.getGraph().getDefaultGraphArea().setOriginCentered(true);
+		graph.getGraph().getDefaultGraphArea().setOriginCentered(true);
 
 		//graph.setOriginOffsetPercentage(0.2, 0.2);
 		
 		//graph.setLimitsAxisWorld(6.9, 10.1, -1.1, 5.1);
 		
-		graph.setOriginOffsetDisplay(0, 0);
+		//graph.setOriginOffsetDisplay(0, 0);
 		
 		dp1 = createNewDataProducer();
 		dp2 = createNewDataProducer();
+		
+		dp3 = new DefaultMultipleDataProducer();
+		graph.addDataGraphable(dp3, 0, 1);
 		
 		graph.addDataProducer(dp1);
 		graph.addDataProducer(dp2);
@@ -204,9 +210,18 @@ public class DataGraphExample2MainPanel extends JPanel
 		{
 			//System.err.println(t);
 			
-			((DefaultDataProducer)dp1).addValue((float)Math.sin(t));
-			((DefaultDataProducer)dp2).addValue((float)Math.cos(4*t)-1.5f);
+//			((DefaultDataProducer)dp1).addValue((float)Math.sin(t));
+//			((DefaultDataProducer)dp2).addValue((float)Math.cos(4*t)-1.5f);
+			
+			float vals[] = new float[3];
+			vals[0] = (float)(r * Math.cos(t));
+			vals[1] = (float)(r * Math.sin(t));
+			vals[2] = (float)(r);
+			
+			((DefaultMultipleDataProducer)dp3).addValues(vals);
+			
 			t+=0.1;
+			r-=0.05;
 		}
 	};
 

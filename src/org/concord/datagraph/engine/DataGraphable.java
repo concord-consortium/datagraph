@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.3 $
- * $Date: 2004-09-09 19:05:38 $
+ * $Revision: 1.4 $
+ * $Date: 2004-09-09 21:46:40 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -54,6 +54,8 @@ public class DataGraphable extends DefaultGraphable
 	
 	protected Vector dataStoreListeners;
 	
+	protected boolean needUpdate = true;
+	
 	/**
      * Default constructor.
      */
@@ -93,6 +95,12 @@ public class DataGraphable extends DefaultGraphable
 	{
 		channelX = channelXAxis;
 		channelY = channelYAxis;
+		if (channelX < -1){
+			channelX = -1;
+		}
+		if (channelY < -1){
+			channelY = -1;
+		}
 		setDataProducer(source);
 	}
 	
@@ -110,13 +118,25 @@ public class DataGraphable extends DefaultGraphable
 		float [] data = de.getData();
 		int numberOfSamples = de.getNumSamples();
 
-		int sampleIndex = dataOffset;
+		int sampleIndex;
+		
+		sampleIndex = dataOffset;
+		
 		for(int i=0; i<numberOfSamples; i++)
 		{
-			yValues.addElement(new Float(data[sampleIndex]));
+			if (channelX != -1){
+				xValues.addElement(new Float(data[sampleIndex + channelX]));
+			}
+			
+			if (channelY != -1){
+				yValues.addElement(new Float(data[sampleIndex + channelY]));
+			}
+			
 			sampleIndex+= nextSampleOffset;
 		}
 
+		needUpdate = true;
+		
 		notifyChange();
 		notifyDataAdded();
 	}
@@ -127,6 +147,7 @@ public class DataGraphable extends DefaultGraphable
 	public void reset()
 	{
 		yValues.removeAllElements();
+		needUpdate = true;
 		notifyChange();
 	}
 
@@ -176,7 +197,9 @@ public class DataGraphable extends DefaultGraphable
      **/
     public void draw(Graphics2D g)
 	{
-		update();
+    	if (needUpdate){
+    		update();
+    	}
 		
 		Shape oldClip = g.getClip();
 		Color oldColor = g.getColor();
@@ -208,11 +231,23 @@ public class DataGraphable extends DefaultGraphable
 		CoordinateSystem coord = getGraphArea().getCoordinateSystem();
 
 		for(int i=0; i<yValues.size(); i++){
-			Float yFloat = (Float)yValues.elementAt(i);
 			
-			px = time;
-			//Flip y
-			py = yFloat.floatValue();
+			if (channelX == -1){
+				px = time;
+			}
+			else{
+				Float xFloat = (Float)xValues.elementAt(i);
+				px = xFloat.floatValue(); 
+			}
+			
+			if (channelY == -1){
+				py = time;
+			}
+			else{
+				Float yFloat = (Float)yValues.elementAt(i);
+				py = yFloat.floatValue();
+			}
+			
 			Point2D.Double dataPoint = new Point2D.Double(px, py);
 			
 			coord.transformToDisplay(dataPoint, pathPoint);
@@ -228,6 +263,8 @@ public class DataGraphable extends DefaultGraphable
 			}
 			time += dt;
 		}
+		
+		needUpdate = false;
 	}
 
 	/** 
@@ -365,5 +402,33 @@ public class DataGraphable extends DefaultGraphable
 	public void setLineColor(Color lineColor)
 	{
 		this.lineColor = lineColor;
+	}
+	/**
+	 * @return Returns the channelX.
+	 */
+	public int getChannelX()
+	{
+		return channelX;
+	}
+	/**
+	 * @param channelX The channelX to set.
+	 */
+	public void setChannelX(int channelX)
+	{
+		this.channelX = channelX;
+	}
+	/**
+	 * @return Returns the channelY.
+	 */
+	public int getChannelY()
+	{
+		return channelY;
+	}
+	/**
+	 * @param channelY The channelY to set.
+	 */
+	public void setChannelY(int channelY)
+	{
+		this.channelY = channelY;
 	}
 }
