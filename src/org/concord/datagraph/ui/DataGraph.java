@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.9 $
- * $Date: 2004-09-09 22:14:04 $
+ * $Revision: 1.10 $
+ * $Date: 2004-09-10 15:13:33 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -343,8 +343,6 @@ public class DataGraph extends JPanel
 			y-=height;
 		}
 
-		toolBar.showDashedBox(true);
-		
 		selectionBox.setBounds(x,y,width,height);
 	}
 
