@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.9 $
- * $Date: 2005-03-10 06:05:37 $
+ * $Revision: 1.10 $
+ * $Date: 2005-03-15 03:02:23 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -391,4 +391,19 @@ public class ControllableDataGraphable extends DataGraphable
 		addPointOrder(x, y, i, value);
 	}
 	
+	/**
+	 * @return Returns the lineType.
+	 */
+	public int getLineType()
+	{
+		return lineType;
+	}
+	
+	/**
+	 * @param lineType The lineType to set.
+	 */
+	public void setLineType(int lineType)
+	{
+		this.lineType = lineType;
+	}
 }
