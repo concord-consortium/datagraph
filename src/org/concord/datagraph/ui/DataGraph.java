@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.11 $
- * $Date: 2004-09-13 23:17:00 $
+ * $Revision: 1.12 $
+ * $Date: 2004-09-14 20:14:00 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -98,6 +98,7 @@ public class DataGraph extends JPanel
 		// Tool Bar
 		toolBar = new GraphWindowToolBar();
 		toolBar.setGraphWindow(graph);
+		toolBar.setGrid(grid);
 		toolBar.setButtonsMargin(0);
 		toolBar.setFloatable(false);
 		////////

@@ -5,5 +5,6 @@
 	<classpathentry kind="src" path="/Data"/>
 	<classpathentry kind="src" path="/Graph"/>
 	<classpathentry kind="src" path="/Framework"/>
+	<classpathentry kind="src" path="/Swing"/>
 	<classpathentry kind="output" path="lib"/>
 </classpath>
