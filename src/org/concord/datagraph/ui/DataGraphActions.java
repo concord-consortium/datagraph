@@ -1,13 +1,18 @@
 /*
  * Last modification information:
- * $Revision: 1.2 $
- * $Date: 2004-09-14 20:29:50 $
- * $Author: imoncada $
+ * $Revision: 1.3 $
+ * $Date: 2004-09-14 23:05:27 $
+ * $Author: dima $
  *
- * Licence Information
+ * License Information
  * Copyright 2004 The Concord Consortium 
 */
 package org.concord.datagraph.ui;
+
+import java.awt.Frame;
+import java.awt.MenuBar;
+import java.awt.Menu;
+import java.awt.MenuItem;
 
 import java.awt.event.ActionEvent;
 
@@ -37,7 +42,8 @@ public class DataGraphActions
 {
 	protected DataGraph graph;
 	
-	protected JMenu menu;
+	protected JMenu swingMenu;
+	protected Menu  awtMenu;
 	
 	public static final int ACTION_SETLIMITS = 1; 
 	
@@ -55,19 +61,33 @@ public class DataGraphActions
 		this.graph = graph;
 	}
 	
-	public void initMenu()
+	public void initSwingMenu()
 	{
-		menu = new JMenu("Graph");
+		swingMenu = new JMenu("Graph");
 				
-		addDataGraphActions(menu);
+		addDataGraphActionsSwing(swingMenu);
 		
-		JMenu gridMenu = new JMenu("Grid");
-		menu.add(gridMenu);
+		JMenu gridSwingMenu = new JMenu("Grid");
+		swingMenu.add(gridSwingMenu);
 		
-		addGridActions(gridMenu);
+		addGridActionsSwing(gridSwingMenu);
+
 	}
 
-	public void addDataGraphActions(JMenu m)
+	public void initAWTMenu()
+	{
+		awtMenu = new Menu("Graph");
+				
+		addDataGraphActionsAWT(awtMenu);
+		
+		Menu gridAWTMenu = new Menu("Grid");
+		awtMenu.add(gridAWTMenu);
+		
+		addGridActionsAWT(gridAWTMenu);
+
+	}
+
+	public void addDataGraphActionsSwing(JMenu m)
 	{
 		JMenuItem mitem;
 		
@@ -75,7 +95,19 @@ public class DataGraphActions
 		m.add(mitem);
 	}
 
-	public void addGridActions(JMenu m)
+	public void addDataGraphActionsAWT(Menu m)
+	{
+		MenuItem mitem;
+		GraphAction action = (GraphAction)getAction(ACTION_SETLIMITS);
+		mitem = new MenuItem(action.getValue(Action.NAME).toString());
+		mitem.addActionListener(action);
+		action.setAWTMenuOwner(mitem);
+		m.add(mitem);
+	}
+
+
+
+	public void addGridActionsSwing(JMenu m)
 	{
 		JMenuItem mitem;
 		
@@ -94,6 +126,42 @@ public class DataGraphActions
 		mitem = new JMenuItem(getAction(ACTION_HIDE_SHOW_AXIS_LABELS));
 		m.add(mitem);
 	}
+
+	public void addGridActionsAWT(Menu m)
+	{
+		MenuItem mitem;
+		GraphAction action = (GraphAction)getAction(ACTION_HIDE_SHOW_GRID);
+		mitem = new MenuItem(action.getValue(Action.NAME).toString());
+		mitem.addActionListener(action);
+		m.add(mitem);
+		action.setAWTMenuOwner(mitem);
+		
+        action = (GraphAction)getAction(ACTION_HIDE_SHOW_GRID_LINES);
+		mitem = new MenuItem(action.getValue(Action.NAME).toString());
+		mitem.addActionListener(action);
+		m.add(mitem);
+		action.setAWTMenuOwner(mitem);
+
+        action = (GraphAction)getAction(ACTION_HIDE_SHOW_TICK_MARKS);
+		mitem = new MenuItem(action.getValue(Action.NAME).toString());
+		mitem.addActionListener(action);
+		m.add(mitem);
+		action.setAWTMenuOwner(mitem);
+
+        action = (GraphAction)getAction(ACTION_HIDE_SHOW_GRID_NUMBERS);
+		mitem = new MenuItem(action.getValue(Action.NAME).toString());
+		mitem.addActionListener(action);
+		m.add(mitem);
+		action.setAWTMenuOwner(mitem);
+
+        action = (GraphAction)getAction(ACTION_HIDE_SHOW_AXIS_LABELS);
+		mitem = new MenuItem(action.getValue(Action.NAME).toString());
+		mitem.addActionListener(action);
+		m.add(mitem);
+		action.setAWTMenuOwner(mitem);
+	}
+
+
 	
 	public AbstractAction getAction(int type)
 	{
@@ -102,23 +170,40 @@ public class DataGraphActions
 	
 	public static void main(String[] args)
 	{
-		JFrame f = new JFrame();
-		DataGraphExample2MainPanel panel = new DataGraphExample2MainPanel();	
-		DataGraphActions graphA = new DataGraphActions(panel.getGraph());
-		
-		JMenuBar menubar = new JMenuBar();
-		menubar.add(graphA.getMenu());
-		f.setJMenuBar(menubar);
-		
-		f.getContentPane().add(panel);
-		f.setSize(800, 600);
-		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		f.show();
+	    boolean swingFrame = false;
+	    if(swingFrame){
+    		JFrame f = new JFrame();
+    		DataGraphExample2MainPanel panel = new DataGraphExample2MainPanel();	
+    		DataGraphActions graphA = new DataGraphActions(panel.getGraph());
+    		
+    		JMenuBar swingMenubar = new JMenuBar();
+    		swingMenubar.add(graphA.getSwingMenu());
+    		f.setJMenuBar(swingMenubar);
+    		
+    		f.getContentPane().add(panel);
+    		f.setSize(800, 600);
+    		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    		f.show();
+        }else{
+    		Frame f = new Frame();
+    		DataGraphExample2MainPanel panel = new DataGraphExample2MainPanel();	
+    		DataGraphActions graphA = new DataGraphActions(panel.getGraph());
+    		
+    		MenuBar awtMenubar = new MenuBar();
+    		awtMenubar.add(graphA.getAWTMenu());
+    		f.setMenuBar(awtMenubar);
+    		
+    		f.add(panel);
+    		f.setSize(800, 600);
+    		f.show();
+        }
 	}
 
 	class GraphAction extends AbstractAction
 	{
 		protected int type;
+		MenuItem    awtMenuOwner = null;  
+		
 				
 		public GraphAction(int type)
 		{
@@ -130,6 +215,7 @@ public class DataGraphActions
 		public void setName(String name)
 		{
 			putValue(Action.NAME, name);
+            if(awtMenuOwner != null) awtMenuOwner.setLabel(name);
 		}
 		
 		private String getDefaultName(int type)
@@ -138,7 +224,7 @@ public class DataGraphActions
 				return "Set Axis Limits";
 			}
 			else if (type == ACTION_HIDE_SHOW_GRID){
-				return "Hide Whole Grid";
+				return "Hide Grid & Axis";
 			}
 			else if (type == ACTION_HIDE_SHOW_GRID_LINES){
 				return "Hide Grid Lines";
@@ -185,10 +271,10 @@ public class DataGraphActions
 				Grid2D grid = graph.getGrid();
 				grid.setVisible(!grid.isVisible());
 				if (grid.isVisible()){
-					setName("Hide Whole Grid");
+					setName("Hide Grid & Axis");
 				}
 				else{
-					setName("Show Whole Grid");
+					setName("Show Grid & Axis");
 				}
 				
 			}
@@ -249,16 +335,34 @@ public class DataGraphActions
 				
 			}
 		}		
+		
+		void setAWTMenuOwner(MenuItem awtMenuOwner)
+		{
+		    this.awtMenuOwner = awtMenuOwner;
+		}
+  
+		MenuItem getAWTMenuOwner(Menu awtMenuOwner)
+		{
+		    return awtMenuOwner;
+		}
+  
 	}
 	
 	/**
 	 * @return Returns the menu.
 	 */
-	public JMenu getMenu()
+	public JMenu getSwingMenu()
 	{
-		if (menu == null){
-			initMenu();
+		if (swingMenu == null){
+			initSwingMenu();
 		}
-		return menu;
+		return swingMenu;
+	}
+	public Menu getAWTMenu()
+	{
+		if (awtMenu == null){
+			initAWTMenu();
+		}
+		return awtMenu;
 	}
 }
