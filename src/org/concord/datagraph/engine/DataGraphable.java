@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.10 $
- * $Date: 2004-09-22 19:56:58 $
+ * $Revision: 1.11 $
+ * $Date: 2004-09-23 15:36:40 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -592,5 +592,13 @@ public class DataGraphable extends DefaultGraphable
 	public void setShowCrossPoint(boolean showCrossPoint)
 	{
 		this.showCrossPoint = showCrossPoint;
+	}
+	
+	/**
+	 * @return Returns the data producer.
+	 */
+	public DataProducer getDataProducer()
+	{
+		return dataSource;
 	}
 }

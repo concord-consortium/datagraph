@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.13 $
- * $Date: 2004-09-22 19:56:58 $
+ * $Revision: 1.14 $
+ * $Date: 2004-09-23 15:36:40 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -303,12 +303,7 @@ public class DataGraph extends JPanel
 		
 		return yPos;		
 	}
-	
-	public DataGraphable getGraphable(DataProducer source)
-	{
-		return (DataGraphable)sources.get(source);
-	}
-	
+		
 	protected void resetGraphArea()
 	{
 		//Reset graph areas
@@ -424,13 +419,33 @@ public class DataGraph extends JPanel
 		// TODO Auto-generated method stub
 		// remove the associated data source from 
 		// the graph
-		DataGraphable dGraphable = (DataGraphable)sources.get(source);
+		DataGraphable dGraphable = getGraphable(source);
 		if (dGraphable != null){
 			dGraphable.setDataProducer(null);
 			objList.remove(dGraphable);
 		}
 	}
 
+	public DataGraphable getGraphable(DataProducer source)
+	{
+		DataGraphable dGraphable = (DataGraphable)sources.get(source);
+		if (dGraphable == null){
+			//Look for the first data graphable that has a data producer == source
+			//TODO: it should actually return a list of graphables that have that data producer
+			//specially for removeDataProducer
+			for (int i=0; i < objList.size(); i++){
+				Object obj = objList.elementAt(i);
+				if (obj instanceof DataGraphable){
+					dGraphable = (DataGraphable)obj;
+					if (dGraphable.getDataProducer() == source){
+						return dGraphable;
+					}
+				}
+			}
+		}
+		return dGraphable;
+	}
+	
 	/**
 	 * Creates a data graphable that will graph the data coming from the specified
 	 * data source, using channelXAxis as the index for the channel that will be in the x axis
