@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.13 $
- * $Date: 2004-10-25 02:30:06 $
+ * $Revision: 1.14 $
+ * $Date: 2004-10-26 17:27:25 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -11,10 +11,12 @@ package org.concord.datagraph.engine;
 
 /**
  * DataGraphable
- * This class is an object that listens to data (it's a data listener)
- * from a data producer,
- * and draws this data in a graph (it's a Graphable)
- * as a countinuous CONNECTED set of points.
+ * This class is an object that takes data from a 
+ * data store and draws this data in a graph (it's a Graphable)
+ * as a countinuous set of points that can be connected or not
+ * (connected by default).
+ * It is itself a DataStore with 2 channels (x,y), so it can easily
+ * be added to a data table.
  *
  * Date created: June 18, 2004
  *
@@ -30,25 +32,16 @@ import org.concord.graph.engine.*;
 import org.concord.framework.data.stream.*;
 
 public class DataGraphable extends DefaultGraphable
-	implements DataListener, DataStore
+	implements DataStoreListener, DataStore
 {
-	protected DataProducer dataSource;
+	protected DataStore dataStore;
 
-	protected Vector xValues;
-	protected Vector yValues;
-	
 	//By default, it graphs the dt (x axis) and the first channel (y axis) 
 	protected int channelX = -1;
 	protected int channelY = 0;
 	
 	protected Color lineColor = Color.black;
 	protected float lineWidth = 2;
-
-	private int dataOffset = 0;
-	private int nextSampleOffset = 1;
-	private float dt = 1;
-		
-	protected DataStreamDescription dataStreamDesc;
 	
 	protected GeneralPath path;
 	protected GeneralPath crossPath;
@@ -59,7 +52,6 @@ public class DataGraphable extends DefaultGraphable
 	protected boolean showCrossPoint = false;
 	protected int crossSize = 3;
 	
-	private float lastTime;
 	private int lastValueCalculated = -1;
 	protected boolean needUpdate = true;
 	protected boolean needUpdateDataReceived = false;
@@ -76,8 +68,6 @@ public class DataGraphable extends DefaultGraphable
      */
 	public DataGraphable()
 	{
-		xValues = new Vector();
-		yValues = new Vector();
 		path = new GeneralPath();
 		crossPath = new GeneralPath();
 		dataStoreListeners = new Vector();
@@ -102,16 +92,18 @@ public class DataGraphable extends DefaultGraphable
 	 */
 	public void setDataProducer(DataProducer source)
 	{
-		if (dataSource != null){
-			dataSource.removeDataListener(this);
-		}
-		dataSource = source;
-		if (dataSource != null){
-			updateDataDescription(dataSource.getDataDescription());
-			dataSource.addDataListener(this);
-		}
+		//Create a default data store for this data producer
+		ProducerDataStore pDataStore = new ProducerDataStore(source);
+		
+		setDataStore(pDataStore);
 	}
 	
+	/**
+	 * 
+	 * @param source
+	 * @param channelXAxis
+	 * @param channelYAxis
+	 */
 	public void setDataProducer(DataProducer source, int channelXAxis, int channelYAxis)
 	{
 		setDataProducer(source);
@@ -119,53 +111,44 @@ public class DataGraphable extends DefaultGraphable
 		setChannelY(channelYAxis);
 	}
 	
-
-	/*
-	 ** Handler of the data received event
-	 * @see org.concord.framework.data.stream.DataListener#dataReceived(org.concord.framework.data.stream.DataEvent)
+	/**
+	 * Sets the data store that this graphable will be using 
+	 * to get its data
+	 * @param dataStore
 	 */
-	public void dataReceived(DataStreamEvent dataEvent)
+	public void setDataStore(DataStore dataStore)
 	{
-		DataStreamEvent de;		
-		if (!(dataEvent instanceof DataStreamEvent)) return;
-		de = (DataStreamEvent)dataEvent;
-		
-		float [] data = de.getData();
-		int numberOfSamples = de.getNumSamples();
-		int sampleIndex;
-		
-		sampleIndex = dataOffset;
-		
-		for(int i=0; i<numberOfSamples; i++)
-		{
-			if (channelX != -1){
-				xValues.addElement(new Float(data[sampleIndex + channelX]));
-			}
-			
-			if (channelY != -1){
-				yValues.addElement(new Float(data[sampleIndex + channelY]));
-			}
-			
-			sampleIndex+= nextSampleOffset;
+		if (this.dataStore != null){
+			this.dataStore.removeDataStoreListener(this);
 		}
-
-		needUpdate = true;
-		needUpdateDataReceived = true;
-		
-		notifyChange();
-		notifyDataAdded();
+		this.dataStore = dataStore;
+		if (this.dataStore != null){
+			this.dataStore.addDataStoreListener(this);
+		}
 	}
-
+	
+	/**
+	 * Sets the data store that this graphable will be using 
+	 * to get its data
+	 * @param dataStore
+	 */
+	public void setDataStore(DataStore dataStore, int channelXAxis, int channelYAxis)
+	{
+		setDataStore(dataStore);
+		setChannelX(channelXAxis);
+		setChannelY(channelYAxis);
+	}	
+	
 	/*
 	 * Resets the data received
 	 */
 	public void reset()
 	{
-		xValues.removeAllElements();
-		yValues.removeAllElements();
+		dataStore.clearValues();
+		
 		needUpdate = true;
 		needUpdateDataReceived = false;
-		lastTime = 0;
+		lastValueCalculated = -1;
 		
 		minXValue = Float.NaN;
 		maxXValue = Float.NaN;
@@ -204,32 +187,15 @@ public class DataGraphable extends DefaultGraphable
 		lineWidth = width;
 	}
 
-	protected void updateDataDescription(DataStreamDescription desc)
-	{
-		dataStreamDesc = desc;
-		dataOffset = desc.getDataOffset();
-		nextSampleOffset = desc.getNextSampleOffset();
-		dt = desc.getDt();
-	}
-
-	public void dataStreamEvent(DataStreamEvent dataEvent)
-	{
-		DataStreamEvent de;		
-		if (!(dataEvent instanceof DataStreamEvent)) return;
-		de = (DataStreamEvent)dataEvent;
-		
-		updateDataDescription(de.getDataDescription());
-	}
-
     /**
      *  Draws this object on Graphics g 
      **/
     public void draw(Graphics2D g)
 	{
 		long b = System.currentTimeMillis();
-    	if (needUpdate){
-    		update();
-    	}
+		if (needUpdate){
+			update();
+		}
 		
 		Shape oldClip = g.getClip();
 		Color oldColor = g.getColor();
@@ -264,43 +230,46 @@ public class DataGraphable extends DefaultGraphable
 	{		
 		float ppx, ppy;
 		float px, py;
+		int initialI;
+		boolean movePoint = false;
 		
 		Point2D lastPathPoint;
 
+		if (dataStore == null) return;
+		
 		Point2D.Double pathPoint = new Point2D.Double();
 
 		CoordinateSystem coord = getGraphArea().getCoordinateSystem();
-
-		float time;
-		int initialI;
 		
-    	if (!needUpdateDataReceived || lastTime == 0){
+    	if (!needUpdateDataReceived || lastValueCalculated < 0){
     		path.reset();
     		crossPath.reset();
-    		time = 0;
-    		initialI = 0;
+    		lastValueCalculated = -1;
     	}
-    	else{
-    		time = lastTime + dt;
-    		initialI = lastValueCalculated + 1;
-    	}
+   		initialI = lastValueCalculated + 1;
     	
-		for(int i=initialI; i<yValues.size(); i++){
+    	//System.out.println("dataStore.getTotalNumSamples():"+dataStore.getTotalNumSamples());    	
+    	
+		for(int i=initialI; i < dataStore.getTotalNumSamples(); i++){
 			
-			if (channelX == -1){
-				px = time;
-			}
-			else{
-				Float xFloat = (Float)xValues.elementAt(i);
+			Float xFloat = (Float)dataStore.getValueAt(i, channelX);
+			if (xFloat != null && !xFloat.isNaN()){
 				px = xFloat.floatValue(); 
 			}
+			else{
+				px = Float.NaN;
+				movePoint = true;
+				continue;
+			}
 			
-			if (channelY == -1){
-				py = time;
+			Float yFloat = (Float)dataStore.getValueAt(i, channelY);
+			if (yFloat != null && !yFloat.isNaN()){
+				py = yFloat.floatValue();
 			}
 			else{
-				Float yFloat = (Float)yValues.elementAt(i);
-				py = yFloat.floatValue();
+				py = Float.NaN;
+				movePoint = true;
+				continue;
 			}
 			
 			//Always keep the min and max value available
@@ -340,8 +309,9 @@ public class DataGraphable extends DefaultGraphable
 			else{
 				
 				if (connectPoints){
-					if (i==0){
+					if (i==0 || movePoint){
 						path.moveTo(ppx, ppy);
+						movePoint = false;
 					}
 					else{
 						path.lineTo(ppx, ppy);
@@ -362,10 +332,8 @@ public class DataGraphable extends DefaultGraphable
 				
 			}
 			
-			lastTime = time;
 			lastValueCalculated = i;
 			
-			time += dt;
 		}
 			
 		//System.out.println("size:"+yValues.size());
@@ -382,36 +350,19 @@ public class DataGraphable extends DefaultGraphable
 		DataGraphable g = new DataGraphable();
 		g.setColor(lineColor);
 		g.setLineWidth(lineWidth);
-		g.setDataProducer(dataSource);
+		g.setDataStore(dataStore);
 		
 		//FIXME Add values to the vector... is that enough?
-		for(int i=0; i<yValues.size(); i++){
-			g.yValues.add(yValues.elementAt(i));
-		}
+		//for(int i=0; i<yValues.size(); i++){
+		//	g.yValues.add(yValues.elementAt(i));
+		//}
 		
 		return g;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.concord.framework.data.stream.DataStore#getTotalNumSamples()
-	 */
-	public int getTotalNumSamples()
-	{
-		return yValues.size();
-	}
+/*
+public Object getValueAt(int numSample, int numChannel):
 
-	/* (non-Javadoc)
-	 * @see org.concord.framework.data.stream.DataStore#getTotalNumChannels()
-	 */
-	public int getTotalNumChannels()
-	{
-		return 2;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.concord.framework.data.stream.DataStore#getValueAt(int, int)
-	 */
-	public Object getValueAt(int numSample, int numChannel)
 	{
 		Float val = null; 
 		
@@ -434,17 +385,11 @@ public class DataGraphable extends DefaultGraphable
 		
 		return val;
 	}
+*/
+	
+/*
+getDataChannelDescription(int numChannel):
 
-	/**
-	 * @see org.concord.framework.data.stream.DataStore#getDataChannelDescription(int)
-	 */
-	public DataChannelDescription getDataChannelDescription(int numChannel)
-	{
-		DataChannelDescription channelDesc = null;
-		if (dataStreamDesc != null){
-			channelDesc = dataStreamDesc.getChannelDescription(numChannel);
-		}
-		if (channelDesc == null){
 			channelDesc = new DataChannelDescription();
 			channelDesc.setPrecision(2);
 			if (numChannel == 0){
@@ -453,58 +398,8 @@ public class DataGraphable extends DefaultGraphable
 			else if (numChannel == 1){
 				channelDesc.setName("y value");
 			}
-		}
-		return channelDesc;
-	}
-
-	/**
-	 * @see org.concord.framework.data.stream.DataStore#addDataStoreListener(org.concord.framework.data.stream.DataStoreListener)
-	 */
-	public void addDataStoreListener(DataStoreListener l)
-	{
-		if (!dataStoreListeners.contains(l)){
-			dataStoreListeners.add(l);
-		}
-	}
-
-	/**
-	 * @see org.concord.framework.data.stream.DataStore#removeDataStoreListener(org.concord.framework.data.stream.DataStoreListener)
-	 */
-	public void removeDataStoreListener(DataStoreListener l)
-	{
-		dataStoreListeners.remove(l);		
-	}
-	
-	protected void notifyDataAdded()
-	{
-		DataStoreEvent evt = new DataStoreEvent(this, DataStoreEvent.DATA_ADDED);
-		DataStoreListener l;
-		for (int i=0; i<dataStoreListeners.size(); i++){
-			l = (DataStoreListener)dataStoreListeners.elementAt(i);
-			l.dataAdded(evt);
-		}
-	}
-	
-	protected void notifyDataRemoved()
-	{
-		DataStoreEvent evt = new DataStoreEvent(this, DataStoreEvent.DATA_ADDED);
-		DataStoreListener l;
-		for (int i=0; i<dataStoreListeners.size(); i++){
-			l = (DataStoreListener)dataStoreListeners.elementAt(i);
-			l.dataRemoved(evt);
-		}
-	}
-	
-	protected void notifyDataChanged()
-	{
-		DataStoreEvent evt = new DataStoreEvent(this, DataStoreEvent.DATA_ADDED);
-		DataStoreListener l;
-		for (int i=0; i<dataStoreListeners.size(); i++){
-			l = (DataStoreListener)dataStoreListeners.elementAt(i);
-			l.dataChanged(evt);
-		}
-	}
-	
+*/
+		
 	/**
 	 * @return Returns the channelX.
 	 */
@@ -554,7 +449,7 @@ public class DataGraphable extends DefaultGraphable
 		this.connectPoints = connectPoints;
 	}
 	
-	//Debugging purposes
+/*	//Debugging purposes
 	public void setData(Vector xValues, Vector yValues)
 	{
 		this.xValues = xValues;
@@ -563,6 +458,8 @@ public class DataGraphable extends DefaultGraphable
 		needUpdate = true;
 		needUpdateDataReceived = false;
 	}
+*/
+	
 	/**
 	 * @return Returns the autoRepaintData.
 	 */
@@ -617,10 +514,11 @@ public class DataGraphable extends DefaultGraphable
 	/**
 	 * @return Returns the data producer.
 	 */
-	public DataProducer getDataProducer()
+/*	public DataProducer getDataProducer()
 	{
-		return dataSource;
+		return dataProducer;
 	}
+*/
 	
 	public float getMinXValue()
 	{
@@ -640,5 +538,129 @@ public class DataGraphable extends DefaultGraphable
 	public float getMaxYValue()
 	{
 		return maxYValue;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.concord.framework.data.stream.DataStoreListener#dataAdded(org.concord.framework.data.stream.DataStoreEvent)
+	 */
+	public void dataAdded(DataStoreEvent evt)
+	{
+		needUpdate = true;
+		needUpdateDataReceived = true;
+		
+		notifyChange();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.concord.framework.data.stream.DataStoreListener#dataRemoved(org.concord.framework.data.stream.DataStoreEvent)
+	 */
+	public void dataRemoved(DataStoreEvent evt)
+	{
+		needUpdate = true;
+		needUpdateDataReceived = false;
+//		lastValueCalculated = -1;
+		
+		notifyChange();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.concord.framework.data.stream.DataStoreListener#dataChanged(org.concord.framework.data.stream.DataStoreEvent)
+	 */
+	public void dataChanged(DataStoreEvent evt)
+	{
+		needUpdate = true;
+		needUpdateDataReceived = false;
+//		lastValueCalculated = -1;
+		
+		notifyChange();
+	}
+
+	/**
+	 * @see org.concord.framework.data.stream.DataStoreListener#dataChannelDescChanged(org.concord.framework.data.stream.DataStoreEvent)
+	 */
+	public void dataChannelDescChanged(DataStoreEvent evt)
+	{
+		//TODO ?
+	}
+	
+	/**
+	 * @return Returns the dataStore.
+	 */
+	public DataStore getDataStore()
+	{
+		return dataStore;
+	}
+
+	/**
+	 * @see org.concord.framework.data.stream.DataStore#getTotalNumSamples()
+	 */
+	public int getTotalNumSamples()
+	{
+		if (dataStore == null) return 0;
+		return dataStore.getTotalNumSamples();
+	}
+
+	/**
+	 * @see org.concord.framework.data.stream.DataStore#getTotalNumChannels()
+	 */
+	public int getTotalNumChannels()
+	{
+		return 2;
+	}
+
+	/**
+	 * @see org.concord.framework.data.stream.DataStore#getValueAt(int, int)
+	 */
+	public Object getValueAt(int numSample, int numChannel)
+	{
+		if (numChannel == 0){
+			return dataStore.getValueAt(numSample, channelX);
+		}
+		else if (numChannel == 1){
+			return dataStore.getValueAt(numSample, channelY);
+		}
+		
+		return null;
+	}
+
+	/**
+	 * @see org.concord.framework.data.stream.DataStore#addDataStoreListener(org.concord.framework.data.stream.DataStoreListener)
+	 */
+	public void addDataStoreListener(DataStoreListener l)
+	{
+		if (dataStore == null) return;
+		dataStore.addDataStoreListener(l);
+	}
+
+	/**
+	 * @see org.concord.framework.data.stream.DataStore#removeDataStoreListener(org.concord.framework.data.stream.DataStoreListener)
+	 */
+	public void removeDataStoreListener(DataStoreListener l)
+	{
+		if (dataStore == null) return;
+		dataStore.removeDataStoreListener(l);
+	}
+
+	/**
+	 * @see org.concord.framework.data.stream.DataStore#getDataChannelDescription(int)
+	 */
+	public DataChannelDescription getDataChannelDescription(int numChannel)
+	{
+		if (dataStore == null) return null;
+		if (numChannel == 0){
+			return dataStore.getDataChannelDescription(channelX);
+		}
+		else if (numChannel == 1){
+			return dataStore.getDataChannelDescription(channelY);
+		}
+		return dataStore.getDataChannelDescription(numChannel);
+	}
+
+	/**
+	 * @see org.concord.framework.data.stream.DataStore#clearValues()
+	 */
+	public void clearValues()
+	{
+		reset();
 	}
 }

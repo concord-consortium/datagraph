@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.14 $
- * $Date: 2004-09-23 15:36:40 $
+ * $Revision: 1.15 $
+ * $Date: 2004-10-26 17:27:25 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -437,8 +437,10 @@ public class DataGraph extends JPanel
 				Object obj = objList.elementAt(i);
 				if (obj instanceof DataGraphable){
 					dGraphable = (DataGraphable)obj;
-					if (dGraphable.getDataProducer() == source){
-						return dGraphable;
+					if (dGraphable.getDataStore() instanceof ProducerDataStore){
+						if (((ProducerDataStore)dGraphable.getDataStore()).getDataProducer() == source){
+							return dGraphable;
+						}
 					}
 				}
 			}
@@ -448,7 +450,7 @@ public class DataGraph extends JPanel
 	
 	/**
 	 * Creates a data graphable that will graph the data coming from the specified
-	 * data source, using channelXAxis as the index for the channel that will be in the x axis
+	 * data producer, using channelXAxis as the index for the channel that will be in the x axis
 	 * of the graph, and channelYAxis as the index for the channel that will be in the y axis.
 	 * If one of the indexes is -1, it will take the dt as the data for that axis
 	 * This data graphable can then be added to the graph
@@ -462,6 +464,28 @@ public class DataGraph extends JPanel
 		// add it to the graph
 		DataGraphable dGraphable = new DataGraphable();
 		dGraphable.setDataProducer(source);
+		dGraphable.setChannelX(channelXAxis);
+		dGraphable.setChannelY(channelYAxis);
+		
+		return dGraphable;
+	}
+	
+	/**
+	 * Creates a data graphable that will graph the data coming from the specified
+	 * data store, using channelXAxis as the index for the channel that will be in the x axis
+	 * of the graph, and channelYAxis as the index for the channel that will be in the y axis.
+	 * If one of the indexes is -1, it will take the dt as the data for that axis
+	 * This data graphable can then be added to the graph
+	 * @param dataStore
+	 * @param channelXAxis
+	 * @param channelYAxis
+	 */
+	public DataGraphable createDataGraphable(DataStore dataStore, int channelXAxis, int channelYAxis)
+	{
+		// Create a graphable for this datasource
+		// add it to the graph
+		DataGraphable dGraphable = new DataGraphable();
+		dGraphable.setDataStore(dataStore);
 		dGraphable.setChannelX(channelXAxis);
 		dGraphable.setChannelY(channelYAxis);
 		

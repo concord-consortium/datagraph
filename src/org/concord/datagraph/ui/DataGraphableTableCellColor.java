@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.2 $
- * $Date: 2004-10-21 22:37:33 $
+ * $Revision: 1.3 $
+ * $Date: 2004-10-26 17:27:25 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -10,12 +10,14 @@
 package org.concord.datagraph.ui;
 
 import java.awt.Color;
+import java.util.Hashtable;
 import java.util.Vector;
 
 import org.concord.data.ui.DataColumnDescription;
 import org.concord.data.ui.DefaultTableCellColorModel;
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.framework.data.stream.DataStore;
+import org.concord.graph.engine.GraphableList;
 
 
 /**
@@ -29,22 +31,34 @@ import org.concord.framework.data.stream.DataStore;
  */
 public class DataGraphableTableCellColor extends DefaultTableCellColorModel
 {
-	Vector dataGraphables;	//List of DataGraphable objects 
+	Vector dataColumnDescriptions;	//List of DataColumnDescription objects 
+	Hashtable dataStoreDataGraphables;
 
 	/**
 	 * 
 	 */
 	public DataGraphableTableCellColor()
 	{
-		this(null);
+		this(null,null);
 	}
 
 	/**
 	 * 
 	 */
-	public DataGraphableTableCellColor(Vector dataGraphableList)
+	public DataGraphableTableCellColor(Vector dataColDescList)
 	{
-		setDataGraphableList(dataGraphableList);
+		dataStoreDataGraphables = new Hashtable();
+		setDataColumnDescriptionList(dataColDescList);
+	}
+	
+	/**
+	 * 
+	 */
+	public DataGraphableTableCellColor(Vector dataColDescList, GraphableList dataGraphables)
+	{
+		dataStoreDataGraphables = new Hashtable();
+		setDataGraphableList(dataGraphables);
+		setDataColumnDescriptionList(dataColDescList);
 	}
 	
 	/**
@@ -54,7 +68,7 @@ public class DataGraphableTableCellColor extends DefaultTableCellColorModel
 	{
 		Color specificColor = super.getBackgroundColor(row, col, selected, focus);
 		if (specificColor != null) return specificColor;
-		if (dataGraphables == null) return null;
+		if (dataColumnDescriptions == null) return null;
 		if (selected){
 			return null;//new Color(210,210,200);
 		}
@@ -68,13 +82,21 @@ public class DataGraphableTableCellColor extends DefaultTableCellColorModel
 	{
 		Color specificColor = super.getForegroundColor(row, col, selected, focus);
 		if (specificColor != null) return specificColor;
-		if (dataGraphables == null) return null;
-		DataColumnDescription dcol = (DataColumnDescription)dataGraphables.elementAt(col);
+		if (dataColumnDescriptions == null) return null;
+		DataColumnDescription dcol = (DataColumnDescription)dataColumnDescriptions.elementAt(col);
 		DataStore ds = dcol.getDataStore();
 		if (ds instanceof DataGraphable){
 			return ((DataGraphable)ds).getColor();
 		}
-		return null;
+		else{
+			DataGraphable dg = (DataGraphable)dataStoreDataGraphables.get(ds);
+			if (dg != null){
+				return dg.getColor();
+			}
+			else{
+				return dcol.getColor();
+			}
+		}
 	}
 
 	/**
@@ -97,14 +119,37 @@ public class DataGraphableTableCellColor extends DefaultTableCellColorModel
 	 */
 	public Vector getDataGraphableList()
 	{
-		return dataGraphables;
+		return dataColumnDescriptions;
 	}
 	
 	/**
 	 * @param dataGraphable The dataGraphable to set.
 	 */
-	public void setDataGraphableList(Vector dataGraphableList)
+	public void setDataGraphableList(GraphableList dataGraphableList)
 	{
-		this.dataGraphables = dataGraphableList;
+		updateDataStoreDataGraphables(dataGraphableList);
+	}
+	
+	/**
+	 * 
+	 */
+	private void updateDataStoreDataGraphables(GraphableList dataGraphableList)
+	{
+		DataGraphable dg;
+		for (int i=0; i < dataGraphableList.size(); i++){
+			Object obj = dataGraphableList.elementAt(i);
+			if (obj instanceof DataGraphable){
+				dg = (DataGraphable)obj;
+				dataStoreDataGraphables.put(dg.getDataStore(), dg);
+			}
+		}
+	}
+
+	/**
+	 * @param dataGraphable The dataGraphable to set.
+	 */
+	public void setDataColumnDescriptionList(Vector dataColDescList)
+	{
+		this.dataColumnDescriptions = dataColDescList;
 	}
 }
