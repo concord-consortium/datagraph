@@ -31,6 +31,7 @@
 package org.concord.datagraph.state;
 
 import org.concord.framework.otrunk.OTObject;
+import org.concord.framework.otrunk.OTObjectInterface;
 import org.concord.framework.otrunk.OTObjectList;
 
 /**
@@ -40,7 +41,7 @@ import org.concord.framework.otrunk.OTObjectList;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public interface OTDataCollector
-    extends OTObject
+    extends OTObjectInterface
 {
     public String getTitle();
     
