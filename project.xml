@@ -2,13 +2,12 @@
 <project>
   <!-- Inherit main project xml file -->
   <extend>../Builds/project.xml</extend>
-
   <!-- Project specific parameters -->
+  <pomVersion>3</pomVersion>
   <artifactId>datagraph</artifactId>
   <name>DataGraph</name>
   <groupId>${pom.artifactId}</groupId>
   <currentVersion>1.2</currentVersion>
-
   <dependencies>
     <dependency>
       <groupId>framework</groupId>
@@ -54,6 +53,12 @@
         <eclipse.dependency>true</eclipse.dependency>
       </properties>
     </dependency>
+    <dependency>
+      <groupId>graphutil</groupId>
+      <artifactId>graphutil</artifactId>
+      <version>SNAPSHOT</version>
+      <type>jar</type>
+    </dependency>
   </dependencies>
-
 </project>
+
