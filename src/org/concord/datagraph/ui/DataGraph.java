@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.15 $
- * $Date: 2004-10-26 17:27:25 $
+ * $Revision: 1.16 $
+ * $Date: 2004-10-28 19:00:46 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -10,7 +10,6 @@
 package org.concord.datagraph.ui;
 
 import java.awt.*;
-import java.awt.event.*;
 import java.awt.geom.*;
 import javax.swing.*;
 
@@ -47,9 +46,7 @@ public class DataGraph extends JPanel
 	protected Grid2D grid;
 	protected GraphWindowToolBar toolBar;
 	
-	protected Hashtable sources = new Hashtable();
-
-	protected boolean selectionMode = true;
+	protected Hashtable producers = new Hashtable();
 
 	protected GraphableList objList;
 	
@@ -61,6 +58,14 @@ public class DataGraph extends JPanel
 	protected DashedBox selectionBox;
 	protected boolean limitsSet = false;
 	
+	/**
+	 * Creates a default data graph that will have: a GraphWindow with a Grid2D that displays
+	 * the x axis at the bottom and the y axis at the left, with the origin at the bottom left
+	 * corner of the graph, with a default scale of 20 pixels per unit, with a default graph area
+	 * in the middle or the graph that has a margin of 5 pixels on the top/bottom, and 40 pixels 
+	 * on the side. 
+	 * It also has a toolbar to control the graph.   
+	 */
 	public DataGraph()
 	{
 		////////
@@ -121,6 +126,16 @@ public class DataGraph extends JPanel
 		initScaleObject();
 	}
 	
+	/**
+	 * Creates a default data graph with or without a tool bar
+	 * @param showToolbar	indicates if the toolbar should be visible or not
+	 */
+	public DataGraph(boolean showToolbar)
+	{
+		this();
+		toolBar.setVisible(showToolbar);
+	}
+	
 	protected Grid2D createGrid()
 	{
 		Grid2D gr = new Grid2D();
@@ -155,61 +170,47 @@ public class DataGraph extends JPanel
 		toolBar.addAxisScale(axisScale);
 	}
 	
+	/**
+	 * Returns the graph of this data graph (a GraphWindow object)
+	 * This is useful if you need to set the properties of the graph directly
+	 * @return
+	 */
 	public GraphWindow getGraph()
 	{
 		return graph;
 	}
 	
+	/**
+	 * Returns the grid used in this data graph
+	 * @return
+	 */
 	public Grid2D getGrid()
 	{
 		return grid;
 	}
 
-	public void setSelectionMode(boolean mode)
+	/**
+	 * Sets the selection on this data graph
+	 */
+	public void setSelection(float x, float y, float width, float height)
 	{
-		selectionMode = mode;
+		if(width < 0)
+		{
+			width=-width;
+			x-=width;
+		}
+		if(height < 0)
+		{
+			height=-height;
+			y-=height;
+		}
+
+		selectionBox.setBounds(x,y,width,height);
 	}
 
-/*
-	public void mouseDragged(MouseEvent e)
-	{
-		if (!selectionMode) return;
-
-		Point2D.Double draggedWorldPoint = new Point2D.Double();
-
-
-		Point2D.Double mousePoint = new Point2D.Double(e.getX(), e.getY());
-		CoordinateSystem coord = getGraph().getDefaultGraphArea().getCoordinateSystem();
-		
-		coord.transformToWorld(mousePoint, draggedWorldPoint);
-
-		setSelection((float)pressedWorldPoint.x, (float)pressedWorldPoint.y, 
-					 (float)draggedWorldPoint.x-(float)pressedWorldPoint.x,
-					 (float)draggedWorldPoint.y-(float)pressedWorldPoint.y);
-	}
-
-	public void mouseMoved(MouseEvent e){}
-	public void mouseClicked(MouseEvent e){}
-	public void mouseEntered(MouseEvent e){}
-	public void mouseExited(MouseEvent e){}
-
-	Point2D.Double pressedWorldPoint = new Point2D.Double();
-	public void mousePressed(MouseEvent e)
-	{
-		if (!selectionMode) return;
-		
-		Point2D.Double mousePoint = new Point2D.Double(e.getX(), e.getY());
-		CoordinateSystem coord = getGraph().getDefaultGraphArea().getCoordinateSystem();
-		coord.transformToWorld(mousePoint, pressedWorldPoint);
-		
-		setSelection((float)pressedWorldPoint.x, (float)pressedWorldPoint.y, 0, 0);
-	}
-
-	public void mouseReleased(MouseEvent e)
-	{
-
-	}
-*/	
+	/**
+	 * Zooms to the selection of this data graph (set with setSelection()) 
+	 */
 	public void zoomSelection()
 	{
 		selectionBox.zoom();		
@@ -229,6 +230,10 @@ public class DataGraph extends JPanel
 		coord.setScale(scale);
 	}
 	
+	/**
+	 * Returns the scale of the x axis
+	 * @return
+	 */
 	public double getXScale()
 	{
 		CoordinateSystem coord = getGraph().getDefaultGraphArea().getCoordinateSystem();
@@ -236,6 +241,10 @@ public class DataGraph extends JPanel
 		return coord.getScale().getX();
 	}
 
+	/**
+	 * Returns the scale of the y axis
+	 * @return
+	 */
 	public double getYScale()
 	{
 		CoordinateSystem coord = getGraph().getDefaultGraphArea().getCoordinateSystem();
@@ -312,22 +321,6 @@ public class DataGraph extends JPanel
 		}
 	}
 	
-	public void setSelection(float x, float y, float width, float height)
-	{
-		if(width < 0)
-		{
-			width=-width;
-			x-=width;
-		}
-		if(height < 0)
-		{
-			height=-height;
-			y-=height;
-		}
-
-		selectionBox.setBounds(x,y,width,height);
-	}
-
 	/**
 	 * Sets up the axis of the graph.
 	 * It will display values from minX to maxX on the X axis and
@@ -384,61 +377,72 @@ public class DataGraph extends JPanel
 		return defaultGA.getUpperRightCornerWorld().getY();
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.concord.framework.datastream.DataConsumer#addDataSource(org.concord.framework.datastream.DataProducer)
+	/**
+	 * Adds to the graph a data graphable associated with the specified data producer
+	 * By default, it will create a DataGraphable with -1 as the channel for the x axis (dt)
+	 * and 0 as the channel of the y axis,
+	 * so that means it will graph dt vs. channel 0
+	 * @param dataProducer data producer that will produce the data for the data graphable
+	 * @see org.concord.framework.datastream.DataConsumer#addDataProducer(org.concord.framework.datastream.DataProducer)
 	 */
-	public void addDataProducer(DataProducer source)
+	public void addDataProducer(DataProducer dataProducer)
 	{
-		addDataProducer(source, defaultGA);		
+		addDataProducer(dataProducer, defaultGA);		
 	}
 
 	/**
-	 * 
-	 * @param source
+	 * Adds to the graph a data graphable associated with the specified data producer
+	 * @param dataProducer
 	 * @param ga
 	 */
-	protected void addDataProducer(DataProducer source, GraphArea ga)
+	protected void addDataProducer(DataProducer dataProducer, GraphArea ga)
 	{
-		// Create a graphable for this datasource
+		// Create a graphable for this data Producer
 		// add it to the graph
-		DataGraphable dGraphable = new DataGraphable();
-		dGraphable.setDataProducer(source);
+		DataGraphable dGraphable = createDataGraphable(dataProducer);
 		
 		dGraphable.setGraphArea(ga);
 		
 		objList.add(dGraphable);
-		sources.put(source, dGraphable);		
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.concord.framework.datastream.DataConsumer#removeDataSource(org.concord.framework.datastream.DataProducer)
+	/**
+	 * Removes the first Data Graphable associated with the specified Data Producer
+	 * @see org.concord.framework.datastream.DataConsumer#removeDataProducer(org.concord.framework.datastream.DataProducer)
 	 */
-	public void removeDataProducer(DataProducer source)
+	public void removeDataProducer(DataProducer dataProducer)
 	{
-
-		// TODO Auto-generated method stub
-		// remove the associated data source from 
-		// the graph
-		DataGraphable dGraphable = getGraphable(source);
+		//TODO it should use getGraphables (should return a Vector) and it should remove 
+		//ALL the graphables associated with the data producer, not only the first one  
+		//remove the associated dataProducer from 
+		//the graph
+		DataGraphable dGraphable = getGraphable(dataProducer);
 		if (dGraphable != null){
 			dGraphable.setDataProducer(null);
 			objList.remove(dGraphable);
 		}
 	}
 
-	public DataGraphable getGraphable(DataProducer source)
+	/**
+	 * Returns the first Data Graphable in the graph that is associated with the specified
+	 * data producer. 
+	 * @param dataProducer
+	 * @return
+	 */
+	public DataGraphable getGraphable(DataProducer dataProducer)
 	{
-		DataGraphable dGraphable = (DataGraphable)sources.get(source);
+		DataGraphable dGraphable = (DataGraphable)producers.get(dataProducer);
 		if (dGraphable == null){
-			//Look for the first data graphable that has a data producer == source
+			//Look for the first data graphable that has a data producer == dataProducer
 			//TODO: it should actually return a list of graphables that have that data producer
 			//specially for removeDataProducer
+			//I think the vector thing should be returned in a new method: getGraphables()
 			for (int i=0; i < objList.size(); i++){
 				Object obj = objList.elementAt(i);
 				if (obj instanceof DataGraphable){
 					dGraphable = (DataGraphable)obj;
 					if (dGraphable.getDataStore() instanceof ProducerDataStore){
-						if (((ProducerDataStore)dGraphable.getDataStore()).getDataProducer() == source){
+						if (((ProducerDataStore)dGraphable.getDataStore()).getDataProducer() == dataProducer){
 							return dGraphable;
 						}
 					}
@@ -454,18 +458,20 @@ public class DataGraph extends JPanel
 	 * of the graph, and channelYAxis as the index for the channel that will be in the y axis.
 	 * If one of the indexes is -1, it will take the dt as the data for that axis
 	 * This data graphable can then be added to the graph
-	 * @param source
+	 * @param dataProducer
 	 * @param channelXAxis
 	 * @param channelYAxis
 	 */
-	public DataGraphable createDataGraphable(DataProducer source, int channelXAxis, int channelYAxis)
+	public DataGraphable createDataGraphable(DataProducer dataProducer, int channelXAxis, int channelYAxis)
 	{
-		// Create a graphable for this datasource
+		// Create a graphable for this dataProducer
 		// add it to the graph
 		DataGraphable dGraphable = new DataGraphable();
-		dGraphable.setDataProducer(source);
+		dGraphable.setDataProducer(dataProducer);
 		dGraphable.setChannelX(channelXAxis);
 		dGraphable.setChannelY(channelYAxis);
+		
+		producers.put(dataProducer, dGraphable);
 		
 		return dGraphable;
 	}
@@ -482,7 +488,7 @@ public class DataGraph extends JPanel
 	 */
 	public DataGraphable createDataGraphable(DataStore dataStore, int channelXAxis, int channelYAxis)
 	{
-		// Create a graphable for this datasource
+		// Create a graphable for this dataProducer
 		// add it to the graph
 		DataGraphable dGraphable = new DataGraphable();
 		dGraphable.setDataStore(dataStore);
@@ -493,8 +499,34 @@ public class DataGraph extends JPanel
 	}
 	
 	/**
+	 * Creates a data graphable that will graph the data coming from the specified
+	 * data store, using the first 2 channels of the data store (0 and 1) 
+	 * It will use 0 as the index for the channel that will be in the x axis
+	 * of the graph, and 1 as the index for the channel that will be in the y axis.
+	 * This data graphable can then be added to the graph
+	 * @param dataStore
+	 */
+	public DataGraphable createDataGraphable(DataStore dataStore)
+	{
+		return createDataGraphable(dataStore, 0, 1);
+	}
+	
+	/**
+	 * Creates a data graphable that will graph the data coming from the specified
+	 * data producer, using dt and the first channel for x and y respectively. 
+	 * It will use -1 as the index for the channel that will be in the x axis (dt)
+	 * of the graph, and 0 as the index for the channel that will be in the y axis.
+	 * This data graphable can then be added to the graph
+	 * @param dataStore
+	 */
+	public DataGraphable createDataGraphable(DataProducer dataProducer)
+	{
+		return createDataGraphable(dataProducer, -1, 0);
+	}
+	
+	/**
 	 * Adds a data graphable to the list of graphables
-	 * @param graphable
+	 * @param graphable data graphable to add
 	 */
 	public void addDataGraphable(DataGraphable graphable)
 	{
@@ -504,18 +536,37 @@ public class DataGraph extends JPanel
 		objList.add(graphable);
 	}
 	
+	/**
+	 * Removes a data graphable from the list of graphables
+	 * @param graphable data graphable to remove
+	 */
+	public void removeDataGraphable(DataGraphable graphable)
+	{
+		objList.remove(graphable);
+	}
+	
+	/**
+	 * Returns the top-level list of graphables of this graph 
+	 * @return
+	 */
 	public GraphableList getObjList()
 	{
 		return objList;
 	}
 
+	/**
+	 * Returns the toolbar of this graph
+	 * @return
+	 */
 	public GraphWindowToolBar getToolBar()
 	{
 		return toolBar;
 	}
 
 	/**
-	 * @return Returns the adjustOnReset.
+	 * Returns if the graph should adjust the origin offset to the original origin offset
+	 * when the graph is reset
+	 * @return 
 	 */
 	public boolean isAdjustOriginOffsetOnReset()
 	{
@@ -523,7 +574,9 @@ public class DataGraph extends JPanel
 	}
 
 	/**
-	 * @param adjustOnReset The adjustOnReset to set.
+	 * Sets if the graph should adjust the origin offset to the original origin offset
+	 * when the graph is reset
+	 * @param adjustOnReset 
 	 */
 	public void setAdjustOriginOffsetOnReset(boolean adjustOnReset)
 	{
@@ -536,13 +589,8 @@ public class DataGraph extends JPanel
 		final JPanel fa = new DataGraph();
 		frame.getContentPane().add(fa);
 		frame.setSize(800,600);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.show();
-		
-		frame.addWindowListener( new WindowAdapter() {
-			public void windowClosing(WindowEvent e){				
-				System.exit(0);
-			}			
-		});
 	}
 
 	/* (non-Javadoc)
@@ -579,6 +627,7 @@ public class DataGraph extends JPanel
 	}
 	
 	/**
+	 * Resets all the graphables in the data graph
 	 * @see org.concord.framework.data.DataFlow#reset()
 	 */
 	public void reset()
