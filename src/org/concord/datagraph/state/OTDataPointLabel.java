@@ -24,16 +24,15 @@
 
 /*
  * Last modification information:
- * $Revision: 1.4 $
- * $Date: 2005-04-01 05:47:31 $
- * $Author: imoncada $
+ * $Revision: 1.5 $
+ * $Date: 2005-04-05 04:53:06 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
 */
 package org.concord.datagraph.state;
 
-import org.concord.datagraph.engine.DataGraphable;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.graph.util.ui.BoxTextLabel;
 

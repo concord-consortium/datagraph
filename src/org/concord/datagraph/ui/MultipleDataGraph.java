@@ -24,9 +24,9 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.7 $
- * $Date: 2005-04-03 07:47:39 $
- * $Author: imoncada $
+ * $Revision: 1.8 $
+ * $Date: 2005-04-05 04:51:56 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -35,8 +35,6 @@ package org.concord.datagraph.ui;
 
 import java.awt.Dimension;
 import java.awt.Insets;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.Vector;
 
 import javax.swing.JFrame;
