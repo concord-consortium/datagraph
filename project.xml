@@ -11,12 +11,18 @@
 
   <dependencies>
     <dependency>
+      <groupId>concord</groupId>
+      <artifactId>maven-ccManifest-plugin</artifactId>
+      <version>1.0.0</version>
+      <type>plugin</type>
+    </dependency>
+    <dependency>
       <groupId>framework</groupId>
       <artifactId>framework</artifactId>
       <version>SNAPSHOT</version>
       <type>jar</type>
       <properties>
-        <cc.path>Framework</cc.path>
+        <cc.path>Framework/lib</cc.path>
         <eclipse.dependency>true</eclipse.dependency>
       </properties>
     </dependency>
@@ -26,7 +32,7 @@
       <version>SNAPSHOT</version>
       <type>jar</type>
       <properties>
-        <cc.path>Data</cc.path>
+        <cc.path>Data/lib</cc.path>
         <eclipse.dependency>true</eclipse.dependency>
       </properties>
     </dependency>
@@ -36,7 +42,7 @@
       <version>SNAPSHOT</version>
       <type>jar</type>
       <properties>
-        <cc.path>Graph</cc.path>
+        <cc.path>Graph/lib</cc.path>
         <eclipse.dependency>true</eclipse.dependency>
       </properties>
     </dependency>
@@ -46,7 +52,7 @@
       <version>SNAPSHOT</version>
       <type>jar</type>
       <properties>
-        <cc.path>Swing</cc.path>
+        <cc.path>Swing/lib</cc.path>
         <eclipse.dependency>true</eclipse.dependency>
       </properties>
     </dependency>
