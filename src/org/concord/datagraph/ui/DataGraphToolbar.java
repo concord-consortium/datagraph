@@ -53,7 +53,7 @@ public class DataGraphToolbar extends GraphWindowToolBar
     {
         super(false);
         
-		addButton("regionscale.gif", 
+		addButton("arrow.gif", 
 		        "" + MultiRegionAxisScale.DRAGMODE_TRANSLATE_DILATE, 
 		        "Move and Scale graph");
 

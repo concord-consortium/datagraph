@@ -24,8 +24,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.6 $
- * $Date: 2005-03-06 06:11:51 $
+ * $Revision: 1.7 $
+ * $Date: 2005-03-09 05:09:51 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -230,14 +230,14 @@ public class DataPointLabel extends PointTextLabel
 		if (newNote || mouseInsideDataPoint){
 			if (indexPointOver != -1 && graphableOver != null){
 				
-				System.out.println("painting an oval");
+				//System.out.println("painting an oval");
 				
 				Point2D p = getPointDataGraphable(graphableOver, indexPointOver);
 				CoordinateSystem cs = graphArea.getCoordinateSystem();
 				Point2D pD = cs.transformToDisplay(p);
 
 				if (p != null){
-					System.out.println("painting an oval 2");
+					//System.out.println("painting an oval 2");
 					g.drawOval((int)pD.getX() - 7, (int)pD.getY() - 7, 13, 13);
 				}
 			}
