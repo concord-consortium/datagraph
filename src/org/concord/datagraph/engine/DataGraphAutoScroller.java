@@ -24,9 +24,9 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.5 $
- * $Date: 2004-11-12 21:18:03 $
- * $Author: eblack $
+ * $Revision: 1.6 $
+ * $Date: 2004-12-13 07:05:11 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -48,10 +48,7 @@ public class DataGraphAutoScroller extends DataGraphDaemon
 {
 	protected boolean autoScrollX = true;
 	protected boolean autoScrollY = false;
-	
-	protected float width;
-	protected float height;
-	
+		
 	protected float minXValue = Float.NaN;
 	protected float minYValue = Float.NaN;
 	
@@ -59,6 +56,10 @@ public class DataGraphAutoScroller extends DataGraphDaemon
 	protected float yPaddingMin = Float.NaN;
 	protected float xPaddingMax = 0;
 	protected float yPaddingMax = 0;
+	private float xPaddingMinPer = Float.NaN;
+	private float xPaddingMaxPer;
+	private float yPaddingMinPer = Float.NaN;
+	private float yPaddingMaxPer;
 	
 	/**
 	 * 
@@ -66,8 +67,6 @@ public class DataGraphAutoScroller extends DataGraphDaemon
 	public DataGraphAutoScroller(float desiredWidth, float desiredHeight)
 	{
 		super();
-		this.width = desiredWidth;
-		this.height = desiredHeight;
 	}
 
 	/**
@@ -94,20 +93,35 @@ public class DataGraphAutoScroller extends DataGraphDaemon
 			
 			//System.out.println(minX + " " + maxX +  " " + minY +  " " + maxY);
 			
-			double worldWidth = graph.getMaxXAxisWorld() - graph.getMinXAxisWorld();
-			double worldHeight = graph.getMaxYAxisWorld() - graph.getMinYAxisWorld();
+			float worldWidth = (float)(graph.getMaxXAxisWorld() - graph.getMinXAxisWorld());
+			float worldHeight = (float)(graph.getMaxYAxisWorld() - graph.getMinYAxisWorld());
 			
-			if (!Float.isNaN(xPaddingMin) && maxX + xPaddingMin - graph.getMinXAxisWorld() < width){
+			float xPaddingMinLocal = xPaddingMin;
+			float xPaddingMaxLocal = xPaddingMax;
+			float yPaddingMinLocal = yPaddingMin;
+			float yPaddingMaxLocal = yPaddingMax;
+			
+			if(!Float.isNaN(xPaddingMinPer)) {
+				xPaddingMinLocal = xPaddingMinPer * worldWidth;
+				xPaddingMaxLocal = xPaddingMaxPer * worldWidth;
+			}
+			
+			if(!Float.isNaN(yPaddingMinPer)) {
+				yPaddingMinLocal = yPaddingMinPer * worldHeight;
+				yPaddingMaxLocal = yPaddingMaxPer * worldHeight;
+			}
+			
+			if (!Float.isNaN(xPaddingMinLocal) && maxX + xPaddingMinLocal - graph.getMinXAxisWorld() < worldWidth){
 				return;
 			}
-			if (!Float.isNaN(yPaddingMin) && maxY + yPaddingMin - graph.getMinYAxisWorld() < height){
+			if (!Float.isNaN(yPaddingMinLocal) && maxY + yPaddingMinLocal - graph.getMinYAxisWorld() < worldHeight){
 				return;
 			}
 			
-			maxX = maxX + xPaddingMax;
-			maxY = maxY + yPaddingMax;
-			minX = maxX - width;
-			minY = maxY - height;
+			maxX = maxX + xPaddingMaxLocal;
+			maxY = maxY + yPaddingMaxLocal;
+			minX = maxX - (float)worldWidth;
+			minY = maxY - (float)worldHeight;
 			if (!((!Float.isNaN(minXValue) && minX < minXValue) || (!Float.isNaN(minYValue) && minY < minYValue))){
 				if (autoScrollX && autoScrollY){			
 					graph.setLimitsAxisWorld(minX, maxX, minY, maxY);
@@ -171,6 +185,21 @@ public class DataGraphAutoScroller extends DataGraphDaemon
 	{
 		xPaddingMin = paddingMin;
 		xPaddingMax = paddingMax;
+		xPaddingMinPer = Float.NaN;
+		xPaddingMaxPer = Float.NaN;
+
+	}
+
+	
+	/*
+	 * Set the padding in a percentage instead of world fixed values
+	 */
+	public void setXPaddingPercentage(float paddingMinPercentage, float paddingMaxPercentage)
+	{
+		xPaddingMinPer = paddingMinPercentage / 100;
+		xPaddingMin = Float.NaN;
+		xPaddingMaxPer = paddingMaxPercentage / 100;	
+		xPaddingMax = Float.NaN;
 	}
 	/**
 	 * @param padding The yPadding to set.
@@ -179,23 +208,40 @@ public class DataGraphAutoScroller extends DataGraphDaemon
 	{
 		yPaddingMin = paddingMin;
 		yPaddingMax = paddingMax;
+		yPaddingMinPer = Float.NaN;
+		yPaddingMaxPer = Float.NaN;
 	}
 	
+	/*
+	 * Set the padding in a percentage instead of world fixed values
+	 */
+	public void setYPaddingPercentage(float paddingMinPercentage, float paddingMaxPercentage)
+	{
+		yPaddingMinPer = paddingMinPercentage / 100;
+		yPaddingMin = Float.NaN;
+		yPaddingMaxPer = paddingMaxPercentage / 100;	
+		yPaddingMax = Float.NaN;
+	}
+
 	/**
 	 * 
 	 * @param desiredWidth the width to scrolled to
+	 * 
+	 * @deprecated this method is ignored now.  The current width of the 
+	 * graph is assumed to be the desired width
 	 */
 	public void setDesiredWidth(float desiredWidth)
 	{
-		width = desiredWidth;
 	}
 	
 	/**
 	 * 
 	 * @param desiredHeight the height to scrolled to
+	 * 
+	 * @deprecated this method is ignored now.  The current height of the
+	 * graph is assumed to be the desired height
 	 */
 	public void setDesiredHeight(float desiredHeight)
 	{
-		height = desiredHeight;
 	}
 }

@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.22 $
- * $Date: 2004-11-24 08:58:05 $
+ * $Revision: 1.23 $
+ * $Date: 2004-12-13 07:05:11 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -782,7 +782,7 @@ public class DataGraph extends JPanel
 			scroller.setGraphables(getObjList());
 			scroller.setMinXValue(0);
 			// This needs to be adjust based on the graph dimensions
-			scroller.setXPadding(1,5);
+			scroller.setXPaddingPercentage(5,90);
 			scroller.setEnabled(false);
 		}
 		return scroller;
