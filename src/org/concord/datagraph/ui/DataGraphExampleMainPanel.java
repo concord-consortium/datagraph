@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.3 $
- * $Date: 2004-09-02 21:14:41 $
+ * $Revision: 1.4 $
+ * $Date: 2004-09-07 17:30:54 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -85,7 +85,7 @@ public class DataGraphExampleMainPanel extends JPanel
 		graph.addDataProducer(dp5,2);
 		graph.getGraphable(dp1).setColor(Color.red);
 		graph.getGraphable(dp2).setColor(Color.blue);
-		graph.getGraphable(dp3).setColor(new Color(255, 255, 255));
+		graph.getGraphable(dp3).setColor(new Color(0, 150, 0));
 		graph.getGraphable(dp4).setColor(Color.orange);
 		
 		JPanel mainPanel = new JPanel();

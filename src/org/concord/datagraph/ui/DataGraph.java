@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.2 $
- * $Date: 2004-08-27 20:19:50 $
+ * $Revision: 1.3 $
+ * $Date: 2004-09-07 17:30:54 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -112,8 +112,8 @@ public class DataGraph extends JPanel
 		gr.getXGrid().setAxisLabelSize(12);
 		gr.getYGrid().setAxisLabelSize(12);
 		
-		gr.getXGrid().setAxisDrawMode(SingleAxisGrid.BEGINNING);
-		gr.getYGrid().setAxisDrawMode(SingleAxisGrid.BEGINNING);
+		gr.getXGrid().setAxisDrawMode(SingleAxisGrid.AXIS_BEGINNING);
+		gr.getYGrid().setAxisDrawMode(SingleAxisGrid.AXIS_BEGINNING);
 		
 		gr.getXGrid().setDrawGridOnAxis(true);
 		gr.getYGrid().setDrawGridOnAxis(true);

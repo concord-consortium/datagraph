@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.1 $
- * $Date: 2004-09-02 21:14:41 $
+ * $Revision: 1.2 $
+ * $Date: 2004-09-07 17:30:54 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -67,8 +67,8 @@ public class DataGraphExample2MainPanel extends JPanel
 		mgrid.getXGrid().setAxisLabel("X Axis");
 		mgrid.getYGrid().setAxisLabel("Y Axis");
 		
-		mgrid.getXGrid().setAxisDrawMode(SingleAxisGrid.ORIGIN_AXISVISIBLE);
-		mgrid.getYGrid().setAxisDrawMode(SingleAxisGrid.ORIGIN_AXISVISIBLE);
+		mgrid.getXGrid().setAxisDrawMode(SingleAxisGrid.AXIS_ALWAYSVISIBLE);
+		mgrid.getYGrid().setAxisDrawMode(SingleAxisGrid.AXIS_ALWAYSVISIBLE);
 		
 		graph.getGraph().getDefaultGraphArea().setOriginCentered(true);
 		
