@@ -24,8 +24,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.4 $
- * $Date: 2005-03-03 05:59:24 $
+ * $Revision: 1.5 $
+ * $Date: 2005-03-04 13:52:07 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -63,7 +63,9 @@ public class DataPointLabel extends BoxTextLabel
 	
 	protected Point2D displayDataPoint;
 	
-	private boolean dataPointChanged = true;
+	private boolean dataPointChanged = false;
+	
+	private boolean graphAreaChanged = false; 
 	
 	private boolean mouseInsideDataPoint = false;
 	
@@ -101,12 +103,65 @@ public class DataPointLabel extends BoxTextLabel
 	public void update()
 	{
 		super.update();
+		
 		if (dataPointChanged){
 			CoordinateSystem cs = graphArea.getCoordinateSystem();
 			displayDataPoint = cs.transformToDisplay(dataPoint);
 			dataPointChanged = false;
 		}
+		
+		if (graphAreaChanged){
+			updateLabelPosition();
+			super.update();
+			graphAreaChanged = false;
+		}
 	}
+
+	/**
+	 * 
+	 */
+	private void updateLabelPosition()
+	{
+		System.out.println(dataPointChanged+" "+dataPoint+" "+displayDataPoint+""+displayPositionIni+" "+graphArea.getSize()+" "+graphArea.getPosition());
+		//See if the note is inside the user's view
+		if (dataPoint == null) return;
+		if (graphArea.getSize().getHeight() <=0 || graphArea.getSize().getWidth() <=0) return;
+
+		CoordinateSystem cs = graphArea.getCoordinateSystem();
+		double xx, yy;
+		double dx = 0;
+		double dy = 0;
+		
+		xx = graphArea.getPosition().getX() - displayPositionIni.getX();
+		if (xx > 0){
+			dx = xx;
+		}
+		
+		yy = graphArea.getPosition().getY() - graphArea.getSize().getHeight() - displayPositionIni.getY();
+		if (yy > 0){
+			dy = yy;
+		}
+		
+		xx = graphArea.getPosition().getX() + graphArea.getSize().getWidth() - displayPositionFin.getX();
+		if (xx < 0){
+			dx = xx;
+		}
+		
+		yy = graphArea.getPosition().getY() - displayPositionFin.getY();
+		if (yy < 0){
+			dy = yy;
+		}
+		
+		if (dx != 0 || dy != 0){
+			System.out.println("Moving "+dx+","+dy);
+			Point2D p = new Point2D.Double(
+					displayPositionIni.getX() + dx, 
+					displayPositionIni.getY() + dy);
+			Point2D pW = cs.transformToWorld(p);
+			location.setLocation(pW);
+		}
+	}
+
 	/**
 	 * @see org.concord.graph.engine.Drawable#draw(java.awt.Graphics2D)
 	 */
@@ -114,6 +169,9 @@ public class DataPointLabel extends BoxTextLabel
 	{
 		//Don't draw new notes
 		if (newNote) return;
+		
+		//Only draw when the point is visible
+		if (!graphArea.isWorldInside(dataPoint)) return;
 		
 		if (needUpdate){
 			update();
@@ -219,7 +277,10 @@ public class DataPointLabel extends BoxTextLabel
 	public void stateChanged(ChangeEvent e)
 	{
 		dataPointChanged = true;
-		super.stateChanged(e);
+		graphAreaChanged = true;
+		//super.stateChanged(e);
+		needUpdate = true;
+		notifyChange();
 	}
 	
 	
