@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.4 $
- * $Date: 2004-09-15 14:58:09 $
+ * $Revision: 1.5 $
+ * $Date: 2004-10-29 07:41:00 $
  * $Author: imoncada $
  *
  * License Information
@@ -26,7 +26,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-import org.concord.datagraph.examples.DataGraphExample2MainPanel;
 import org.concord.graph.ui.Grid2D;
 import org.concord.swing.CustomDialog;
 
@@ -181,8 +180,8 @@ public class DataGraphActions
 	    
 	    if (swingFrame){
     		JFrame f = new JFrame();
-    		DataGraphExample2MainPanel panel = new DataGraphExample2MainPanel();	
-    		DataGraphActions graphA = new DataGraphActions(panel.getGraph());
+    		DataGraph panel = new DataGraph();	
+    		DataGraphActions graphA = new DataGraphActions(panel);
     		
     		JMenuBar swingMenubar = new JMenuBar();
     		swingMenubar.add(graphA.getSwingMenu());
@@ -195,8 +194,8 @@ public class DataGraphActions
         }
 	    else{
     		Frame f = new Frame();
-    		DataGraphExample2MainPanel panel = new DataGraphExample2MainPanel();	
-    		DataGraphActions graphA = new DataGraphActions(panel.getGraph());
+    		DataGraph panel = new DataGraph();	
+    		DataGraphActions graphA = new DataGraphActions(panel);
     		
     		MenuBar awtMenubar = new MenuBar();
     		awtMenubar.add(graphA.getAWTMenu());
