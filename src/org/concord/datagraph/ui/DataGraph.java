@@ -24,9 +24,9 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.29 $
- * $Date: 2005-03-06 07:49:45 $
- * $Author: imoncada $
+ * $Revision: 1.30 $
+ * $Date: 2005-03-07 04:53:33 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -43,6 +43,7 @@ import java.util.Vector;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import org.concord.data.ui.DataFlowControlToolBar;
 import org.concord.datagraph.engine.DataGraphAutoScaler;
 import org.concord.datagraph.engine.DataGraphAutoScroller;
 import org.concord.datagraph.engine.DataGraphable;
@@ -89,7 +90,8 @@ public class DataGraph extends JPanel
 	public final static int AUTO_FIT_NONE = 0;
 	public final static int AUTO_SCALE_MODE = 1;
 	public final static int AUTO_SCROLL_MODE = 2;	
-
+	public final static int AUTO_SCROLL_RUNNING_MODE = 3;
+	
 	//Graph, grid and toolbar
 	protected GraphWindow graph;
 	protected Grid2D grid;
@@ -110,9 +112,9 @@ public class DataGraph extends JPanel
 	protected boolean limitsSet = false;
 
 	protected DataGraphAutoScaler scaler = null;
-	protected DataGraphAutoScroller scroller = null;	
-		
-	
+	protected DataGraphAutoScroller scroller = null;
+    private boolean running;
+    private int autoFitMode;		
 	
 	/**
 	 * Creates a default data graph that will have: a GraphWindow with a Grid2D that displays
@@ -396,7 +398,11 @@ public class DataGraph extends JPanel
 	{
 		//Reset graph areas
 		if (adjustOriginOnReset){
-			defaultGA.adjustCoordinateSystem();
+		    // I'm not sure this is the right way to do this
+		    // 
+		    setOriginOffsetPercentage(0,-1);
+		    
+//			defaultGA.adjustCoordinateSystem();
 		}
 	}
 	
@@ -735,7 +741,10 @@ public class DataGraph extends JPanel
 	 */
 	public void stop()
 	{
-		//TODO: Not supported yet
+	    running = false;
+	    if(autoFitMode == AUTO_SCROLL_RUNNING_MODE){
+	        scroller.setEnabled(false);
+	    }
 	}
 
 	/**
@@ -743,7 +752,10 @@ public class DataGraph extends JPanel
 	 */
 	public void start()
 	{
-		//TODO: Not supported yet
+	    running = true;
+	    if(autoFitMode == AUTO_SCROLL_RUNNING_MODE){
+	        scroller.setEnabled(true);
+	    }
 	}
 	
 	/**
@@ -765,11 +777,6 @@ public class DataGraph extends JPanel
 		resetGraphArea();
 	}
 
-	/*
-	public final static int AUTO_FIT_NONE = 0;
-	public final static int AUTO_SCALE_MODE = 1;
-	public final static int AUTO_SCROLL_MODE = 2;	
-*/
 	/**
 	 * sets the mode used to resize the graph as new points are added
 	 * AUTO_FIT_NONE - don't resize the graph automatically
@@ -781,9 +788,13 @@ public class DataGraph extends JPanel
 	 *   so new data is visible. If you want to customize the behavior of
 	 *   this mode you can use the getAutoScroller() method and customize
 	 *   the returned object.
+	 * AUTO_SCROLL_RUNNING_MODE - turn on auto scroll when the graph 
+	 *   is started.  This is only useful for data producers. 
 	 */
 	public void setAutoFitMode(int mode)
 	{
+	    autoFitMode = mode;
+	    
 		switch(mode){
 			case AUTO_FIT_NONE:
 				if (scaler != null) {
@@ -803,6 +814,13 @@ public class DataGraph extends JPanel
 			case AUTO_SCROLL_MODE:
 				getAutoScroller();
 				scroller.setEnabled(true);
+				if (scaler != null) {
+					scaler.setEnabled(false);
+				}
+				break;
+			case AUTO_SCROLL_RUNNING_MODE:
+				getAutoScroller();
+				scroller.setEnabled(false);
 				if (scaler != null) {
 					scaler.setEnabled(false);
 				}

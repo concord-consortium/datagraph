@@ -24,9 +24,9 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.27 $
- * $Date: 2005-03-06 06:10:45 $
- * $Author: imoncada $
+ * $Revision: 1.28 $
+ * $Date: 2005-03-07 04:53:33 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -311,6 +311,51 @@ public class DataGraphable extends DefaultGraphable
 		return Float.NaN;
     }
     
+    private Point2D tmpDataPoint = new Point2D.Double();
+    
+    public Point2D getRowPoint(int rowIndex, CoordinateSystem coord, 
+            Point2D.Double pathPoint)
+    {
+		float px, py;
+		Object objVal;
+
+        objVal = dataStore.getValueAt(rowIndex, channelX);
+		px = handleValue(objVal);
+					
+		objVal = dataStore.getValueAt(rowIndex, channelY);
+		py = handleValue(objVal);
+		
+		if(Float.isNaN(px) || Float.isNaN(py)) {
+			//We have found an invalid point.  If there was a valid undrawn point 
+			//before this one, then we need to draw it.  
+			//There can only be an undrawn point if we are connecting points and not
+			//drawing crosses
+			// This could be caused if the data store was being updated at the same
+			// as we are looking at it.  This should make this point the last point
+			// in the data store.
+		    return null;
+		}
+		
+		//Always keep the min and max value available
+		if (Float.isNaN(minXValue) || px < minXValue){
+			minXValue = px;
+		}
+		if (Float.isNaN(maxXValue) || px > maxXValue){
+			maxXValue = px;
+		}
+		if (Float.isNaN(minYValue) || py < minYValue){
+			minYValue = py;
+		}
+		if (Float.isNaN(maxYValue) || py > maxYValue){
+			maxYValue = py;
+		}
+		
+		tmpDataPoint.setLocation(px, py);
+		coord.transformToDisplay(tmpDataPoint, pathPoint);
+				
+		return pathPoint;
+    }
+    
     /**
      * 
      */
@@ -332,8 +377,9 @@ public class DataGraphable extends DefaultGraphable
 
 		if (dataStore == null) return;
 		
-		Point2D.Double pathPoint = new Point2D.Double();
-
+		Point2D.Double pathPointHolder = new Point2D.Double();
+		Point2D pathPoint = null;
+		
 		CoordinateSystem coord = getGraphArea().getCoordinateSystem();
 		
 		// if new data was not received or no values have been
@@ -348,18 +394,30 @@ public class DataGraphable extends DefaultGraphable
     		validPrevPoint = false;
     	}
    		initialI = lastValueCalculated + 1;
+
+	    if(initialI != 0 && !validPrevPoint) {
+	        System.err.println("last drawn point was invalid");
+	        
+	        // verify that the previous point really is invalid
+	        // it can happen that is it invlaid for a little while while
+	        // it is being added to the DataStore.
+	        // if there was an automic DataStore store add row this wouldn't
+	        // be a problem.  
+	        Point2D invalidPoint = getRowPoint(initialI-1, coord, pathPointHolder);
+	        if(invalidPoint != null) {
+	            // it wasn't really invalid
+	            initialI--;
+	            if(initialI != 0) {
+	                validPrevPoint = true;
+	            }
+	        }
+	    }
    		
    		int i;
-		for(i=initialI; i < dataStore.getTotalNumSamples(); i++){			
-			Object objVal;
-			
-			objVal = dataStore.getValueAt(i, channelX);
-			px = handleValue(objVal);
-						
-			objVal = dataStore.getValueAt(i, channelY);
-			py = handleValue(objVal);
-			
-			if(Float.isNaN(px) || Float.isNaN(py)) {
+		for(i=initialI; i < dataStore.getTotalNumSamples(); i++){
+		    pathPoint = getRowPoint(i, coord, pathPointHolder);
+
+		    if(pathPoint == null) {
 				//We have found an invalid point.  If there was a valid undrawn point 
 				//before this one, then we need to draw it.  
 				//There can only be an undrawn point if we are connecting points and not
@@ -368,30 +426,15 @@ public class DataGraphable extends DefaultGraphable
 					drawPoint(undrawnPoint);
 					undrawnPoint = null;
 				}
+				// This could be caused if the data store was being updated at the same
+				// as we are looking at it.  This should make this point the last point
+				// in the data store.
 				validPrevPoint = false;
 				continue;								
 			}
 			
-			//Always keep the min and max value available
-			if (Float.isNaN(minXValue) || px < minXValue){
-				minXValue = px;
-			}
-			if (Float.isNaN(maxXValue) || px > maxXValue){
-				maxXValue = px;
-			}
-			if (Float.isNaN(minYValue) || py < minYValue){
-				minYValue = py;
-			}
-			if (Float.isNaN(maxYValue) || py > maxYValue){
-				maxYValue = py;
-			}
-			
-			Point2D.Double dataPoint = new Point2D.Double(px, py);
-			
-			coord.transformToDisplay(dataPoint, pathPoint);
-			
-			ppx = (float)pathPoint.x;
-			ppy = (float)pathPoint.y;
+			ppx = (float)pathPoint.getX();
+			ppy = (float)pathPoint.getY();
 
 			currentPathPoint = path.getCurrentPoint();
 			
@@ -441,7 +484,7 @@ public class DataGraphable extends DefaultGraphable
 			// If we made it here then the current point (soon to be the prev point)
 			// is a valid point, so set the flag
 			// technically we only care about this if we are connecting points
-			// but it seemed easier to understand if this id done out here
+			// but it seemed easier to understand if this is done out here
 			validPrevPoint = true;
 		}
 			
@@ -516,46 +559,6 @@ public class DataGraphable extends DefaultGraphable
 		
 		return g;
 	}
-
-/*
-public Object getValueAt(int numSample, int numChannel):
-
-	{
-		Float val = null; 
-		
-		if (numChannel == 0){
-			if (channelX == -1){
-				val = new Float(dt * numSample);
-			}
-			else{
-				val = (Float)xValues.elementAt(numSample);
-			}
-		}
-		else if (numChannel == 1){
-			if (channelY == -1){
-				val = new Float(dt * numSample);
-			}
-			else{
-				val = (Float)yValues.elementAt(numSample);
-			}
-		}
-		
-		return val;
-	}
-*/
-	
-/*
-getDataChannelDescription(int numChannel):
-
-			channelDesc = new DataChannelDescription();
-			channelDesc.setPrecision(2);
-			if (numChannel == 0){
-				channelDesc.setName("x value");
-			}
-			else if (numChannel == 1){
-				channelDesc.setName("y value");
-			}
-*/
 		
 	/**
 	 * @return Returns the channelX.

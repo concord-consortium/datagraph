@@ -24,16 +24,19 @@
 
 /*
  * Last modification information:
- * $Revision: 1.5 $
- * $Date: 2005-03-06 06:52:49 $
- * $Author: imoncada $
+ * $Revision: 1.6 $
+ * $Date: 2005-03-07 04:53:33 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
 */
 package org.concord.datagraph.state;
 
+import java.awt.BorderLayout;
+
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 
 import org.concord.datagraph.ui.AddDataPointLabelAction;
 import org.concord.datagraph.ui.DataGraph;
@@ -58,6 +61,7 @@ public class OTDataGraphView
 	OTDataGraph pfObject;
 	protected OTViewContainer viewContainer;
 	DataGraph dataGraph;
+	DataGraphStateManager manager;
 	SelectableList notesLayer;
 	
 	public OTDataGraphView(OTDataGraph pfDataGraph, OTViewContainer vContainer)
@@ -74,9 +78,21 @@ public class OTDataGraphView
 		dataGraph = new DataGraph();
 		dataGraph.changeToDataGraphToolbar();
 		
-		DataGraphStateManager manager = new DataGraphStateManager(pfObject, dataGraph);
+		manager = new DataGraphStateManager(pfObject, dataGraph);
 		manager.initialize(editable);
 				
-		return dataGraph;
+		dataGraph.setAutoFitMode(DataGraph.AUTO_SCROLL_RUNNING_MODE);
+		
+		JPanel graphWrapper = new JPanel(){
+		  public void removeNotify()
+		  {
+		      System.err.println("got remove notify");
+		      dataGraph.reset();
+		  }
+		};
+		
+		graphWrapper.setLayout(new BorderLayout());
+		graphWrapper.add(dataGraph, BorderLayout.CENTER);
+		return graphWrapper;
 	}
 }

@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.6 $
- * $Date: 2005-02-19 14:08:01 $
+ * $Revision: 1.7 $
+ * $Date: 2005-03-07 04:53:33 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -40,6 +40,8 @@ import java.util.Vector;
 
 import org.concord.data.Unit;
 import org.concord.data.state.OTDataStore;
+import org.concord.data.ui.DataFlowControlAction;
+import org.concord.data.ui.DataFlowControlButton;
 import org.concord.data.ui.DataFlowControlToolBar;
 import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.DataGraphable;
@@ -47,7 +49,6 @@ import org.concord.datagraph.ui.DataGraph;
 import org.concord.datagraph.ui.SingleDataAxisGrid;
 import org.concord.framework.data.DataDimension;
 import org.concord.framework.data.stream.DataProducer;
-import org.concord.framework.data.stream.DataProducerProxy;
 import org.concord.framework.data.stream.DataStore;
 import org.concord.framework.otrunk.OTObjectList;
 import org.concord.graph.engine.GraphableList;
@@ -236,23 +237,20 @@ public class DataGraphStateManager
 		// add it to the data graph
 		for(int i=0; i<pfGraphables.size(); i++) {
 			OTDataGraphable otGraphable = (OTDataGraphable)pfGraphables.get(i);
-			Object dataProducer = otGraphable.getDataProducer();
+			DataProducer dataProducer = (DataProducer)otGraphable.getDataProducer();
 			OTDataStore dataStore = (OTDataStore)otGraphable.getDataStore();
 			
 			// dProducer.getDataDescription().setDt(0.1f);
 			DataGraphable realGraphable = null;
-			if(dataProducer instanceof DataProducerProxy) {
-				dataProducer = ((DataProducerProxy)dataProducer).getDataProducer();
-			}
 			
-			if(dataProducer instanceof DataProducer) {
+			if(dataProducer != null) {
 				if(otGraphable.getControllable()) {
 					System.err.println("Can't control a graphable with a data producer");
 				}
 				
-				realGraphable = dataGraph.createDataGraphable((DataProducer)dataProducer);
+				realGraphable = dataGraph.createDataGraphable(dataProducer);
 				if(toolBar == null) {					
-					toolBar = new DataFlowControlToolBar(dataGraph);
+					toolBar = createFlowToolBar();
 					dataGraph.add(toolBar, BorderLayout.SOUTH);
 				}
 				toolBar.addDataFlowObject((DataProducer)dataProducer);
@@ -279,6 +277,27 @@ public class DataGraphStateManager
 		graphableList.addGraphableListListener(this);				
 	}
 
+	public DataFlowControlToolBar createFlowToolBar()
+	{
+	    DataFlowControlToolBar toolbar = 
+	        new DataFlowControlToolBar(false);
+
+		DataFlowControlButton b = null;
+		
+		b = new DataFlowControlButton(DataFlowControlAction.FLOW_CONTROL_START);
+		toolbar.add(b);
+
+		b = new DataFlowControlButton(DataFlowControlAction.FLOW_CONTROL_STOP);
+		toolbar.add(b);
+		
+		b = new DataFlowControlButton(DataFlowControlAction.FLOW_CONTROL_RESET);
+		b.setText("Clear");
+		toolbar.add(b);
+	 
+		toolbar.addDataFlowObject(dataGraph);
+		
+	    return toolbar;
+	}
 	
 	/**
 	 * This only works for graphables that came from a loaded
@@ -357,4 +376,5 @@ public class DataGraphStateManager
 	public void listGraphableRemoved(EventObject e)
 	{
 	}
+	
 }
