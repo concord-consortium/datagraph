@@ -24,9 +24,9 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.6 $
- * $Date: 2004-11-12 21:18:03 $
- * $Author: eblack $
+ * $Revision: 1.7 $
+ * $Date: 2004-11-15 19:50:08 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -79,7 +79,7 @@ public class DataGraphAutoScaler extends DataGraphDaemon
 			//System.out.println(minX + " " + maxX +  " " + minY +  " " + maxY);
 			
 			if (autoScaleX && autoScaleY){			
-			graph.setLimitsAxisWorld(minX, maxX, minY, maxY);
+				graph.setLimitsAxisWorld(minX, maxX, minY, maxY);
 			}
 			else if (autoScaleX){			
 				graph.setLimitsAxisWorld(minX, maxX, graph.getMinYAxisWorld(), graph.getMaxYAxisWorld());
