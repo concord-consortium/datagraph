@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.34 $
- * $Date: 2005-03-25 17:35:27 $
+ * $Revision: 1.35 $
+ * $Date: 2005-03-31 04:41:33 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -38,7 +38,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.geom.Point2D;
-import java.util.EventObject;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -63,14 +62,11 @@ import org.concord.graph.engine.GraphArea;
 import org.concord.graph.engine.GraphableList;
 import org.concord.graph.engine.MultiRegionAxisScale;
 import org.concord.graph.engine.SelectableList;
-import org.concord.graph.event.GraphWindowListener;
-import org.concord.graph.event.GraphWindowResizeEvent;
 import org.concord.graph.examples.DashedBox;
 import org.concord.graph.examples.GraphWindowToolBar;
 import org.concord.graph.ui.GraphWindow;
 import org.concord.graph.ui.Grid2D;
 import org.concord.graph.ui.SingleAxisGrid;
-import org.concord.swing.SelectableToggleButton;
 
 /**
  * DataGraph
@@ -87,8 +83,7 @@ import org.concord.swing.SelectableToggleButton;
  */
 
 public class DataGraph extends JPanel
-	implements DataFlow, DataConsumer, GraphWindowListener,
-		DataFlowCapabilities
+	implements DataFlow, DataConsumer, DataFlowCapabilities
 {
 	public final static int AUTO_FIT_NONE = 0;
 	public final static int AUTO_SCALE_MODE = 1;
@@ -113,7 +108,6 @@ public class DataGraph extends JPanel
 	protected boolean adjustOriginOnReset = true;
 	
 	protected DashedBox selectionBox;
-	protected boolean limitsSet = false;
 
 	protected DataGraphAutoScaler scaler = null;
 	protected DataGraphAutoScroller scroller = null;
@@ -145,8 +139,6 @@ public class DataGraph extends JPanel
 		defaultCS = (DefaultCoordinateSystem2D)defaultGA.getCoordinateSystem();
 
 		defaultGA.setInsets(new Insets(10,50,40,10));
-		
-		graph.addGraphWindowListener(this);
 		
 		//By default, the origin is the lower left corner of the graph area
 		setOriginOffsetPercentage(0,0);
@@ -434,12 +426,10 @@ public class DataGraph extends JPanel
 	 */
 	public void setLimitsAxisWorld(double minX, double maxX, double minY, double maxY)
 	{
-		setOriginOffsetPercentage(-1, -1);
-		
-		setSelection((float)minX, (float)minY, (float)(maxX - minX), (float)(maxY - minY));
-		zoomSelection();
-		
-		limitsSet = true;
+	    getGraph().getDefaultGraphArea().setAutoCSMode(
+	            GraphArea.FIXED_AXIS_LIMITS);
+	    getGraph().getDefaultGraphArea().
+	    	setLimitsAxisWorld(minX, maxX, minY, maxY);	    
 	}
 
 	/**
@@ -758,23 +748,6 @@ public class DataGraph extends JPanel
 		frame.setSize(800,600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.show();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.concord.graph.event.GraphWindowListener#windowChanged(java.util.EventObject)
-	 */
-	public void windowChanged(EventObject e)
-	{
-	}
-
-	/* (non-Javadoc)
-	 * @see org.concord.graph.event.GraphWindowListener#windowResized(org.concord.graph.event.GraphWindowResizeEvent)
-	 */
-	public void windowResized(GraphWindowResizeEvent e)
-	{
-		if (limitsSet){
-			zoomSelection();
-		}
 	}
 
 	/**
