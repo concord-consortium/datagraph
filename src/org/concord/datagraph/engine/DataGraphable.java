@@ -1,8 +1,8 @@
 /*
  * Last modification information:
- * $Revision: 1.6 $
- * $Date: 2004-09-14 18:49:39 $
- * $Author: imoncada $
+ * $Revision: 1.7 $
+ * $Date: 2004-09-14 23:14:25 $
+ * $Author: dima $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -283,7 +283,7 @@ public class DataGraphable extends DefaultGraphable
 			else{
 				//Make a vertical "dot" of 1 pixel
 				path.moveTo(ppx, ppy);
-				path.lineTo(ppx, ppy);
+				path.lineTo(ppx, ppy+1);//TODO there is a issue with MAC OS X
 			}
 
 			lastTime = time;
