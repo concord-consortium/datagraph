@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.1 $
- * $Date: 2004-09-14 20:14:00 $
+ * $Revision: 1.2 $
+ * $Date: 2004-09-14 20:29:50 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -37,6 +37,8 @@ public class DataGraphActions
 {
 	protected DataGraph graph;
 	
+	protected JMenu menu;
+	
 	public static final int ACTION_SETLIMITS = 1; 
 	
 	public static final int ACTION_HIDE_SHOW_GRID = 2; 
@@ -53,18 +55,16 @@ public class DataGraphActions
 		this.graph = graph;
 	}
 	
-	public JMenu getMenu()
+	public void initMenu()
 	{
-		JMenu m = new JMenu("Graph");
+		menu = new JMenu("Graph");
 				
-		addDataGraphActions(m);
+		addDataGraphActions(menu);
 		
 		JMenu gridMenu = new JMenu("Grid");
-		m.add(gridMenu);
+		menu.add(gridMenu);
 		
 		addGridActions(gridMenu);
-		
-		return m;
 	}
 
 	public void addDataGraphActions(JMenu m)
@@ -249,5 +249,16 @@ public class DataGraphActions
 				
 			}
 		}		
+	}
+	
+	/**
+	 * @return Returns the menu.
+	 */
+	public JMenu getMenu()
+	{
+		if (menu == null){
+			initMenu();
+		}
+		return menu;
 	}
 }
