@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.4 $
- * $Date: 2004-09-09 21:46:40 $
+ * $Revision: 1.5 $
+ * $Date: 2004-09-10 19:20:50 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -54,7 +54,12 @@ public class DataGraphable extends DefaultGraphable
 	
 	protected Vector dataStoreListeners;
 	
+	protected boolean connectPoints = true; 
+	
+	private float lastTime;
+	private int lastValueCalculated;
 	protected boolean needUpdate = true;
+	protected boolean needUpdateDataReceived = false;
 	
 	/**
      * Default constructor.
@@ -117,7 +122,6 @@ public class DataGraphable extends DefaultGraphable
 		
 		float [] data = de.getData();
 		int numberOfSamples = de.getNumSamples();
-
 		int sampleIndex;
 		
 		sampleIndex = dataOffset;
@@ -136,6 +140,7 @@ public class DataGraphable extends DefaultGraphable
 		}
 
 		needUpdate = true;
+		needUpdateDataReceived = true;
 		
 		notifyChange();
 		notifyDataAdded();
@@ -148,6 +153,7 @@ public class DataGraphable extends DefaultGraphable
 	{
 		yValues.removeAllElements();
 		needUpdate = true;
+		needUpdateDataReceived = false;
 		notifyChange();
 	}
 
@@ -219,18 +225,28 @@ public class DataGraphable extends DefaultGraphable
      * 
      */
     public void update()
-	{
-		path.reset();
-		
+	{		
 		float ppx, ppy;
 		float px, py;
 
 		Point2D.Double pathPoint = new Point2D.Double();
 
-		float time = 0;
 		CoordinateSystem coord = getGraphArea().getCoordinateSystem();
 
-		for(int i=0; i<yValues.size(); i++){
+		float time;
+		int initialI;
+		
+    	if (needUpdateDataReceived){
+    		time = lastTime;
+    		initialI = lastValueCalculated;
+    	}
+    	else{
+    		path.reset();
+    		time = 0;
+    		initialI = 0;
+    	}
+
+		for(int i=initialI; i<yValues.size(); i++){
 			
 			if (channelX == -1){
 				px = time;
@@ -255,15 +271,27 @@ public class DataGraphable extends DefaultGraphable
 			ppx = (float)pathPoint.x;
 			ppy = (float)pathPoint.y;
 
-			if (i==0){
-				path.moveTo(ppx, ppy);
+			if (connectPoints){
+				if (i==0){
+					path.moveTo(ppx, ppy);
+				}
+				else{
+					path.lineTo(ppx, ppy);
+				}
 			}
 			else{
+				//Make a vertical "dot" of 1 pixel
+				path.moveTo(ppx, ppy);
 				path.lineTo(ppx, ppy);
 			}
+
+			lastTime = time;
+			lastValueCalculated = i;
+			
 			time += dt;
 		}
-		
+			
+		needUpdateDataReceived = false;
 		needUpdate = false;
 	}
 
@@ -309,10 +337,20 @@ public class DataGraphable extends DefaultGraphable
 		Float val = null; 
 		
 		if (numChannel == 0){
-			val = new Float(dt * numSample);
+			if (channelX == -1){
+				val = new Float(dt * numSample);
+			}
+			else{
+				val = (Float)xValues.elementAt(numSample);
+			}
 		}
-		if (numChannel == 1){
-			val = (Float)yValues.elementAt(numSample);
+		else if (numChannel == 1){
+			if (channelY == -1){
+				val = new Float(dt * numSample);
+			}
+			else{
+				val = (Float)yValues.elementAt(numSample);
+			}
 		}
 		
 		return val;
@@ -430,5 +468,19 @@ public class DataGraphable extends DefaultGraphable
 	public void setChannelY(int channelY)
 	{
 		this.channelY = channelY;
+	}
+	/**
+	 * @return Returns the connectPoints.
+	 */
+	public boolean isConnectPoints()
+	{
+		return connectPoints;
+	}
+	/**
+	 * @param connectPoints The connectPoints to set.
+	 */
+	public void setConnectPoints(boolean connectPoints)
+	{
+		this.connectPoints = connectPoints;
 	}
 }

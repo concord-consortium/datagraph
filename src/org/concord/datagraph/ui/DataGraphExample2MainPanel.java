@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.6 $
- * $Date: 2004-09-09 22:14:04 $
+ * $Revision: 1.7 $
+ * $Date: 2004-09-10 19:20:50 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -49,6 +49,7 @@ public class DataGraphExample2MainPanel extends JPanel
 	DataProducer dp1;
 	DataProducer dp2;
 	DataProducer dp3;
+	DataProducer dp4;
 	
 	JButton startButton;
 	JButton stopButton;
@@ -58,7 +59,7 @@ public class DataGraphExample2MainPanel extends JPanel
 	DataTablePanel tablePanel;
 	
 	float t;
-	float r = 4;
+	float r;
 	
 	public DataGraphExample2MainPanel()
 	{
@@ -84,15 +85,22 @@ public class DataGraphExample2MainPanel extends JPanel
 		dp1 = createNewDataProducer();
 		dp2 = createNewDataProducer();
 		
-		dp3 = new DefaultMultipleDataProducer();
-		DataGraphable dg = graph.createDataGraphable(dp3, 0, 1);
-		dg.setColor(255,128,0);
-		graph.addDataGraphable(dg);
-		
 		graph.addDataProducer(dp1);
 		graph.addDataProducer(dp2);
 		graph.getGraphable(dp1).setColor(Color.red);
 		graph.getGraphable(dp2).setColor(Color.blue);
+		
+		dp3 = new DefaultMultipleDataProducer();
+		DataGraphable dg3 = graph.createDataGraphable(dp3, 0, 1);
+		dg3.setColor(255,128,0);
+		graph.addDataGraphable(dg3);
+
+		dp4 = new DefaultMultipleDataProducer();
+		DataGraphable dg4 = graph.createDataGraphable(dp4, 0, 1);
+		dg4.setColor(0,0,150);
+		dg4.setConnectPoints(false);
+		dg4.setLineWidth(3);
+		graph.addDataGraphable(dg4);
 		
 		JPanel mainPanel = new JPanel();
 		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
@@ -114,6 +122,9 @@ public class DataGraphExample2MainPanel extends JPanel
 		tableModel.addDataColumn(graph.getGraphable(dp1), 0);
 		tableModel.addDataColumn(graph.getGraphable(dp1), 1);
 		tableModel.addDataColumn(graph.getGraphable(dp2), 1);
+		
+		tableModel.addDataStore(dg3);
+		tableModel.addDataStore(dg4);
 		
 		tableModel.setDataStep(5);
 		
@@ -173,6 +184,7 @@ public class DataGraphExample2MainPanel extends JPanel
 		add(buttonPanel, BorderLayout.SOUTH);
 		
 		t = 0;
+		r = 4;
 	}
 	
 	ActionListener buttonListener = new ActionListener()
@@ -202,6 +214,7 @@ public class DataGraphExample2MainPanel extends JPanel
 				timer.stop();
 				graph.reset();
 				t = 0;
+				r = 4;
 			}
 		}
 	};
@@ -212,15 +225,23 @@ public class DataGraphExample2MainPanel extends JPanel
 		{
 			//System.err.println(t);
 			
-//			((DefaultDataProducer)dp1).addValue((float)Math.sin(t));
-//			((DefaultDataProducer)dp2).addValue((float)Math.cos(4*t)-1.5f);
+			((DefaultDataProducer)dp1).addValue((float)Math.sin(t));
+			((DefaultDataProducer)dp2).addValue((float)Math.cos(4*t)-1.5f);
 			
 			float vals[] = new float[3];
-			vals[0] = (float)(r * Math.cos(t));
-			vals[1] = (float)(r * Math.sin(t));
+			vals[0] = (float)(r * Math.cos(2*t));
+			vals[1] = (float)(r * Math.sin(2*t));
 			vals[2] = (float)(r);
-			
 			((DefaultMultipleDataProducer)dp3).addValues(vals);
+
+			
+			vals[0] = (float)(r * Math.cos(t));
+			vals[1] = (float)(r * Math.sin(t));			
+			((DefaultMultipleDataProducer)dp4).addValues(vals, false);
+			
+			vals[0] = (float)(r * Math.cos(t)+1);
+			vals[1] = (float)(r * Math.sin(t)+1);			
+			((DefaultMultipleDataProducer)dp4).addValues(vals, true);
 			
 			t+=0.1;
 			r-=0.05;
