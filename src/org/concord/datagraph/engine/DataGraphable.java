@@ -24,9 +24,9 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.21 $
- * $Date: 2004-11-12 21:18:03 $
- * $Author: eblack $
+ * $Revision: 1.22 $
+ * $Date: 2004-11-23 16:11:12 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -111,6 +111,11 @@ public class DataGraphable extends DefaultGraphable
 	private float maxXValue;
 	private float minYValue;
 	private float maxYValue;
+
+	// If this is true then we have internally created a ProducerDataStore
+	// this would be done if someone adds a dataProducer to us.
+	// This is useful for state saving 
+	private boolean internalProducerDataStore = false;
 	
 	/**
      * Default constructor.
@@ -136,11 +141,15 @@ public class DataGraphable extends DefaultGraphable
      * components. Use setDataStore() instead
 	 */
 	public void setDataProducer(DataProducer dataProducer)
-	{
-		//Create a default data store for this data producer
+	{		
+		// Create a default data store for this data producer
 		ProducerDataStore pDataStore = new ProducerDataStore(dataProducer);
 		
+		// This sets the internal producer data store to false
 		setDataStore(pDataStore);
+		
+		// We just created an internal datastore so we need to remember it 
+		internalProducerDataStore = true;
 	}
 	
 	/**
@@ -170,6 +179,8 @@ public class DataGraphable extends DefaultGraphable
 			this.dataStore.removeDataStoreListener(this);
 		}
 		this.dataStore = dataStore;
+		// Assume someone set this from the outside with their own dataStore
+		internalProducerDataStore = false;
 		if (this.dataStore != null){
 			this.dataStore.addDataStoreListener(this);
 		}
@@ -666,11 +677,14 @@ getDataChannelDescription(int numChannel):
 	/**
 	 * @return Returns the data producer.
 	 */
-/*	public DataProducer getDataProducer()
+	public DataProducer getDataProducer()
 	{
-		return dataProducer;
+		if(internalProducerDataStore) {
+			ProducerDataStore pDataStore = (ProducerDataStore)dataStore;
+			return pDataStore.getDataProducer();
+		}
+		return null;
 	}
-*/
 	
 	public float getMinXValue()
 	{
@@ -852,7 +866,9 @@ getDataChannelDescription(int numChannel):
 		else if (numChannel == 1){
 			return dataStore.getDataChannelDescription(channelY);
 		}
-		return dataStore.getDataChannelDescription(numChannel);
+				
+		throw new ArrayIndexOutOfBoundsException("requested channel: " + numChannel + 
+				" is not valid for DataGraphable");
 	}
 
 	/**
