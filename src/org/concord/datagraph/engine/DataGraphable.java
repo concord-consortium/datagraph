@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.35 $
- * $Date: 2005-03-25 17:34:54 $
+ * $Revision: 1.36 $
+ * $Date: 2005-04-01 17:52:47 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -185,6 +185,9 @@ public class DataGraphable extends DefaultGraphable
 		this.dataStore = dataStore;
 		// Assume someone set this from the outside with their own dataStore
 		internalProducerDataStore = false;
+		needUpdate = true;
+		lastValueCalculated = -1;
+		needUpdateDataReceived = false;
 		if (this.dataStore != null){
 			this.dataStore.addDataStoreListener(this);
 		}

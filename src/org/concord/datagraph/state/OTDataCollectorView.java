@@ -65,6 +65,7 @@ import org.concord.datagraph.ui.DataPointLabel;
 import org.concord.datagraph.ui.SingleDataAxisGrid;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.otrunk.OTObjectList;
+import org.concord.framework.otrunk.OTrunk;
 import org.concord.framework.otrunk.view.OTObjectView;
 import org.concord.framework.otrunk.view.OTViewContainer;
 import org.concord.graph.engine.GraphableList;
@@ -159,7 +160,7 @@ public class OTDataCollectorView
 			
 			// dProducer.getDataDescription().setDt(0.1f);
 			DataGraphable realGraphable = otGraphable.getDataGraphable();
-
+			
 			if(dataStore == null) {
 			    System.err.println("Trying to display graphable with out a data store");
 			    continue;
@@ -473,6 +474,10 @@ public class OTDataCollectorView
 		otLabel.setY((float)l.getLocation().getY());
 
 		otLabel.setText(l.getMessage());
+		
+		OTrunk otrunk = dataCollector.getOTDatabase();
+		OTDataGraphable otGraphable = (OTDataGraphable)otrunk.getWrapper(l.getDataGraphable());
+		otLabel.setDataGraphable(otGraphable);
 	}
 
 	/**
@@ -505,8 +510,9 @@ public class OTDataCollectorView
 		else{
 			l.setLocation(locPoint);
 		}
-		if (otDPLabel.getDataGraphable() != null){
-			l.setDataGraphable(null);
+		OTDataGraphable otGraphable = otDPLabel.getDataGraphable();
+		if (otGraphable != null){		    
+			l.setDataGraphable(otGraphable.getDataGraphable());
 		}
 		l.setSelectionEnabled(otDPLabel.getSelectable());
 	}

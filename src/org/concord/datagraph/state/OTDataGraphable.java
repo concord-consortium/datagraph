@@ -39,7 +39,7 @@ import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.DataStore;
 import org.concord.framework.otrunk.DefaultOTObject;
 import org.concord.framework.otrunk.OTResourceSchema;
-import org.concord.framework.otrunk.OTWrappedObject;
+import org.concord.framework.otrunk.OTWrapper;
 
 /**
  * @author scott
@@ -48,6 +48,7 @@ import org.concord.framework.otrunk.OTWrappedObject;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class OTDataGraphable extends DefaultOTObject
+	implements OTWrapper
 {
     public static interface ResourceSchema extends OTResourceSchema
     {
@@ -96,6 +97,21 @@ public class OTDataGraphable extends DefaultOTObject
 
 	DataGraphable wrappedObject = null;
 	
+	/**
+	 * This method is used by the otrunk framework to save this
+	 * object.  It will also be using during instanciation so 
+	 * objects that need DataGraphables don't need to know about
+	 * this OTDataGraphable they will just get the wrapped object.
+	 * Finally this is used ad Author time to validate the use of
+	 * this object
+	 * 
+	 * @return
+	 */
+	public DataGraphable getWrappedObject()
+	{
+	    return getDataGraphable();
+	}
+	
     public DataGraphable getDataGraphable()
     {
         if(wrappedObject == null) {
@@ -138,5 +154,7 @@ public class OTDataGraphable extends DefaultOTObject
 		resources.setColor(c.getRGB() & 0x00FFFFFF);
 		resources.setConnectPoints(wrappedObject.isConnectPoints());
 		resources.setDrawMarks(wrappedObject.isShowCrossPoint());
+		resources.setXColumn(wrappedObject.getChannelX());
+		resources.setYColumn(wrappedObject.getChannelY());
     }
 }

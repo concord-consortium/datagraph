@@ -24,9 +24,9 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.5 $
- * $Date: 2004-11-12 21:18:04 $
- * $Author: eblack $
+ * $Revision: 1.6 $
+ * $Date: 2005-04-01 17:52:47 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -154,7 +154,7 @@ public class MultipleDataGraph extends DataGraph
 	//Reset graph areas
 		if (adjustOriginOnReset){
 			for (int i=0; i< subGraphAreas.size(); i++){
-				((GraphArea)subGraphAreas.elementAt(i)).adjustCoordinateSystem();
+			    resetGraphArea(((GraphArea)subGraphAreas.elementAt(i)));
 			}
 		}
 	}

@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.35 $
- * $Date: 2005-03-31 04:41:33 $
+ * $Revision: 1.36 $
+ * $Date: 2005-04-01 17:52:47 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -402,16 +402,15 @@ public class DataGraph extends JPanel
 		return yPos;		
 	}
 		
-	protected void resetGraphArea()
+	/**
+	 * Scroll the graph area back so the x value starts at 0,
+	 * keep the scale the same.
+	 * You can use the org.concord.graph.engine.GraphArea.
+	 * @param graphArea
+	 */
+	protected void resetGraphArea(GraphArea graphArea)
 	{
-		//Reset graph areas
-		if (adjustOriginOnReset){
-		    // I'm not sure this is the right way to do this
-		    // 
-		    setOriginOffsetPercentage(0,-1);
-		    
-//			defaultGA.adjustCoordinateSystem();
-		}
+	    graphArea.setOriginPositionPercentage(0,-1);	    
 	}
 	
 	/**
@@ -788,7 +787,9 @@ public class DataGraph extends JPanel
 			}
 		}
 		
-		resetGraphArea();
+		if (adjustOriginOnReset){
+		    resetGraphArea(defaultGA);
+		}
 	}
 
 	/**
