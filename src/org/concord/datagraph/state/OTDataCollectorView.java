@@ -470,6 +470,9 @@ public class OTDataCollectorView
 			otLabel.setXData((float)l.getDataPoint().getX());
 			otLabel.setYData((float)l.getDataPoint().getY());
 		}
+		if (l.getDataGraphable() != null){
+//			otLabel.setDataGraphable();
+		}
 		otLabel.setX((float)l.getLocation().getX());
 		otLabel.setY((float)l.getLocation().getY());
 
@@ -510,10 +513,12 @@ public class OTDataCollectorView
 		else{
 			l.setLocation(locPoint);
 		}
+		
 		OTDataGraphable otGraphable = otDPLabel.getDataGraphable();
 		if (otGraphable != null){		    
 			l.setDataGraphable(otGraphable.getDataGraphable());
 		}
+		l.setGraphableList(dataGraph.getObjList());
 		l.setSelectionEnabled(otDPLabel.getSelectable());
 	}
 
