@@ -93,7 +93,7 @@ public class DataGraphStateManagerTmp extends DataGraphStateManager
 		// for each list item get the data producer object
 		// add it to the data graph
 		for(int i=0; i<pfGraphables.size(); i++) {
-			OTDataGraphable dGraphable = (OTDataGraphable)pfGraphables.get(i);
+			OTDataGraphableTmp dGraphable = (OTDataGraphableTmp)pfGraphables.get(i);
 			Object dataProducer = dGraphable.getDataProducer();
 			OTDataStore dataStore = (OTDataStore)dGraphable.getDataStore();
 			
