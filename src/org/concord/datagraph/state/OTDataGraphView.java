@@ -24,8 +24,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.3 $
- * $Date: 2005-02-14 06:19:19 $
+ * $Revision: 1.4 $
+ * $Date: 2005-02-23 15:50:22 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -36,6 +36,7 @@ package org.concord.datagraph.state;
 import javax.swing.JComponent;
 
 import org.concord.datagraph.ui.DataGraph;
+import org.concord.datagraph.ui.DataGraphToolbar;
 import org.concord.framework.otrunk.view.OTObjectView;
 import org.concord.framework.otrunk.view.OTViewContainer;
 
@@ -69,6 +70,11 @@ public class OTDataGraphView
 	{
 		dataGraph = new DataGraph();
 
+		DataGraphToolbar dgToolbar = new DataGraphToolbar();
+		dgToolbar.setButtonsMargin(0);
+		dgToolbar.setFloatable(false);
+		dataGraph.setToolBar(dgToolbar);
+		
 		DataGraphStateManager manager = new DataGraphStateManager(pfObject, dataGraph);
 		manager.initialize(editable);
 				

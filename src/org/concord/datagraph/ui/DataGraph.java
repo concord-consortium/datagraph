@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.26 $
- * $Date: 2005-02-19 14:08:01 $
+ * $Revision: 1.27 $
+ * $Date: 2005-02-23 15:50:22 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -38,6 +38,7 @@ import java.awt.Insets;
 import java.awt.geom.Point2D;
 import java.util.EventObject;
 import java.util.Hashtable;
+import java.util.Vector;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -92,6 +93,8 @@ public class DataGraph extends JPanel
 	protected GraphWindow graph;
 	protected Grid2D grid;
 	protected GraphWindowToolBar toolBar;
+	protected Vector axisScaleObjs = new Vector();
+	
 	
 	protected Hashtable producers = new Hashtable();
 
@@ -107,6 +110,8 @@ public class DataGraph extends JPanel
 
 	protected DataGraphAutoScaler scaler = null;
 	protected DataGraphAutoScroller scroller = null;	
+		
+	
 	
 	/**
 	 * Creates a default data graph that will have: a GraphWindow with a Grid2D that displays
@@ -152,15 +157,6 @@ public class DataGraph extends JPanel
 		graph.addDecoration(grid);
 		////////
 		
-		////////
-		// Tool Bar
-		toolBar = new GraphWindowToolBar();
-		toolBar.setGraphWindow(graph);
-		toolBar.setGrid(grid);
-		toolBar.setButtonsMargin(0);
-		toolBar.setFloatable(false);
-		////////
-
 		selectionBox = new DashedBox();
 		selectionBox.setVisible(false);
 		graph.add(selectionBox);
@@ -173,8 +169,15 @@ public class DataGraph extends JPanel
 
 		setLayout(new BorderLayout());
 		add(graph);
-		add(toolBar, BorderLayout.EAST);		
-		
+
+		////////
+		// Tool Bar
+		GraphWindowToolBar gwToolBar = new GraphWindowToolBar();		
+		gwToolBar.setButtonsMargin(0);
+		gwToolBar.setFloatable(false);
+		setToolBar(gwToolBar);
+		////////
+
 		initScaleObject();
 	}
 	
@@ -223,6 +226,7 @@ public class DataGraph extends JPanel
 		axisScale.setShowCover(false);
 		axisScale.setOriginDragFixPoint(false);
 		graph.add(axisScale);
+		axisScaleObjs.add(axisScale);
 		toolBar.addAxisScale(axisScale);
 	}
 	
@@ -628,6 +632,38 @@ public class DataGraph extends JPanel
 		return toolBar;
 	}
 
+	/**
+	 * Sets the tool bar of this graph
+	 * this sets the graphwindow and grid of the 
+	 * tool bar to be the graphwindow and grid
+	 * of this data graph.
+	 * It also adds the toolbar to this panel.
+	 * 
+	 * @param gwToolbar
+	 */
+	public void setToolBar(GraphWindowToolBar gwToolbar)
+	{
+	    Vector axisScaleControls = null;
+	    if(toolBar != null) {
+	        // remove references to this graph from 
+	        // the old toolbar
+	        toolBar.setGraphWindow(null);
+	        toolBar.setGrid(null);
+	        remove(toolBar);
+	    }
+	    
+	    toolBar = gwToolbar;
+
+		toolBar.setGraphWindow(graph);
+		toolBar.setGrid(grid);
+		
+		for(int i=0; i<axisScaleObjs.size(); i++){
+		    toolBar.addAxisScale((AxisScale)axisScaleObjs.get(i));
+		}
+		
+		add(toolBar, BorderLayout.EAST);				
+	}
+	
 	/**
 	 * Returns if the graph should adjust the origin offset to the original origin offset
 	 * when the graph is reset
