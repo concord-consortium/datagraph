@@ -24,9 +24,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.3 $
- * $Date: 2005-03-02 07:30:57 $
- * $Author: maven $
+ * $Revision: 1.4 $
+ * $Date: 2005-03-03 05:59:24 $
+ * $Author: imoncada $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -44,9 +44,6 @@ import java.awt.geom.Point2D;
 import javax.swing.event.ChangeEvent;
 
 import org.concord.graph.engine.CoordinateSystem;
-import org.concord.graph.engine.DefaultControllable;
-import org.concord.graph.engine.GraphArea;
-import org.concord.graph.engine.Graphable;
 import org.concord.graph.examples.BoxTextLabel;
 
 
@@ -80,6 +77,12 @@ public class DataPointLabel extends BoxTextLabel
 		this("Message");
 	}
 	
+	public DataPointLabel(boolean newNote)
+	{
+		this();
+		this.newNote = newNote;
+	}
+	
 	/**
 	 * 
 	 */
@@ -109,6 +112,9 @@ public class DataPointLabel extends BoxTextLabel
 	 */
 	public void draw(Graphics2D g)
 	{
+		//Don't draw new notes
+		if (newNote) return;
+		
 		if (needUpdate){
 			update();
 			needUpdate = false;
@@ -152,6 +158,14 @@ public class DataPointLabel extends BoxTextLabel
 			g.drawLine((int)displayDataPoint.getX() - 3, (int)displayDataPoint.getY() + 3,
 					(int)displayDataPoint.getX() + 3, (int)displayDataPoint.getY() - 3);
 		}
+		else{
+			g.setColor(foreColor);
+
+			g.setStroke(getStroke());
+			
+			g.fillOval((int)(displayDataPoint.getX() - 3.5), (int)(displayDataPoint.getY() - 3.5),
+					7, 7);
+		}
 	}
 
 	/**
@@ -184,6 +198,19 @@ public class DataPointLabel extends BoxTextLabel
 		dataPointChanged = true;
 		needUpdate = true;
 		notifyChange();
+	}
+	
+	/**
+	 * @param p
+	 */
+	protected void addAtPoint(Point p)
+	{
+		CoordinateSystem cs = graphArea.getCoordinateSystem();
+		setDataPoint(cs.transformToWorld(p));
+		Point2D dataDisplay = cs.transformToDisplay(dataPoint);
+		Point2D locDisplay = new Point2D.Double(
+				dataDisplay.getX() + 20, dataDisplay.getY() - 40);
+		setLocation(cs.transformToWorld(locDisplay));
 	}
 	
 	/**
