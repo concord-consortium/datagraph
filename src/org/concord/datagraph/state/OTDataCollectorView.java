@@ -32,16 +32,23 @@ package org.concord.datagraph.state;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.EventObject;
 import java.util.Vector;
 
+import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JPanel;
 
 import org.concord.data.state.OTDataStore;
 import org.concord.data.ui.DataFlowControlAction;
 import org.concord.data.ui.DataFlowControlButton;
 import org.concord.data.ui.DataFlowControlToolBar;
+import org.concord.data.ui.DataStoreLabel;
+import org.concord.data.ui.DataValueLabel;
 import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.datagraph.ui.DataGraph;
@@ -71,6 +78,10 @@ public class OTDataCollectorView
 	DataGraph dataGraph;
 	SelectableList notesLayer;
 	DataGraphable sourceGraphable;
+	DataProducer sourceProducer;
+	DataValueLabel valueLabel;
+	OTDataStore dataStore = null;
+	JDialog dialog;
 	
 	OTDataAxis xOTAxis;
 	OTDataAxis yOTAxis;
@@ -86,11 +97,6 @@ public class OTDataCollectorView
      */
     public JComponent getComponent(boolean editable)
     {
-        if(dataCollector.getSingleValue()){
-            System.err.println("single value is not supported");
-            return null;
-        }
-        
 		dataGraph = new DataGraph();
 		dataGraph.changeToDataGraphToolbar();
 		dataGraph.setAutoFitMode(DataGraph.AUTO_SCROLL_RUNNING_MODE);
@@ -151,8 +157,8 @@ public class OTDataCollectorView
 
 		OTDataGraphable source = dataCollector.getSource();
 		if(source != null) {
-			DataProducer dataProducer = (DataProducer)source.getDataProducer();
-			OTDataStore dataStore = (OTDataStore)source.getDataStore();
+			sourceProducer = (DataProducer)source.getDataProducer();
+			dataStore = (OTDataStore)source.getDataStore();
 
 			String title = dataCollector.getTitle(); 
 			if(title == null) {
@@ -170,18 +176,49 @@ public class OTDataCollectorView
 						source.getXColumn(), 
 						source.getYColumn());
 				// TODO need to add the sketch components here
-			} else if(dataProducer != null) {
+			} else if(sourceProducer != null) {
 			    // need to set the data store to be the data store for this
 			    // graphable
-			    if(dataStore != null){
-			        dataStore.setDataProducer(dataProducer);
+			    if(dataStore != null && !dataCollector.getSingleValue()){
+			        dataStore.setDataProducer(sourceProducer);
 					sourceGraphable = dataGraph.createDataGraphable(dataStore);
 			    } else {
-			        sourceGraphable = dataGraph.createDataGraphable(dataProducer);
+			        sourceGraphable = dataGraph.createDataGraphable(sourceProducer);
 			    }
-				toolBar = createFlowToolBar();
-				dataGraph.add(toolBar, BorderLayout.SOUTH);
-				toolBar.addDataFlowObject((DataProducer)dataProducer);
+			    
+			    JPanel bottomPanel = new JPanel(new FlowLayout());
+			    valueLabel = new DataValueLabel(sourceProducer);
+			    bottomPanel.add(valueLabel);
+			    if(!dataCollector.getSingleValue()) {
+			        toolBar = createFlowToolBar();
+			        bottomPanel.add(toolBar);
+			        toolBar.addDataFlowObject((DataProducer)sourceProducer);
+			    } else {
+			        JButton record = new JButton("Record");
+			        record.addActionListener(new ActionListener(){
+			            public void actionPerformed(ActionEvent e){
+			                sourceProducer.stop();
+			                float currentValue = valueLabel.getValue();
+			                int lastSample = dataStore.getTotalNumSamples();
+			                dataStore.setValueAt(lastSample, 0, new Float(currentValue));
+			                dataGraph.reset();
+			                dialog.hide();
+			            }
+			        });
+			        
+			        JButton cancel = new JButton("Cancel");
+			        cancel.addActionListener(new ActionListener(){
+			            public void actionPerformed(ActionEvent e){
+			                sourceProducer.stop();
+			                dataGraph.reset();
+			                dialog.hide();
+			            }
+			        });
+			        bottomPanel.add(record);
+			        bottomPanel.add(cancel);
+			    }
+
+			    dataGraph.add(bottomPanel, BorderLayout.SOUTH);  			    
 			}
 
 			if(sourceGraphable != null) {
@@ -208,6 +245,7 @@ public class OTDataCollectorView
 		GraphableList graphableList = dataGraph.getObjList();
 		graphableList.addGraphableListListener(this);				
 		
+		/*
 		JPanel graphWrapper = new JPanel(){
 		  public void removeNotify()
 		  {
@@ -221,6 +259,36 @@ public class OTDataCollectorView
 		graphWrapper.setLayout(new BorderLayout());
 		graphWrapper.add(dataGraph, BorderLayout.CENTER);
 		return graphWrapper;
+		*/
+
+        if(dataCollector.getSingleValue()){
+            JPanel svPanel = new JPanel(new FlowLayout());
+            DataStoreLabel dataLabel = new DataStoreLabel(dataStore, 0);
+            svPanel.add(dataLabel);
+            JButton cDataButton = new JButton("Collect Data"); 
+            cDataButton.addActionListener(new ActionListener(){
+                public void actionPerformed(ActionEvent event)
+                {
+                    boolean needPack = false;
+                    if(dialog == null) {
+                        dialog = new JDialog();
+                        needPack = true;
+                    }
+                    dialog.getContentPane().setLayout(new BorderLayout());
+                    dialog.getContentPane().removeAll();
+                    dialog.getContentPane().add(dataGraph, BorderLayout.CENTER);
+                    if(needPack){
+                        dialog.pack();
+                    }
+                    dialog.show();
+                    sourceProducer.start();
+                }                
+            });
+            svPanel.add(cDataButton);
+            return svPanel;
+        }
+        
+		return dataGraph;
     }
 
 	public DataFlowControlToolBar createFlowToolBar()
