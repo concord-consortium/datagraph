@@ -24,8 +24,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.3 $
- * $Date: 2005-03-18 14:14:15 $
+ * $Revision: 1.4 $
+ * $Date: 2005-04-01 05:47:31 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -33,6 +33,7 @@
 */
 package org.concord.datagraph.state;
 
+import org.concord.datagraph.engine.DataGraphable;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.graph.util.ui.BoxTextLabel;
 
@@ -53,22 +54,29 @@ public interface OTDataPointLabel
 	public int getColor();
 	public void setColor(int color);
 	
-	public static float DEFAULT_x = 0;
+	public static float DEFAULT_x = Float.NaN;
 	public float getX();
 	public void setX(float x);
 
-	public static float DEFAULT_y = 0;
+	public static float DEFAULT_y = Float.NaN;
 	public float getY();
 	public void setY(float y);
 
+	public static float DEFAULT_xData = Float.NaN;
+	public float getXData();
+	public void setXData(float x);
+
+	public static float DEFAULT_yData = Float.NaN;
+	public float getYData();
+	public void setYData(float y);
+	
 	public String getText();
 	public void setText(String text);
-
-	public static boolean DEFAULT_isDataPoint = true;
-	public boolean getIsDataPoint();
-	public void setIsDataPoint(boolean b);
 
 	public static boolean DEFAULT_selectable = true;
 	public boolean getSelectable();
 	public void setSelectable(boolean b);
+
+	public OTDataGraphable getDataGraphable();
+	public void setDataGraphable(OTDataGraphable b);
 }

@@ -24,8 +24,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.10 $
- * $Date: 2005-03-18 09:52:21 $
+ * $Revision: 1.11 $
+ * $Date: 2005-04-01 05:47:48 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -259,7 +259,7 @@ public class DataPointLabel extends PointTextLabel
 	/**
 	 * @param dataGraphable The dataGraphable to set.
 	 */
-	protected void setDataGraphable(DataGraphable dataGraphable)
+	public void setDataGraphable(DataGraphable dataGraphable)
 	{
 		if (this.dataGraphable == dataGraphable) return;
 		

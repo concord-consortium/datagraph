@@ -286,10 +286,7 @@ public class OTDataCollectorView
 		    
 		    dataGraph.add(dTree, BorderLayout.WEST);
 		}
-		
-		GraphableList graphableList = dataGraph.getObjList();
-		graphableList.addGraphableListListener(this);				
-		
+				
 		/*
 		JPanel graphWrapper = new JPanel(){
 		  public void removeNotify()
@@ -354,20 +351,15 @@ public class OTDataCollectorView
 			
 			notesLayer.add(l);
 			
-			l.setMessage(otDPLabel.getText());
-			l.setBackground(new Color(otDPLabel.getColor()));
-			Point2D dataPoint = new Point2D.Double(otDPLabel.getX(), otDPLabel.getY());
-			if (otDPLabel.getIsDataPoint()){
-				l.setDataPoint(dataPoint);
-				l.setLocation(l.getTextBoxDefaultLocation(null, dataPoint));
-			}
-			else{
-				l.setLocation(dataPoint);
-			}
-			l.setSelectionEnabled(otDPLabel.getSelectable());
+			loadStateLabel(l, otDPLabel);
         }
         //
         
+		GraphableList graphableList = dataGraph.getObjList();
+		graphableList.addGraphableListListener(this);
+		
+		notesLayer.addGraphableListListener(this);
+		
 		dataGraph.setPreferredSize(new Dimension(400,320));
 		
 		return dataGraph;
@@ -427,16 +419,45 @@ public class OTDataCollectorView
 		source.setConnectPoints(sourceGraphable.isConnectPoints());
 		source.setDrawMarks(sourceGraphable.isShowCrossPoint());
 		source.setXColumn(sourceGraphable.getChannelX());
-		source.setYColumn(sourceGraphable.getChannelY());		
+		source.setYColumn(sourceGraphable.getChannelY());	
+		
+        //Load the data point labels
+        for (int i=0; i<notesLayer.size(); i++){
+			OTDataPointLabel otDPLabel = (OTDataPointLabel)dataCollector.getLabels().get(i);
+			DataPointLabel l = (DataPointLabel)notesLayer.elementAt(i);
+			
+			saveStateLabel(otDPLabel, l);
+        }
+        //
+
 	}
 	
-	/* (non-Javadoc)
+	/**
 	 * @see org.concord.graph.event.GraphableListListener#listGraphableAdded(java.util.EventObject)
 	 */
 	public void listGraphableAdded(EventObject e)
 	{
+		Object obj = e.getSource();
+		if (obj instanceof DataPointLabel){
+			DataPointLabel l;
+			OTDataPointLabel otLabel;
+
+			try{
+				otLabel = (OTDataPointLabel)dataCollector.getOTDatabase().createObject(OTDataPointLabel.class);
+			}
+			catch (Exception ex) {
+				ex.printStackTrace();
+				return;
+			}
+			
+			l = (DataPointLabel)obj;
+			
+			saveStateLabel(otLabel, l);
+			
+			dataCollector.getLabels().add(otLabel);
+		}
 	}
-	
+		
 	/* (non-Javadoc)
 	 * @see org.concord.graph.event.GraphableListListener#listGraphableChanged(java.util.EventObject)
 	 */
@@ -452,5 +473,57 @@ public class OTDataCollectorView
 	{
 	}
 	
+	/**
+	 * @param otLabel
+	 * @param l
+	 */
+	private void saveStateLabel(OTDataPointLabel otLabel, DataPointLabel l)
+	{
+		otLabel.setColor(l.getBackground().getRGB());
+		if (l.getDataPoint() != null){
+			otLabel.setXData((float)l.getDataPoint().getX());
+			otLabel.setYData((float)l.getDataPoint().getY());
+		}
+		otLabel.setX((float)l.getLocation().getX());
+		otLabel.setY((float)l.getLocation().getY());
+
+		otLabel.setText(l.getMessage());
+	}
+
+	/**
+	 * @param l
+	 * @param otDPLabel
+	 */
+	private void loadStateLabel(DataPointLabel l, OTDataPointLabel otDPLabel)
+	{
+		Point2D locPoint = null;
+		Point2D dataPoint = null;
+		
+		l.setMessage(otDPLabel.getText());
+		l.setBackground(new Color(otDPLabel.getColor()));
+		if (!Float.isNaN(otDPLabel.getX()) && !Float.isNaN(otDPLabel.getY())){
+			locPoint = new Point2D.Double(otDPLabel.getX(), otDPLabel.getY());
+		}
+		if (!Float.isNaN(otDPLabel.getXData()) && !Float.isNaN(otDPLabel.getYData())){
+			dataPoint = new Point2D.Double(otDPLabel.getXData(), otDPLabel.getYData());
+		}
+		
+		if (dataPoint != null){
+			l.setDataPoint(dataPoint);
+			if (locPoint != null){
+				l.setLocation(locPoint);
+			}
+			else{
+				l.setLocation(l.getTextBoxDefaultLocation(null, dataPoint));
+			}
+		}
+		else{
+			l.setLocation(locPoint);
+		}
+		if (otDPLabel.getDataGraphable() != null){
+			l.setDataGraphable(null);
+		}
+		l.setSelectionEnabled(otDPLabel.getSelectable());
+	}
 
 }
