@@ -24,8 +24,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.5 $
- * $Date: 2005-03-04 13:52:07 $
+ * $Revision: 1.6 $
+ * $Date: 2005-03-06 06:11:51 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -41,10 +41,15 @@ import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.Point2D;
 
+import javax.sound.midi.ControllerEventListener;
 import javax.swing.event.ChangeEvent;
 
+import org.concord.datagraph.engine.ControllableDataGraphable;
+import org.concord.datagraph.engine.DataGraphable;
 import org.concord.graph.engine.CoordinateSystem;
-import org.concord.graph.examples.BoxTextLabel;
+import org.concord.graph.engine.GraphableList;
+import org.concord.graph.util.ui.BoxTextLabel;
+import org.concord.graph.util.ui.PointTextLabel;
 
 
 /**
@@ -56,20 +61,11 @@ import org.concord.graph.examples.BoxTextLabel;
  * @author imoncada<p>
  *
  */
-public class DataPointLabel extends BoxTextLabel
+public class DataPointLabel extends PointTextLabel
 {
-	//Temporary x,y point to link
-	protected Point2D dataPoint;
-	
-	protected Point2D displayDataPoint;
-	
-	private boolean dataPointChanged = false;
-	
-	private boolean graphAreaChanged = false; 
-	
-	private boolean mouseInsideDataPoint = false;
-	
-	protected Point2D originalDataPoint;
+	private GraphableList objList;
+	private int indexPointOver = -1;
+	private DataGraphable graphableOver = null;
 	
 	/**
 	 * 
@@ -91,75 +87,139 @@ public class DataPointLabel extends BoxTextLabel
 	public DataPointLabel(String msg)
 	{
 		super(msg);
-		dataPoint = new Point2D.Double(1,1);
-		
-		displayDataPoint = new Point2D.Double();
-		originalDataPoint = new Point2D.Double();
 	}
 	
 	/**
-	 * @see org.concord.graph.engine.Graphable#update()
+	 * @param gList The GraphableList to set.
 	 */
-	public void update()
+	public void setGraphableList(GraphableList gList)
 	{
-		super.update();
-		
-		if (dataPointChanged){
-			CoordinateSystem cs = graphArea.getCoordinateSystem();
-			displayDataPoint = cs.transformToDisplay(dataPoint);
-			dataPointChanged = false;
+		this.objList = gList;
+	}
+	
+	/**
+	 * @see org.concord.graph.engine.MouseMotionReceiver#mouseMoved(java.awt.Point)
+	 */
+	public boolean mouseMoved(Point p)
+	{
+		if (newNote){
+			findAvailablePointOver(p);
 		}
-		
-		if (graphAreaChanged){
-			updateLabelPosition();
-			super.update();
-			graphAreaChanged = false;
+		return super.mouseMoved(p);
+	}
+	
+	/**
+	 * 
+	 */
+	private void findAvailablePointOver(Point p)
+	{
+		if (objList != null){
+			//Look for a point in one of the graphables in the list
+			int index = -1;
+			DataGraphable dg = null;
+			for (int i=0; i<objList.size(); i++){
+				Object obj = objList.elementAt(i);
+				if (obj instanceof DataGraphable){
+					dg = (DataGraphable)obj;
+					index = dg.getIndexValueAtDisplay(p, 10);
+					if (index != -1) break;
+				}
+			}
+			
+			if (index != -1){
+				//Found a point!
+				//System.out.println("Found a point!!!");
+				if (index != indexPointOver || dg != graphableOver){
+					indexPointOver = index;
+					graphableOver = dg;
+					notifyChange();
+				}
+			}
+			else{
+				//System.out.println("No point!");
+				if (index != indexPointOver || graphableOver != null){
+					indexPointOver = index;
+					graphableOver = null;
+					notifyChange();
+				}
+			}
+		}
+	}
+	
+	/**
+	 * @see org.concord.graph.engine.MouseControllable#mouseDragged(java.awt.Point)
+	 */
+	public boolean mouseDragged(Point p)
+	{
+		if (mouseInsideDataPoint){
+			findAvailablePointOver(p);
+		}
+		return super.mouseDragged(p);
+	}
+	
+	/**
+	 * @see org.concord.graph.engine.MouseControllable#mouseReleased(java.awt.Point)
+	 */
+	public boolean mouseReleased(Point p)
+	{
+		if (dragEnabled){
+			if (indexPointOver != -1 && graphableOver != null){
+				Point2D pW = getPointDataGraphable(graphableOver, indexPointOver);
+				setDataPoint(pW);
+			}
+			else{
+				restoreOriginalDataPoint();
+			}
+		}
+		indexPointOver = -1;
+		graphableOver = null;
+		return super.mouseReleased(p);
+	}
+	
+	/**
+	 * 
+	 */
+	private void restoreOriginalDataPoint()
+	{
+		if (dataPoint != null){
+			setDataPoint(originalDataPoint);
 		}
 	}
 
 	/**
-	 * 
+	 * @see org.concord.graph.util.ui.BoxTextLabel#addAtPoint(java.awt.Point)
 	 */
-	private void updateLabelPosition()
+	protected boolean addAtPoint(Point2D pD, Point2D pW)
 	{
-		System.out.println(dataPointChanged+" "+dataPoint+" "+displayDataPoint+""+displayPositionIni+" "+graphArea.getSize()+" "+graphArea.getPosition());
-		//See if the note is inside the user's view
-		if (dataPoint == null) return;
-		if (graphArea.getSize().getHeight() <=0 || graphArea.getSize().getWidth() <=0) return;
-
-		CoordinateSystem cs = graphArea.getCoordinateSystem();
-		double xx, yy;
-		double dx = 0;
-		double dy = 0;
-		
-		xx = graphArea.getPosition().getX() - displayPositionIni.getX();
-		if (xx > 0){
-			dx = xx;
+		if (indexPointOver != -1 && graphableOver != null){
+			Point2D p = getPointDataGraphable(graphableOver, indexPointOver);
+			return super.addAtPoint(null, p);
 		}
-		
-		yy = graphArea.getPosition().getY() - graphArea.getSize().getHeight() - displayPositionIni.getY();
-		if (yy > 0){
-			dy = yy;
+		else{
+			//super.addAtPoint(pD, pW);
+			return false;
 		}
+	}
+	
+	/**
+	 * @param graphableOver2
+	 * @param indexPointOver2
+	 * @return
+	 */
+	private static Point2D getPointDataGraphable(DataGraphable dg, int index)
+	{
+		Object objVal;
+		double x,y;
 		
-		xx = graphArea.getPosition().getX() + graphArea.getSize().getWidth() - displayPositionFin.getX();
-		if (xx < 0){
-			dx = xx;
-		}
+		objVal = dg.getValueAt(index, 0);
+		if (!(objVal instanceof Float)) return null;
+		x = ((Float)objVal).floatValue();
 		
-		yy = graphArea.getPosition().getY() - displayPositionFin.getY();
-		if (yy < 0){
-			dy = yy;
-		}
+		objVal = dg.getValueAt(index, 1);
+		if (!(objVal instanceof Float)) return null;
+		y = ((Float)objVal).floatValue();
 		
-		if (dx != 0 || dy != 0){
-			System.out.println("Moving "+dx+","+dy);
-			Point2D p = new Point2D.Double(
-					displayPositionIni.getX() + dx, 
-					displayPositionIni.getY() + dy);
-			Point2D pW = cs.transformToWorld(p);
-			location.setLocation(pW);
-		}
+		return new Point2D.Double(x, y);
 	}
 
 	/**
@@ -167,213 +227,21 @@ public class DataPointLabel extends BoxTextLabel
 	 */
 	public void draw(Graphics2D g)
 	{
-		//Don't draw new notes
-		if (newNote) return;
-		
-		//Only draw when the point is visible
-		if (!graphArea.isWorldInside(dataPoint)) return;
-		
-		if (needUpdate){
-			update();
-			needUpdate = false;
-		}
-		
-		Color oldColor = g.getColor();
-		Stroke oldStroke = g.getStroke();
-		Shape oldClip = g.getClip();
-		Font oldFont = g.getFont();
-		
-		graphArea.clipGraphics(g);
-		
-		drawDataPointLink(g);
+		if (newNote || mouseInsideDataPoint){
+			if (indexPointOver != -1 && graphableOver != null){
+				
+				System.out.println("painting an oval");
+				
+				Point2D p = getPointDataGraphable(graphableOver, indexPointOver);
+				CoordinateSystem cs = graphArea.getCoordinateSystem();
+				Point2D pD = cs.transformToDisplay(p);
 
+				if (p != null){
+					System.out.println("painting an oval 2");
+					g.drawOval((int)pD.getX() - 7, (int)pD.getY() - 7, 13, 13);
+				}
+			}
+		}
 		super.draw(g);
-		
-		drawDataPoint(g);
-		
-		g.setColor(oldColor);
-		g.setStroke(oldStroke);
-		g.setClip(oldClip);
-		g.setFont(oldFont);
-	}
-
-	/**
-	 * 
-	 */
-	protected void drawDataPoint(Graphics2D g)
-	{
-		if (isSelected()){
-			if (mouseInsideDataPoint){
-				g.setColor(Color.red);
-			}
-			else{
-				g.setColor(foreColor);
-			}
-			g.setStroke(getStroke());
-			
-			g.drawLine((int)displayDataPoint.getX() - 3, (int)displayDataPoint.getY() - 3,
-					(int)displayDataPoint.getX() + 3, (int)displayDataPoint.getY() + 3);
-			g.drawLine((int)displayDataPoint.getX() - 3, (int)displayDataPoint.getY() + 3,
-					(int)displayDataPoint.getX() + 3, (int)displayDataPoint.getY() - 3);
-		}
-		else{
-			g.setColor(foreColor);
-
-			g.setStroke(getStroke());
-			
-			g.fillOval((int)(displayDataPoint.getX() - 3.5), (int)(displayDataPoint.getY() - 3.5),
-					7, 7);
-		}
-	}
-
-	/**
-	 * @param g
-	 */
-	protected void drawDataPointLink(Graphics2D g)
-	{
-		g.setColor(foreColor);
-		g.setStroke(getStroke());
-		
-		g.drawLine((int)displayDataPoint.getX(), (int)displayDataPoint.getY(),
-				(int)(displayPositionFin.getX() + displayPositionIni.getX())/2, 
-				(int)(displayPositionFin.getY() + displayPositionIni.getY())/2);
-	}
-	
-	/**
-	 * @return Returns the dataPoint.
-	 */
-	public Point2D getDataPoint()
-	{
-		return dataPoint;
-	}
-	
-	/**
-	 * @param dataPoint The dataPoint to set.
-	 */
-	public void setDataPoint(Point2D dataPoint)
-	{
-		this.dataPoint = dataPoint;
-		dataPointChanged = true;
-		needUpdate = true;
-		notifyChange();
-	}
-	
-	/**
-	 * @param p
-	 */
-	protected void addAtPoint(Point p)
-	{
-		CoordinateSystem cs = graphArea.getCoordinateSystem();
-		setDataPoint(cs.transformToWorld(p));
-		Point2D dataDisplay = cs.transformToDisplay(dataPoint);
-		Point2D locDisplay = new Point2D.Double(
-				dataDisplay.getX() + 20, dataDisplay.getY() - 40);
-		setLocation(cs.transformToWorld(locDisplay));
-	}
-	
-	/**
-	 * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
-	 */
-	public void stateChanged(ChangeEvent e)
-	{
-		dataPointChanged = true;
-		graphAreaChanged = true;
-		//super.stateChanged(e);
-		needUpdate = true;
-		notifyChange();
-	}
-	
-	
-	/**
-	 * @see org.concord.graph.engine.MouseMotionReceiver#mouseMoved(java.awt.Point)
-	 */
-	public boolean mouseMoved(Point location)
-	{
-		if (isPointInDataPoint(location)){
-			if (!mouseInsideDataPoint){
-				mouseInsideDataPoint = true;
-				notifyChange();
-			}
-		}
-		else{
-			if (mouseInsideDataPoint){
-				mouseInsideDataPoint = false;
-				notifyChange();
-			}
-		}
-		return super.mouseMoved(location);
-	}
-
-	/**
-	 * @param location
-	 * @return
-	 */
-	private boolean isPointInDataPoint(Point p)
-	{
-		if (p.getX() >= displayDataPoint.getX() - 3 && 
-				p.getX() <= displayDataPoint.getX() + 3 &&
-				p.getY() >= displayDataPoint.getY() - 3 && 
-				p.getY() <= displayDataPoint.getY() + 3){
-			return true;
-		}
-		
-		return false;
-	}
-	
-	
-	/**
-	 * @see org.concord.graph.engine.MouseSensitive#isPointInProximity(java.awt.Point)
-	 */
-	public boolean isPointInProximity(Point location)
-	{
-		if (isSelected()){
-			if (isPointInDataPoint(location)){
-				mouseInsideDataPoint = true;
-				return true;
-			}
-		}
-		return super.isPointInProximity(location);
-	}
-	
-	/**
-	 * @see org.concord.graph.engine.MouseMotionReceiver#mouseExited(java.awt.Point)
-	 */
-	public boolean mouseExited(Point location)
-	{
-		mouseInsideDataPoint = false;
-		return super.mouseExited(location);
-	}
-	
-	/**
-	 * @see org.concord.graph.engine.MouseControllable#mousePressed(java.awt.Point)
-	 */
-	public boolean mousePressed(Point p)
-	{
-		if (super.mousePressed(p)){
-			return true;
-		}
-		
-		//Store my original data point
-		originalDataPoint.setLocation(this.dataPoint);
-		
-		return true;
-	}
-	/**
-	 * @see org.concord.graph.engine.MouseControllable#mouseDragged(java.awt.Point)
-	 */
-	public boolean mouseDragged(Point p)
-	{
-		if (!mouseInsideDataPoint){
-			return super.mouseDragged(p);
-		}
-		
-		Point2D p2 = graphArea.getCoordinateSystem().transformToWorld(p);
-		
-		Point2D newP = new Point2D.Double(originalDataPoint.getX() + (p2.getX() - clickPointWorld.getX()),
-				originalDataPoint.getY() + (p2.getY() - clickPointWorld.getY()));
-		
-		setDataPoint(newP);
-		
-		return true;
 	}
 }
