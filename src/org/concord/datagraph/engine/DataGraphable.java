@@ -1,8 +1,8 @@
 /*
  * Last modification information:
- * $Revision: 1.7 $
- * $Date: 2004-09-14 23:14:25 $
- * $Author: dima $
+ * $Revision: 1.8 $
+ * $Date: 2004-09-17 18:04:09 $
+ * $Author: imoncada $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -57,9 +57,11 @@ public class DataGraphable extends DefaultGraphable
 	protected boolean connectPoints = true; 
 	
 	private float lastTime;
-	private int lastValueCalculated;
+	private int lastValueCalculated = -1;
 	protected boolean needUpdate = true;
 	protected boolean needUpdateDataReceived = false;
+	
+	protected boolean autoRepaintData = true;
 	
 	/**
      * Default constructor.
@@ -98,15 +100,9 @@ public class DataGraphable extends DefaultGraphable
 	
 	public void setDataProducer(DataProducer source, int channelXAxis, int channelYAxis)
 	{
-		channelX = channelXAxis;
-		channelY = channelYAxis;
-		if (channelX < -1){
-			channelX = -1;
-		}
-		if (channelY < -1){
-			channelY = -1;
-		}
 		setDataProducer(source);
+		setChannelX(channelXAxis);
+		setChannelY(channelYAxis);
 	}
 	
 
@@ -204,6 +200,7 @@ public class DataGraphable extends DefaultGraphable
      **/
     public void draw(Graphics2D g)
 	{
+		long b = System.currentTimeMillis();
     	if (needUpdate){
     		update();
     	}
@@ -215,11 +212,16 @@ public class DataGraphable extends DefaultGraphable
 		graphArea.clipGraphics(g);
 		g.setColor(lineColor);
 		g.setStroke(new BasicStroke(lineWidth));
+		
 		g.draw(path);
 		
 		g.setColor(oldColor);
 		g.setStroke(oldStroke);
 		g.setClip(oldClip);
+
+		long a = System.currentTimeMillis();
+		
+		//System.out.println(a-b);
 	}
 
     /**
@@ -229,6 +231,8 @@ public class DataGraphable extends DefaultGraphable
 	{		
 		float ppx, ppy;
 		float px, py;
+		
+		Point2D lastPathPoint;
 
 		Point2D.Double pathPoint = new Point2D.Double();
 
@@ -244,9 +248,9 @@ public class DataGraphable extends DefaultGraphable
     	}
     	else{
     		time = lastTime;
-    		initialI = lastValueCalculated;
+    		initialI = lastValueCalculated + 1;
     	}
-
+    	
 		for(int i=initialI; i<yValues.size(); i++){
 			
 			if (channelX == -1){
@@ -272,26 +276,44 @@ public class DataGraphable extends DefaultGraphable
 			ppx = (float)pathPoint.x;
 			ppy = (float)pathPoint.y;
 
-			if (connectPoints){
-				if (i==0){
-					path.moveTo(ppx, ppy);
-				}
-				else{
-					path.lineTo(ppx, ppy);
-				}
+			lastPathPoint = path.getCurrentPoint();
+			
+			double thresholdPointTheSame = lineWidth/2 - 0.01;
+			float dy = 0;
+			if (!connectPoints){
+				dy = 1;//TODO dy is 1 because of MAC OS X
+			}
+			
+			if (lastPathPoint != null && 
+					MathUtil.equalsDouble(ppx, lastPathPoint.getX(), thresholdPointTheSame) && 
+					MathUtil.equalsDouble(ppy, lastPathPoint.getY() - dy, thresholdPointTheSame)){
+				//System.out.println("Not adding this point:"+ppx+","+ppy+" "+lastPathPoint);
 			}
 			else{
-				//Make a vertical "dot" of 1 pixel
-				path.moveTo(ppx, ppy);
-				path.lineTo(ppx, ppy+1);//TODO there is a issue with MAC OS X
+				
+				if (connectPoints){
+					if (i==0){
+						path.moveTo(ppx, ppy);
+					}
+					else{
+						path.lineTo(ppx, ppy);
+					}
+				}
+				else{
+					//Make a vertical "dot" of 1 pixel
+					path.moveTo(ppx, ppy);
+					path.lineTo(ppx, ppy + dy);//TODO dy is 1 because of MAC OS X
+				}
 			}
-
+			
 			lastTime = time;
 			lastValueCalculated = i;
 			
 			time += dt;
 		}
 			
+		//System.out.println("size:"+yValues.size());
+		
 		needUpdateDataReceived = false;
 		needUpdate = false;
 	}
@@ -454,6 +476,9 @@ public class DataGraphable extends DefaultGraphable
 	 */
 	public void setChannelX(int channelX)
 	{
+		if (channelX < -1){
+			channelX = -1;
+		}
 		this.channelX = channelX;
 	}
 	/**
@@ -468,6 +493,9 @@ public class DataGraphable extends DefaultGraphable
 	 */
 	public void setChannelY(int channelY)
 	{
+		if (channelY < -1){
+			channelY = -1;
+		}
 		this.channelY = channelY;
 	}
 	/**
@@ -483,5 +511,49 @@ public class DataGraphable extends DefaultGraphable
 	public void setConnectPoints(boolean connectPoints)
 	{
 		this.connectPoints = connectPoints;
+	}
+	
+	//Debugging purposes
+	public void setData(Vector xValues, Vector yValues)
+	{
+		this.xValues = xValues;
+		this.yValues = yValues;
+		
+		needUpdate = true;
+		needUpdateDataReceived = false;
+	}
+	/**
+	 * @return Returns the autoRepaintData.
+	 */
+	public boolean isAutoRepaintData()
+	{
+		return autoRepaintData;
+	}
+	/**
+	 * @param autoRepaintData The autoRepaintData to set.
+	 */
+	public void setAutoRepaintData(boolean autoRepaintData)
+	{
+		this.autoRepaintData = autoRepaintData;
+	}
+	
+	/**
+	 * @see org.concord.graph.engine.DefaultGraphable#notifyChange()
+	 */
+	protected void notifyChange()
+	{
+		if (autoRepaintData){
+			super.notifyChange();
+		}
+	}
+
+	/**
+	 * @see org.concord.graph.engine.DefaultGraphable#notifyChange()
+	 */
+	public void repaint()
+	{
+		if (needUpdate || needUpdateDataReceived){
+			super.notifyChange();
+		}
 	}
 }
