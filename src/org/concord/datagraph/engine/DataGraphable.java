@@ -24,9 +24,9 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.32 $
- * $Date: 2005-03-16 19:00:12 $
- * $Author: scytacki $
+ * $Revision: 1.33 $
+ * $Date: 2005-03-21 08:18:01 $
+ * $Author: imoncada $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -392,6 +392,11 @@ public class DataGraphable extends DefaultGraphable
     		// the previous point is invalid because there is no
     		// previous point
     		validPrevPoint = false;
+    		
+    		minXValue = Float.NaN;
+    		maxXValue = Float.NaN;
+    		minYValue = Float.NaN;
+    		maxYValue = Float.NaN;
     	}
    		initialI = lastValueCalculated + 1;
 

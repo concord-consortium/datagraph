@@ -62,7 +62,6 @@ import org.concord.datagraph.engine.DataGraphable;
 import org.concord.datagraph.ui.AddDataPointLabelAction;
 import org.concord.datagraph.ui.DataGraph;
 import org.concord.datagraph.ui.DataPointLabel;
-import org.concord.datagraph.ui.DrawDataGraphableAction;
 import org.concord.datagraph.ui.SingleDataAxisGrid;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.ProducerDataStore;
@@ -75,6 +74,7 @@ import org.concord.graph.event.GraphableListListener;
 import org.concord.graph.examples.GraphWindowToolBar;
 import org.concord.graph.ui.Grid2D;
 import org.concord.graph.ui.SingleAxisGrid;
+import org.concord.graph.util.control.DrawingAction;
 import org.concord.graph.util.ui.ResourceLoader;
 import org.concord.swing.SelectableToggleButton;
 
@@ -209,8 +209,8 @@ public class OTDataCollectorView
 			       }
 			    });
 			    
-				DrawDataGraphableAction a = new DrawDataGraphableAction();
-				a.setDataGraphable((ControllableDataGraphable)sourceGraphable);
+				DrawingAction a = new DrawingAction();
+				a.setDrawingObject((ControllableDataGraphable)sourceGraphable);
 				gwToolbar.addButton(new SelectableToggleButton(a), "Draw a function");
 				
 			    bottomPanel.add(clearButton);

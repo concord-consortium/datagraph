@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.10 $
- * $Date: 2005-03-15 03:02:23 $
+ * $Revision: 1.11 $
+ * $Date: 2005-03-21 08:18:01 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -35,12 +35,14 @@ package org.concord.datagraph.engine;
 
 import java.awt.Point;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 
 import org.concord.data.stream.DataStoreFunctionUtil;
 import org.concord.framework.data.stream.DataStore;
 import org.concord.framework.data.stream.WritableDataStore;
 import org.concord.graph.engine.CoordinateSystem;
 import org.concord.graph.engine.MouseControllable;
+import org.concord.graph.util.engine.DrawingObject;
 
 
 /**
@@ -53,7 +55,7 @@ import org.concord.graph.engine.MouseControllable;
  *
  */
 public class ControllableDataGraphable extends DataGraphable
-	implements MouseControllable
+	implements MouseControllable, DrawingObject
 {
 	public final static int DRAGMODE_NONE = 0;
 	public final static int DRAGMODE_MOVEPOINTS = 1;
@@ -70,11 +72,14 @@ public class ControllableDataGraphable extends DataGraphable
 	
 	private boolean mouseClicked = false;
 	private int indexPointClicked = -1;
+	protected Point2D lastPointW; 
 	
-	private float startDragX = Float.NaN;
-	private float startDragY = Float.NaN;
+	//private float startDragX = Float.NaN;
+	//private float startDragY = Float.NaN;
 	private DataStoreFunctionUtil functionUtil;
 		
+	protected int drawingMode = DrawingObject.DRAWING_DRAG_MODE_NONE;
+	
 	/**
 	 * 
 	 */
@@ -82,6 +87,7 @@ public class ControllableDataGraphable extends DataGraphable
 	{
 		super();
 		functionUtil = new DataStoreFunctionUtil();
+		lastPointW = new Point2D.Double();
 	}
 	
 	/**
@@ -112,8 +118,6 @@ public class ControllableDataGraphable extends DataGraphable
 	 */
 	public boolean mousePressed(Point p)
 	{
-		Point2D pW;
-		
 		mouseClicked = true;
 
 		if (dragMode == DRAGMODE_NONE) return false;
@@ -124,18 +128,18 @@ public class ControllableDataGraphable extends DataGraphable
 		if (graphArea == null) return false;
 		CoordinateSystem cs = graphArea.getCoordinateSystem();
 		
-		pW = cs.transformToWorld(p);
+		lastPointW = cs.transformToWorld(p);
 		
 		if (dragMode == DRAGMODE_ADDPOINTS || dragMode == DRAGMODE_ADDMULTIPLEPOINTS){
 			//Add a new point
 			if (lineType == LINETYPE_FREE){
-				addPoint(pW.getX(), pW.getY());
+				addPoint(lastPointW.getX(), lastPointW.getY());
 			}
 			else if (lineType == LINETYPE_FUNCTION){
 				
-				addPointOrder((float)pW.getX(), (float)pW.getY());
-				startDragX = (float)pW.getX();
-				startDragY = (float)pW.getY();
+				addPointOrder((float)lastPointW.getX(), (float)lastPointW.getY());
+				//startDragX = (float)pointClickedW.getX();
+				//startDragY = (float)pointClickedW.getY();
 			}
 		}
 		else if (dragMode == DRAGMODE_REMOVEPOINTS){
@@ -152,7 +156,11 @@ public class ControllableDataGraphable extends DataGraphable
 	public boolean mouseDragged(Point p)
 	{
 		//System.out.println("dragged "+p);
-		Point2D pW;
+		double startDragX = Float.NaN;
+		
+		if (lastPointW != null){
+			startDragX = lastPointW.getX();
+		}
 		
 		if (dragMode == DRAGMODE_NONE) return false;
 		
@@ -162,27 +170,30 @@ public class ControllableDataGraphable extends DataGraphable
 		if (graphArea == null) return false;
 		CoordinateSystem cs = graphArea.getCoordinateSystem();
 		
-		pW = cs.transformToWorld(p);
+		lastPointW = cs.transformToWorld(p);
 		
 		if (dragMode == DRAGMODE_MOVEPOINTS){
 			//Drag the current point
-			setValueAt(indexPointClicked, 0, new Float(pW.getX()));
-			setValueAt(indexPointClicked, 1, new Float(pW.getY()));
+			setValueAt(indexPointClicked, 0, new Float(lastPointW.getX()));
+			setValueAt(indexPointClicked, 1, new Float(lastPointW.getY()));
 		}
 		else if (dragMode == DRAGMODE_ADDMULTIPLEPOINTS){
 			//Add a new point
 			if (lineType == LINETYPE_FREE){
-				addPoint(pW.getX(), pW.getY());
+				addPoint(lastPointW.getX(), lastPointW.getY());
 			}
 			else if (lineType == LINETYPE_FUNCTION){
 				
-				addPointOrderFromTo((float)pW.getX(), (float)pW.getY(), startDragX);
-				startDragX = (float)pW.getX();
-				startDragY = (float)pW.getY();
+				addPointOrderFromTo((float)lastPointW.getX(), (float)lastPointW.getY(), (float)startDragX);
+				//startDragX = (float)pW.getX();
+				//startDragY = (float)pW.getY();
 			}
 		}
+		else{
+			return false;
+		}
 		
-		return false;
+		return true;
 	}
 	
 	/* (non-Javadoc)
@@ -192,7 +203,8 @@ public class ControllableDataGraphable extends DataGraphable
 	{
 		indexPointClicked = -1;
 		mouseClicked = false;
-		startDragX = Float.NaN;
+		lastPointW = null;
+		//startDragX = Float.NaN;
 		return false;
 	}
 
@@ -229,7 +241,7 @@ public class ControllableDataGraphable extends DataGraphable
 	 * @param p
 	 * @return
 	 */
-	private boolean isPointAValue(Point p)
+	protected boolean isPointAValue(Point p)
 	{
 		indexPointClicked = getIndexValueAtDisplay(p, 5);
 		if (indexPointClicked == -1){
@@ -405,5 +417,41 @@ public class ControllableDataGraphable extends DataGraphable
 	public void setLineType(int lineType)
 	{
 		this.lineType = lineType;
+	}
+
+	/**
+	 * @see org.concord.graph.util.engine.DrawingObject#erase(java.awt.geom.Rectangle2D)
+	 */
+	public boolean erase(Rectangle2D rectDisplay)
+	{
+		throw new UnsupportedOperationException("erase is not supported by ControllableDataGraphable yet");
+	}
+
+	/**
+	 * @see org.concord.graph.util.engine.DrawingObject#setDrawingDragMode(int)
+	 */
+	public boolean setDrawingDragMode(int mode)
+	{
+		drawingMode = mode;
+		
+		if (mode == DrawingObject.DRAWING_DRAG_MODE_NONE){
+			setDragMode(DRAGMODE_NONE);
+			return true;
+		}
+		else if (mode == DrawingObject.DRAWING_DRAG_MODE_DRAW){
+			setDragMode(DRAGMODE_ADDMULTIPLEPOINTS);
+			return true;
+		}
+		
+		//return false;
+		throw new UnsupportedOperationException("setDrawingDragMode is not supported by ControllableDataGraphable yet");
+	}
+
+	/**
+	 * @see org.concord.graph.util.engine.DrawingObject#getDrawingDragMode()
+	 */
+	public int getDrawingDragMode()
+	{
+		return drawingMode;
 	}
 }
