@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.7 $
- * $Date: 2005-03-10 03:04:29 $
+ * $Revision: 1.8 $
+ * $Date: 2005-03-10 06:04:54 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -36,7 +36,7 @@ package org.concord.datagraph.engine;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 
-import org.concord.data.stream.PointsDataStore;
+import org.concord.data.stream.DataStoreFunctionUtil;
 import org.concord.framework.data.stream.DataStore;
 import org.concord.framework.data.stream.WritableDataStore;
 import org.concord.graph.engine.CoordinateSystem;
@@ -73,7 +73,7 @@ public class ControllableDataGraphable extends DataGraphable
 	
 	private float startDragX = Float.NaN;
 	private float startDragY = Float.NaN;
-
+	private DataStoreFunctionUtil functionUtil;
 		
 	/**
 	 * 
@@ -81,6 +81,7 @@ public class ControllableDataGraphable extends DataGraphable
 	public ControllableDataGraphable()
 	{
 		super();
+		functionUtil = new DataStoreFunctionUtil();
 	}
 	
 	/**
@@ -94,6 +95,16 @@ public class ControllableDataGraphable extends DataGraphable
 		}
 		
 		super.setDataStore(dataStore);
+		functionUtil.setDataStore((WritableDataStore)dataStore);
+	}
+	
+	/**
+	 * @see org.concord.datagraph.engine.DataGraphable#setChannelX(int)
+	 */
+	public void setChannelX(int channelX)
+	{
+		super.setChannelX(channelX);
+		functionUtil.setXChannel(channelX);
 	}
 	
 	/**
@@ -122,13 +133,9 @@ public class ControllableDataGraphable extends DataGraphable
 			}
 			else if (lineType == LINETYPE_FUNCTION){
 				
-				//XXX FIXME TEST!!!
-				if ((dataStore instanceof PointsDataStore)) {
-					//System.out.println("pressed "+(float)pW.getX());
-					((PointsDataStore)dataStore).addPointOrder((float)pW.getX(), (float)pW.getY());
-					startDragX = (float)pW.getX();
-					startDragY = (float)pW.getY();
-				}
+				addPointOrder((float)pW.getX(), (float)pW.getY());
+				startDragX = (float)pW.getX();
+				startDragY = (float)pW.getY();
 			}
 		}
 		else if (dragMode == DRAGMODE_REMOVEPOINTS){
@@ -138,13 +145,13 @@ public class ControllableDataGraphable extends DataGraphable
 		
 		return true;
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see org.concord.graph.engine.MouseControllable#mouseDragged(java.awt.Point)
 	 */
 	public boolean mouseDragged(Point p)
 	{
-		System.out.println("dragged "+p);
+		//System.out.println("dragged "+p);
 		Point2D pW;
 		
 		if (dragMode == DRAGMODE_NONE) return false;
@@ -169,16 +176,9 @@ public class ControllableDataGraphable extends DataGraphable
 			}
 			else if (lineType == LINETYPE_FUNCTION){
 				
-				//XXX FIXME TEST!!!
-				if ((dataStore instanceof PointsDataStore)) {
-					//if (startDragX != (float)pW.getX() && startDragY != (float)pW.getY()){
-						//System.out.println("dragged "+(float)pW.getX());
-						//((PointsDataStore)dataStore).addPointOrder((float)pW.getX(), (float)pW.getY());
-						((PointsDataStore)dataStore).addPointOrderFromTo((float)pW.getX(), (float)pW.getY(), startDragX);
-						startDragX = (float)pW.getX();
-						startDragY = (float)pW.getY();
-					//}
-				}
+				addPointOrderFromTo((float)pW.getX(), (float)pW.getY(), startDragX);
+				startDragX = (float)pW.getX();
+				startDragY = (float)pW.getY();
 			}
 		}
 		
@@ -255,4 +255,140 @@ public class ControllableDataGraphable extends DataGraphable
 	{
 		this.dragMode = dragMode;
 	}
+	
+	/* Function stuff */
+
+	/**
+	 * @param f
+	 * @param g
+	 */
+	private void addPointOrder(float x, float y)
+	{
+		float value;
+		int i = functionUtil.findSamplePositionValue(x);
+		value = functionUtil.getXValueAt(i);
+		
+		addPointOrder(x, y, i, value);
+	}
+
+	/**
+	 * @param x
+	 * @param i
+	 * @param value
+	 */
+	private void addPointOrder(float x, float y, int i, float value)
+	{
+		float v = functionUtil.getXValueAt(i);
+		if (v != value){
+			System.err.println("values different: "+value+" "+v);
+		}
+		if (i < getTotalNumSamples()){
+			if (value != x){
+				insertSampleAt(i);
+			}
+			for (int j=0; j < getTotalNumChannels(); j++){
+				if (j == channelX){
+					setValueAt(i, j, new Float(x));
+					//System.out.println("addPointOrder set "+getFloatVectorStr(channel));
+				}
+				else if (j == channelY){
+					setValueAt(i, j, new Float(y));
+				}
+				else{
+					setValueAt(i, j, null);
+				}				
+			}
+			//notifyDataChanged();
+		}
+		else{
+			addPoint(x,y);
+		}
+	}
+	
+	public void addPointOrderFromTo(float x, float y, float otherX)
+	{
+		if (otherX <= x){
+			addPointOrderFrom(x, y, otherX);
+		}
+		else{
+			addPointOrderTo(x, y, otherX);
+		}
+	}
+	
+	public void addPointOrderFrom(float x, float y, float startX)
+	{
+		float value;
+		int i;
+		int startI;
+		int t;
+		int ti;
+		
+		if (x < startX){
+			return;
+		}
+		if (x == startX){
+			addPointOrder(x, y);
+			return;
+		}
+		
+		i = functionUtil.findSamplePositionValue(x);
+		t = getTotalNumSamples();
+		startI = functionUtil.findSamplePositionValue(startX);
+		value = functionUtil.getXValueAt(i);
+		
+		//System.out.println("addPointOrderFrom("+x+" "+i+" "+startX+" "+startI+") in "+getFloatVectorStr((Vector)channelsValues.elementAt(0)));
+		
+		//Removing all values from startI to i
+		ti = Math.min(i, t);
+		for (int ii = startI+1; ii < ti; ii++){
+			//for (int j=0; j < channelsValues.size(); j++){
+			//	Vector channel = (Vector)channelsValues.elementAt(j);
+			//	channel.remove(startI+1);
+			//}
+			//The only problem with doing this is that removeSampleAt fires a removed event
+			removeSampleAt(startI+1);
+			i--;
+		}
+		//i = i - (ti - (startI +1));
+		
+		//System.out.println("after removing, i:"+i+" "+getFloatVectorStr((Vector)channelsValues.elementAt(0)));
+		
+		addPointOrder(x, y, i, value);
+		
+	}
+	
+	public void addPointOrderTo(float x, float y, float endX)
+	{
+		float value;
+		int i;
+		int endI;
+		int t;
+		int ti;
+		
+		if (x > endX){
+			return;
+		}
+		if (x == endX){
+			addPointOrder(x, y);
+			return;
+		}
+		
+		i = functionUtil.findSamplePositionValue(x);
+		t = getTotalNumSamples();
+		endI = functionUtil.findSamplePositionValue(endX);
+		value = functionUtil.getXValueAt(i);
+		
+		//System.out.println("addPointOrderFrom("+x+" "+i+" "+endX+" "+endI+") in "+getFloatVectorStr((Vector)channelsValues.elementAt(0)));
+		
+		//Removing all values from i to endI
+		ti = Math.min(endI, t);
+		for (int ii = i; ii < ti; ii++){
+			removeSampleAt(i);
+		}
+		
+		//System.out.println("after removing, i:"+i+" "+getFloatVectorStr((Vector)channelsValues.elementAt(0)));
+		
+		addPointOrder(x, y, i, value);
+	}
+	
 }
