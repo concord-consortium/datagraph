@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.19 $
- * $Date: 2004-11-10 20:33:39 $
+ * $Revision: 1.20 $
+ * $Date: 2004-11-10 20:37:43 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -24,12 +24,26 @@ package org.concord.datagraph.engine;
  * @author Ingrid Moncada<p>
  *
  */
-import java.awt.*;
-import java.awt.geom.*;
-import java.util.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Shape;
+import java.awt.Stroke;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Point2D;
+import java.util.Vector;
 
-import org.concord.graph.engine.*;
-import org.concord.framework.data.stream.*;
+import org.concord.framework.data.stream.DataChannelDescription;
+import org.concord.framework.data.stream.DataProducer;
+import org.concord.framework.data.stream.DataStore;
+import org.concord.framework.data.stream.DataStoreEvent;
+import org.concord.framework.data.stream.DataStoreListener;
+import org.concord.framework.data.stream.ProducerDataStore;
+import org.concord.framework.data.stream.WritableDataStore;
+import org.concord.graph.engine.CoordinateSystem;
+import org.concord.graph.engine.DefaultGraphable;
+import org.concord.graph.engine.Graphable;
+import org.concord.graph.engine.MathUtil;
 
 public class DataGraphable extends DefaultGraphable
 	implements DataStoreListener, DataStore

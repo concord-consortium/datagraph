@@ -1,8 +1,8 @@
 /*
  * Last modification information:
- * $Revision: 1.5 $
- * $Date: 2004-10-29 07:41:00 $
- * $Author: imoncada $
+ * $Revision: 1.6 $
+ * $Date: 2004-11-10 20:37:43 $
+ * $Author: scytacki $
  *
  * License Information
  * Copyright 2004 The Concord Consortium 
@@ -10,10 +10,9 @@
 package org.concord.datagraph.ui;
 
 import java.awt.Frame;
-import java.awt.MenuBar;
 import java.awt.Menu;
+import java.awt.MenuBar;
 import java.awt.MenuItem;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;

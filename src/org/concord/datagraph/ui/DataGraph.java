@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.18 $
- * $Date: 2004-11-10 20:33:39 $
+ * $Revision: 1.19 $
+ * $Date: 2004-11-10 20:37:43 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -9,22 +9,36 @@
 */
 package org.concord.datagraph.ui;
 
-import java.awt.*;
-import java.awt.geom.*;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Insets;
+import java.awt.geom.Point2D;
+import java.util.EventObject;
+import java.util.Hashtable;
 
-import java.util.*;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import org.concord.datagraph.engine.DataGraphAutoScaler;
 import org.concord.datagraph.engine.DataGraphAutoScroller;
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.framework.data.DataFlow;
-import org.concord.framework.data.stream.*;
-import org.concord.graph.ui.*;
-import org.concord.graph.engine.*;
+import org.concord.framework.data.stream.DataConsumer;
+import org.concord.framework.data.stream.DataProducer;
+import org.concord.framework.data.stream.DataStore;
+import org.concord.framework.data.stream.ProducerDataStore;
+import org.concord.graph.engine.AxisScale;
+import org.concord.graph.engine.CoordinateSystem;
+import org.concord.graph.engine.DefaultCoordinateSystem2D;
+import org.concord.graph.engine.GraphArea;
+import org.concord.graph.engine.GraphableList;
+import org.concord.graph.engine.SelectableList;
 import org.concord.graph.event.GraphWindowListener;
 import org.concord.graph.event.GraphWindowResizeEvent;
-import org.concord.graph.examples.*;
+import org.concord.graph.examples.DashedBox;
+import org.concord.graph.examples.GraphWindowToolBar;
+import org.concord.graph.ui.GraphWindow;
+import org.concord.graph.ui.Grid2D;
+import org.concord.graph.ui.SingleAxisGrid;
 
 /**
  * DataGraph

@@ -1,22 +1,29 @@
 /*
  * Last modification information:
- * $Revision: 1.3 $
- * $Date: 2004-09-02 16:27:28 $
- * $Author: imoncada $
+ * $Revision: 1.4 $
+ * $Date: 2004-11-10 20:37:43 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
 */
 package org.concord.datagraph.ui;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import java.util.*;
+import java.awt.Dimension;
+import java.awt.Insets;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.Vector;
 
-import org.concord.framework.data.stream.*;
-import org.concord.graph.ui.*;
-import org.concord.graph.engine.*;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+import org.concord.framework.data.stream.DataConsumer;
+import org.concord.framework.data.stream.DataProducer;
+import org.concord.graph.engine.AxisScale;
+import org.concord.graph.engine.DefaultCoordinateSystem2D;
+import org.concord.graph.engine.GraphArea;
+import org.concord.graph.ui.Grid2D;
 
 /**
  * MultipleDataGraph

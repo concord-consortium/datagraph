@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.2 $
- * $Date: 2004-11-10 20:33:39 $
+ * $Revision: 1.3 $
+ * $Date: 2004-11-10 20:37:43 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -9,8 +9,6 @@
 */
 package org.concord.datagraph.engine;
 
-import org.concord.datagraph.ui.DataGraph;
-import org.concord.graph.engine.GraphableList;
 
 
 /**
