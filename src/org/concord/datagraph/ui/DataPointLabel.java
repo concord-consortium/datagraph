@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.1 $
- * $Date: 2005-03-02 07:07:13 $
+ * $Revision: 1.2 $
+ * $Date: 2005-03-02 07:26:01 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -95,6 +95,8 @@ public class DataPointLabel extends BoxTextLabel
 		Shape oldClip = g.getClip();
 		Font oldFont = g.getFont();
 		
+		graphArea.clipGraphics(g);
+		
 		drawDataPointLink(g);
 
 		super.draw(g);
@@ -137,7 +139,8 @@ public class DataPointLabel extends BoxTextLabel
 		g.setStroke(getStroke());
 		
 		g.drawLine((int)displayDataPoint.getX(), (int)displayDataPoint.getY(),
-				(int)displayPositionIni.getX(), (int)displayPositionFin.getY());
+				(int)(displayPositionFin.getX() + displayPositionIni.getX())/2, 
+				(int)(displayPositionFin.getY() + displayPositionIni.getY())/2);
 	}
 	
 	/**
