@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.11 $
- * $Date: 2005-03-21 08:18:01 $
+ * $Revision: 1.12 $
+ * $Date: 2005-03-22 05:11:28 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -73,6 +73,8 @@ public class ControllableDataGraphable extends DataGraphable
 	private boolean mouseClicked = false;
 	private int indexPointClicked = -1;
 	protected Point2D lastPointW; 
+	
+	protected boolean drawAlwaysConnected = true;
 	
 	//private float startDragX = Float.NaN;
 	//private float startDragY = Float.NaN;
@@ -133,6 +135,9 @@ public class ControllableDataGraphable extends DataGraphable
 		if (dragMode == DRAGMODE_ADDPOINTS || dragMode == DRAGMODE_ADDMULTIPLEPOINTS){
 			//Add a new point
 			if (lineType == LINETYPE_FREE){
+				if (!drawAlwaysConnected){
+					addPoint(Float.NaN, Float.NaN);
+				}
 				addPoint(lastPointW.getX(), lastPointW.getY());
 			}
 			else if (lineType == LINETYPE_FUNCTION){
@@ -453,5 +458,19 @@ public class ControllableDataGraphable extends DataGraphable
 	public int getDrawingDragMode()
 	{
 		return drawingMode;
+	}
+	/**
+	 * @return Returns the drawAlwaysConnected.
+	 */
+	public boolean isDrawAlwaysConnected()
+	{
+		return drawAlwaysConnected;
+	}
+	/**
+	 * @param drawAlwaysConnected The drawAlwaysConnected to set.
+	 */
+	public void setDrawAlwaysConnected(boolean drawAlwaysConnected)
+	{
+		this.drawAlwaysConnected = drawAlwaysConnected;
 	}
 }
