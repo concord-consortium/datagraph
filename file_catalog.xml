@@ -39,6 +39,13 @@
         <md5sum>1d8dbb1264d88934b27ff395e1054609</md5sum>
     </file>
     <file>
+        <name>file_catalog.xml</name>
+        <rev>1.2</rev>
+        <modtime>1107587195000</modtime>
+        <size>6259</size>
+        <md5sum>74adf7e39c5b754371fdbdaf1bc748db</md5sum>
+    </file>
+    <file>
         <name>maven.xml</name>
         <rev>1.2</rev>
         <modtime>1102954717000</modtime>
@@ -54,10 +61,10 @@
     </file>
     <file>
         <name>project.xml</name>
-        <rev>1.5</rev>
-        <modtime>1107197568000</modtime>
-        <size>1585</size>
-        <md5sum>0999046e70d89d36e63e32ff676ac907</md5sum>
+        <rev>1.6</rev>
+        <modtime>1107587198000</modtime>
+        <size>1583</size>
+        <md5sum>0eb856b72318a853dea4163c211af2f1</md5sum>
     </file>
     <file>
         <name>src/org/concord/datagraph/engine/ControllableDataGraphable.java</name>
@@ -186,4 +193,3 @@
         <md5sum>db63f8d5e830faf2f1aeb3f5c894fd2b</md5sum>
     </file>
 </filecatalog>
-
