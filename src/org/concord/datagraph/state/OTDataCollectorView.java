@@ -70,6 +70,7 @@ import org.concord.graph.event.GraphableListListener;
 import org.concord.graph.examples.GraphWindowToolBar;
 import org.concord.graph.ui.Grid2D;
 import org.concord.graph.ui.SingleAxisGrid;
+import org.concord.graph.util.ui.ResourceLoader;
 import org.concord.swing.SelectableToggleButton;
 
 /**
@@ -295,7 +296,8 @@ public class OTDataCollectorView
             
             JPanel svPanel = new JPanel(new FlowLayout());
             svPanel.add(dataLabel);
-            JButton cDataButton = new JButton("Collect Data"); 
+            JButton cDataButton = new JButton(); 
+            cDataButton.setIcon(ResourceLoader.getImageIcon("data_graph_button.gif", "Collect Data"));
             cDataButton.addActionListener(new ActionListener(){
                 public void actionPerformed(ActionEvent event)
                 {
