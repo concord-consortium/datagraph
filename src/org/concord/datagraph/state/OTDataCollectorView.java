@@ -34,6 +34,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Insets;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -298,6 +299,7 @@ public class OTDataCollectorView
             svPanel.add(dataLabel);
             JButton cDataButton = new JButton(); 
             cDataButton.setIcon(ResourceLoader.getImageIcon("data_graph_button.gif", "Collect Data"));
+            cDataButton.setMargin(new Insets(2,2,2,2));
             cDataButton.addActionListener(new ActionListener(){
                 public void actionPerformed(ActionEvent event)
                 {
