@@ -24,9 +24,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.4 $
- * $Date: 2005-02-23 15:50:22 $
- * $Author: scytacki $
+ * $Revision: 1.5 $
+ * $Date: 2005-03-06 06:52:49 $
+ * $Author: imoncada $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -35,10 +35,12 @@ package org.concord.datagraph.state;
 
 import javax.swing.JComponent;
 
+import org.concord.datagraph.ui.AddDataPointLabelAction;
 import org.concord.datagraph.ui.DataGraph;
 import org.concord.datagraph.ui.DataGraphToolbar;
 import org.concord.framework.otrunk.view.OTObjectView;
 import org.concord.framework.otrunk.view.OTViewContainer;
+import org.concord.graph.engine.SelectableList;
 
 
 /**
@@ -56,6 +58,7 @@ public class OTDataGraphView
 	OTDataGraph pfObject;
 	protected OTViewContainer viewContainer;
 	DataGraph dataGraph;
+	SelectableList notesLayer;
 	
 	public OTDataGraphView(OTDataGraph pfDataGraph, OTViewContainer vContainer)
 	{
@@ -69,11 +72,7 @@ public class OTDataGraphView
 	public JComponent getComponent(boolean editable)
 	{
 		dataGraph = new DataGraph();
-
-		DataGraphToolbar dgToolbar = new DataGraphToolbar();
-		dgToolbar.setButtonsMargin(0);
-		dgToolbar.setFloatable(false);
-		dataGraph.setToolBar(dgToolbar);
+		dataGraph.changeToDataGraphToolbar();
 		
 		DataGraphStateManager manager = new DataGraphStateManager(pfObject, dataGraph);
 		manager.initialize(editable);

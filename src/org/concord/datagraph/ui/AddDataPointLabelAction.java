@@ -24,9 +24,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.2 $
- * $Date: 2005-03-06 06:16:08 $
- * $Author: maven $
+ * $Revision: 1.3 $
+ * $Date: 2005-03-06 06:52:49 $
+ * $Author: imoncada $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -51,13 +51,15 @@ import org.concord.graph.util.ui.BoxTextLabel;
 public class AddDataPointLabelAction extends AddLabelAction
 {
 	protected DataStore dataStore;
+	protected GraphableList dataGraphablesList;
 	
 	/**
 	 * @param gList
 	 */
-	public AddDataPointLabelAction(GraphableList gList)
+	public AddDataPointLabelAction(GraphableList gList, GraphableList objList)
 	{
 		super(gList);
+		dataGraphablesList = objList;
 		setName("Note");
 	}
 
@@ -67,7 +69,7 @@ public class AddDataPointLabelAction extends AddLabelAction
 	protected BoxTextLabel createTextLabel()
 	{
 		DataPointLabel label = new DataPointLabel(true);
-		label.setGraphableList(objList);
+		label.setGraphableList(dataGraphablesList);
 		label.setMessage("Data Point");
 		return label;
 	}

@@ -30,6 +30,13 @@
  */
 package org.concord.datagraph.ui;
 
+import java.net.URL;
+
+import javax.swing.AbstractButton;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JToggleButton;
+
 import org.concord.graph.engine.AxisScale;
 import org.concord.graph.engine.MultiRegionAxisScale;
 import org.concord.graph.examples.GraphWindowToolBar;
@@ -58,6 +65,6 @@ public class DataGraphToolbar extends GraphWindowToolBar
 		        "" + AxisScale.DRAGMODE_ZOOM_OUT, 
 		        "Zoom out from a point");
 		
-		addButton("restorescale.gif", "restorescale", "Restore initial scale", false);		    		
+		addButton("restorescale.gif", "restorescale", "Restore initial scale", false);
     }
 }
