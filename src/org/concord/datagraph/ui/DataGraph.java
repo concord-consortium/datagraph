@@ -24,9 +24,9 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.33 $
- * $Date: 2005-03-18 09:52:21 $
- * $Author: imoncada $
+ * $Revision: 1.34 $
+ * $Date: 2005-03-25 17:35:27 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -558,7 +558,9 @@ public class DataGraph extends JPanel
 	 * data producer, using channelXAxis as the index for the channel that will be in the x axis
 	 * of the graph, and channelYAxis as the index for the channel that will be in the y axis.
 	 * If one of the indexes is -1, it will take the dt as the data for that axis
-	 * This data graphable can then be added to the graph
+	 * This data graphable can then be added to the graph, is NOT added
+	 * automatically.
+	 * 
 	 * @param dataProducer
 	 * @param channelXAxis
 	 * @param channelYAxis
@@ -582,7 +584,8 @@ public class DataGraph extends JPanel
 	 * data store, using channelXAxis as the index for the channel that will be in the x axis
 	 * of the graph, and channelYAxis as the index for the channel that will be in the y axis.
 	 * If one of the indexes is -1, it will take the dt as the data for that axis
-	 * This data graphable can then be added to the graph
+	 * This data graphable can then be added to the graph, it is NOT added
+	 * automatically.
 	 * @param dataStore
 	 * @param channelXAxis
 	 * @param channelYAxis
