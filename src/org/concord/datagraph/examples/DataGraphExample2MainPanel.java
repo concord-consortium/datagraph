@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.2 $
- * $Date: 2004-09-22 19:56:58 $
+ * $Revision: 1.3 $
+ * $Date: 2004-10-26 17:33:45 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -19,11 +19,14 @@ import javax.swing.AbstractButton;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.Timer;
 
+import org.concord.framework.data.stream.DataChannelDescription;
 import org.concord.framework.data.stream.DataProducer;
+import org.concord.framework.data.stream.DataStreamDescription;
 import org.concord.framework.data.stream.DefaultDataProducer;
 import org.concord.framework.data.stream.DefaultMultipleDataProducer;
 import org.concord.graph.ui.Grid2D;
@@ -95,11 +98,19 @@ public class DataGraphExample2MainPanel extends JPanel
 		graph.getGraphable(dp2).setColor(Color.blue);
 		
 		dp3 = new DefaultMultipleDataProducer();
+		dp3.getDataDescription().setDataType(DataStreamDescription.DATA_SERIES);
 		DataGraphable dg3 = graph.createDataGraphable(dp3, 0, 1);
 		dg3.setColor(255,128,0);
 		graph.addDataGraphable(dg3);
 
 		dp4 = new DefaultMultipleDataProducer();
+		dp4.getDataDescription().setDataType(DataStreamDescription.DATA_SERIES);
+		dp4.getDataDescription().setChannelDescription(new DataChannelDescription(), 0);
+		dp4.getDataDescription().getChannelDescription(0).setPrecision(2);
+		dp4.getDataDescription().getChannelDescription(0).setName("dark blue x");
+		dp4.getDataDescription().setChannelDescription(new DataChannelDescription(), 1);
+		dp4.getDataDescription().getChannelDescription(1).setPrecision(2);
+		dp4.getDataDescription().getChannelDescription(1).setName("dark blue y");
 		DataGraphable dg4 = graph.createDataGraphable(dp4, 0, 1);
 		dg4.setColor(0,0,150);
 		dg4.setConnectPoints(false);
@@ -124,13 +135,15 @@ public class DataGraphExample2MainPanel extends JPanel
 		//tableModel.addDataStore(graph.getGraphable(dp4));
 		//tableModel.addDataStore(graph.getGraphable(dp5));
 		
-		tableModel.addDataColumn(graph.getGraphable(dp1), 0);
-		tableModel.addDataColumn(graph.getGraphable(dp1), 1);
-		tableModel.addDataColumn(graph.getGraphable(dp2), 1);
+		//tableModel.addDataStore(graph.getGraphable(dp1));
+		tableModel.addDataColumn(graph.getGraphable(dp1).getDataStore(), -1);
+		tableModel.addDataColumn(graph.getGraphable(dp1).getDataStore(), 0);
+		tableModel.addDataColumn(graph.getGraphable(dp2).getDataStore(), 0);
+		//tableModel.addDataStore(graph.getGraphable(dp2).getDataStore());
 		
 		tableModel.addDataStore(dg3);
 		tableModel.addDataStore(dg4);
-		
+	
 //		tableModel.setDataStep(5);
 		
 		dataTable = tablePanel.getTable();
@@ -155,7 +168,7 @@ public class DataGraphExample2MainPanel extends JPanel
 
 		//Cell renderer stuff
 		TableCellColorModel colorModel;
-		colorModel = new DataGraphableTableCellColor(tableModel.getDataColumns());
+		colorModel = new DataGraphableTableCellColor(tableModel.getDataColumns(), graph.getObjList());
 		DataTableCellRenderer cellRenderer = new DataTableCellRenderer(); 
 		((DataGraphableTableCellColor)colorModel).setColorColumn(new Color(230,230,200), Color.black, null, 0);		
 		((DataGraphableTableCellColor)colorModel).setBackgroundColorColumn(null, 0, true, false);		
@@ -192,12 +205,16 @@ public class DataGraphExample2MainPanel extends JPanel
 		
 		DataValueLabel valLabel;
 		
+		labelPanel.add(new JLabel("Red Y Value: "));
+		
 		valLabel = new DataValueLabel();
 		valLabel.setDataProducer(dp1, 0);
 		valLabel.setBackground(Color.red);
 		valLabel.setOpaque(true);
 		labelPanel.add(valLabel);
 
+		labelPanel.add(new JLabel("Blue Y Value: "));
+		
 		valLabel = new DataValueLabel();
 		valLabel.setDataProducer(dp2, 0);
 		valLabel.setBackground(Color.blue);
@@ -272,25 +289,27 @@ public class DataGraphExample2MainPanel extends JPanel
 	{
 		public void actionPerformed(ActionEvent e)
 		{
-			//System.err.println(t);
+			System.err.println(t+" "+(float)Math.sin(t));
 			
 			((DefaultDataProducer)dp1).addValue((float)Math.sin(t));
 			((DefaultDataProducer)dp2).addValue((float)Math.cos(4*t)-1.5f);
 			
-			float vals[] = new float[3];
-			vals[0] = (float)(r * Math.cos(2*t));
-			vals[1] = (float)(r * Math.sin(2*t));
-			vals[2] = (float)(r);
-			((DefaultMultipleDataProducer)dp3).addValues(vals);
+			float vals3[], vals4[];
+			
+			vals3 = new float[3];
+			vals3[0] = (float)(r * Math.cos(2*t));
+			vals3[1] = (float)(r * Math.sin(2*t));
+			vals3[2] = (float)(r);
+			((DefaultMultipleDataProducer)dp3).addValues(vals3);
 
+			vals4 = new float[2];
+			vals4[0] = (float)(r * Math.cos(t));
+			vals4[1] = (float)(r * Math.sin(t));			
+			((DefaultMultipleDataProducer)dp4).addValues(vals4, false);
 			
-			vals[0] = (float)(r * Math.cos(t));
-			vals[1] = (float)(r * Math.sin(t));			
-			((DefaultMultipleDataProducer)dp4).addValues(vals, false);
-			
-			vals[0] = (float)(r * Math.cos(t)+1);
-			vals[1] = (float)(r * Math.sin(t)+1);			
-			((DefaultMultipleDataProducer)dp4).addValues(vals, true);
+			vals4[0] = (float)(r * Math.cos(t)+1);
+			vals4[1] = (float)(r * Math.sin(t)+1);			
+			((DefaultMultipleDataProducer)dp4).addValues(vals4, true);
 			
 			t+=0.1;
 			r-=0.05;
@@ -299,9 +318,16 @@ public class DataGraphExample2MainPanel extends JPanel
 
 	public DataProducer createNewDataProducer()
 	{
-		DataProducer dp = new DefaultDataProducer(0.1f);
-		dp.getDataDescription().getChannelDescription().setPrecision(2);
-		dp.getDataDescription().getChannelDescription().setName("x value");
+		DataProducer dp;
+		
+		dp = new DefaultDataProducer(0.1f);
+
+		dp.getDataDescription().addChannelDescription(new DataChannelDescription());
+		
+		dp.getDataDescription().getChannelDescription(0).setPrecision(2);
+		dp.getDataDescription().getChannelDescription(0).setName("x value");
+		dp.getDataDescription().getChannelDescription(1).setPrecision(2);
+		dp.getDataDescription().getChannelDescription(1).setName("y value");
 		return dp;
 	}
 	
