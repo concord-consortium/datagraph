@@ -1,0 +1,16 @@
+<project name="DataGraph" default="jar" basedir =".">
+	<import file="../ProjectSets/standard-ant-targets.xml"/>
+
+	<property name="jar-name" value="datagraph"/>
+	
+	<!-- depends framework -->
+	<path id="run-classpath">
+    	<pathelement location="../Framework/lib/framework.jar"/>
+    	<pathelement location="../Data/lib/data.jar"/>
+    	<pathelement location="../Graph/lib/graph.jar"/>
+	</path>
+
+	<path id="build-classpath">
+		<path refid="run-classpath"/>
+	</path>
+</project>
