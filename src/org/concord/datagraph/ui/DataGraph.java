@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.28 $
- * $Date: 2005-03-06 06:52:49 $
+ * $Revision: 1.29 $
+ * $Date: 2005-03-06 07:49:45 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -66,6 +66,7 @@ import org.concord.graph.examples.GraphWindowToolBar;
 import org.concord.graph.ui.GraphWindow;
 import org.concord.graph.ui.Grid2D;
 import org.concord.graph.ui.SingleAxisGrid;
+import org.concord.swing.SelectableToggleButton;
 
 /**
  * DataGraph
@@ -192,7 +193,10 @@ public class DataGraph extends JPanel
 		DataGraphToolbar dgToolbar = new DataGraphToolbar();
 		dgToolbar.setButtonsMargin(0);
 		dgToolbar.setFloatable(false);
-		dgToolbar.addButton(new AddDataPointLabelAction(notesLayer, objList), "Add a note to a point in the graph", false);
+		
+		SelectableToggleButton addNoteButton = new SelectableToggleButton(new AddDataPointLabelAction(notesLayer, objList));
+		dgToolbar.addButton(addNoteButton, "Add a note to a point in the graph");
+		
 		setToolBar(dgToolbar);
 	}
 	
