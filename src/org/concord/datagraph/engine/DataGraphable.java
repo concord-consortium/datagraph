@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.9 $
- * $Date: 2004-09-17 20:59:42 $
+ * $Revision: 1.10 $
+ * $Date: 2004-09-22 19:56:58 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -49,12 +49,15 @@ public class DataGraphable extends DefaultGraphable
 	private float dt = 1;
 
 	protected GeneralPath path;
+	protected GeneralPath crossPath;
 		
 	protected DataStreamDescription dataStreamDesc;
 	
 	protected Vector dataStoreListeners;
 	
 	protected boolean connectPoints = true; 
+	protected boolean showCrossPoint = false;
+	protected int crossSize = 3;
 	
 	private float lastTime;
 	private int lastValueCalculated = -1;
@@ -71,6 +74,7 @@ public class DataGraphable extends DefaultGraphable
 		xValues = new Vector();
 		yValues = new Vector();
 		path = new GeneralPath();
+		crossPath = new GeneralPath();
 		dataStoreListeners = new Vector();
 	}
 	
@@ -214,7 +218,15 @@ public class DataGraphable extends DefaultGraphable
 		g.setColor(lineColor);
 		g.setStroke(new BasicStroke(lineWidth));
 		
-		g.draw(path);
+		if (!connectPoints && showCrossPoint){
+		}
+		else{
+			g.draw(path);
+		}
+		if (showCrossPoint){
+			g.setStroke(new BasicStroke(1.0f));
+			g.draw(crossPath);
+		}
 		
 		g.setColor(oldColor);
 		g.setStroke(oldStroke);
@@ -243,11 +255,12 @@ public class DataGraphable extends DefaultGraphable
 		
     	if (!needUpdateDataReceived || lastTime == 0){
     		path.reset();
+    		crossPath.reset();
     		time = 0;
     		initialI = 0;
     	}
     	else{
-    		time = lastTime;
+    		time = lastTime + dt;
     		initialI = lastValueCalculated + 1;
     	}
     	
@@ -304,6 +317,14 @@ public class DataGraphable extends DefaultGraphable
 					path.moveTo(ppx, ppy);
 					path.lineTo(ppx, ppy + dy);//TODO dy is 1 because of MAC OS X
 				}
+				
+				if (showCrossPoint){
+					crossPath.moveTo(ppx - crossSize, ppy - crossSize);
+					crossPath.lineTo(ppx + crossSize, ppy + crossSize);
+					crossPath.moveTo(ppx - crossSize, ppy + crossSize);
+					crossPath.lineTo(ppx + crossSize, ppy - crossSize);
+				}
+				
 			}
 			
 			lastTime = time;
@@ -555,5 +576,21 @@ public class DataGraphable extends DefaultGraphable
 		if (needUpdate || needUpdateDataReceived){
 			super.notifyChange();
 		}
+	}
+	
+	/**
+	 * @return Returns the showCrossPoint.
+	 */
+	public boolean isShowCrossPoint()
+	{
+		return showCrossPoint;
+	}
+	
+	/**
+	 * @param showCrossPoint The showCrossPoint to set.
+	 */
+	public void setShowCrossPoint(boolean showCrossPoint)
+	{
+		this.showCrossPoint = showCrossPoint;
 	}
 }

@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.12 $
- * $Date: 2004-09-14 20:14:00 $
+ * $Revision: 1.13 $
+ * $Date: 2004-09-22 19:56:58 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -17,6 +17,7 @@ import javax.swing.*;
 import java.util.*;
 
 import org.concord.datagraph.engine.DataGraphable;
+import org.concord.framework.data.DataFlow;
 import org.concord.framework.data.stream.*;
 import org.concord.graph.ui.*;
 import org.concord.graph.engine.*;
@@ -39,7 +40,7 @@ import org.concord.graph.examples.*;
  */
 
 public class DataGraph extends JPanel
-	implements DataConsumer, GraphWindowListener
+	implements DataFlow, DataConsumer, GraphWindowListener
 {
 	//Graph, grid and toolbar
 	protected GraphWindow graph;
@@ -307,21 +308,6 @@ public class DataGraph extends JPanel
 	{
 		return (DataGraphable)sources.get(source);
 	}
-
-	public void reset()
-	{
-		//Reset each data graphable
-		for(int i=0; i<objList.size(); i++)
-		{
-			if(objList.elementAt(i) instanceof DataGraphable)
-			{
-				DataGraphable dGraphable = (DataGraphable)objList.elementAt(i);
-				dGraphable.reset();
-			}
-		}
-		
-		resetGraphArea();
-	}
 	
 	protected void resetGraphArea()
 	{
@@ -536,4 +522,39 @@ public class DataGraph extends JPanel
 			zoomSelection();
 		}
 	}
+
+	/**
+	 * @see org.concord.framework.data.DataFlow#stop()
+	 */
+	public void stop()
+	{
+		//TODO: Not supported yet
+	}
+
+	/**
+	 * @see org.concord.framework.data.DataFlow#start()
+	 */
+	public void start()
+	{
+		//TODO: Not supported yet
+	}
+	
+	/**
+	 * @see org.concord.framework.data.DataFlow#reset()
+	 */
+	public void reset()
+	{
+		//Reset each data graphable
+		for(int i=0; i<objList.size(); i++)
+		{
+			if(objList.elementAt(i) instanceof DataGraphable)
+			{
+				DataGraphable dGraphable = (DataGraphable)objList.elementAt(i);
+				dGraphable.reset();
+			}
+		}
+		
+		resetGraphArea();
+	}
+	
 }

@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.1 $
- * $Date: 2004-09-14 20:14:00 $
+ * $Revision: 1.2 $
+ * $Date: 2004-09-22 19:56:58 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -11,6 +11,7 @@ package org.concord.datagraph.examples;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -29,6 +30,7 @@ import org.concord.graph.ui.Grid2D;
 import org.concord.data.ui.DataTableCellRenderer;
 import org.concord.data.ui.DataTableModel;
 import org.concord.data.ui.DataTablePanel;
+import org.concord.data.ui.DataValueLabel;
 import org.concord.data.ui.TableCellColorModel;
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.datagraph.ui.DataGraph;
@@ -109,6 +111,7 @@ public class DataGraphExample2MainPanel extends JPanel
 		
 		setLayout(new BorderLayout());
 
+		//graph.setPreferredSize(new Dimension(100,100));
 		mainPanel.add(graph);
 		
 		tablePanel = new DataTablePanel();
@@ -128,7 +131,7 @@ public class DataGraphExample2MainPanel extends JPanel
 		tableModel.addDataStore(dg3);
 		tableModel.addDataStore(dg4);
 		
-		tableModel.setDataStep(5);
+//		tableModel.setDataStep(5);
 		
 		dataTable = tablePanel.getTable();
 		//dataTable.setPreferredSize(new Dimension(500,300));
@@ -160,6 +163,7 @@ public class DataGraphExample2MainPanel extends JPanel
 		dataTable.setDefaultRenderer(Object.class, cellRenderer);
 		//
 		
+		tablePanel.setPreferredSize(new Dimension(100,300));
 		mainPanel.add(tablePanel);	
 
 		add(mainPanel);
@@ -182,6 +186,49 @@ public class DataGraphExample2MainPanel extends JPanel
 		buttonPanel.add(startButton);
 		buttonPanel.add(stopButton);
 		buttonPanel.add(resetButton);
+		
+		//Data value labels
+		JPanel labelPanel = new JPanel();
+		
+		DataValueLabel valLabel;
+		
+		valLabel = new DataValueLabel();
+		valLabel.setDataProducer(dp1, 0);
+		valLabel.setBackground(Color.red);
+		valLabel.setOpaque(true);
+		labelPanel.add(valLabel);
+
+		valLabel = new DataValueLabel();
+		valLabel.setDataProducer(dp2, 0);
+		valLabel.setBackground(Color.blue);
+		valLabel.setOpaque(true);
+		labelPanel.add(valLabel);
+		
+		valLabel = new DataValueLabel();
+		valLabel.setDataProducer(dp3, 0);
+		valLabel.setBackground(Color.orange);
+		valLabel.setOpaque(true);
+		labelPanel.add(valLabel);
+		
+		valLabel = new DataValueLabel();
+		valLabel.setDataProducer(dp3, 1);
+		valLabel.setBackground(Color.yellow);
+		valLabel.setOpaque(true);
+		labelPanel.add(valLabel);
+		
+		valLabel = new DataValueLabel();
+		valLabel.setDataProducer(dp4, 0);
+		valLabel.setBackground(Color.green);
+		valLabel.setOpaque(true);
+		labelPanel.add(valLabel);
+		
+		valLabel = new DataValueLabel();
+		valLabel.setDataProducer(dp4, 1);
+		valLabel.setBackground(Color.cyan);
+		valLabel.setOpaque(true);
+		labelPanel.add(valLabel);
+		
+		mainPanel.add(labelPanel);
 		
 		add(buttonPanel, BorderLayout.SOUTH);
 		
