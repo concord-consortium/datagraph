@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.10 $
- * $Date: 2004-09-10 15:13:33 $
+ * $Revision: 1.11 $
+ * $Date: 2004-09-13 23:17:00 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -364,6 +364,42 @@ public class DataGraph extends JPanel
 		zoomSelection();
 		
 		limitsSet = true;
+	}
+
+	/**
+	 * Returns the current minimum x value shown in the X Axis
+	 * @return
+	 */
+	public double getMinXAxisWorld()
+	{
+		return defaultGA.getLowerLeftCornerWorld().getX();
+	}
+	
+	/**
+	 * Returns the current maximum x value shown in the X Axis
+	 * @return
+	 */
+	public double getMaxXAxisWorld()
+	{
+		return defaultGA.getUpperRightCornerWorld().getX();
+	}
+
+	/**
+	 * Returns the current minimum y value shown in the Y Axis
+	 * @return
+	 */
+	public double getMinYAxisWorld()
+	{
+		return defaultGA.getLowerLeftCornerWorld().getY();
+	}
+	
+	/**
+	 * Returns the current minimum x value shown in the X Axis
+	 * @return
+	 */
+	public double getMaxYAxisWorld()
+	{
+		return defaultGA.getUpperRightCornerWorld().getY();
 	}
 	
 	/* (non-Javadoc)
