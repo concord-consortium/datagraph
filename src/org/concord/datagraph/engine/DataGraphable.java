@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.15 $
- * $Date: 2004-10-27 23:24:04 $
+ * $Revision: 1.16 $
+ * $Date: 2004-10-28 18:57:41 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -81,35 +81,32 @@ public class DataGraphable extends DefaultGraphable
 		maxYValue = Float.NaN;
 	}
 	
-	/**
-     * Default constructor.
-     */
-	public DataGraphable(DataProducer source)
-	{
-		this();
-		setDataProducer(source);
-	}
-	
 	/*
-	 * Sets the data producer of this graphable
+	 * Sets the data producer of this graphable.
+	 * By default it will graph dt vs channel 0
+     * If the data will be shared by more components, this method is not recommended.
+     * Create a ProducerDataStore with the data prodeucer and share the data store with other
+     * components. Use setDataStore() instead
 	 */
-	public void setDataProducer(DataProducer source)
+	public void setDataProducer(DataProducer dataProducer)
 	{
 		//Create a default data store for this data producer
-		ProducerDataStore pDataStore = new ProducerDataStore(source);
+		ProducerDataStore pDataStore = new ProducerDataStore(dataProducer);
 		
 		setDataStore(pDataStore);
 	}
 	
 	/**
-	 * 
-	 * @param source
+     * If the data will be shared by more components, this method is not recommended.
+     * Create a ProducerDataStore with the data prodeucer and share the data store with other
+     * components. Use setDataStore() instead
+	 * @param dataProducer
 	 * @param channelXAxis
 	 * @param channelYAxis
 	 */
-	public void setDataProducer(DataProducer source, int channelXAxis, int channelYAxis)
+	public void setDataProducer(DataProducer dataProducer, int channelXAxis, int channelYAxis)
 	{
-		setDataProducer(source);
+		setDataProducer(dataProducer);
 		setChannelX(channelXAxis);
 		setChannelY(channelYAxis);
 	}
@@ -117,6 +114,7 @@ public class DataGraphable extends DefaultGraphable
 	/**
 	 * Sets the data store that this graphable will be using 
 	 * to get its data
+	 * By default it will graph dt vs channel 0
 	 * @param dataStore
 	 */
 	public void setDataStore(DataStore dataStore)
@@ -133,6 +131,7 @@ public class DataGraphable extends DefaultGraphable
 	/**
 	 * Sets the data store that this graphable will be using 
 	 * to get its data
+	 * It will graph channelXAxis vs channelYAxis 
 	 * @param dataStore
 	 */
 	public void setDataStore(DataStore dataStore, int channelXAxis, int channelYAxis)
@@ -724,6 +723,18 @@ getDataChannelDescription(int numChannel):
 		}
 	}
 
+	/**
+	 * Only works with a Writable Data Store!
+	 * @param numSample
+	 */
+	public void removeValueAt(int numSample)
+	{
+		//Only works with a Writable Data Store!
+		if (!(dataStore instanceof WritableDataStore)) return;
+		
+		((WritableDataStore)dataStore).removeValueAt(numSample);
+	}
+	
 	/**
 	 * @see org.concord.framework.data.stream.DataStore#addDataStoreListener(org.concord.framework.data.stream.DataStoreListener)
 	 */
