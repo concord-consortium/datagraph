@@ -24,8 +24,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.3 $
- * $Date: 2005-03-06 06:52:49 $
+ * $Revision: 1.4 $
+ * $Date: 2005-03-08 08:51:57 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -60,7 +60,7 @@ public class AddDataPointLabelAction extends AddLabelAction
 	{
 		super(gList);
 		dataGraphablesList = objList;
-		setName("Note");
+		//setName("Note");
 	}
 
 	/**
