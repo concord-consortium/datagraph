@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.1 $
- * $Date: 2004-08-27 16:56:44 $
+ * $Revision: 1.2 $
+ * $Date: 2004-08-27 20:19:50 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -203,23 +203,50 @@ public class DataGraph extends JPanel
 		selectionBox.zoom();		
 	}
 
-	public void setScale(float xScale, float yScale)
+	public void setScale(double xScale, double yScale)
 	{
 		CoordinateSystem coord = getGraph().getDefaultGraphArea().getCoordinateSystem();
 
 		Point2D.Double scale = new Point2D.Double(xScale, yScale);
 		coord.setScale(scale);
-
+	}
+	
+	public double getXScale()
+	{
+		CoordinateSystem coord = getGraph().getDefaultGraphArea().getCoordinateSystem();
+		
+		return coord.getScale().getX();
 	}
 
-	public void setOriginOffsetDisplay(int xPos, int yPos)
+	public double getYScale()
+	{
+		CoordinateSystem coord = getGraph().getDefaultGraphArea().getCoordinateSystem();
+		
+		return coord.getScale().getY();
+	}
+	
+	public void setOriginOffsetDisplay(double xPos, double yPos)
 	{
 		CoordinateSystem coord = getGraph().getDefaultGraphArea().getCoordinateSystem();
 
 		Point2D.Double origin = new Point2D.Double(xPos, yPos);
 		coord.setOriginOffsetDisplay(origin);		
 	}
+	
+	public double getXOriginOffsetDisplay()
+	{
+		CoordinateSystem coord = getGraph().getDefaultGraphArea().getCoordinateSystem();
 
+		return coord.getOriginOffsetDisplay().getX();		
+	}
+
+	public double getYOriginOffsetDisplay()
+	{
+		CoordinateSystem coord = getGraph().getDefaultGraphArea().getCoordinateSystem();
+
+		return coord.getOriginOffsetDisplay().getY();		
+	}
+	
 	public DataGraphable getGraphable(DataProducer source)
 	{
 		return (DataGraphable)sources.get(source);

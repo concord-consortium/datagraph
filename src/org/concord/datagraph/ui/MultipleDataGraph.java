@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.1 $
- * $Date: 2004-08-27 16:56:44 $
+ * $Revision: 1.2 $
+ * $Date: 2004-08-27 20:19:50 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -121,106 +121,9 @@ public class MultipleDataGraph extends DataGraph
 		((MultipleGrid2D)grid).addGrid(ga);
 	}
 	
-	public GraphWindow getGraph()
+	protected void resetGraphArea()
 	{
-		return graph;
-	}
-	
-	public Grid2D getGrid()
-	{
-		return grid;
-	}
-
-	public void setSelectionMode(boolean mode)
-	{
-		selectionMode = mode;
-	}
-
-/*
-	public void mouseDragged(MouseEvent e)
-	{
-		if (!selectionMode) return;
-
-		Point2D.Double draggedWorldPoint = new Point2D.Double();
-
-
-		Point2D.Double mousePoint = new Point2D.Double(e.getX(), e.getY());
-		CoordinateSystem coord = getGraph().getDefaultGraphArea().getCoordinateSystem();
-		
-		coord.transformToWorld(mousePoint, draggedWorldPoint);
-
-		setSelection((float)pressedWorldPoint.x, (float)pressedWorldPoint.y, 
-					 (float)draggedWorldPoint.x-(float)pressedWorldPoint.x,
-					 (float)draggedWorldPoint.y-(float)pressedWorldPoint.y);
-	}
-
-	public void mouseMoved(MouseEvent e){}
-	public void mouseClicked(MouseEvent e){}
-	public void mouseEntered(MouseEvent e){}
-	public void mouseExited(MouseEvent e){}
-
-	Point2D.Double pressedWorldPoint = new Point2D.Double();
-	public void mousePressed(MouseEvent e)
-	{
-		if (!selectionMode) return;
-		
-		Point2D.Double mousePoint = new Point2D.Double(e.getX(), e.getY());
-		CoordinateSystem coord = getGraph().getDefaultGraphArea().getCoordinateSystem();
-		coord.transformToWorld(mousePoint, pressedWorldPoint);
-		
-		setSelection((float)pressedWorldPoint.x, (float)pressedWorldPoint.y, 0, 0);
-	}
-
-	public void mouseReleased(MouseEvent e)
-	{
-
-	}
-*/	
-	public void zoomSelection()
-	{
-		DashedBox selectionBox = toolBar.getSelectionBox();
-		if(selectionBox == null) { 
-			return; 
-		}
-		
-		selectionBox.zoom();		
-	}
-
-	public void setScale(float xScale, float yScale)
-	{
-		CoordinateSystem coord = getGraph().getDefaultGraphArea().getCoordinateSystem();
-
-		Point2D.Double scale = new Point2D.Double(xScale, yScale);
-		coord.setScale(scale);
-
-	}
-
-	public void setOriginOffsetDisplay(int xPos, int yPos)
-	{
-		CoordinateSystem coord = getGraph().getDefaultGraphArea().getCoordinateSystem();
-
-		Point2D.Double origin = new Point2D.Double(xPos, yPos);
-		coord.setOriginOffsetDisplay(origin);		
-	}
-
-	public DataGraphable getGraphable(DataProducer source)
-	{
-		return (DataGraphable)sources.get(source);
-	}
-
-	public void reset()
-	{
-		//Reset each data graphable
-		for(int i=0; i<objList.size(); i++)
-		{
-			if(objList.elementAt(i) instanceof DataGraphable)
-			{
-				DataGraphable dGraphable = (DataGraphable)objList.elementAt(i);
-				dGraphable.reset();
-			}
-		}
-		
-		//Reset graph areas
+	//Reset graph areas
 		if (adjustOriginOnReset){
 			for (int i=0; i< subGraphAreas.size(); i++){
 				((GraphArea)subGraphAreas.elementAt(i)).adjustCoordinateSystem();
@@ -228,27 +131,6 @@ public class MultipleDataGraph extends DataGraph
 		}
 	}
 	
-	public void setSelection(float x, float y, float width, float height)
-	{
-		if(width < 0)
-		{
-			width=-width;
-			x-=width;
-		}
-		if(height < 0)
-		{
-			height=-height;
-			y-=height;
-		}
-
-		toolBar.showDashedBox(true);
-		
-		DashedBox selectionBox = toolBar.getSelectionBox();		
-		if (selectionBox != null){
-			selectionBox.setBounds(x,y,width,height);
-		}
-	}
-
 	/* (non-Javadoc)
 	 * @see org.concord.framework.datastream.DataConsumer#addDataSource(org.concord.framework.datastream.DataProducer)
 	 */
@@ -264,58 +146,8 @@ public class MultipleDataGraph extends DataGraph
 	{
 		if (graphAreaIndex < 0 || graphAreaIndex >= subGraphAreas.size()) return;
 		
-		// Create a graphable for this datasource
-		// add it to the graph
-		DataGraphable dGraphable = new DataGraphable();
-		dGraphable.setDataProducer(source);
-		
 		GraphArea ga = (GraphArea)subGraphAreas.elementAt(graphAreaIndex);
-		dGraphable.setGraphArea(ga);
-		
-		objList.add(dGraphable);
-		sources.put(source, dGraphable);		
-	}
-
-	/* (non-Javadoc)
-	 * @see org.concord.framework.datastream.DataConsumer#removeDataSource(org.concord.framework.datastream.DataProducer)
-	 */
-	public void removeDataProducer(DataProducer source)
-	{
-
-		// TODO Auto-generated method stub
-		// remove the associated data source from 
-		// the graph
-		DataGraphable dGraphable = (DataGraphable)sources.get(source);
-		if (dGraphable != null){
-			dGraphable.setDataProducer(null);
-			objList.remove(dGraphable);
-		}
-	}
-
-	public GraphableList getObjList()
-	{
-		return objList;
-	}
-
-	public GraphWindowToolBar getToolBar()
-	{
-		return toolBar;
-	}
-
-	/**
-	 * @return Returns the adjustOnReset.
-	 */
-	public boolean isAdjustOriginOffsetOnReset()
-	{
-		return adjustOriginOnReset;
-	}
-
-	/**
-	 * @param adjustOnReset The adjustOnReset to set.
-	 */
-	public void setAdjustOriginOffsetOnReset(boolean adjustOnReset)
-	{
-		this.adjustOriginOnReset = adjustOnReset;
+		addDataProducer(source, ga);
 	}
 	
 	//Testing purposes
