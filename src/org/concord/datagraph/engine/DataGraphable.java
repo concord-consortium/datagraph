@@ -24,9 +24,9 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.25 $
- * $Date: 2005-02-22 21:58:54 $
- * $Author: eburke $
+ * $Revision: 1.26 $
+ * $Date: 2005-02-23 12:32:18 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -758,7 +758,7 @@ getDataChannelDescription(int numChannel):
 	    if(pDataStore.isUseDtAsChannel() && getChannelX() == 0){
 	        setChannelX(-1);
 	        setChannelY(getChannelY() - 1);
-	    } else if(getChannelX() == -1){
+	    } else if(!pDataStore.isUseDtAsChannel() && getChannelX() == -1){
 	        setChannelX(0);
 	        setChannelY(getChannelY() + 1);
 	    }
