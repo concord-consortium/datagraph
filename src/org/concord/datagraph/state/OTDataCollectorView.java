@@ -38,6 +38,7 @@ import java.awt.Insets;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.Point2D;
 import java.util.EventObject;
 import java.util.Vector;
 
@@ -58,7 +59,9 @@ import org.concord.data.ui.DataStoreLabel;
 import org.concord.data.ui.DataValueLabel;
 import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.DataGraphable;
+import org.concord.datagraph.ui.AddDataPointLabelAction;
 import org.concord.datagraph.ui.DataGraph;
+import org.concord.datagraph.ui.DataPointLabel;
 import org.concord.datagraph.ui.DrawDataGraphableAction;
 import org.concord.datagraph.ui.SingleDataAxisGrid;
 import org.concord.framework.data.stream.DataProducer;
@@ -110,6 +113,14 @@ public class OTDataCollectorView
     {
 		dataGraph = new DataGraph();
 		dataGraph.changeToDataGraphToolbar();
+
+		//Add notes button
+		notesLayer = new SelectableList();
+		dataGraph.getGraph().add(notesLayer);
+		SelectableToggleButton addNoteButton = new SelectableToggleButton(new AddDataPointLabelAction(notesLayer, dataGraph.getObjList()));
+		dataGraph.getToolBar().addButton(addNoteButton, "Add a note to a point in the graph");
+		//
+		
 		dataGraph.setAutoFitMode(DataGraph.AUTO_SCROLL_RUNNING_MODE);
 		
 		xOTAxis = dataCollector.getXDataAxis();
@@ -117,6 +128,8 @@ public class OTDataCollectorView
 
 		OTObjectList pfGraphables = dataCollector.getGraphables();
 
+		OTObjectList pfDPLabels = dataCollector.getLabels();
+		
 		DataFlowControlToolBar toolBar = null;
 
 		dataGraph.setLimitsAxisWorld(xOTAxis.getMin(), xOTAxis.getMax(),
@@ -331,6 +344,28 @@ public class OTDataCollectorView
             svPanel.add(cDataButton);
             return svPanel;
         }
+        
+        //Load the data point labels
+        for (int i=0; i<pfDPLabels.size(); i++){
+			OTDataPointLabel otDPLabel = (OTDataPointLabel)pfDPLabels.get(i);
+        	
+			//Create a data point label
+			DataPointLabel l = new DataPointLabel();
+			
+			notesLayer.add(l);
+			
+			l.setMessage(otDPLabel.getText());
+			l.setBackground(new Color(otDPLabel.getColor()));
+			Point2D dataPoint = new Point2D.Double(otDPLabel.getX(), otDPLabel.getY());
+			if (otDPLabel.getIsDataPoint()){
+				l.setDataPoint(dataPoint);
+				l.setLocation(l.getTextBoxDefaultLocation(null, dataPoint));
+			}
+			else{
+				l.setLocation(dataPoint);
+			}
+        }
+        //
         
 		dataGraph.setPreferredSize(new Dimension(400,320));
 		

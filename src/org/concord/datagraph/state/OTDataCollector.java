@@ -58,4 +58,7 @@ public interface OTDataCollector
 	public OTObject getDataSetFolder();
 	
 	public OTObjectList getGraphables();
+
+	//The labels on this data collector are a separate list
+	public OTObjectList getLabels();
 }

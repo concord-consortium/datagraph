@@ -24,9 +24,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.8 $
- * $Date: 2005-03-16 19:00:12 $
- * $Author: scytacki $
+ * $Revision: 1.9 $
+ * $Date: 2005-03-18 09:52:21 $
+ * $Author: imoncada $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -39,10 +39,12 @@ import java.awt.Dimension;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
+import org.concord.datagraph.ui.AddDataPointLabelAction;
 import org.concord.datagraph.ui.DataGraph;
 import org.concord.framework.otrunk.view.OTObjectView;
 import org.concord.framework.otrunk.view.OTViewContainer;
 import org.concord.graph.engine.SelectableList;
+import org.concord.swing.SelectableToggleButton;
 
 
 /**
@@ -76,6 +78,13 @@ public class OTDataGraphView
 	{
 		dataGraph = new DataGraph();
 		dataGraph.changeToDataGraphToolbar();
+		
+		//Add notes button
+		notesLayer = new SelectableList();
+		dataGraph.getGraph().add(notesLayer);
+		SelectableToggleButton addNoteButton = new SelectableToggleButton(new AddDataPointLabelAction(notesLayer, dataGraph.getObjList()));
+		dataGraph.getToolBar().addButton(addNoteButton, "Add a note to a point in the graph");
+		//
 		
 		manager = new DataGraphStateManager(pfObject, dataGraph);
 		manager.initialize(editable);

@@ -24,8 +24,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.9 $
- * $Date: 2005-03-10 07:32:42 $
+ * $Revision: 1.10 $
+ * $Date: 2005-03-18 09:52:21 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -56,7 +56,7 @@ import org.concord.graph.util.ui.PointTextLabel;
  */
 public class DataPointLabel extends PointTextLabel 
 	implements DataStoreListener
-{
+{	
 	//
 	//Variables to watch the graphables that it's mousing over
 	private GraphableList objList;
@@ -190,7 +190,7 @@ public class DataPointLabel extends PointTextLabel
 	/**
 	 * @see org.concord.graph.util.ui.BoxTextLabel#addAtPoint(java.awt.Point)
 	 */
-	protected boolean addAtPoint(Point2D pD, Point2D pW)
+	public boolean addAtPoint(Point2D pD, Point2D pW)
 	{
 		if (indexPointOver != -1 && graphableOver != null){
 			setDataGraphable(graphableOver);

@@ -24,9 +24,9 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.32 $
- * $Date: 2005-03-16 19:00:12 $
- * $Author: scytacki $
+ * $Revision: 1.33 $
+ * $Date: 2005-03-18 09:52:21 $
+ * $Author: imoncada $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -210,17 +210,11 @@ public class DataGraph extends JPanel
 	 *
 	 */
 	public void changeToDataGraphToolbar()
-	{
-		SelectableList notesLayer = new SelectableList();
-		getGraph().add(notesLayer);
-	
+	{	
 		DataGraphToolbar dgToolbar = new DataGraphToolbar();
 		dgToolbar.setButtonsMargin(0);
 		dgToolbar.setFloatable(false);
-		
-		SelectableToggleButton addNoteButton = new SelectableToggleButton(new AddDataPointLabelAction(notesLayer, objList));
-		dgToolbar.addButton(addNoteButton, "Add a note to a point in the graph");
-		
+				
 		setToolBar(dgToolbar);
 	}
 	
