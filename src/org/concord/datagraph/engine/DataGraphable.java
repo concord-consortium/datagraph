@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.30 $
- * $Date: 2005-03-10 03:04:29 $
+ * $Revision: 1.31 $
+ * $Date: 2005-03-10 06:04:54 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -824,7 +824,7 @@ public class DataGraphable extends DefaultGraphable
 	{
 		//Only works with a Writable Data Store!
 		if (!(dataStore instanceof WritableDataStore)) {
-			throw new IllegalArgumentException("The Data Store "+dataStore+" is not Writable!");
+			throw new UnsupportedOperationException("The Data Store "+dataStore+" is not Writable!");
 		}
 		
 		if (numChannel == 0){
@@ -843,17 +843,31 @@ public class DataGraphable extends DefaultGraphable
 	{
 		//Only works with a Writable Data Store!
 		if (!(dataStore instanceof WritableDataStore)) {
-			throw new IllegalArgumentException("The Data Store "+dataStore+" is not Writable!");
+			throw new UnsupportedOperationException("The Data Store "+dataStore+" is not Writable!");
 		}
 		
 		((WritableDataStore)dataStore).removeSampleAt(numSample);
+	}
+	
+	/**
+	 * Only works with a Writable Data Store!
+	 * @param numSample
+	 */
+	public void insertSampleAt(int numSample)
+	{
+		//Only works with a Writable Data Store!
+		if (!(dataStore instanceof WritableDataStore)) {
+			throw new UnsupportedOperationException("The Data Store "+dataStore+" is not Writable!");
+		}
+		
+		((WritableDataStore)dataStore).insertSampleAt(numSample);
 	}
 	
 	public void addPoint(double x, double y)
 	{
 		//Only works with a Writable Data Store!
 		if (!(dataStore instanceof WritableDataStore)) {
-			throw new IllegalArgumentException("The Data Store "+dataStore+" is not Writable!");
+			throw new UnsupportedOperationException("The Data Store "+dataStore+" is not Writable!");
 		}
 		
 		int newPointIndex = getTotalNumSamples();

@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.8 $
- * $Date: 2005-03-10 06:04:54 $
+ * $Revision: 1.9 $
+ * $Date: 2005-03-10 06:05:37 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -278,10 +278,10 @@ public class ControllableDataGraphable extends DataGraphable
 	 */
 	private void addPointOrder(float x, float y, int i, float value)
 	{
-		float v = functionUtil.getXValueAt(i);
-		if (v != value){
-			System.err.println("values different: "+value+" "+v);
-		}
+		//float v = functionUtil.getXValueAt(i);
+		//if (v != value){
+		//	System.err.println("values different: "+value+" "+v);
+		//}
 		if (i < getTotalNumSamples()){
 			if (value != x){
 				insertSampleAt(i);
