@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.4 $
- * $Date: 2004-11-10 22:28:54 $
+ * $Revision: 1.5 $
+ * $Date: 2004-11-10 22:53:32 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -40,6 +40,9 @@ public class DataGraphAutoScaler extends DataGraphDaemon
 			Object obj = graphables.elementAt(i);
 			if (obj instanceof DataGraphable){
 				dg = (DataGraphable)obj;
+				if(dg.getTotalNumSamples() < 1) {
+					continue;
+				}
 				
 				minX = Math.min(dg.getMinXValue(), minX);
 				maxX = Math.max(dg.getMaxXValue(), maxX);
