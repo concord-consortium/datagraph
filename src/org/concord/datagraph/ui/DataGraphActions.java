@@ -1,8 +1,8 @@
 /*
  * Last modification information:
- * $Revision: 1.3 $
- * $Date: 2004-09-14 23:05:27 $
- * $Author: dima $
+ * $Revision: 1.4 $
+ * $Date: 2004-09-15 14:58:09 $
+ * $Author: imoncada $
  *
  * License Information
  * Copyright 2004 The Concord Consortium 
@@ -15,6 +15,8 @@ import java.awt.Menu;
 import java.awt.MenuItem;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -31,11 +33,20 @@ import org.concord.swing.CustomDialog;
 
 /**
  * DataGraphActions
- * Class name and description
+ * A class that manages the possible actions that a user
+ * can do with a Data Graph
+ * This class can be used to add a swing or AWT menu that
+ * automatically contains all the possible actions on a 
+ * data graph.
+ * It can also be used as a factory class for all the actions 
+ * related to the data graph. For example, a user interface
+ * can add buttons and associate them with actions generated
+ * from this class.
  *
  * Date created: Sep 13, 2004
  *
  * @author imoncada<p>
+ * @author dima<p>
  *
  */
 public class DataGraphActions
@@ -61,7 +72,7 @@ public class DataGraphActions
 		this.graph = graph;
 	}
 	
-	public void initSwingMenu()
+	protected void initSwingMenu()
 	{
 		swingMenu = new JMenu("Graph");
 				
@@ -74,7 +85,7 @@ public class DataGraphActions
 
 	}
 
-	public void initAWTMenu()
+	protected void initAWTMenu()
 	{
 		awtMenu = new Menu("Graph");
 				
@@ -104,8 +115,6 @@ public class DataGraphActions
 		action.setAWTMenuOwner(mitem);
 		m.add(mitem);
 	}
-
-
 
 	public void addGridActionsSwing(JMenu m)
 	{
@@ -161,8 +170,6 @@ public class DataGraphActions
 		action.setAWTMenuOwner(mitem);
 	}
 
-
-	
 	public AbstractAction getAction(int type)
 	{
 		return new GraphAction(type);
@@ -170,8 +177,9 @@ public class DataGraphActions
 	
 	public static void main(String[] args)
 	{
-	    boolean swingFrame = false;
-	    if(swingFrame){
+	    boolean swingFrame = true;
+	    
+	    if (swingFrame){
     		JFrame f = new JFrame();
     		DataGraphExample2MainPanel panel = new DataGraphExample2MainPanel();	
     		DataGraphActions graphA = new DataGraphActions(panel.getGraph());
@@ -184,7 +192,8 @@ public class DataGraphActions
     		f.setSize(800, 600);
     		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     		f.show();
-        }else{
+        }
+	    else{
     		Frame f = new Frame();
     		DataGraphExample2MainPanel panel = new DataGraphExample2MainPanel();	
     		DataGraphActions graphA = new DataGraphActions(panel.getGraph());
@@ -195,6 +204,12 @@ public class DataGraphActions
     		
     		f.add(panel);
     		f.setSize(800, 600);
+    		f.addWindowListener( new WindowAdapter(){
+				public void windowClosing(WindowEvent e)
+				{
+					System.exit(0);
+				}
+    		});
     		f.show();
         }
 	}
@@ -348,8 +363,10 @@ public class DataGraphActions
   
 	}
 	
-	/**
-	 * @return Returns the menu.
+	/** 
+	 * Returns a swing menu with all the actions 
+	 * that the user can do with the data graph
+	 * @return swing menu.
 	 */
 	public JMenu getSwingMenu()
 	{
@@ -358,6 +375,12 @@ public class DataGraphActions
 		}
 		return swingMenu;
 	}
+	
+	/** 
+	 * Returns an AWT menu with all the actions 
+	 * that the user can do with the data graph
+	 * @return AWT menu.
+	 */
 	public Menu getAWTMenu()
 	{
 		if (awtMenu == null){
