@@ -24,9 +24,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.2 $
- * $Date: 2005-01-29 20:42:38 $
- * $Author: maven $
+ * $Revision: 1.3 $
+ * $Date: 2005-03-09 17:14:12 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -43,8 +43,8 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 
 import org.concord.data.ui.DataTableCellRenderer;
-import org.concord.data.ui.DataTablePanel;
 import org.concord.data.ui.DataTableEditor;
+import org.concord.data.ui.DataTablePanel;
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.framework.data.stream.DataStore;
 import org.concord.graph.engine.GraphableList;

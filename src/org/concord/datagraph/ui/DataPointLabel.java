@@ -24,31 +24,22 @@
 
 /*
  * Last modification information:
- * $Revision: 1.7 $
- * $Date: 2005-03-09 05:09:51 $
- * $Author: imoncada $
+ * $Revision: 1.8 $
+ * $Date: 2005-03-09 17:14:12 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
 */
 package org.concord.datagraph.ui;
 
-import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.Shape;
-import java.awt.Stroke;
 import java.awt.geom.Point2D;
 
-import javax.sound.midi.ControllerEventListener;
-import javax.swing.event.ChangeEvent;
-
-import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.graph.engine.CoordinateSystem;
 import org.concord.graph.engine.GraphableList;
-import org.concord.graph.util.ui.BoxTextLabel;
 import org.concord.graph.util.ui.PointTextLabel;
 
 

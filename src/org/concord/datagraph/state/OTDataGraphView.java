@@ -24,8 +24,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.6 $
- * $Date: 2005-03-07 04:53:33 $
+ * $Revision: 1.7 $
+ * $Date: 2005-03-09 17:14:12 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -38,9 +38,7 @@ import java.awt.BorderLayout;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
-import org.concord.datagraph.ui.AddDataPointLabelAction;
 import org.concord.datagraph.ui.DataGraph;
-import org.concord.datagraph.ui.DataGraphToolbar;
 import org.concord.framework.otrunk.view.OTObjectView;
 import org.concord.framework.otrunk.view.OTViewContainer;
 import org.concord.graph.engine.SelectableList;

@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.4 $
- * $Date: 2005-01-31 17:41:33 $
+ * $Revision: 1.5 $
+ * $Date: 2005-03-09 17:14:12 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -65,6 +65,10 @@ public interface OTDataGraphable
 	public boolean getControllable();
 	public void setControllable(boolean flag);
 	
+	public static boolean DEFAULT_allowHide = true;
+	public boolean getAllowHide();
+	public void setAllowHide(boolean flag);
+		
 	public OTDataStore getDataStore();
 	public void setDataStore(OTDataStore store);
 	

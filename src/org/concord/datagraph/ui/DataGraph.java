@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.30 $
- * $Date: 2005-03-07 04:53:33 $
+ * $Revision: 1.31 $
+ * $Date: 2005-03-09 17:14:12 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -34,6 +34,8 @@
 package org.concord.datagraph.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Insets;
 import java.awt.geom.Point2D;
 import java.util.EventObject;
@@ -41,9 +43,10 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
-import org.concord.data.ui.DataFlowControlToolBar;
 import org.concord.datagraph.engine.DataGraphAutoScaler;
 import org.concord.datagraph.engine.DataGraphAutoScroller;
 import org.concord.datagraph.engine.DataGraphable;
@@ -114,7 +117,8 @@ public class DataGraph extends JPanel
 	protected DataGraphAutoScaler scaler = null;
 	protected DataGraphAutoScroller scroller = null;
     private boolean running;
-    private int autoFitMode;		
+    private int autoFitMode;
+    private JLabel titleLabel;		
 	
 	/**
 	 * Creates a default data graph that will have: a GraphWindow with a Grid2D that displays
@@ -182,6 +186,20 @@ public class DataGraph extends JPanel
 		////////
 
 		initScaleObject();
+	}
+	
+	public void setTitle(String title)
+	{
+	    if(titleLabel == null){
+	        titleLabel = new JLabel(title);
+	        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+	        titleLabel.setBackground(Color.WHITE);
+	        titleLabel.setOpaque(true);
+	        titleLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
+	        add(titleLabel, BorderLayout.NORTH);
+	    } else {
+	        titleLabel.setText(title);
+	    }
 	}
 	
 	/**

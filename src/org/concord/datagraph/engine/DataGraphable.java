@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.28 $
- * $Date: 2005-03-07 04:53:33 $
+ * $Revision: 1.29 $
+ * $Date: 2005-03-09 17:14:12 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -395,6 +395,12 @@ public class DataGraphable extends DefaultGraphable
     	}
    		initialI = lastValueCalculated + 1;
 
+   		
+   		// This is a bit a hack to handle cases that aren't handled correctly
+   		// if the points are added atomically.  Then there should never be
+   		// and invalid points.  So this code shouldn't be run, however
+   		// some data stores don't add points atomically so this case might
+   		// happen sometimes.
 	    if(initialI != 0 && !validPrevPoint) {
 	        System.err.println("last drawn point was invalid");
 	        
