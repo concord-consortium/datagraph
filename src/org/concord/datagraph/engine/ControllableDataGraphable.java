@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.13 $
- * $Date: 2005-04-04 02:05:57 $
+ * $Revision: 1.14 $
+ * $Date: 2005-04-05 00:13:23 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -475,5 +475,13 @@ public class ControllableDataGraphable extends DataGraphable
 	public void setDrawAlwaysConnected(boolean drawAlwaysConnected)
 	{
 		this.drawAlwaysConnected = drawAlwaysConnected;
+	}
+
+	/**
+	 * @see org.concord.graph.util.engine.DrawingObject#isResizeEnabled()
+	 */
+	public boolean isResizeEnabled()
+	{
+		return false;
 	}
 }

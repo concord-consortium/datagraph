@@ -24,8 +24,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.4 $
- * $Date: 2005-04-03 19:41:47 $
+ * $Revision: 1.5 $
+ * $Date: 2005-04-05 00:13:23 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -110,7 +110,7 @@ public class ControllableDataGraphableDrawing extends ControllableDataGraphable
 		super.draw(g);
 
 		//Draw the little squares in the corners
-		if (isShowBoundingBox()){
+		if (isShowBoundingBox() && isResizeEnabled()){
 			g.setColor(boundingBoxColor);
 
 			g.fillRect((int)(boundingBox.getX()) - 2, (int)(boundingBox.getY()) - 2, 5, 5);
