@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.5 $
- * $Date: 2005-03-06 06:10:45 $
+ * $Revision: 1.6 $
+ * $Date: 2005-03-08 08:54:55 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -36,6 +36,7 @@ package org.concord.datagraph.engine;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 
+import org.concord.data.stream.PointsDataStore;
 import org.concord.framework.data.stream.DataStore;
 import org.concord.framework.data.stream.WritableDataStore;
 import org.concord.graph.engine.CoordinateSystem;
@@ -65,10 +66,14 @@ public class ControllableDataGraphable extends DataGraphable
 	public final static int LINETYPE_FREE = 0;
 	public final static int LINETYPE_FUNCTION = 1;
 	
-	protected int lineType = LINETYPE_FREE;	
+	protected int lineType = LINETYPE_FUNCTION;//LINETYPE_FREE;	
 	
 	private boolean mouseClicked = false;
 	private int indexPointClicked = -1;
+	
+	private float startDragX = Float.NaN;
+	private float startDragY = Float.NaN;
+
 		
 	/**
 	 * 
@@ -112,10 +117,19 @@ public class ControllableDataGraphable extends DataGraphable
 		
 		if (dragMode == DRAGMODE_ADDPOINTS || dragMode == DRAGMODE_ADDMULTIPLEPOINTS){
 			//Add a new point
-			addPoint(pW.getX(), pW.getY());
-			
-			//Sort the points 
-			
+			if (lineType == LINETYPE_FREE){
+				addPoint(pW.getX(), pW.getY());
+			}
+			else if (lineType == LINETYPE_FUNCTION){
+				
+				//XXX FIXME TEST!!!
+				if ((dataStore instanceof PointsDataStore)) {
+					//System.out.println("pressed "+(float)pW.getX());
+					((PointsDataStore)dataStore).addPointOrder((float)pW.getX(), (float)pW.getY());
+					startDragX = (float)pW.getX();
+					startDragY = (float)pW.getY();
+				}
+			}
 		}
 		else if (dragMode == DRAGMODE_REMOVEPOINTS){
 			//Remove the current point
@@ -130,6 +144,7 @@ public class ControllableDataGraphable extends DataGraphable
 	 */
 	public boolean mouseDragged(Point p)
 	{
+		System.out.println("dragged "+p);
 		Point2D pW;
 		
 		if (dragMode == DRAGMODE_NONE) return false;
@@ -149,7 +164,22 @@ public class ControllableDataGraphable extends DataGraphable
 		}
 		else if (dragMode == DRAGMODE_ADDMULTIPLEPOINTS){
 			//Add a new point
-			addPoint(pW.getX(), pW.getY());
+			if (lineType == LINETYPE_FREE){
+				addPoint(pW.getX(), pW.getY());
+			}
+			else if (lineType == LINETYPE_FUNCTION){
+				
+				//XXX FIXME TEST!!!
+				if ((dataStore instanceof PointsDataStore)) {
+					//if (startDragX != (float)pW.getX() && startDragY != (float)pW.getY()){
+						//System.out.println("dragged "+(float)pW.getX());
+						//((PointsDataStore)dataStore).addPointOrder((float)pW.getX(), (float)pW.getY());
+						((PointsDataStore)dataStore).addPointOrderFromTo((float)pW.getX(), (float)pW.getY(), startDragX);
+						startDragX = (float)pW.getX();
+						startDragY = (float)pW.getY();
+					//}
+				}
+			}
 		}
 		
 		return false;
@@ -162,6 +192,7 @@ public class ControllableDataGraphable extends DataGraphable
 	{
 		indexPointClicked = -1;
 		mouseClicked = false;
+		startDragX = Float.NaN;
 		return false;
 	}
 
