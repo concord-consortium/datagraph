@@ -24,9 +24,9 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.2 $
- * $Date: 2004-12-12 04:04:57 $
- * $Author: maven $
+ * $Revision: 1.3 $
+ * $Date: 2005-01-31 17:41:33 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -34,6 +34,7 @@
 package org.concord.datagraph.state;
 
 import org.concord.framework.otrunk.OTObject;
+import org.concord.framework.otrunk.OTObjectList;
 
 
 /**
@@ -56,4 +57,9 @@ public interface OTDataAxis
 
 	public void setLabel(String label);
 	public String getLabel();
+	
+	public void setUnits(String units);
+	public String getUnits();
+	
+	public OTObjectList getGraphables();	
 }

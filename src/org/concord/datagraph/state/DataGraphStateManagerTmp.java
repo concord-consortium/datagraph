@@ -44,6 +44,7 @@ import org.concord.datagraph.engine.DataGraphable;
 import org.concord.datagraph.ui.DataGraph;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.WritableDataStore;
+import org.concord.framework.otrunk.OTObjectList;
 import org.concord.graph.engine.GraphableList;
 import org.concord.graph.ui.Grid2D;
 import org.concord.graph.ui.SingleAxisGrid;
@@ -73,10 +74,13 @@ public class DataGraphStateManagerTmp extends DataGraphStateManager
 	 */
 	public void initializeControllable()
 	{
-		xAxis = pfObject.getXDataAxis();
-		yAxis = pfObject.getYDataAxis();
-		
-		pfGraphables = pfObject.getDataGraphables();
+		OTObjectList xAxisList = pfObject.getXDataAxis();
+		OTObjectList yAxisList = pfObject.getYDataAxis();
+
+		xAxis = (OTDataAxis)xAxisList.get(0);
+		yAxis = (OTDataAxis)yAxisList.get(0);
+				
+		pfGraphables = pfObject.getGraphables();
 
 		// OTObjectList dataProducers = pfObject.getDataProducers();				
 		DataFlowControlToolBar toolBar = null;

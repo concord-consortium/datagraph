@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.3 $
- * $Date: 2005-01-27 16:43:13 $
+ * $Revision: 1.4 $
+ * $Date: 2005-01-31 17:41:33 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -69,5 +69,13 @@ public interface OTDataGraphable
 	public void setDataStore(OTDataStore store);
 	
 	public OTObject getDataProducer();
-	public void setDataProducer(OTObject producer);	
+	public void setDataProducer(OTObject producer);
+
+	public static int DEFAULT_xColumn = 0;
+	public int getXColumn();
+	public void setXColumn(int xCol);
+	
+	public static int DEFAULT_yColumn = 1;
+	public int getYColumn();
+	public void setYColumn(int yCol);
 }

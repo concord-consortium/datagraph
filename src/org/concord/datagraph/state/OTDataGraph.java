@@ -24,9 +24,9 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.2 $
- * $Date: 2004-12-12 04:04:57 $
- * $Author: maven $
+ * $Revision: 1.3 $
+ * $Date: 2005-01-31 17:41:33 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -48,12 +48,9 @@ import org.concord.framework.otrunk.OTObjectList;
  */
 public interface OTDataGraph extends OTObject
 {
-	public OTObjectList getDataGraphables();
+	public OTObjectList getGraphables();
 	
-	public OTDataAxis getYDataAxis();
-	public void setYDataAxis(OTDataAxis axis);
+	public OTObjectList getYDataAxis();
 
-	public OTDataAxis getXDataAxis();
-	public void setXDataAxis(OTDataAxis axis);
-	
+	public OTObjectList getXDataAxis();	
 }

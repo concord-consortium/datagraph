@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.3 $
- * $Date: 2005-01-27 16:43:13 $
+ * $Revision: 1.4 $
+ * $Date: 2005-01-31 17:41:33 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -84,22 +84,51 @@ public class DataGraphStateManager
 		this.dataGraph = dataGraph;
 	}
 
+	public static void setupAxisLabel(SingleAxisGrid sAxis, OTDataAxis axis)
+	{
+		String axisLabel = "";
+		
+		if(axis.getLabel() != null) {
+			axisLabel += axis.getLabel();
+		}
+	
+		if(axis.getUnits() != null) {
+			axisLabel += "(" + axis.getUnits() + ")";
+		}
+		
+		if(axisLabel.length() > 0) {
+			sAxis.setAxisLabel(axisLabel);
+		}		
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.concord.portfolio.views.PortfolioView#getComponent(boolean)
 	 */
 	public void initialize()
 	{
-		xAxis = pfObject.getXDataAxis();
-		yAxis = pfObject.getYDataAxis();
+		OTObjectList xAxisList = pfObject.getXDataAxis();
+		OTObjectList yAxisList = pfObject.getYDataAxis();
+
+		xAxis = (OTDataAxis)xAxisList.get(0);
+		yAxis = (OTDataAxis)yAxisList.get(0);
 		
-		pfGraphables = pfObject.getDataGraphables();
+		pfGraphables = pfObject.getGraphables();
 
 		// OTObjectList dataProducers = pfObject.getDataProducers();				
 		DataFlowControlToolBar toolBar = null;
 		
 		dataGraph.setLimitsAxisWorld(xAxis.getMin(), xAxis.getMax(),
 				yAxis.getMin(), yAxis.getMax());
+
+		Grid2D grid = dataGraph.getGrid();
+
+		SingleAxisGrid sXAxis = grid.getXGrid();
+		setupAxisLabel(sXAxis, xAxis);
 		
+		SingleAxisGrid sYAxis = grid.getYGrid();
+		setupAxisLabel(sYAxis, yAxis);
+		
+
 		// for each list item get the data producer object
 		// add it to the data graph
 		for(int i=0; i<pfGraphables.size(); i++) {
@@ -127,9 +156,13 @@ public class DataGraphStateManager
 			} else {
 				if(otGraphable.getControllable()) {
 					realGraphable = new ControllableDataGraphable();
-					realGraphable.setDataStore(dataStore);
+					realGraphable.setDataStore(dataStore, 
+							otGraphable.getXColumn(), 
+							otGraphable.getYColumn());
 				} else {
-					realGraphable = dataGraph.createDataGraphable(dataStore);
+					realGraphable = dataGraph.createDataGraphable(dataStore, 
+							otGraphable.getXColumn(), 
+							otGraphable.getYColumn());
 				}
 			}
 			// realGraphable.addGraphableListener(this);
