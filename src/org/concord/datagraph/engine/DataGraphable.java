@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.2 $
- * $Date: 2004-09-02 16:27:28 $
+ * $Revision: 1.3 $
+ * $Date: 2004-09-09 19:05:38 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -34,7 +34,12 @@ public class DataGraphable extends DefaultGraphable
 {
 	protected DataProducer dataSource;
 
-	protected Vector yValues = new Vector();
+	protected Vector xValues;
+	protected Vector yValues;
+	
+	//By default, it graphs the dt (x axis) and the first channel (y axis) 
+	protected int channelX = -1;
+	protected int channelY = 0;
 	
 	protected Color lineColor = Color.black;
 	protected float lineWidth = 2;
@@ -54,8 +59,19 @@ public class DataGraphable extends DefaultGraphable
      */
 	public DataGraphable()
 	{
+		xValues = new Vector();
+		yValues = new Vector();
 		path = new GeneralPath();
 		dataStoreListeners = new Vector();
+	}
+	
+	/**
+     * Default constructor.
+     */
+	public DataGraphable(DataProducer source)
+	{
+		this();
+		setDataProducer(source);
 	}
 	
 	/*
@@ -72,6 +88,14 @@ public class DataGraphable extends DefaultGraphable
 			dataSource.addDataListener(this);
 		}
 	}
+	
+	public void setDataProducer(DataProducer source, int channelXAxis, int channelYAxis)
+	{
+		channelX = channelXAxis;
+		channelY = channelYAxis;
+		setDataProducer(source);
+	}
+	
 
 	/*
 	 ** Handler of the data received event

@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.3 $
- * $Date: 2004-09-07 17:59:21 $
+ * $Revision: 1.4 $
+ * $Date: 2004-09-09 19:05:38 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -67,10 +67,16 @@ public class DataGraphExample2MainPanel extends JPanel
 		mgrid.getXGrid().setAxisLabel("X Axis");
 		mgrid.getYGrid().setAxisLabel("Y Axis");
 		
-		mgrid.getXGrid().setAxisDrawMode(SingleAxisGrid.ALWAYSVISIBLE);
-		mgrid.getYGrid().setAxisDrawMode(SingleAxisGrid.ALWAYSVISIBLE);
+		//mgrid.getXGrid().setAxisDrawMode(SingleAxisGrid.ALWAYSVISIBLE);
+		//mgrid.getYGrid().setAxisDrawMode(SingleAxisGrid.ALWAYSVISIBLE);
 		
-		graph.getGraph().getDefaultGraphArea().setOriginCentered(true);
+		//graph.getGraph().getDefaultGraphArea().setOriginCentered(true);
+
+		//graph.setOriginOffsetPercentage(0.2, 0.2);
+		
+		//graph.setLimitsAxisWorld(6.9, 10.1, -1.1, 5.1);
+		
+		graph.setOriginOffsetDisplay(0, 0);
 		
 		dp1 = createNewDataProducer();
 		dp2 = createNewDataProducer();

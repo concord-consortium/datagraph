@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.5 $
- * $Date: 2004-09-08 23:32:43 $
+ * $Revision: 1.6 $
+ * $Date: 2004-09-09 19:05:38 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -13,12 +13,15 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.*;
 import javax.swing.*;
+
 import java.util.*;
 
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.framework.data.stream.*;
 import org.concord.graph.ui.*;
 import org.concord.graph.engine.*;
+import org.concord.graph.event.GraphWindowListener;
+import org.concord.graph.event.GraphWindowResizeEvent;
 import org.concord.graph.examples.*;
 
 /**
@@ -36,7 +39,7 @@ import org.concord.graph.examples.*;
  */
 
 public class DataGraph extends JPanel
-	implements DataConsumer
+	implements DataConsumer, GraphWindowListener
 {
 	//Graph, grid and toolbar
 	protected GraphWindow graph;
@@ -54,6 +57,9 @@ public class DataGraph extends JPanel
 	
 	protected boolean adjustOriginOnReset = true;
 	
+	protected DashedBox selectionBox;
+	protected boolean limitsSet = false;
+	
 	public DataGraph()
 	{
 		////////
@@ -70,6 +76,11 @@ public class DataGraph extends JPanel
 		defaultCS = (DefaultCoordinateSystem2D)defaultGA.getCoordinateSystem();
 
 		defaultGA.setInsets(new Insets(5,40,40,5));
+		
+		graph.addGraphWindowListener(this);
+		
+		//By default, the origin is the lower left corner of the graph area
+		setOriginOffsetPercentage(0,0);
 		
 		//setOriginOffsetDisplay(20, 0);
 		//defaultGA.setYCentered(true);
@@ -91,6 +102,10 @@ public class DataGraph extends JPanel
 		toolBar.setFloatable(false);
 		////////
 
+		selectionBox = new DashedBox();
+		selectionBox.setVisible(false);
+		graph.add(selectionBox);
+		
 		////////
 		// List of Graphable Objects
 		objList = new SelectableList();
@@ -100,7 +115,7 @@ public class DataGraph extends JPanel
 		setLayout(new BorderLayout());
 		add(graph);
 		add(toolBar, BorderLayout.EAST);		
-
+		
 		initScaleObject();
 	}
 	
@@ -195,14 +210,15 @@ public class DataGraph extends JPanel
 */	
 	public void zoomSelection()
 	{
-		DashedBox selectionBox = toolBar.getSelectionBox();
-		if(selectionBox == null) { 
-			return; 
-		}
-		
 		selectionBox.zoom();		
 	}
 
+	/**
+	 * Sets the scale of the coordinate system given the number of pixels
+	 * desired in a world unit
+	 * @param xScale	Number of pixels per world unit (x direction)
+	 * @param yScale	Number of pixels per world unit (y direction)
+	 */
 	public void setScale(double xScale, double yScale)
 	{
 		CoordinateSystem coord = getGraph().getDefaultGraphArea().getCoordinateSystem();
@@ -225,17 +241,41 @@ public class DataGraph extends JPanel
 		return coord.getScale().getY();
 	}
 	
+	/**
+	 * Sets the position of the axes' origin, relative to
+	 * the UPPER LEFT corner of the window
+	 * @param xPos	Position of the origin in the x direction, relative to the left edge (DISPLAY COORDINATES)
+	 * @param yPos	Position of the origin in the x direction, relative to the left edge (DISPLAY COORDINATES)
+	 */
 	public void setOriginOffsetDisplay(double xPos, double yPos)
 	{
-		CoordinateSystem coord = getGraph().getDefaultGraphArea().getCoordinateSystem();
+		setOriginOffsetPercentage(-1, -1);
 
+		//xPos and yPos are relative to the UPPER LEFT CORNER of the window
+		xPos = xPos + defaultGA.getInsets().left;
+		yPos = yPos + defaultGA.getInsets().top;
+		
 		Point2D.Double origin = new Point2D.Double(xPos, yPos);
-		coord.setOriginOffsetDisplay(origin);		
+		defaultCS.setOriginOffsetDisplay(origin);
 	}
 	
-	public void setOriginOffsetPercentage(double originPositionX, double originPositionY)
+	/**
+	 * Sets the percentage of the position of the axes' origin, relative to
+	 * the LOWER LEFT corner of the window
+	 * The parameters (between 0 and 1) represent values as a 
+	 * PERCENTAGE of the SIZE of the graph area.
+	 * 0 means the origin will be AT the LOWER LEFT corner
+	 * 1 means it will be at the opposite corner
+	 * 0.2 means the origin will be at a distance of 20% the size of the grap area, 
+	 * from the lower left corner
+	 * @param originPercentageX	Distance (x direction) from the origin to the left edge, as a percentage of
+	 * 							the WIDTH of the graph area (a value from 0 to 1)
+	 * @param originPercentageY	Distance (y direction) from the origin to the lower edge, as a percentage of
+	 * 							the HEIGHT of the graph area (a value from 0 to 1)
+	 */
+	public void setOriginOffsetPercentage(double originPercentageX, double originPercentageY)
 	{
-		getGraph().getDefaultGraphArea().setOriginPositionPercentage(originPositionX, originPositionY);
+		getGraph().getDefaultGraphArea().setOriginPositionPercentage(originPercentageX, originPercentageY);
 	}
 	
 	public double getXOriginOffsetDisplay()
@@ -295,12 +335,29 @@ public class DataGraph extends JPanel
 
 		toolBar.showDashedBox(true);
 		
-		DashedBox selectionBox = toolBar.getSelectionBox();		
-		if (selectionBox != null){
-			selectionBox.setBounds(x,y,width,height);
-		}
+		selectionBox.setBounds(x,y,width,height);
 	}
 
+	/**
+	 * Sets up the axis of the graph.
+	 * It will display values from minX to maxX on the X axis and
+	 * from minY to maxY on the Y axis
+	 * The values are ALL in WORLD COORDINATES!
+	 * @param minX	minimum value displayed in the x axis (WORLD COORDINATES)
+	 * @param maxX	maximum value displayed in the x axis (WORLD COORDINATES)
+	 * @param minY	minimum value displayed in the y axis (WORLD COORDINATES)
+	 * @param maxY	maximum value displayed in the y axis (WORLD COORDINATES)
+	 */
+	public void setLimitsAxisWorld(double minX, double maxX, double minY, double maxY)
+	{
+		setOriginOffsetPercentage(-1, -1);
+		
+		setSelection((float)minX, (float)minY, (float)(maxX - minX), (float)(maxY - minY));
+		zoomSelection();
+		
+		limitsSet = true;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.concord.framework.datastream.DataConsumer#addDataSource(org.concord.framework.datastream.DataProducer)
 	 */
@@ -343,6 +400,31 @@ public class DataGraph extends JPanel
 		}
 	}
 
+	/**
+	 * Adds a graphable to the graph that will graph the data coming from the specified
+	 * data source, using channelXAxis as the index for the channel that will be in the x axis
+	 * of the graph, and channelYAxis as the index for the channel that will be in the y axis.
+	 * If one of the indexes is -1, it will take the dt as the data for that axis
+	 * @param source
+	 * @param channelXAxis
+	 * @param channelYAxis
+	 */
+	public void addDataGraphable(DataProducer source, int channelXAxis, int channelYAxis)
+	{
+	}
+	
+	/**
+	 * Adds a data graphable to the list of graphables
+	 * @param graphable
+	 */
+	public void addDataGraphable(DataGraphable graphable)
+	{
+		if (graphable.getGraphArea() == null){
+			graphable.setGraphArea(defaultGA);
+		}
+		objList.add(graphable);
+	}
+	
 	public GraphableList getObjList()
 	{
 		return objList;
@@ -382,5 +464,22 @@ public class DataGraph extends JPanel
 				System.exit(0);
 			}			
 		});
+	}
+
+	/* (non-Javadoc)
+	 * @see org.concord.graph.event.GraphWindowListener#windowChanged(java.util.EventObject)
+	 */
+	public void windowChanged(EventObject e)
+	{
+	}
+
+	/* (non-Javadoc)
+	 * @see org.concord.graph.event.GraphWindowListener#windowResized(org.concord.graph.event.GraphWindowResizeEvent)
+	 */
+	public void windowResized(GraphWindowResizeEvent e)
+	{
+		if (limitsSet){
+			zoomSelection();
+		}
 	}
 }
