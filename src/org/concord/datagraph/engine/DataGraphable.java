@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.8 $
- * $Date: 2004-09-17 18:04:09 $
+ * $Revision: 1.9 $
+ * $Date: 2004-09-17 20:59:42 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -147,6 +147,7 @@ public class DataGraphable extends DefaultGraphable
 	 */
 	public void reset()
 	{
+		xValues.removeAllElements();
 		yValues.removeAllElements();
 		needUpdate = true;
 		needUpdateDataReceived = false;
@@ -219,8 +220,7 @@ public class DataGraphable extends DefaultGraphable
 		g.setStroke(oldStroke);
 		g.setClip(oldClip);
 
-		long a = System.currentTimeMillis();
-		
+		long a = System.currentTimeMillis();		
 		//System.out.println(a-b);
 	}
 
