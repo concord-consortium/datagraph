@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.12 $
- * $Date: 2004-10-21 22:38:28 $
+ * $Revision: 1.13 $
+ * $Date: 2004-10-25 02:30:06 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -47,12 +47,12 @@ public class DataGraphable extends DefaultGraphable
 	private int dataOffset = 0;
 	private int nextSampleOffset = 1;
 	private float dt = 1;
-
-	protected GeneralPath path;
-	protected GeneralPath crossPath;
 		
 	protected DataStreamDescription dataStreamDesc;
 	
+	protected GeneralPath path;
+	protected GeneralPath crossPath;
+
 	protected Vector dataStoreListeners;
 	
 	protected boolean connectPoints = true; 
