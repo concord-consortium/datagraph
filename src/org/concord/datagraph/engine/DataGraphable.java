@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.11 $
- * $Date: 2004-09-23 15:36:40 $
+ * $Revision: 1.12 $
+ * $Date: 2004-10-21 22:38:28 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -66,6 +66,11 @@ public class DataGraphable extends DefaultGraphable
 	
 	protected boolean autoRepaintData = true;
 	
+	private float minXValue;
+	private float maxXValue;
+	private float minYValue;
+	private float maxYValue;
+	
 	/**
      * Default constructor.
      */
@@ -76,6 +81,11 @@ public class DataGraphable extends DefaultGraphable
 		path = new GeneralPath();
 		crossPath = new GeneralPath();
 		dataStoreListeners = new Vector();
+
+		minXValue = Float.NaN;
+		maxXValue = Float.NaN;
+		minYValue = Float.NaN;
+		maxYValue = Float.NaN;
 	}
 	
 	/**
@@ -156,6 +166,12 @@ public class DataGraphable extends DefaultGraphable
 		needUpdate = true;
 		needUpdateDataReceived = false;
 		lastTime = 0;
+		
+		minXValue = Float.NaN;
+		maxXValue = Float.NaN;
+		minYValue = Float.NaN;
+		maxYValue = Float.NaN;
+		
 		notifyChange();
 	}
 
@@ -175,6 +191,11 @@ public class DataGraphable extends DefaultGraphable
 		lineColor = c;
 	}
 
+	public Color getColor()
+	{
+		return lineColor;
+	}
+	
 	/*
 	 * Sets the line width of the path drawn on the graph
 	 */
@@ -280,6 +301,20 @@ public class DataGraphable extends DefaultGraphable
 			else{
 				Float yFloat = (Float)yValues.elementAt(i);
 				py = yFloat.floatValue();
+			}
+			
+			//Always keep the min and max value available
+			if (Float.isNaN(minXValue) || px < minXValue){
+				minXValue = px;
+			}
+			if (Float.isNaN(maxXValue) || px > maxXValue){
+				maxXValue = px;
+			}
+			if (Float.isNaN(minYValue) || py < minYValue){
+				minYValue = py;
+			}
+			if (Float.isNaN(maxYValue) || py > maxYValue){
+				maxYValue = py;
 			}
 			
 			Point2D.Double dataPoint = new Point2D.Double(px, py);
@@ -471,21 +506,6 @@ public class DataGraphable extends DefaultGraphable
 	}
 	
 	/**
-	 * @return Returns the lineColor.
-	 */
-	public Color getLineColor()
-	{
-		return lineColor;
-	}
-	
-	/**
-	 * @param lineColor The lineColor to set.
-	 */
-	public void setLineColor(Color lineColor)
-	{
-		this.lineColor = lineColor;
-	}
-	/**
 	 * @return Returns the channelX.
 	 */
 	public int getChannelX()
@@ -600,5 +620,25 @@ public class DataGraphable extends DefaultGraphable
 	public DataProducer getDataProducer()
 	{
 		return dataSource;
+	}
+	
+	public float getMinXValue()
+	{
+		return minXValue;
+	}
+
+	public float getMaxXValue()
+	{
+		return maxXValue;
+	}
+	
+	public float getMinYValue()
+	{
+		return minYValue;
+	}
+
+	public float getMaxYValue()
+	{
+		return maxYValue;
 	}
 }
