@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.5 $
- * $Date: 2004-09-09 21:46:40 $
+ * $Revision: 1.6 $
+ * $Date: 2004-09-09 22:14:04 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -26,11 +26,11 @@ import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.DefaultDataProducer;
 import org.concord.framework.data.stream.DefaultMultipleDataProducer;
 import org.concord.graph.ui.Grid2D;
-import org.concord.graph.ui.SingleAxisGrid;
 import org.concord.data.ui.DataTableCellRenderer;
 import org.concord.data.ui.DataTableModel;
 import org.concord.data.ui.DataTablePanel;
 import org.concord.data.ui.TableCellColorModel;
+import org.concord.datagraph.engine.DataGraphable;
 
 /**
  * DataGraphExampleMainPanel
@@ -85,7 +85,9 @@ public class DataGraphExample2MainPanel extends JPanel
 		dp2 = createNewDataProducer();
 		
 		dp3 = new DefaultMultipleDataProducer();
-		graph.addDataGraphable(dp3, 0, 1);
+		DataGraphable dg = graph.createDataGraphable(dp3, 0, 1);
+		dg.setColor(255,128,0);
+		graph.addDataGraphable(dg);
 		
 		graph.addDataProducer(dp1);
 		graph.addDataProducer(dp2);

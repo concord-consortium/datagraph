@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.8 $
- * $Date: 2004-09-09 21:46:40 $
+ * $Revision: 1.9 $
+ * $Date: 2004-09-09 22:14:04 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -411,15 +411,16 @@ public class DataGraph extends JPanel
 	}
 
 	/**
-	 * Adds a graphable to the graph that will graph the data coming from the specified
+	 * Creates a data graphable that will graph the data coming from the specified
 	 * data source, using channelXAxis as the index for the channel that will be in the x axis
 	 * of the graph, and channelYAxis as the index for the channel that will be in the y axis.
 	 * If one of the indexes is -1, it will take the dt as the data for that axis
+	 * This data graphable can then be added to the graph
 	 * @param source
 	 * @param channelXAxis
 	 * @param channelYAxis
 	 */
-	public void addDataGraphable(DataProducer source, int channelXAxis, int channelYAxis)
+	public DataGraphable createDataGraphable(DataProducer source, int channelXAxis, int channelYAxis)
 	{
 		// Create a graphable for this datasource
 		// add it to the graph
@@ -428,7 +429,7 @@ public class DataGraph extends JPanel
 		dGraphable.setChannelX(channelXAxis);
 		dGraphable.setChannelY(channelYAxis);
 		
-		addDataGraphable(dGraphable);
+		return dGraphable;
 	}
 	
 	/**
