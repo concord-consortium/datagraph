@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.4 $
- * $Date: 2004-09-07 17:59:21 $
+ * $Revision: 1.5 $
+ * $Date: 2004-09-08 23:32:43 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -231,6 +231,11 @@ public class DataGraph extends JPanel
 
 		Point2D.Double origin = new Point2D.Double(xPos, yPos);
 		coord.setOriginOffsetDisplay(origin);		
+	}
+	
+	public void setOriginOffsetPercentage(double originPositionX, double originPositionY)
+	{
+		getGraph().getDefaultGraphArea().setOriginPositionPercentage(originPositionX, originPositionY);
 	}
 	
 	public double getXOriginOffsetDisplay()
