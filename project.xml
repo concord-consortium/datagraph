@@ -7,7 +7,7 @@
   <artifactId>datagraph</artifactId>
   <name>DataGraph</name>
   <groupId>${pom.artifactId}</groupId>
-  <currentVersion>1.0</currentVersion>
+  <currentVersion>1.2</currentVersion>
 
   <dependencies>
     <dependency>
@@ -53,4 +53,3 @@
   </dependencies>
 
 </project>
-
