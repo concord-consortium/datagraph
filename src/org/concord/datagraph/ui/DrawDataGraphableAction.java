@@ -24,9 +24,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.2 $
- * $Date: 2005-03-15 03:23:15 $
- * $Author: maven $
+ * $Revision: 1.3 $
+ * $Date: 2005-03-15 05:45:54 $
+ * $Author: imoncada $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -66,7 +66,8 @@ public class DrawDataGraphableAction extends SelectableAction
 	public DrawDataGraphableAction()
 	{
 		super();
-		setName("Draw");
+		//setName("Draw");
+		setIcon("pencil.gif");
 	}
 
 	/**
