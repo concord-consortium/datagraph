@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.23 $
- * $Date: 2004-12-13 07:05:11 $
+ * $Revision: 1.24 $
+ * $Date: 2005-01-15 16:02:21 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -46,6 +46,7 @@ import org.concord.datagraph.engine.DataGraphAutoScaler;
 import org.concord.datagraph.engine.DataGraphAutoScroller;
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.framework.data.DataFlow;
+import org.concord.framework.data.DataFlowCapabilities;
 import org.concord.framework.data.stream.DataConsumer;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.DataStore;
@@ -80,7 +81,8 @@ import org.concord.graph.ui.SingleAxisGrid;
  */
 
 public class DataGraph extends JPanel
-	implements DataFlow, DataConsumer, GraphWindowListener
+	implements DataFlow, DataConsumer, GraphWindowListener,
+		DataFlowCapabilities
 {
 	public final static int AUTO_FIT_NONE = 0;
 	public final static int AUTO_SCALE_MODE = 1;
@@ -786,5 +788,13 @@ public class DataGraph extends JPanel
 			scroller.setEnabled(false);
 		}
 		return scroller;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.concord.framework.data.DataFlowCapabilities#getDataFlowCapabilities()
+	 */
+	public DataFlowCapabilities.Capabilities getDataFlowCapabilities() {
+		// TODO Auto-generated method stub
+		return new DataFlowCapabilities.Capabilities(false, false, true);
 	}	
 }
