@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.21 $
- * $Date: 2004-11-23 22:24:46 $
+ * $Revision: 1.22 $
+ * $Date: 2004-11-24 08:58:05 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -55,6 +55,7 @@ import org.concord.graph.engine.CoordinateSystem;
 import org.concord.graph.engine.DefaultCoordinateSystem2D;
 import org.concord.graph.engine.GraphArea;
 import org.concord.graph.engine.GraphableList;
+import org.concord.graph.engine.MultiRegionAxisScale;
 import org.concord.graph.engine.SelectableList;
 import org.concord.graph.event.GraphWindowListener;
 import org.concord.graph.event.GraphWindowResizeEvent;
@@ -210,11 +211,12 @@ public class DataGraph extends JPanel
 	protected void addScaleAxis(GraphArea ga)
 	{
 		//Adding the scaling object for the graph area
-		AxisScale axisScale = new AxisScale();
+		AxisScale axisScale = new MultiRegionAxisScale(getGrid());
 		axisScale.setGraphArea(ga);
 		axisScale.setDragMode(AxisScale.DRAGMODE_NONE);
 		axisScale.setShowMessage(false);
 		axisScale.setShowCover(false);
+		axisScale.setOriginDragFixPoint(false);
 		graph.add(axisScale);
 		toolBar.addAxisScale(axisScale);
 	}
