@@ -290,8 +290,10 @@ public class OTDataCollectorView
 		*/
 
         if(dataCollector.getSingleValue()){
-            JPanel svPanel = new JPanel(new FlowLayout());
             DataStoreLabel dataLabel = new DataStoreLabel(dataStore, 0);
+            if(!editable) return dataLabel;
+            
+            JPanel svPanel = new JPanel(new FlowLayout());
             svPanel.add(dataLabel);
             JButton cDataButton = new JButton("Collect Data"); 
             cDataButton.addActionListener(new ActionListener(){
