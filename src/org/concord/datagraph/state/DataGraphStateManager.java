@@ -24,9 +24,9 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.2 $
- * $Date: 2004-12-12 04:04:57 $
- * $Author: maven $
+ * $Revision: 1.3 $
+ * $Date: 2005-01-27 16:43:13 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -41,6 +41,7 @@ import java.io.PrintStream;
 import java.io.StringReader;
 import java.util.EventObject;
 
+import org.concord.data.state.OTDataStore;
 import org.concord.data.stream.DataStoreUtil;
 import org.concord.data.stream.PointsDataStore;
 import org.concord.data.ui.DataFlowControlToolBar;
@@ -48,6 +49,7 @@ import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.datagraph.ui.DataGraph;
 import org.concord.framework.data.stream.DataProducer;
+import org.concord.framework.data.stream.DataProducerProxy;
 import org.concord.framework.data.stream.DataStore;
 import org.concord.framework.data.stream.DefaultDataStore;
 import org.concord.framework.data.stream.WritableDataStore;
@@ -101,13 +103,21 @@ public class DataGraphStateManager
 		// for each list item get the data producer object
 		// add it to the data graph
 		for(int i=0; i<pfGraphables.size(); i++) {
-			OTDataGraphable dGraphable = (OTDataGraphable)pfGraphables.get(i);
-			Object dataProducer = dGraphable.getDataProducer();
-			OTDataStore dataStore = (OTDataStore)dGraphable.getDataStore();
+			OTDataGraphable otGraphable = (OTDataGraphable)pfGraphables.get(i);
+			Object dataProducer = otGraphable.getDataProducer();
+			OTDataStore dataStore = (OTDataStore)otGraphable.getDataStore();
 			
 			// dProducer.getDataDescription().setDt(0.1f);
 			DataGraphable realGraphable = null;
+			if(dataProducer instanceof DataProducerProxy) {
+				dataProducer = ((DataProducerProxy)dataProducer).getDataProducer();
+			}
+			
 			if(dataProducer instanceof DataProducer) {
+				if(otGraphable.getControllable()) {
+					System.err.println("Can't control a graphable with a data producer");
+				}
+				
 				realGraphable = dataGraph.createDataGraphable((DataProducer)dataProducer);
 				if(toolBar == null) {					
 					toolBar = new DataFlowControlToolBar(dataGraph);
@@ -115,19 +125,17 @@ public class DataGraphStateManager
 				}
 				toolBar.addDataFlowObject((DataProducer)dataProducer);
 			} else {
-				String values = dataStore.getValues();
-				WritableDataStore dStore = new DefaultDataStore();
-				try {
-					DataStoreUtil.loadData(new StringReader(values), dStore, false);
-				} catch(IOException e) {
-					e.printStackTrace();
+				if(otGraphable.getControllable()) {
+					realGraphable = new ControllableDataGraphable();
+					realGraphable.setDataStore(dataStore);
+				} else {
+					realGraphable = dataGraph.createDataGraphable(dataStore);
 				}
-				realGraphable = dataGraph.createDataGraphable(dStore);
 			}
 			// realGraphable.addGraphableListener(this);
-			realGraphable.setColor(new Color(dGraphable.getColor()));
-			realGraphable.setConnectPoints(dGraphable.getConnectPoints());
-			realGraphable.setShowCrossPoint(dGraphable.getDrawMarks());
+			realGraphable.setColor(new Color(otGraphable.getColor()));
+			realGraphable.setConnectPoints(otGraphable.getConnectPoints());
+			realGraphable.setShowCrossPoint(otGraphable.getDrawMarks());
 			dataGraph.addDataGraphable(realGraphable);
 		}
 		
@@ -136,79 +144,6 @@ public class DataGraphStateManager
 	}
 
 	
-	ControllableDataGraphable lastGraphable;
-	
-	public ControllableDataGraphable getLastGraphable()
-	{
-		return lastGraphable;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.concord.portfolio.views.PortfolioView#getComponent(boolean)
-	 */
-	public void initializeControllable()
-	{
-		xAxis = pfObject.getXDataAxis();
-		yAxis = pfObject.getYDataAxis();
-		
-		pfGraphables = pfObject.getDataGraphables();
-
-		// OTObjectList dataProducers = pfObject.getDataProducers();				
-		DataFlowControlToolBar toolBar = null;
-		
-		dataGraph.setLimitsAxisWorld(xAxis.getMin(), xAxis.getMax(),
-				yAxis.getMin(), yAxis.getMax());
-
-		Grid2D grid = dataGraph.getGrid();
-
-		SingleAxisGrid sXAxis = grid.getXGrid();
-		sXAxis.setAxisLabel(xAxis.getLabel());
-		SingleAxisGrid sYAxis = grid.getYGrid();
-		sYAxis.setAxisLabel(yAxis.getLabel());
-				
-		// for each list item get the data producer object
-		// add it to the data graph
-		for(int i=0; i<pfGraphables.size(); i++) {
-			OTDataGraphable dGraphable = (OTDataGraphable)pfGraphables.get(i);
-			Object dataProducer = dGraphable.getDataProducer();
-			OTDataStore dataStore = (OTDataStore)dGraphable.getDataStore();
-			
-			// dProducer.getDataDescription().setDt(0.1f);
-			DataGraphable realGraphable = null;
-			if(dataProducer instanceof DataProducer) {
-				realGraphable = dataGraph.createDataGraphable((DataProducer)dataProducer);
-				if(toolBar == null) {					
-					toolBar = new DataFlowControlToolBar(dataGraph);
-					dataGraph.add(toolBar, BorderLayout.SOUTH);
-				}
-				toolBar.addDataFlowObject((DataProducer)dataProducer);
-			} else {
-				String values = dataStore.getValues();
-								
-				WritableDataStore dStore = new PointsDataStore();
-				try {
-					DataStoreUtil.loadData(new StringReader(values), dStore, false);
-				} catch(IOException e) {
-					e.printStackTrace();
-				}
-				
-				realGraphable = new ControllableDataGraphable();
-				realGraphable.setDataStore((PointsDataStore)dStore, 0, 1);
-				realGraphable.setConnectPoints(dGraphable.getConnectPoints());
-				realGraphable.setShowCrossPoint(dGraphable.getDrawMarks());
-
-				realGraphable.setLineWidth(3);
-				lastGraphable = (ControllableDataGraphable)realGraphable;
-			}
-			// realGraphable.addGraphableListener(this);
-			realGraphable.setColor(new Color(dGraphable.getColor()));
-			dataGraph.addDataGraphable(realGraphable);
-		}
-		
-		GraphableList graphableList = dataGraph.getObjList();
-		graphableList.addGraphableListListener(this);				
-	}
-
 	/**
 	 * This only works for graphables that came from a loaded
 	 * pfgraphables.  It doesn't yet handel cases where new
@@ -233,7 +168,6 @@ public class DataGraphStateManager
 		if(sYAxis.getAxisLabel() != null){
 			yAxis.setLabel(sYAxis.getAxisLabel());
 		}
-
 		
 		// TODO change the name of this method so it is more descriptive
 		GraphableList graphableList = dataGraph.getObjList();
@@ -253,14 +187,9 @@ public class DataGraphStateManager
 				// We can't store the data values yet because we don't have a way
 				// to populate the graph when it is data producer
 			} else {
-				ByteArrayOutputStream outS = new ByteArrayOutputStream();
-				PrintStream printStream = new PrintStream(outS);
-				DataStoreUtil.printData(printStream, dStore, null, false);
-			
-				String values = outS.toString();
-
-				OTDataStore pfDataStore = pfGraphable.getDataStore();
-				pfDataStore.setValues(values);
+				// FIXME we should probably update the 
+				// the data description of the data store 
+				// somewhere around here				
 			}
 			
 			Color c = dGraphable.getColor();

@@ -24,15 +24,16 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.2 $
- * $Date: 2004-12-12 04:04:57 $
- * $Author: maven $
+ * $Revision: 1.3 $
+ * $Date: 2005-01-27 16:43:13 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
 */
 package org.concord.datagraph.state;
 
+import org.concord.data.state.OTDataStore;
 import org.concord.framework.otrunk.OTObject;
 
 
@@ -60,10 +61,13 @@ public interface OTDataGraphable
 	public boolean getDrawMarks();
 	public void setDrawMarks(boolean flag);
 	
+	public static boolean DEFAULT_controllable = false;
+	public boolean getControllable();
+	public void setControllable(boolean flag);
+	
 	public OTDataStore getDataStore();
 	public void setDataStore(OTDataStore store);
 	
 	public OTObject getDataProducer();
-	public void setDataProducer(OTObject producer);
-	
+	public void setDataProducer(OTObject producer);	
 }
