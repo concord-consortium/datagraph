@@ -8,6 +8,7 @@
     	<pathelement location="../Framework/lib/framework.jar"/>
     	<pathelement location="../Data/lib/data.jar"/>
     	<pathelement location="../Graph/lib/graph.jar"/>
+    	<pathelement location="../Swing/lib/ccswing.jar"/>
 	</path>
 
 	<path id="build-classpath">
