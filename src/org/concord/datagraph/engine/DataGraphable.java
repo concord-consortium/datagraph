@@ -1,8 +1,8 @@
 /*
  * Last modification information:
- * $Revision: 1.17 $
- * $Date: 2004-10-29 07:36:48 $
- * $Author: imoncada $
+ * $Revision: 1.18 $
+ * $Date: 2004-11-10 04:17:19 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -241,10 +241,17 @@ public class DataGraphable extends DefaultGraphable
 		float ppx, ppy;
 		float px, py;
 		int initialI;
-		boolean movePoint = false;
-		Point2D lastMovePoint = null;
 		
-		Point2D lastPathPoint;
+		//movePoint indicates that when "processing" the current point, 
+		//the path should do a moveTo, instead of lineTo
+		boolean movePoint = false;		
+		
+		//lastMovePoint stores the last point that was "processed" doing moveTo instead of lineTo. 
+		//It's used only in case there will be another moveTo immediately after, 
+		//instead of lineTo (in that case the point has to be drawn as a point)
+		Point2D lastMovePoint = null;	
+		
+		Point2D currentPathPoint;
 
 		if (dataStore == null) return;
 		
@@ -252,6 +259,8 @@ public class DataGraphable extends DefaultGraphable
 
 		CoordinateSystem coord = getGraphArea().getCoordinateSystem();
 		
+		// if new data was not received or no values have been
+		// calculated then all the points need to be recalculated
     	if (!needUpdateDataReceived || lastValueCalculated < 0){
     		path.reset();
     		crossPath.reset();
@@ -259,7 +268,8 @@ public class DataGraphable extends DefaultGraphable
     	}
    		initialI = lastValueCalculated + 1;
     	    	
-		for(int i=initialI; i < dataStore.getTotalNumSamples(); i++){
+   		int i;
+		for(i=initialI; i < dataStore.getTotalNumSamples(); i++){
 			
 			Object objVal;
 			
@@ -270,11 +280,9 @@ public class DataGraphable extends DefaultGraphable
 				movePoint = true;
 				continue;
 			}
-			Float xFloat = (Float)objVal;
-			if (xFloat != null && !xFloat.isNaN()){
-				px = xFloat.floatValue(); 
-			}
-			else{
+
+			Float xFloat = (Float)objVal;			
+			if (xFloat == null || xFloat.isNaN()){
 				px = Float.NaN;
 				//When connecting points and not drawing crosses, it should draw a point 
 				if (connectPoints && !showCrossPoint && lastMovePoint != null){
@@ -282,8 +290,10 @@ public class DataGraphable extends DefaultGraphable
 					lastMovePoint = null;
 				}
 				movePoint = true;
-				continue;
+				continue;				
 			}
+			
+			px = xFloat.floatValue(); 
 			
 			objVal = dataStore.getValueAt(i, channelY);
 			//Handling non null objects different than Floats
@@ -292,11 +302,9 @@ public class DataGraphable extends DefaultGraphable
 				movePoint = true;
 				continue;
 			}
+
 			Float yFloat = (Float)objVal;
-			if (yFloat != null && !yFloat.isNaN()){
-				py = yFloat.floatValue();
-			}
-			else{
+			if (yFloat == null || yFloat.isNaN()) {
 				py = Float.NaN;
 				//When connecting points and not drawing crosses, it should draw a point 
 				if (connectPoints && !showCrossPoint && lastMovePoint != null){
@@ -304,8 +312,10 @@ public class DataGraphable extends DefaultGraphable
 					lastMovePoint = null;
 				}
 				movePoint = true;
-				continue;
+				continue;				
 			}
+			
+			py = yFloat.floatValue();
 			
 			//Always keep the min and max value available
 			if (Float.isNaN(minXValue) || px < minXValue){
@@ -328,7 +338,7 @@ public class DataGraphable extends DefaultGraphable
 			ppx = (float)pathPoint.x;
 			ppy = (float)pathPoint.y;
 
-			lastPathPoint = path.getCurrentPoint();
+			currentPathPoint = path.getCurrentPoint();
 			
 			double thresholdPointTheSame = lineWidth/2 - 0.01;
 			
@@ -337,9 +347,9 @@ public class DataGraphable extends DefaultGraphable
 				dy = 1;//TODO dy is 1 because of MAC OS X
 			}
 			
-			if (lastPathPoint != null && 
-					MathUtil.equalsDouble(ppx, lastPathPoint.getX(), thresholdPointTheSame) && 
-					MathUtil.equalsDouble(ppy, lastPathPoint.getY() - dy, thresholdPointTheSame)){
+			if (currentPathPoint != null && 
+					MathUtil.equalsDouble(ppx, currentPathPoint.getX(), thresholdPointTheSame) && 
+					MathUtil.equalsDouble(ppy, currentPathPoint.getY() - dy, thresholdPointTheSame)){
 				//System.out.println("Not adding this point:"+ppx+","+ppy+" "+lastPathPoint);
 			}
 			else{
@@ -354,6 +364,7 @@ public class DataGraphable extends DefaultGraphable
 					}
 					else{
 						path.lineTo(ppx, ppy);
+						lastMovePoint = null;
 					}
 				}
 				else{
@@ -364,12 +375,11 @@ public class DataGraphable extends DefaultGraphable
 					drawCrossPoint(ppx, ppy);
 				}
 				
-			}
-			
-			lastValueCalculated = i;
-			
+			}			
 		}
 			
+		lastValueCalculated = i-1;
+		
 		//When connecting points and not drawing crosses, it should draw a point 
 		if (connectPoints && !showCrossPoint && lastMovePoint != null){
 			drawPoint(lastMovePoint);
