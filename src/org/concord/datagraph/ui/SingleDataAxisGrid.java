@@ -30,7 +30,6 @@
  */
 package org.concord.datagraph.ui;
 
-import org.concord.data.Unit;
 import org.concord.framework.data.DataDimension;
 import org.concord.graph.ui.SingleAxisGrid;
 

@@ -24,9 +24,9 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.24 $
- * $Date: 2005-02-19 14:08:01 $
- * $Author: scytacki $
+ * $Revision: 1.25 $
+ * $Date: 2005-02-22 21:58:54 $
+ * $Author: eburke $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -62,8 +62,6 @@ import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.DataStore;
 import org.concord.framework.data.stream.DataStoreEvent;
 import org.concord.framework.data.stream.DataStoreListener;
-import org.concord.framework.data.stream.DataStreamDescription;
-import org.concord.framework.data.stream.DataStreamEvent;
 import org.concord.framework.data.stream.ProducerDataStore;
 import org.concord.framework.data.stream.WritableDataStore;
 import org.concord.graph.engine.CoordinateSystem;
