@@ -36,7 +36,6 @@ import org.concord.data.state.OTDataStore;
 import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.framework.data.stream.DataProducer;
-import org.concord.framework.data.stream.DataStore;
 import org.concord.framework.otrunk.DefaultOTObject;
 import org.concord.framework.otrunk.OTResourceSchema;
 import org.concord.framework.otrunk.OTWrapper;
@@ -115,37 +114,58 @@ public class OTDataGraphable extends DefaultOTObject
     public DataGraphable getDataGraphable()
     {
         if(wrappedObject == null) {
-            if(resources.getControllable()){
+            if (resources.getControllable()){
                 wrappedObject = new ControllableDataGraphable();
-            } else {
+            } 
+            else {
                 wrappedObject = new DataGraphable();
             }
             wrappedObject.setColor(new Color(resources.getColor()));
             wrappedObject.setShowCrossPoint(resources.getDrawMarks());
             wrappedObject.setLabel(resources.getName());
+            
+			DataProducer producer = resources.getDataProducer();
+			OTDataStore dataStore = resources.getDataStore();
+
+			if (resources.getControllable() && producer != null){
+			    System.err.println("Can't control a graphable with a data producer");
+			    return null;
+			}
+			
+			if (producer != null && dataStore != null){
+			    dataStore.setDataProducer(producer);
+			}
+			
+			if (dataStore != null){
+			    wrappedObject.setDataStore(dataStore);
+			}
+			else if (producer != null){
+			    wrappedObject.setDataProducer(producer);
+			}
+			else {
+			    System.err.println("OTDataGraphable without a valid " + 
+			            "datastore or dataproducer");
+			}
+			
+			wrappedObject.setChannelX(resources.getXColumn());
+			wrappedObject.setChannelY(resources.getYColumn());
+
         }
 
         return wrappedObject;
     }
 
-    public int getXColumn()
-    {
-        return resources.getXColumn();
-    }
-    
-    public int getYColumn()
-    {
-        return resources.getYColumn();
-    }
-    
+    /**
+     * There should be a better way to do this.  Given a DataGraphable that can be started and 
+     * stopped (similar to implementing DataFlow interface), it should be possible to get that
+     * flow object from the graphable.  Or the data graphable itself should implement the
+     * DataFlow interface.
+     * 
+     * @return
+     */
     public DataProducer getDataProducer()
     {
         return resources.getDataProducer();
-    }
-    
-    public DataStore getDataStore()
-    {
-        return resources.getDataStore();
     }
     
     public void saveObject()

@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.9 $
- * $Date: 2005-04-01 06:21:31 $
+ * $Revision: 1.10 $
+ * $Date: 2005-04-05 04:56:23 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -34,16 +34,13 @@
 package org.concord.datagraph.state;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.util.EventObject;
 import java.util.Vector;
 
 import org.concord.data.Unit;
-import org.concord.data.state.OTDataStore;
 import org.concord.data.ui.DataFlowControlAction;
 import org.concord.data.ui.DataFlowControlButton;
 import org.concord.data.ui.DataFlowControlToolBar;
-import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.datagraph.ui.DataGraph;
 import org.concord.datagraph.ui.SingleDataAxisGrid;
@@ -151,56 +148,6 @@ public class DataGraphStateManager
 		OTObjectList yAxisList = pfObject.getYDataAxis();
 
 		pfGraphables = pfObject.getGraphables();
-/*
-		
-		for (int i=0; i<xAxisList.size(); i++){
-			OTDataAxis currAxis = (OTDataAxis)xAxisList.get(i);
-			OTObjectList axisGraphables = currAxis.getGraphables();
-			for (int j=0; j<axisGraphables.size(); j++){
-				GraphAreaMap gMap = new GraphAreaMap();
-				gMap.xAxis = (OTDataAxis)xAxisList.get(i);
-				gMap.graphables.add(axisGraphables.get(j));
-				areaMap.add(gMap);
-			}
-		}
-
-		for (int i=0; i<yAxisList.size(); i++){
-			OTDataAxis currAxis = (OTDataAxis)yAxisList.get(i);
-			OTObjectList axisGraphables = currAxis.getGraphables();
-			for (int j=0; j<axisGraphables.size(); j++){
-				OTDataGraphable currGraphable = 
-					(OTDataGraphable)axisGraphables.get(j);
-				for (int k=0; k<areaMap.size(); k++){
-					GraphAreaMap gMap = (GraphAreaMap)areaMap.get(k);
-					OTDataGraphable mapGraphable = (OTDataGraphable)(gMap.graphables.get(0));
-					if (mapGraphable.equals(currGraphable)){
-						gMap.yAxis = currAxis;
-					}
-				}
-			}
-		}
-
-		for (int i=0; i<areaMap.size(); i++){
-			GraphAreaMap gMap = (GraphAreaMap)areaMap.get(i);
-			if(gMap.duplicate) continue;
-			for (int j=i; j<areaMap.size(); j++){
-				GraphAreaMap gMap2 = (GraphAreaMap)areaMap.get(j);
-				if(gMap.xAxis == gMap2.xAxis  &&
-						gMap.yAxis == gMap2.yAxis){
-					gMap2.duplicate = true;
-					gMap.graphables.add(gMap2.graphables.get(0));
-				}
-			}
-		}
-		
-		for (int i=0; i<areaMap.size(); i++){
-		}
-
-		GraphAreaMap gMap = (GraphAreaMap)areaMap.get(0);
-		xAxis = gMap.xAxis;
-		yAxis = gMap.yAxis;
-		
-	*/
 		
 		// we are ignoring the complicated code above for now
 		xAxis = (OTDataAxis)xAxisList.get(0);
@@ -237,29 +184,18 @@ public class DataGraphStateManager
 		// add it to the data graph
 		for(int i=0; i<pfGraphables.size(); i++) {
 			OTDataGraphable otGraphable = (OTDataGraphable)pfGraphables.get(i);
-			DataProducer dataProducer = (DataProducer)otGraphable.getDataProducer();
-			OTDataStore dataStore = (OTDataStore)otGraphable.getDataStore();
 			
 			// dProducer.getDataDescription().setDt(0.1f);
 			DataGraphable realGraphable = otGraphable.getDataGraphable();
-			
-			if(dataProducer != null) {
-				if(realGraphable instanceof ControllableDataGraphable) {
-					System.err.println("Can't control a graphable with a data producer");
-				}
-				
+			DataProducer dataProducer = realGraphable.getDataProducer();
+			if(dataProducer != null) {				
 				dataProducer.reset();
-				realGraphable.setDataProducer(dataProducer);				
 				if(toolBar == null) {					
 					toolBar = createFlowToolBar();
 					dataGraph.add(toolBar, BorderLayout.SOUTH);
 				}
 				toolBar.addDataFlowObject((DataProducer)dataProducer);
-			} else {
-			    realGraphable.setDataStore(dataStore, 
-						otGraphable.getXColumn(), 
-						otGraphable.getYColumn());
-			}
+			} 
 
 			dataGraph.addDataGraphable(realGraphable);
 		}

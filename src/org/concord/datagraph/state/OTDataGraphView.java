@@ -24,16 +24,15 @@
 
 /*
  * Last modification information:
- * $Revision: 1.9 $
- * $Date: 2005-03-18 09:52:21 $
- * $Author: imoncada $
+ * $Revision: 1.10 $
+ * $Date: 2005-04-05 04:56:23 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
 */
 package org.concord.datagraph.state;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 
 import javax.swing.JComponent;

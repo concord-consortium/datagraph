@@ -30,6 +30,7 @@
  */
 package org.concord.datagraph.state;
 
+import org.concord.data.state.OTDataStore;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTObjectInterface;
 import org.concord.framework.otrunk.OTObjectList;
@@ -53,6 +54,9 @@ public interface OTDataCollector
 	
 	public final static boolean DEFAULT_singleValue = false;
 	public boolean getSingleValue();
+	
+	public OTDataStore getSingleDataStore();
+	public void setSingleDataStore(OTDataStore dataStore);
 	
 	// if this is null then this doesn't allow saving 
 	// named data sets
