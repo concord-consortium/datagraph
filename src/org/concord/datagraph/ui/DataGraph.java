@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.6 $
- * $Date: 2004-09-09 19:05:38 $
+ * $Revision: 1.7 $
+ * $Date: 2004-09-09 19:10:58 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -243,7 +243,7 @@ public class DataGraph extends JPanel
 	
 	/**
 	 * Sets the position of the axes' origin, relative to
-	 * the UPPER LEFT corner of the window
+	 * the UPPER LEFT corner of the graph area
 	 * @param xPos	Position of the origin in the x direction, relative to the left edge (DISPLAY COORDINATES)
 	 * @param yPos	Position of the origin in the x direction, relative to the left edge (DISPLAY COORDINATES)
 	 */
@@ -282,14 +282,24 @@ public class DataGraph extends JPanel
 	{
 		CoordinateSystem coord = getGraph().getDefaultGraphArea().getCoordinateSystem();
 
-		return coord.getOriginOffsetDisplay().getX();		
+		double xPos = coord.getOriginOffsetDisplay().getX();
+		
+		//xPos is relative to the UPPER LEFT CORNER of the window
+		xPos = xPos - defaultGA.getInsets().left;
+		
+		return xPos;		
 	}
 
 	public double getYOriginOffsetDisplay()
 	{
 		CoordinateSystem coord = getGraph().getDefaultGraphArea().getCoordinateSystem();
 
-		return coord.getOriginOffsetDisplay().getY();		
+		double yPos = coord.getOriginOffsetDisplay().getY(); 
+			
+		//yPos is relative to the UPPER LEFT CORNER of the window
+		yPos = yPos - defaultGA.getInsets().top;
+		
+		return yPos;		
 	}
 	
 	public DataGraphable getGraphable(DataProducer source)
