@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.3 $
- * $Date: 2004-11-10 20:37:43 $
+ * $Revision: 1.4 $
+ * $Date: 2004-11-10 22:28:54 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -61,5 +61,23 @@ public class DataGraphAutoScaler extends DataGraphDaemon
 				graph.setLimitsAxisWorld(graph.getMinXAxisWorld(), graph.getMaxXAxisWorld(), minY, maxY);
 			}
 		}
+	}
+	
+	
+	/**
+	 * @param autoScaleX The autoScaleX to set.
+	 */
+	public void setAutoScaleX(boolean autoScaleX)
+	{
+		this.autoScaleX = autoScaleX;
+	}
+	
+	
+	/**
+	 * @param autoScaleY The autoScaleY to set.
+	 */
+	public void setAutoScaleY(boolean autoScaleY)
+	{
+		this.autoScaleY = autoScaleY;
 	}
 }

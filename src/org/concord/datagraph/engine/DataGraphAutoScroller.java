@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.3 $
- * $Date: 2004-11-10 20:37:43 $
+ * $Revision: 1.4 $
+ * $Date: 2004-11-10 22:28:54 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -69,6 +69,9 @@ public class DataGraphAutoScroller extends DataGraphDaemon
 		if (!Float.isNaN(maxX) && !Float.isNaN(maxY)){
 			
 			//System.out.println(minX + " " + maxX +  " " + minY +  " " + maxY);
+			
+			double worldWidth = graph.getMaxXAxisWorld() - graph.getMinXAxisWorld();
+			double worldHeight = graph.getMaxYAxisWorld() - graph.getMinYAxisWorld();
 			
 			if (!Float.isNaN(xPaddingMin) && maxX + xPaddingMin - graph.getMinXAxisWorld() < width){
 				return;
