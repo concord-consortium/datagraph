@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.1 $
- * $Date: 2004-08-27 16:56:44 $
+ * $Revision: 1.2 $
+ * $Date: 2004-09-02 16:27:28 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -327,4 +327,19 @@ public class DataGraphable extends DefaultGraphable
 		}
 	}
 	
+	/**
+	 * @return Returns the lineColor.
+	 */
+	public Color getLineColor()
+	{
+		return lineColor;
+	}
+	
+	/**
+	 * @param lineColor The lineColor to set.
+	 */
+	public void setLineColor(Color lineColor)
+	{
+		this.lineColor = lineColor;
+	}
 }

@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.2 $
- * $Date: 2004-08-27 20:19:50 $
+ * $Revision: 1.3 $
+ * $Date: 2004-09-02 16:27:28 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -11,15 +11,12 @@ package org.concord.datagraph.ui;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.*;
 import javax.swing.*;
 import java.util.*;
 
-import org.concord.datagraph.engine.DataGraphable;
 import org.concord.framework.data.stream.*;
 import org.concord.graph.ui.*;
 import org.concord.graph.engine.*;
-import org.concord.graph.examples.*;
 
 /**
  * MultipleDataGraph

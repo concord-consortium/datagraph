@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.1 $
- * $Date: 2004-08-27 16:56:44 $
+ * $Revision: 1.2 $
+ * $Date: 2004-09-02 16:27:28 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -24,8 +24,10 @@ import javax.swing.Timer;
 
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.DefaultDataProducer;
+import org.concord.data.ui.DataTableCellRenderer;
 import org.concord.data.ui.DataTableModel;
 import org.concord.data.ui.DataTablePanel;
+import org.concord.data.ui.TableCellColorModel;
 
 /**
  * DataGraphExampleMainPanel
@@ -126,6 +128,20 @@ public class DataGraphExampleMainPanel extends JPanel
 		//scroll.setSize(500,300);
 		//scroll.show();
 		///////////////////////////////////////////////////////////////////////////
+		
+		//colorModel = new DefaultTableCellColorModel();
+		//((DefaultTableCellColorModel)colorModel).setBackgroundColor(Color.pink, 1, 1, true, false);
+
+		//Cell renderer stuff
+		TableCellColorModel colorModel;
+		colorModel = new DataGraphableTableCellColor(tableModel.getDataColumns());
+		DataTableCellRenderer cellRenderer = new DataTableCellRenderer(); 
+		((DataGraphableTableCellColor)colorModel).setColorColumn(new Color(230,230,200), Color.black, null, 0);		
+		((DataGraphableTableCellColor)colorModel).setBackgroundColorColumn(null, 0, true, false);		
+		cellRenderer.setTableCellColorModel(colorModel);
+		dataTable.setDefaultRenderer(Object.class, cellRenderer);
+		//
+		
 		mainPanel.add(tablePanel);	
 
 		add(mainPanel);
