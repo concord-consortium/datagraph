@@ -64,7 +64,6 @@ import org.concord.datagraph.ui.DataGraph;
 import org.concord.datagraph.ui.DataPointLabel;
 import org.concord.datagraph.ui.SingleDataAxisGrid;
 import org.concord.framework.data.stream.DataProducer;
-import org.concord.framework.data.stream.ProducerDataStore;
 import org.concord.framework.otrunk.OTObjectList;
 import org.concord.framework.otrunk.view.OTObjectView;
 import org.concord.framework.otrunk.view.OTViewContainer;
@@ -159,22 +158,17 @@ public class OTDataCollectorView
 			OTDataStore dataStore = (OTDataStore)otGraphable.getDataStore();
 			
 			// dProducer.getDataDescription().setDt(0.1f);
-			DataGraphable realGraphable = null;
+			DataGraphable realGraphable = otGraphable.getDataGraphable();
 
 			if(dataStore == null) {
 			    System.err.println("Trying to display graphable with out a data store");
 			    continue;
 			}
 			
-			realGraphable = dataGraph.createDataGraphable(dataStore, 
-			        otGraphable.getXColumn(), 
-			        otGraphable.getYColumn());
+			realGraphable.setDataStore(dataStore);
+			realGraphable.setChannelX(otGraphable.getXColumn());
+			realGraphable.setChannelY(otGraphable.getYColumn());
 
-			// realGraphable.addGraphableListener(this);
-			realGraphable.setColor(new Color(otGraphable.getColor()));
-			realGraphable.setConnectPoints(otGraphable.getConnectPoints());
-			realGraphable.setShowCrossPoint(otGraphable.getDrawMarks());
-			realGraphable.setLabel(otGraphable.getName());
 			realGraphables.add(realGraphable);
 			dataGraph.addBackgroundDataGraphable(realGraphable);
 		}
@@ -192,10 +186,11 @@ public class OTDataCollectorView
 			if(title != null) {
 			    dataGraph.setTitle(title);
 			}
-			
+
+			sourceGraphable = source.getDataGraphable();
+
 			// dProducer.getDataDescription().setDt(0.1f);
-			if(source.getControllable()) {
-				sourceGraphable = new ControllableDataGraphable();
+			if(sourceGraphable instanceof ControllableDataGraphable) {
 				sourceGraphable.setDataStore(dataStore, 
 						source.getXColumn(), 
 						source.getYColumn());
@@ -221,14 +216,14 @@ public class OTDataCollectorView
 			    // graphable
 			    if(dataStore != null && !dataCollector.getSingleValue()){
 			        dataStore.setDataProducer(sourceProducer);
-					sourceGraphable = dataGraph.createDataGraphable(dataStore,
-							source.getXColumn(), 
-							source.getYColumn());
+					sourceGraphable.setDataStore(dataStore);
 			    } else {
-			        sourceGraphable = dataGraph.createDataGraphable(sourceProducer,
-							source.getXColumn(), 
-							source.getYColumn());
+					sourceGraphable.setDataProducer(sourceProducer);
+					// this doesn't add the producer to the datagraphs
+					// producers list
 			    }
+				sourceGraphable.setChannelX(source.getXColumn());
+				sourceGraphable.setChannelY(source.getYColumn());
 			    
 			    JPanel bottomPanel = new JPanel(new FlowLayout());
 			    valueLabel = new DataValueLabel(sourceProducer);
@@ -267,10 +262,6 @@ public class OTDataCollectorView
 			}
 
 			if(sourceGraphable != null) {
-			    sourceGraphable.setColor(new Color(source.getColor()));
-			    sourceGraphable.setConnectPoints(source.getConnectPoints());
-			    sourceGraphable.setShowCrossPoint(source.getDrawMarks());
-			    sourceGraphable.setLabel(source.getName());
 			    realGraphables.insertElementAt(sourceGraphable, 0);
 			    dataGraph.addDataGraphable(sourceGraphable);
 			}
@@ -414,22 +405,16 @@ public class OTDataCollectorView
 
 		OTDataGraphable source = dataCollector.getSource();
 
-		Color c = sourceGraphable.getColor();
-		source.setColor(c.getRGB());
-		source.setConnectPoints(sourceGraphable.isConnectPoints());
-		source.setDrawMarks(sourceGraphable.isShowCrossPoint());
-		source.setXColumn(sourceGraphable.getChannelX());
-		source.setYColumn(sourceGraphable.getChannelY());	
+		source.saveObject();
 		
-        //Load the data point labels
-        for (int i=0; i<notesLayer.size(); i++){
+		// Save data point labels
+		for (int i=0; i<notesLayer.size(); i++){
 			OTDataPointLabel otDPLabel = (OTDataPointLabel)dataCollector.getLabels().get(i);
 			DataPointLabel l = (DataPointLabel)notesLayer.elementAt(i);
 			
 			saveStateLabel(otDPLabel, l);
         }
-        //
-
+		
 	}
 	
 	/**

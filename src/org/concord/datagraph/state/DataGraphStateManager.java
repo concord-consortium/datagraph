@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.8 $
- * $Date: 2005-03-16 19:00:12 $
+ * $Revision: 1.9 $
+ * $Date: 2005-04-01 06:21:31 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -241,36 +241,26 @@ public class DataGraphStateManager
 			OTDataStore dataStore = (OTDataStore)otGraphable.getDataStore();
 			
 			// dProducer.getDataDescription().setDt(0.1f);
-			DataGraphable realGraphable = null;
+			DataGraphable realGraphable = otGraphable.getDataGraphable();
 			
 			if(dataProducer != null) {
-				if(otGraphable.getControllable()) {
+				if(realGraphable instanceof ControllableDataGraphable) {
 					System.err.println("Can't control a graphable with a data producer");
 				}
 				
 				dataProducer.reset();
-				realGraphable = dataGraph.createDataGraphable(dataProducer);
+				realGraphable.setDataProducer(dataProducer);				
 				if(toolBar == null) {					
 					toolBar = createFlowToolBar();
 					dataGraph.add(toolBar, BorderLayout.SOUTH);
 				}
 				toolBar.addDataFlowObject((DataProducer)dataProducer);
 			} else {
-				if(otGraphable.getControllable()) {
-					realGraphable = new ControllableDataGraphable();
-					realGraphable.setDataStore(dataStore, 
-							otGraphable.getXColumn(), 
-							otGraphable.getYColumn());
-				} else {
-					realGraphable = dataGraph.createDataGraphable(dataStore, 
-							otGraphable.getXColumn(), 
-							otGraphable.getYColumn());
-				}
+			    realGraphable.setDataStore(dataStore, 
+						otGraphable.getXColumn(), 
+						otGraphable.getYColumn());
 			}
-			// realGraphable.addGraphableListener(this);
-			realGraphable.setColor(new Color(otGraphable.getColor()));
-			realGraphable.setConnectPoints(otGraphable.getConnectPoints());
-			realGraphable.setShowCrossPoint(otGraphable.getDrawMarks());
+
 			dataGraph.addDataGraphable(realGraphable);
 		}
 		
@@ -348,12 +338,7 @@ public class DataGraphStateManager
 				// somewhere around here				
 			}
 			
-			Color c = dGraphable.getColor();
-			pfGraphable.setColor(c.getRGB());
-			pfGraphable.setConnectPoints(dGraphable.isConnectPoints());
-			pfGraphable.setDrawMarks(dGraphable.isShowCrossPoint());
-			pfGraphable.setXColumn(dGraphable.getChannelX());
-			pfGraphable.setYColumn(dGraphable.getChannelY());
+			pfGraphable.saveObject();			
 		}
 		
 	}
