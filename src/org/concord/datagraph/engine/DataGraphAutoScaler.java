@@ -1,8 +1,8 @@
 /*
  * Last modification information:
- * $Revision: 1.1 $
- * $Date: 2004-10-29 07:43:12 $
- * $Author: imoncada $
+ * $Revision: 1.2 $
+ * $Date: 2004-11-10 20:33:39 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -22,26 +22,15 @@ import org.concord.graph.engine.GraphableList;
  * @author imoncada<p>
  *
  */
-public class DataGraphAutoScaler 
+public class DataGraphAutoScaler extends DataGraphDaemon
 {
-	protected GraphableList graphables;
-	protected DataGraph graph;
-	
 	protected boolean autoScaleX = true;
 	protected boolean autoScaleY = false;
 	
 	/**
 	 * 
 	 */
-	public DataGraphAutoScaler()
-	{
-		super();
-	}
-
-	/**
-	 * 
-	 */
-	public void scaleCoordinateSystem()
+	public void handleUpdate()
 	{
 		DataGraphable dg;
 		float minX=0, maxX=0, minY=0, maxY=0;
@@ -74,29 +63,5 @@ public class DataGraphAutoScaler
 				graph.setLimitsAxisWorld(graph.getMinXAxisWorld(), graph.getMaxXAxisWorld(), minY, maxY);
 			}
 		}
-	}
-
-	/**
-	 * @param graphables The graphables to set.
-	 */
-	public void setGraphables(GraphableList graphables)
-	{
-		this.graphables = graphables;
-	}
-	
-	/**
-	 * @return Returns the graph.
-	 */
-	public DataGraph getGraph()
-	{
-		return graph;
-	}
-	
-	/**
-	 * @param graph The graph to set.
-	 */
-	public void setGraph(DataGraph graph)
-	{
-		this.graph = graph;
 	}
 }

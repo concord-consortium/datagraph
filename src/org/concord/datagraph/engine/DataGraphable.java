@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.18 $
- * $Date: 2004-11-10 04:17:19 $
+ * $Revision: 1.19 $
+ * $Date: 2004-11-10 20:33:39 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -55,6 +55,15 @@ public class DataGraphable extends DefaultGraphable
 	protected int crossSize = 3;
 	
 	private int lastValueCalculated = -1;
+
+	/*
+	 * validPrevPoint indicates that last point "processed" 
+	 * was a valid point.  This is used to figure out if points
+	 * should be connected.  If there is an invalid point then there
+	 * will be a break in the line drawn.
+	 */
+	private boolean validPrevPoint = false;		
+
 	protected boolean needUpdate = true;
 	protected boolean needUpdateDataReceived = false;
 	
@@ -233,6 +242,24 @@ public class DataGraphable extends DefaultGraphable
 		//System.out.println(a-b);
 	}
 
+    public float handleValue(Object objVal)
+    {    	
+		if (objVal instanceof Float){
+			Float xFloat = (Float)objVal;			
+			// Note: the floatValue could be a NaN here but that
+			// will get taken care of automatically later.
+			return xFloat.floatValue();
+		}
+
+		//Handling non null objects different than Floats
+		if (objVal != null && !(objVal instanceof Float)){
+			System.err.println("Warning! The value is not a Float object: "+objVal);
+		}
+
+		// objVal is either null or something other than a float  
+		return Float.NaN;
+    }
+    
     /**
      * 
      */
@@ -241,15 +268,14 @@ public class DataGraphable extends DefaultGraphable
 		float ppx, ppy;
 		float px, py;
 		int initialI;
-		
-		//movePoint indicates that when "processing" the current point, 
-		//the path should do a moveTo, instead of lineTo
-		boolean movePoint = false;		
-		
-		//lastMovePoint stores the last point that was "processed" doing moveTo instead of lineTo. 
-		//It's used only in case there will be another moveTo immediately after, 
-		//instead of lineTo (in that case the point has to be drawn as a point)
-		Point2D lastMovePoint = null;	
+				
+		//undrawnPoint stores the last point that was "processed" 
+		//which was valid but it wasn't drawn.  If crosses are
+		//being drawn or if points aren't connected then all points are drawn as they
+		//are processed.  Points are not drawn when they are processed, 
+		//if they might be the first point of a line segment.
+		//When the undrawnPoint is recorded the path is movedTo to this undrawn spot
+		Point2D undrawnPoint = null;	
 		
 		Point2D currentPathPoint;
 
@@ -265,57 +291,35 @@ public class DataGraphable extends DefaultGraphable
     		path.reset();
     		crossPath.reset();
     		lastValueCalculated = -1;
+
+    		// the previous point is invalid because there is no
+    		// previous point
+    		validPrevPoint = false;
     	}
    		initialI = lastValueCalculated + 1;
-    	    	
+   		
    		int i;
-		for(i=initialI; i < dataStore.getTotalNumSamples(); i++){
-			
+		for(i=initialI; i < dataStore.getTotalNumSamples(); i++){			
 			Object objVal;
 			
 			objVal = dataStore.getValueAt(i, channelX);
-			//Handling non null objects different than Floats
-			if (objVal != null && !(objVal instanceof Float)){
-				System.err.println("Warning! The value is not a Float object: "+objVal);
-				movePoint = true;
-				continue;
-			}
-
-			Float xFloat = (Float)objVal;			
-			if (xFloat == null || xFloat.isNaN()){
-				px = Float.NaN;
-				//When connecting points and not drawing crosses, it should draw a point 
-				if (connectPoints && !showCrossPoint && lastMovePoint != null){
-					drawPoint(lastMovePoint);
-					lastMovePoint = null;
-				}
-				movePoint = true;
-				continue;				
-			}
-			
-			px = xFloat.floatValue(); 
-			
+			px = handleValue(objVal);
+						
 			objVal = dataStore.getValueAt(i, channelY);
-			//Handling non null objects different than Floats
-			if (objVal != null && !(objVal instanceof Float)){
-				System.err.println("Warning! The value is not a Float object: "+objVal);
-				movePoint = true;
-				continue;
-			}
-
-			Float yFloat = (Float)objVal;
-			if (yFloat == null || yFloat.isNaN()) {
-				py = Float.NaN;
-				//When connecting points and not drawing crosses, it should draw a point 
-				if (connectPoints && !showCrossPoint && lastMovePoint != null){
-					drawPoint(lastMovePoint);
-					lastMovePoint = null;
-				}
-				movePoint = true;
-				continue;				
-			}
+			py = handleValue(objVal);
 			
-			py = yFloat.floatValue();
+			if(Float.isNaN(px) || Float.isNaN(py)) {
+				//We have found an invalid point.  If there was a valid undrawn point 
+				//before this one, then we need to draw it.  
+				//There can only be an undrawn point if we are connecting points and not
+				//drawing crosses
+				if (undrawnPoint != null){
+					drawPoint(undrawnPoint);
+					undrawnPoint = null;
+				}
+				validPrevPoint = false;
+				continue;								
+			}
 			
 			//Always keep the min and max value available
 			if (Float.isNaN(minXValue) || px < minXValue){
@@ -351,39 +355,58 @@ public class DataGraphable extends DefaultGraphable
 					MathUtil.equalsDouble(ppx, currentPathPoint.getX(), thresholdPointTheSame) && 
 					MathUtil.equalsDouble(ppy, currentPathPoint.getY() - dy, thresholdPointTheSame)){
 				//System.out.println("Not adding this point:"+ppx+","+ppy+" "+lastPathPoint);
+				continue;
 			}
-			else{
-				
-				if (connectPoints){
-					if (i==0 || movePoint){
-						path.moveTo(ppx, ppy);
-						if (lastMovePoint == null){
-							lastMovePoint = path.getCurrentPoint();
-						}
-						movePoint = false;
-					}
-					else{
-						path.lineTo(ppx, ppy);
-						lastMovePoint = null;
-					}
+
+			if (connectPoints){
+				if (validPrevPoint){
+					path.lineTo(ppx, ppy);
+					undrawnPoint = null;					
 				}
 				else{
-					drawPoint(ppx, ppy);
-				}
-				
-				if (showCrossPoint){
-					drawCrossPoint(ppx, ppy);
-				}
-				
-			}			
+					path.moveTo(ppx, ppy);
+
+					if (undrawnPoint != null){
+						//if this statement is reach then there is an error in this
+						//algorythm
+						throw new RuntimeException("Assert: We have an undrawn point that will be forgotten");
+					}
+
+					//If we aren't going to draw this point then we need to 
+					//remember it so we can draw it later.
+					if (!showCrossPoint){
+						undrawnPoint = path.getCurrentPoint();
+					}
+				}				
+			}
+			else{
+				drawPoint(ppx, ppy);
+			}
+			
+			if (showCrossPoint){
+				drawCrossPoint(ppx, ppy);
+			}
+			
+			// If we made it here then the current point (soon to be the prev point)
+			// is a valid point, so set the flag
+			// technically we only care about this if we are connecting points
+			// but it seemed easier to understand if this id done out here
+			validPrevPoint = true;
 		}
 			
 		lastValueCalculated = i-1;
 		
-		//When connecting points and not drawing crosses, it should draw a point 
-		if (connectPoints && !showCrossPoint && lastMovePoint != null){
-			drawPoint(lastMovePoint);
-			lastMovePoint = null;
+		//There is a point that hasn't been drawn yet
+		//we will draw it here, however this might cause a display glitch.  
+		//If several points
+		//are sent and the second to the last is an invalid point then this
+		//will draw the last point, but in the next "update" a valid point could
+		//be added.  In this case there will be an extra point drawn.  In this case 
+		//there should just be a line.  This could be fixed by removing the extra point 
+		//on the next draw.
+		if (undrawnPoint != null){
+			drawPoint(undrawnPoint);
+			undrawnPoint = null;
 		}
 		
 		//System.out.println("size:"+yValues.size());

@@ -1,8 +1,8 @@
 /*
  * Last modification information:
- * $Revision: 1.1 $
- * $Date: 2004-10-29 07:43:12 $
- * $Author: imoncada $
+ * $Revision: 1.2 $
+ * $Date: 2004-11-10 20:33:39 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -22,11 +22,8 @@ import org.concord.graph.engine.GraphableList;
  * @author imoncada<p>
  *
  */
-public class DataGraphAutoScroller 
+public class DataGraphAutoScroller extends DataGraphDaemon
 {
-	protected GraphableList graphables;
-	protected DataGraph graph;
-	
 	protected boolean autoScrollX = true;
 	protected boolean autoScrollY = false;
 	
@@ -54,7 +51,7 @@ public class DataGraphAutoScroller
 	/**
 	 * 
 	 */
-	public void scrollCoordinateSystem()
+	public void handleUpdate()
 	{
 		DataGraphable dg;
 		float minX=0, maxX=0, minY=0, maxY=0;
@@ -100,29 +97,6 @@ public class DataGraphAutoScroller
 		}
 	}
 
-	/**
-	 * @param graphables The graphables to set.
-	 */
-	public void setGraphables(GraphableList graphables)
-	{
-		this.graphables = graphables;
-	}
-	
-	/**
-	 * @return Returns the graph.
-	 */
-	public DataGraph getGraph()
-	{
-		return graph;
-	}
-	
-	/**
-	 * @param graph The graph to set.
-	 */
-	public void setGraph(DataGraph graph)
-	{
-		this.graph = graph;
-	}
 	/**
 	 * @return Returns the minXValue.
 	 */
@@ -180,5 +154,23 @@ public class DataGraphAutoScroller
 	{
 		yPaddingMin = paddingMin;
 		yPaddingMax = paddingMax;
+	}
+	
+	/**
+	 * 
+	 * @param desiredWidth the width to scrolled to
+	 */
+	public void setDesiredWidth(float desiredWidth)
+	{
+		width = desiredWidth;
+	}
+	
+	/**
+	 * 
+	 * @param desiredHeight the height to scrolled to
+	 */
+	public void setDesiredHeight(float desiredHeight)
+	{
+		height = desiredHeight;
 	}
 }

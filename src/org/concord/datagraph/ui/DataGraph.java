@@ -1,8 +1,8 @@
 /*
  * Last modification information:
- * $Revision: 1.17 $
- * $Date: 2004-10-29 07:36:48 $
- * $Author: imoncada $
+ * $Revision: 1.18 $
+ * $Date: 2004-11-10 20:33:39 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -15,6 +15,8 @@ import javax.swing.*;
 
 import java.util.*;
 
+import org.concord.datagraph.engine.DataGraphAutoScaler;
+import org.concord.datagraph.engine.DataGraphAutoScroller;
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.framework.data.DataFlow;
 import org.concord.framework.data.stream.*;
@@ -41,6 +43,10 @@ import org.concord.graph.examples.*;
 public class DataGraph extends JPanel
 	implements DataFlow, DataConsumer, GraphWindowListener
 {
+	public final static int AUTO_FIT_NONE = 0;
+	public final static int AUTO_SCALE_MODE = 1;
+	public final static int AUTO_SCROLL_MODE = 2;	
+
 	//Graph, grid and toolbar
 	protected GraphWindow graph;
 	protected Grid2D grid;
@@ -57,6 +63,9 @@ public class DataGraph extends JPanel
 	
 	protected DashedBox selectionBox;
 	protected boolean limitsSet = false;
+
+	protected DataGraphAutoScaler scaler = null;
+	protected DataGraphAutoScroller scroller = null;	
 	
 	/**
 	 * Creates a default data graph that will have: a GraphWindow with a Grid2D that displays
@@ -653,5 +662,87 @@ public class DataGraph extends JPanel
 		
 		resetGraphArea();
 	}
+
+	/*
+	public final static int AUTO_FIT_NONE = 0;
+	public final static int AUTO_SCALE_MODE = 1;
+	public final static int AUTO_SCROLL_MODE = 2;	
+*/
+	/**
+	 * sets the mode used to resize the graph as new points are added
+	 * AUTO_FIT_NONE - don't resize the graph automatically
+	 * AUTO_SCALE_MODE - change the scale of the graph so all the data is
+	 *   visible.  If you want to customize the behavior of this mode
+	 *   you can use the getAutoScaler() method and customize the returned
+	 *   object.
+	 * AUTO_SCROLL_MODE - change the position of the display origin,
+	 *   so new data is visible. If you want to customize the behavior of
+	 *   this mode you can use the getAutoScroller() method and customize
+	 *   the returned object.
+	 */
+	public void setAutoFitMode(int mode)
+	{
+		switch(mode){
+			case AUTO_FIT_NONE:
+				if (scaler != null) {
+					scaler.setEnabled(false);
+				}
+				if (scroller != null) {
+					scroller.setEnabled(false);
+				}
+				break;
+			case AUTO_SCALE_MODE:
+				getAutoScaler();
+				scaler.setEnabled(true);
+				if (scroller != null) {
+					scroller.setEnabled(false);
+				}
+				break;
+			case AUTO_SCROLL_MODE:
+				getAutoScroller();
+				scroller.setEnabled(true);
+				if (scaler != null) {
+					scaler.setEnabled(false);
+				}
+				break;
+			default:
+				throw new RuntimeException("Invalid fit mode: " + mode);
+		}
+	}
 	
+	/**
+	 * Get the object used for auto scaling.  This object can be
+	 * configured to change the behavior of auto scaling.
+	 * @return
+	 */
+	public DataGraphAutoScaler getAutoScaler()
+	{
+		if(scaler == null) {
+			scaler = new DataGraphAutoScaler();
+			scaler.setGraph(this);
+			scaler.setGraphables(getObjList());
+			scaler.setEnabled(false);
+		}
+		return scaler;
+	}
+	
+	/**
+	 * Get the object used for auto scrolling.  This object can be
+	 * configured to change the behavior of auto scrolling.
+	 * @return
+	 */
+	public DataGraphAutoScroller getAutoScroller()
+	{
+		if(scroller == null) {
+			// This needs to be adjust based on the graph dimensions
+			scroller = new DataGraphAutoScroller(6,4);
+			scroller.setGraph(this);
+			scroller.setGraphables(getObjList());
+			scroller.setMinXValue(0);
+			// This needs to be adjust based on the graph dimensions
+			scroller.setXPadding(1,5);
+			scroller.setEnabled(false);
+		}
+		return scroller;
+	}	
 }
