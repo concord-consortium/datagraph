@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.16 $
- * $Date: 2004-10-28 18:57:41 $
+ * $Revision: 1.17 $
+ * $Date: 2004-10-29 07:36:48 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -713,7 +713,9 @@ getDataChannelDescription(int numChannel):
 	public void setValueAt(int numSample, int numChannel, Object value)
 	{
 		//Only works with a Writable Data Store!
-		if (!(dataStore instanceof WritableDataStore)) return;
+		if (!(dataStore instanceof WritableDataStore)) {
+			throw new IllegalArgumentException("The Data Store "+dataStore+" is not Writable!");
+		}
 		
 		if (numChannel == 0){
 			((WritableDataStore)dataStore).setValueAt(numSample, channelX, value);
@@ -730,9 +732,23 @@ getDataChannelDescription(int numChannel):
 	public void removeValueAt(int numSample)
 	{
 		//Only works with a Writable Data Store!
-		if (!(dataStore instanceof WritableDataStore)) return;
+		if (!(dataStore instanceof WritableDataStore)) {
+			throw new IllegalArgumentException("The Data Store "+dataStore+" is not Writable!");
+		}
 		
 		((WritableDataStore)dataStore).removeValueAt(numSample);
+	}
+	
+	public void addPoint(double x, double y)
+	{
+		//Only works with a Writable Data Store!
+		if (!(dataStore instanceof WritableDataStore)) {
+			throw new IllegalArgumentException("The Data Store "+dataStore+" is not Writable!");
+		}
+		
+		int newPointIndex = getTotalNumSamples();
+		setValueAt(newPointIndex, 0, new Float(x));
+		setValueAt(newPointIndex, 1, new Float(y));
 	}
 	
 	/**

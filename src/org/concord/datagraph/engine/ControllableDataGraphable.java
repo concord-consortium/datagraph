@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.2 $
- * $Date: 2004-10-28 18:57:41 $
+ * $Revision: 1.3 $
+ * $Date: 2004-10-29 07:36:48 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -12,6 +12,8 @@ package org.concord.datagraph.engine;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 
+import org.concord.framework.data.stream.DataStore;
+import org.concord.framework.data.stream.WritableDataStore;
 import org.concord.graph.engine.CoordinateSystem;
 import org.concord.graph.engine.MouseControllable;
 
@@ -46,8 +48,21 @@ public class ControllableDataGraphable extends DataGraphable
 	{
 		super();
 	}
-
-	/* (non-Javadoc)
+	
+	/**
+	 * @see org.concord.datagraph.engine.DataGraphable#setDataStore(org.concord.framework.data.stream.DataStore)
+	 */
+	public void setDataStore(DataStore dataStore)
+	{
+		//This Data Graphable only makes sense with a Writable Data Store!
+		if (!(dataStore instanceof WritableDataStore)) {
+			throw new IllegalArgumentException("The Data Store "+dataStore+" is not Writable!");
+		}
+		
+		super.setDataStore(dataStore);
+	}
+	
+	/**
 	 * @see org.concord.graph.engine.MouseControllable#mousePressed(java.awt.Point)
 	 */
 	public boolean mousePressed(Point p)
@@ -56,6 +71,8 @@ public class ControllableDataGraphable extends DataGraphable
 		
 		mouseClicked = true;
 
+		if (dragMode == DRAGMODE_NONE) return false;
+		
 		if (indexPointClicked == -1 &&
 				(dragMode == DRAGMODE_MOVEPOINTS || dragMode == DRAGMODE_REMOVEPOINTS)) return false;
 		
@@ -83,6 +100,8 @@ public class ControllableDataGraphable extends DataGraphable
 	{
 		Point2D pW;
 		
+		if (dragMode == DRAGMODE_NONE) return false;
+		
 		if (indexPointClicked == -1 &&
 				(dragMode == DRAGMODE_MOVEPOINTS || dragMode == DRAGMODE_REMOVEPOINTS)) return false;
 		
@@ -102,13 +121,6 @@ public class ControllableDataGraphable extends DataGraphable
 		}
 		
 		return false;
-	}
-
-	public void addPoint(double x, double y)
-	{
-		int newPointIndex = getTotalNumSamples();
-		setValueAt(newPointIndex, 0, new Float(x));
-		setValueAt(newPointIndex, 1, new Float(y));
 	}
 	
 	/* (non-Javadoc)
@@ -137,6 +149,8 @@ public class ControllableDataGraphable extends DataGraphable
 		indexPointClicked = -1;
 		
 		if (graphArea == null) return false;
+		
+		if (dragMode == DRAGMODE_NONE) return false;
 		
 		if (dragMode == DRAGMODE_MOVEPOINTS || dragMode == DRAGMODE_REMOVEPOINTS){
 			return isPointAValue(p);

@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.16 $
- * $Date: 2004-10-28 19:00:46 $
+ * $Revision: 1.17 $
+ * $Date: 2004-10-29 07:36:48 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -26,7 +26,7 @@ import org.concord.graph.examples.*;
 
 /**
  * DataGraph
- * This is a panel with a graph and a toolbar
+ * This is a panel with a graph and a toolbar on the right
  * The graph has one default graph area that is not the whole window,
  * The grid is drawn at the beginning (LEFT and BOTTOM)
  * and there is some space left for the axis labels.
@@ -522,6 +522,15 @@ public class DataGraph extends JPanel
 	public DataGraphable createDataGraphable(DataProducer dataProducer)
 	{
 		return createDataGraphable(dataProducer, -1, 0);
+	}
+	
+	/**
+	 * Adds a data graphable to the list of graphables
+	 * @param graphable data graphable to add
+	 */
+	public void add(DataGraphable graphable)
+	{
+		addDataGraphable(graphable);
 	}
 	
 	/**
