@@ -24,9 +24,9 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.34 $
- * $Date: 2005-03-25 06:03:30 $
- * $Author: imoncada $
+ * $Revision: 1.35 $
+ * $Date: 2005-03-25 17:34:54 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -63,6 +63,7 @@ import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.DataStore;
 import org.concord.framework.data.stream.DataStoreEvent;
 import org.concord.framework.data.stream.DataStoreListener;
+import org.concord.framework.data.stream.DeltaDataStore;
 import org.concord.framework.data.stream.ProducerDataStore;
 import org.concord.framework.data.stream.WritableDataStore;
 import org.concord.graph.engine.CoordinateSystem;
@@ -78,6 +79,7 @@ public class DataGraphable extends DefaultGraphable
 	//By default, it graphs the dt (x axis) and the first channel (y axis) 
 	protected int channelX = -1;
 	protected int channelY = 0;
+	protected float dt = Float.NaN; // this is only used if this has a DeltaDataStore
 	
 	protected Color lineColor = Color.black;
 	protected float lineWidth = 2;
@@ -212,10 +214,10 @@ public class DataGraphable extends DefaultGraphable
 		needUpdateDataReceived = false;
 		lastValueCalculated = -1;
 		
-		minXValue = Float.NaN;
-		maxXValue = Float.NaN;
-		minYValue = Float.NaN;
-		maxYValue = Float.NaN;
+		minXValue = Float.MAX_VALUE;
+		maxXValue = -Float.MAX_VALUE;
+		minYValue = Float.MAX_VALUE;
+		maxYValue = -Float.MAX_VALUE;
 		
 		notifyChange();
 	}
@@ -266,7 +268,6 @@ public class DataGraphable extends DefaultGraphable
 		//long b = System.currentTimeMillis();
 		if (needUpdate){
 			update();
-			needUpdate = false;
 		}
 		
 		Shape oldClip = g.getClip();
@@ -320,9 +321,13 @@ public class DataGraphable extends DefaultGraphable
 		float px, py;
 		Object objVal;
 
-        objVal = dataStore.getValueAt(rowIndex, channelX);
-		px = handleValue(objVal);
-					
+		if(channelX == -1) {
+		    px = dt * rowIndex;
+		} else {
+		    objVal = dataStore.getValueAt(rowIndex, channelX);
+		    px = handleValue(objVal);
+		}
+		
 		objVal = dataStore.getValueAt(rowIndex, channelY);
 		py = handleValue(objVal);
 		
@@ -338,16 +343,16 @@ public class DataGraphable extends DefaultGraphable
 		}
 		
 		//Always keep the min and max value available
-		if (Float.isNaN(minXValue) || px < minXValue){
+		if (px < minXValue){
 			minXValue = px;
 		}
-		if (Float.isNaN(maxXValue) || px > maxXValue){
+		if (px > maxXValue){
 			maxXValue = px;
 		}
-		if (Float.isNaN(minYValue) || py < minYValue){
+		if (py < minYValue){
 			minYValue = py;
 		}
-		if (Float.isNaN(maxYValue) || py > maxYValue){
+		if (py > maxYValue){
 			maxYValue = py;
 		}
 		
@@ -377,6 +382,11 @@ public class DataGraphable extends DefaultGraphable
 		Point2D currentPathPoint;
 
 		if (dataStore == null) return;
+
+		if (dataStore instanceof DeltaDataStore && channelX == -1) {
+		    dt = ((DeltaDataStore)dataStore).getDt();
+		}
+
 		
 		Point2D.Double pathPointHolder = new Point2D.Double();
 		Point2D pathPoint = null;
@@ -394,10 +404,10 @@ public class DataGraphable extends DefaultGraphable
     		// previous point
     		validPrevPoint = false;
     		
-    		minXValue = Float.NaN;
-    		maxXValue = Float.NaN;
-    		minYValue = Float.NaN;
-    		maxYValue = Float.NaN;
+    		minXValue = Float.MAX_VALUE;
+    		maxXValue = -Float.MAX_VALUE;
+    		minYValue = Float.MAX_VALUE;
+    		maxYValue = -Float.MAX_VALUE;
     	}
    		initialI = lastValueCalculated + 1;
 
@@ -426,79 +436,129 @@ public class DataGraphable extends DefaultGraphable
 	    }
    		
    		int i;
-		for(i=initialI; i < dataStore.getTotalNumSamples(); i++){
-		    pathPoint = getRowPoint(i, coord, pathPointHolder);
-
-		    if(pathPoint == null) {
-				//We have found an invalid point.  If there was a valid undrawn point 
-				//before this one, then we need to draw it.  
-				//There can only be an undrawn point if we are connecting points and not
-				//drawing crosses
-				if (undrawnPoint != null){
-					drawPoint(undrawnPoint);
-					undrawnPoint = null;
-				}
-				// This could be caused if the data store was being updated at the same
-				// as we are looking at it.  This should make this point the last point
-				// in the data store.
-				validPrevPoint = false;
-				continue;								
-			}
-			
-			ppx = (float)pathPoint.getX();
-			ppy = (float)pathPoint.getY();
-
+   		int totalNumSamples = dataStore.getTotalNumSamples();
+		float thresholdPointTheSame = (float)(lineWidth/2 - 0.01);
+		
+		
+		if(connectPoints){
+		    float lastPathX = Float.NaN;
+		    float lastPathY = Float.NaN;
 			currentPathPoint = path.getCurrentPoint();
-			
-			double thresholdPointTheSame = lineWidth/2 - 0.01;
-			
-			float dy = 0;
-			if (!connectPoints){
-				dy = 1;//TODO dy is 1 because of MAC OS X
+			if(currentPathPoint != null) {
+			    lastPathX = (float)currentPathPoint.getX();
+			    lastPathY = (float)currentPathPoint.getY();
 			}
 			
-			if (currentPathPoint != null && 
-					MathUtil.equalsDouble(ppx, currentPathPoint.getX(), thresholdPointTheSame) && 
-					MathUtil.equalsDouble(ppy, currentPathPoint.getY() - dy, thresholdPointTheSame)){
-				//System.out.println("Not adding this point:"+ppx+","+ppy+" "+lastPathPoint);
-				continue;
-			}
+			for(i=initialI; i < totalNumSamples; i++){
+			    pathPoint = getRowPoint(i, coord, pathPointHolder);
 
-			if (connectPoints){
+			    if(pathPoint == null) {
+					//We have found an invalid point.  If there was a valid undrawn point 
+					//before this one, then we need to draw it.  
+					//There can only be an undrawn point if we are connecting points and not
+					//drawing crosses
+					if (undrawnPoint != null){
+						drawPoint(undrawnPoint);
+						undrawnPoint = null;
+					}
+					// This could be caused if the data store was being updated at the same
+					// as we are looking at it.  This should make this point the last point
+					// in the data store.
+					validPrevPoint = false;
+					continue;								
+				}
+				
+				ppx = (float)pathPoint.getX();
+				ppy = (float)pathPoint.getY();
+				
+				if (MathUtil.equalsFloat(ppx, lastPathX, thresholdPointTheSame) && 
+					MathUtil.equalsFloat(ppy, lastPathY, thresholdPointTheSame)){
+					continue;
+				}
+
 				if (validPrevPoint){
-					path.lineTo(ppx, ppy);
-					undrawnPoint = null;					
+				    path.lineTo(ppx, ppy);
+				    undrawnPoint = null;					
 				}
 				else{
-					path.moveTo(ppx, ppy);
-
-					if (undrawnPoint != null){
-						//if this statement is reach then there is an error in this
-						//algorythm
-						throw new RuntimeException("Assert: We have an undrawn point that will be forgotten");
-					}
-
-					//If we aren't going to draw this point then we need to 
-					//remember it so we can draw it later.
-					if (!showCrossPoint){
-						undrawnPoint = path.getCurrentPoint();
-					}
+				    path.moveTo(ppx, ppy);
+				    
+				    if (undrawnPoint != null){
+				        //if this statement is reach then there is an error in this
+				        //algorythm
+				        throw new RuntimeException("Assert: We have an undrawn point that will be forgotten");
+				    }
+				    
+				    //If we aren't going to draw this point then we need to 
+				    //remember it so we can draw it later.
+				    if (!showCrossPoint){
+				        undrawnPoint = path.getCurrentPoint();
+				    }
 				}				
+			
+				lastPathX = ppx;
+				lastPathY = ppy;
+				
+				if (showCrossPoint){
+					drawCrossPoint(ppx, ppy);
+				}
+				
+				// If we made it here then the current point (soon to be the prev point)
+				// is a valid point, so set the flag
+				// technically we only care about this if we are connecting points
+				// but it seemed easier to understand if this is done out here
+				validPrevPoint = true;
 			}
-			else{
+		    
+		} else {
+			for(i=initialI; i < totalNumSamples; i++){
+			    pathPoint = getRowPoint(i, coord, pathPointHolder);
+
+			    if(pathPoint == null) {
+					//We have found an invalid point.  If there was a valid undrawn point 
+					//before this one, then we need to draw it.  
+					//There can only be an undrawn point if we are connecting points and not
+					//drawing crosses
+					if (undrawnPoint != null){
+						drawPoint(undrawnPoint);
+						undrawnPoint = null;
+					}
+					// This could be caused if the data store was being updated at the same
+					// as we are looking at it.  This should make this point the last point
+					// in the data store.
+					validPrevPoint = false;
+					continue;								
+				}
+				
+				ppx = (float)pathPoint.getX();
+				ppy = (float)pathPoint.getY();
+
+				currentPathPoint = path.getCurrentPoint();			
+				
+				float dy = 1;//TODO dy is 1 because of MAC OS X
+				
+				if (currentPathPoint != null && 
+						MathUtil.equalsDouble(ppx, currentPathPoint.getX(), thresholdPointTheSame) && 
+						MathUtil.equalsDouble(ppy, currentPathPoint.getY() - dy, thresholdPointTheSame)){
+					//System.out.println("Not adding this point:"+ppx+","+ppy+" "+lastPathPoint);
+					continue;
+				}
+
 				drawPoint(ppx, ppy);
+				
+				if (showCrossPoint){
+					drawCrossPoint(ppx, ppy);
+				}
+				
+				// If we made it here then the current point (soon to be the prev point)
+				// is a valid point, so set the flag
+				// technically we only care about this if we are connecting points
+				// but it seemed easier to understand if this is done out here
+				validPrevPoint = true;
 			}
-			
-			if (showCrossPoint){
-				drawCrossPoint(ppx, ppy);
-			}
-			
-			// If we made it here then the current point (soon to be the prev point)
-			// is a valid point, so set the flag
-			// technically we only care about this if we are connecting points
-			// but it seemed easier to understand if this is done out here
-			validPrevPoint = true;
+		    
 		}
+		
 			
 		lastValueCalculated = i-1;
 		
@@ -585,7 +645,7 @@ public class DataGraphable extends DefaultGraphable
 	public void setChannelX(int channelX)
 	{
 		if (channelX < -1){
-			channelX = -1;
+			channelX = -1;			
 		}
 		this.channelX = channelX;
 	}
@@ -764,15 +824,16 @@ public class DataGraphable extends DefaultGraphable
 	public void dataChannelDescChanged(DataStoreEvent evt)
 	{
 	    DataStore source = evt.getSource();
-	    if(!(source instanceof ProducerDataStore)){
+	    if(!(source instanceof DeltaDataStore)){
 	        return;
 	    }
 
-	    ProducerDataStore pDataStore = (ProducerDataStore)source;
+	    DeltaDataStore pDataStore = (DeltaDataStore)source;
 	    // we really need something in the pdata store that will
 	    // tell us which channel is x and which is y
 	    if(pDataStore.isUseDtAsChannel() && getChannelX() == 0){
 	        setChannelX(-1);
+	        dt = pDataStore.getDt();
 	        setChannelY(getChannelY() - 1);
 	    } else if(!pDataStore.isUseDtAsChannel() && getChannelX() == -1){
 	        setChannelX(0);
