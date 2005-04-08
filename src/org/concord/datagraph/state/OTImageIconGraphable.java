@@ -1,4 +1,3 @@
-
 /*
  *  Copyright (C) 2004  The Concord Consortium, Inc.,
  *  10 Concord Crossing, Concord, MA 01741
@@ -22,31 +21,38 @@
  *
  */
 
-package org.concord.datagraph.state;
-import org.concord.framework.otrunk.OTObjectInterface;
-import org.concord.framework.otrunk.OTObjectList;
 /*
- * Created on Apr 5, 2005
+ * Last modification information:
+ * $Revision: 1.1 $
+ * $Date: 2005-04-08 04:59:21 $
+ * $Author: imoncada $
  *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
+ * Licence Information
+ * Copyright 2004 The Concord Consortium 
+*/
+
+package org.concord.datagraph.state;
+
+import org.concord.framework.otrunk.OTObjectInterface;
 
 /**
- * @author scott
+ * OTImageIconGraphable
+ * Class name and description
  *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * Date created: Apr 07, 2005
+ *
+ * @author imoncada<p>
+ *
  */
-public interface OTDrawingTool
+public interface OTImageIconGraphable
     extends OTObjectInterface
 {
-    public byte [] getBackgroundImage();
+    public byte [] getSrc();
+    public void setSrc(byte []b);
     
-    public OTObjectList getStamps();
+    public float getX();
+    public void setX(float x);
     
-    public OTObjectList getGraphables();
-    
-    public final static boolean DEFAULT_gridVisible = false;
-    public boolean getGridVisible();
+    public float getY();
+    public void setY(float y);
 }
