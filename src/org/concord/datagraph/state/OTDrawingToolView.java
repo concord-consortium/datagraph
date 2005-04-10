@@ -22,39 +22,43 @@
  *
  */
 
+/*
+ * Last modification information:
+ * $Revision: 1.4 $
+ * $Date: 2005-04-10 17:58:54 $
+ * $Author: imoncada $
+ *
+ * Licence Information
+ * Copyright 2004 The Concord Consortium 
+ */
 package org.concord.datagraph.state;
-import java.net.URL;
+
 import java.util.EventObject;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
-import javax.swing.JPanel;
 
-import org.concord.data.stream.PointsDataStore;
-import org.concord.datagraph.engine.ControllableDataGraphable;
-import org.concord.datagraph.engine.ControllableDataGraphableDrawing;
 import org.concord.framework.otrunk.OTObjectList;
 import org.concord.framework.otrunk.view.OTObjectView;
 import org.concord.framework.otrunk.view.OTViewContainer;
 import org.concord.graph.event.GraphableListListener;
-import org.concord.graph.util.engine.DrawingObject;
+import org.concord.graph.util.state.OTDrawingShape;
+import org.concord.graph.util.state.OTDrawingStamp;
+import org.concord.graph.util.state.OTDrawingTool;
+import org.concord.graph.util.state.OTDrawingImageIcon;
 import org.concord.graph.util.ui.DrawingGraph;
 import org.concord.graph.util.ui.ImageStamp;
-import org.concord.graph.util.ui.ResourceLoader;
-/*
- * Created on Apr 5, 2005
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 
 /**
- * @author scott
+ * OTDrawingToolView
+ * Class name and description
  *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * Date created: Apr 05, 2005
+ *
+ * @author imoncada<p>
+ *
  */
-public class OTDrawingToolView extends DrawingGraph
+public abstract class OTDrawingToolView extends DrawingGraph
     implements OTObjectView, GraphableListListener
 {
     OTDrawingTool drawingTool;
@@ -95,29 +99,19 @@ public class OTDrawingToolView extends DrawingGraph
 		
 		for(int i=0; i<graphables.size(); i++) {
 			Object objOT = graphables.get(i);
-			if (objOT instanceof OTImageIconGraphable){
-				OTImageIconGraphable otImage = (OTImageIconGraphable)objOT;
-				byte [] stampBytes = otImage.getSrc();
-				ImageIcon stampIcon = new ImageIcon(stampBytes);
-				addImageIcon(stampIcon, otImage.getX(), otImage.getY());
+			if (objOT instanceof OTDrawingImageIcon){
+				OTDrawingImageIcon otImage = (OTDrawingImageIcon)objOT;	
+				
+				addImageIcon(otImage.getWrappedObject());
+			}
+			else if (objOT instanceof OTDrawingShape){
+				OTDrawingShape otShape = (OTDrawingShape)objOT;	
+				
+				addShape(otShape.getWrappedObject());
 			}
 		}
 		
 		return this;
-	}
-
-	/**
-	 * @see org.concord.graph.util.engine.DrawingObjectFactory#createNewDrawingObject(int)
-	 */
-	public DrawingObject createNewDrawingObject(int type)
-	{
-		PointsDataStore points = new PointsDataStore();
-		ControllableDataGraphable dg = new ControllableDataGraphableDrawing();
-		dg.setDrawAlwaysConnected(false);
-		dg.setDataStore(points, 0, 1);
-		dg.setLineType(ControllableDataGraphable.LINETYPE_FREE);
-		objList.add(dg);
-		return dg;
 	}
 
 	/**
@@ -129,7 +123,7 @@ public class OTDrawingToolView extends DrawingGraph
 		
 		if (obj instanceof ImageStamp){
 			
-			ImageStamp imgObj = (ImageStamp)obj;
+/*			ImageStamp imgObj = (ImageStamp)obj;
 			OTImageIconGraphable otImg;
 			
 			try{
@@ -140,10 +134,10 @@ public class OTDrawingToolView extends DrawingGraph
 				return;
 			}
 			
-			otImg.setX((float)imgObj.getLocation().getX());
-			otImg.setY((float)imgObj.getLocation().getY());
+		//	otImg.setX((float)imgObj.getLocation().getX());
+		//	otImg.setY((float)imgObj.getLocation().getY());
 			
-			drawingTool.getGraphables().add(otImg);
+			drawingTool.getGraphables().add(otImg);*/
 		}
 	}
 
@@ -152,8 +146,6 @@ public class OTDrawingToolView extends DrawingGraph
 	 */
 	public void listGraphableRemoved(EventObject e)
 	{
-		// TODO Auto-generated method stub
-		
 	}
 
 	/**
