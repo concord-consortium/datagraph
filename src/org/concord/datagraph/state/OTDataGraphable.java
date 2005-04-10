@@ -203,4 +203,13 @@ public class OTDataGraphable extends DefaultOTObject
 	{
 		return DataGraphable.class;
 	}
+
+	/**
+	 * @see org.concord.framework.otrunk.OTWrapper#registerWrappedObject(java.lang.Object)
+	 */
+	public void registerWrappedObject(Object wrappedObject)
+	{
+		// TODO Auto-generated method stub
+		
+	}
 }
