@@ -22,20 +22,27 @@
  *
  */
 
-package org.concord.datagraph.state;
-import org.concord.framework.otrunk.OTObjectInterface;
 /*
- * Created on Apr 5, 2005
+ * Last modification information:
+ * $Revision: 1.3 $
+ * $Date: 2005-04-10 17:30:33 $
+ * $Author: imoncada $
  *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
+ * Licence Information
+ * Copyright 2004 The Concord Consortium 
+*/
+package org.concord.datagraph.state;
+
+import org.concord.framework.otrunk.OTObjectInterface;
 
 /**
- * @author scott
+ * ImageStamp
+ * Class name and description
  *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * Date created: Apr 5, 2005
+ *
+ * @author imoncada<p>
+ *
  */
 public interface OTDrawingStamp
     extends OTObjectInterface
