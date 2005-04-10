@@ -24,8 +24,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.1 $
- * $Date: 2005-04-10 17:57:29 $
+ * $Revision: 1.2 $
+ * $Date: 2005-04-10 18:44:46 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -40,6 +40,7 @@ import org.concord.datagraph.engine.ControllableDataGraphableDrawing;
 import org.concord.framework.otrunk.view.OTViewContainer;
 import org.concord.graph.util.engine.DrawingObject;
 import org.concord.graph.util.state.OTDrawingTool;
+import org.concord.graph.util.state.OTDrawingToolView;
 
 /**
  * OTDataDrawingToolView

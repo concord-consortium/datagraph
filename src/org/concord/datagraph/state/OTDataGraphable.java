@@ -177,4 +177,30 @@ public class OTDataGraphable extends DefaultOTObject
 		resources.setXColumn(wrappedObject.getChannelX());
 		resources.setYColumn(wrappedObject.getChannelY());
     }
+
+	/* (non-Javadoc)
+	 * @see org.concord.framework.otrunk.OTWrapper#saveObject(java.lang.Object)
+	 */
+	public void saveObject(Object wrappedObject)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.concord.framework.otrunk.OTWrapper#createWrappedObject()
+	 */
+	public Object createWrappedObject()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/**
+	 * @see org.concord.framework.otrunk.OTWrapper#getWrappedObjectClass()
+	 */
+	public Class getWrappedObjectClass()
+	{
+		return DataGraphable.class;
+	}
 }
