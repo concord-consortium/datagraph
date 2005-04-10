@@ -24,8 +24,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.3 $
- * $Date: 2005-04-10 17:30:33 $
+ * $Revision: 1.1 $
+ * $Date: 2005-04-10 17:57:29 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -33,21 +33,42 @@
 */
 package org.concord.datagraph.state;
 
-import org.concord.framework.otrunk.OTObjectInterface;
+import org.concord.data.stream.PointsDataStore;
+import org.concord.datagraph.engine.ControllableDataGraphable;
+import org.concord.datagraph.engine.ControllableDataGraphableDrawing;
+
+import org.concord.framework.otrunk.view.OTViewContainer;
+import org.concord.graph.util.engine.DrawingObject;
+import org.concord.graph.util.state.OTDrawingTool;
 
 /**
- * ImageStamp
+ * OTDataDrawingToolView
  * Class name and description
  *
- * Date created: Apr 5, 2005
+ * Date created: Apr 10, 2005
  *
  * @author imoncada<p>
  *
  */
-public interface OTDrawingStamp
-    extends OTObjectInterface
+public class OTDataDrawingToolView extends OTDrawingToolView
 {
-    public byte [] getSrc();
+	
+    public OTDataDrawingToolView(OTDrawingTool tool, OTViewContainer container)
+    {
+    	super(tool, container);
+    }
     
-    public String getDescription();
+	/**
+	 * @see org.concord.graph.util.engine.DrawingObjectFactory#createNewDrawingObject(int)
+	 */
+	public DrawingObject createNewDrawingObject(int type)
+	{
+		PointsDataStore points = new PointsDataStore();
+		ControllableDataGraphable dg = new ControllableDataGraphableDrawing();
+		dg.setDrawAlwaysConnected(false);
+		dg.setDataStore(points, 0, 1);
+		dg.setLineType(ControllableDataGraphable.LINETYPE_FREE);
+		objList.add(dg);
+		return dg;
+	}
 }
