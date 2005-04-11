@@ -50,6 +50,8 @@ import org.concord.datagraph.engine.DataGraphable;
 import org.concord.datagraph.ui.DataGraph;
 import org.concord.datagraph.ui.SingleDataAxisGrid;
 import org.concord.framework.data.stream.DataProducer;
+import org.concord.framework.otrunk.OTChangeEvent;
+import org.concord.framework.otrunk.OTChangeListener;
 import org.concord.framework.otrunk.OTObjectList;
 import org.concord.graph.engine.GraphableList;
 import org.concord.graph.event.GraphableListListener;
@@ -66,7 +68,7 @@ import org.concord.swing.SelectableToggleButton;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class DataGraphManager
-	implements GraphableListListener
+	implements GraphableListListener, OTChangeListener
 {
     OTDataCollector dataCollector;
     DataGraph dataGraph;
@@ -79,11 +81,13 @@ public class DataGraphManager
 	OTDataAxis yOTAxis;
 	
 	JPanel bottomPanel;
+
+	boolean isCausingOTChange = false;
 	
     /**
      * 
      */
-    public DataGraphManager(OTDataCollector collector)
+    public DataGraphManager(OTDataCollector collector, boolean showDataControls)
     {
         dataCollector = collector;
 
@@ -92,7 +96,9 @@ public class DataGraphManager
 		dataGraph.setAutoFitMode(DataGraph.AUTO_SCROLL_RUNNING_MODE);
 		
 		xOTAxis = dataCollector.getXDataAxis();
+		xOTAxis.addOTChangeListener(this);
 		yOTAxis = dataCollector.getYDataAxis();
+		yOTAxis.addOTChangeListener(this);
 
 		OTObjectList pfGraphables = dataCollector.getGraphables();
 
@@ -143,7 +149,7 @@ public class DataGraphManager
 			sourceDataProducer = sourceGraphable.findDataProducer();
 			
 			// dProducer.getDataDescription().setDt(0.1f);
-			if (sourceGraphable instanceof ControllableDataGraphable){
+			if(sourceGraphable instanceof ControllableDataGraphable) {
 
 			    bottomPanel = new JPanel(new FlowLayout());
 			    JButton clearButton = new JButton("Clear");
@@ -162,7 +168,7 @@ public class DataGraphManager
 
 			    dataGraph.add(bottomPanel, BorderLayout.SOUTH);  			    			    
 			} 
-			else {
+			else if(showDataControls){
 			    bottomPanel = new JPanel(new FlowLayout());
 			    valueLabel = new DataValueLabel(sourceDataProducer);
 			    valueLabel.setColumns(4);
@@ -262,6 +268,9 @@ public class DataGraphManager
 	{
 		Grid2D grid = dataGraph.getGrid();
 
+		xOTAxis.setDoNotifyChangeListeners(false);
+		yOTAxis.setDoNotifyChangeListeners(false);
+		
 		xOTAxis.setMin((float)dataGraph.getMinXAxisWorld());
 		xOTAxis.setMax((float)dataGraph.getMaxXAxisWorld());
 		yOTAxis.setMin((float)dataGraph.getMinYAxisWorld());
@@ -277,6 +286,11 @@ public class DataGraphManager
 			yOTAxis.setLabel(sYAxis.getAxisLabel());
 		}
 
+		isCausingOTChange = true;
+		xOTAxis.notifyOTChange();
+		yOTAxis.notifyOTChange();
+		isCausingOTChange = false;
+		
 		OTDataGraphable source = dataCollector.getSource();
 
 		source.saveObject(obj);		
@@ -304,5 +318,20 @@ public class DataGraphManager
 	{
 	}
 
+	/* (non-Javadoc)
+	 * @see org.concord.framework.otrunk.OTChangeListener#stateChanged(org.concord.framework.otrunk.OTChangeEvent)
+	 */
+	public void stateChanged(OTChangeEvent e)
+	{
+	    if(isCausingOTChange) {
+	        // we are the cause of this change
+	        return;
+	    }
 
+	    if(e.getSource() == xOTAxis || e.getSource() == yOTAxis) {
+	        dataGraph.setLimitsAxisWorld(xOTAxis.getMin(), xOTAxis.getMax(),
+	                yOTAxis.getMin(), yOTAxis.getMax());
+	    }	    	    
+	}
+	
 }

@@ -39,6 +39,7 @@ import javax.swing.JComponent;
 import org.concord.datagraph.ui.AddDataPointLabelAction;
 import org.concord.datagraph.ui.DataGraph;
 import org.concord.datagraph.ui.DataPointLabel;
+import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.WritableDataStore;
 import org.concord.framework.otrunk.OTObjectList;
 import org.concord.framework.otrunk.OTrunk;
@@ -66,12 +67,17 @@ public class DataCollectorView
     {
         dataCollector = collector;
     }
-    
+
     public JComponent getComponent(boolean editable)
     {
-	    dataGraphManager = new DataGraphManager(dataCollector);
+        return getDataGraph(editable, true);
+    }
+        
+    public DataGraph getDataGraph(boolean showToolbar, boolean showDataControls)
+    {
+	    dataGraphManager = new DataGraphManager(dataCollector, showDataControls);
 
-	    dataGraphManager.setToolbarVisible(editable);
+	    dataGraphManager.setToolbarVisible(showToolbar);
 	    
 	    DataGraph dataGraph = dataGraphManager.getDataGraph();
 	    
@@ -99,6 +105,12 @@ public class DataCollectorView
         		
         return dataGraph;
     }
+    
+    public DataProducer getSourceDataProducer()
+    {
+        return dataGraphManager.getSourceDataProducer();
+    }
+    
     
 	/**
 	 * @see org.concord.graph.event.GraphableListListener#listGraphableAdded(java.util.EventObject)

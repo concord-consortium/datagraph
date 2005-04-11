@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.3 $
- * $Date: 2005-01-31 17:41:33 $
+ * $Revision: 1.4 $
+ * $Date: 2005-04-11 23:21:25 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -34,6 +34,7 @@
 package org.concord.datagraph.state;
 
 import org.concord.framework.otrunk.OTObject;
+import org.concord.framework.otrunk.OTObjectInterface;
 import org.concord.framework.otrunk.OTObjectList;
 
 
@@ -47,7 +48,7 @@ import org.concord.framework.otrunk.OTObjectList;
  *
  */
 public interface OTDataAxis
-	extends OTObject
+	extends OTObjectInterface
 {
 	public float getMin();
 	public void setMin(float min);

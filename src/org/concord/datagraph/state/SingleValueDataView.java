@@ -97,7 +97,7 @@ public class SingleValueDataView extends JPanel
             return dataLabel;
         }
         	    
-	    dataGraphManager = new DataGraphManager(dataCollector);
+	    dataGraphManager = new DataGraphManager(dataCollector, true);
 	    
 		JPanel bottomPanel = dataGraphManager.getBottomPanel();
 		
