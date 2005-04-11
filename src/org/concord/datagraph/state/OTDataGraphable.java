@@ -31,14 +31,17 @@
 package org.concord.datagraph.state;
 
 import java.awt.Color;
+import java.util.EventObject;
 
 import org.concord.data.state.OTDataStore;
 import org.concord.datagraph.engine.ControllableDataGraphable;
+import org.concord.datagraph.engine.ControllableDataGraphableDrawing;
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.otrunk.DefaultOTObject;
 import org.concord.framework.otrunk.OTResourceSchema;
 import org.concord.framework.otrunk.OTWrapper;
+import org.concord.graph.event.GraphableListener;
 
 /**
  * @author scott
@@ -47,7 +50,7 @@ import org.concord.framework.otrunk.OTWrapper;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class OTDataGraphable extends DefaultOTObject
-	implements OTWrapper
+	implements OTWrapper, GraphableListener
 {
     public static interface ResourceSchema extends OTResourceSchema
     {
@@ -66,6 +69,10 @@ public class OTDataGraphable extends DefaultOTObject
     	public static boolean DEFAULT_controllable = false;
     	public boolean getControllable();
     	public void setControllable(boolean flag);
+    	
+    	public static boolean DEFAULT_drawing = false;
+    	public boolean getDrawing();
+    	public void setDrawing(boolean flag);
     	
     	public static boolean DEFAULT_allowHide = true;
     	public boolean getAllowHide();
@@ -88,13 +95,13 @@ public class OTDataGraphable extends DefaultOTObject
     
     private ResourceSchema resources;
     
+    protected DataGraphable wrappedObject;
+    
 	public OTDataGraphable(ResourceSchema resources)
 	{
 	    super(resources);
 	    this.resources = resources;
 	}
-
-	DataGraphable wrappedObject = null;
 	
 	/**
 	 * This method is used by the otrunk framework to save this
@@ -106,53 +113,56 @@ public class OTDataGraphable extends DefaultOTObject
 	 * 
 	 * @return
 	 */
-	public DataGraphable getWrappedObject()
+	public Object createWrappedObject()
 	{
-	    return getDataGraphable();
-	}
-	
-    public DataGraphable getDataGraphable()
-    {
-        if(wrappedObject == null) {
-            if (resources.getControllable()){
-                wrappedObject = new ControllableDataGraphable();
-            } 
-            else {
-                wrappedObject = new DataGraphable();
-            }
-            wrappedObject.setColor(new Color(resources.getColor()));
-            wrappedObject.setShowCrossPoint(resources.getDrawMarks());
-            wrappedObject.setLabel(resources.getName());
-            
-			DataProducer producer = resources.getDataProducer();
-			OTDataStore dataStore = resources.getDataStore();
+		DataGraphable dg;
 
-			if (resources.getControllable() && producer != null){
-			    System.err.println("Can't control a graphable with a data producer");
-			    return null;
-			}
-			
-			if (producer != null && dataStore != null){
-			    dataStore.setDataProducer(producer);
-			}
-			
-			if (dataStore != null){
-			    wrappedObject.setDataStore(dataStore);
-			}
-			else if (producer != null){
-			    wrappedObject.setDataProducer(producer);
-			}
-			else {
-			    System.err.println("OTDataGraphable without a valid " + 
-			            "datastore or dataproducer");
-			}
-			
-			wrappedObject.setChannelX(resources.getXColumn());
-			wrappedObject.setChannelY(resources.getYColumn());
-
+		if (resources.getDrawing()){
+        	dg = new ControllableDataGraphableDrawing();
+		}
+        else if (resources.getControllable()){
+        	dg = new ControllableDataGraphable();
+        } 
+        else {
+        	dg = new DataGraphable();
         }
+        dg.setColor(new Color(resources.getColor()));
+        dg.setShowCrossPoint(resources.getDrawMarks());
+        dg.setLabel(resources.getName());
+        
+		DataProducer producer = resources.getDataProducer();
+		OTDataStore dataStore = resources.getDataStore();
 
-        return wrappedObject;
+		if (resources.getControllable() && producer != null){
+		    System.err.println("Can't control a graphable with a data producer");
+		    return null;
+		}
+		
+		if (producer != null && dataStore != null){
+		    dataStore.setDataProducer(producer);
+		}
+		
+		if (dataStore != null){
+			dg.setDataStore(dataStore);
+		}
+		else if (producer != null){
+			dg.setDataProducer(producer);
+		}
+		else {
+		    System.err.println("OTDataGraphable without a valid " + 
+		            "datastore or dataproducer");
+		}
+		
+		dg.setChannelX(resources.getXColumn());
+		dg.setChannelY(resources.getYColumn());
+
+		wrappedObject = dg;
+		
+		//Now, listen to this object so I can be updated automatically when it changes
+		registerWrappedObject(dg);
+		//
+		
+        return dg;
     }
 
     /**
@@ -168,32 +178,19 @@ public class OTDataGraphable extends DefaultOTObject
         return resources.getDataProducer();
     }
     
-    public void saveObject()
-    {
-		Color c = wrappedObject.getColor();
-		resources.setColor(c.getRGB() & 0x00FFFFFF);
-		resources.setConnectPoints(wrappedObject.isConnectPoints());
-		resources.setDrawMarks(wrappedObject.isShowCrossPoint());
-		resources.setXColumn(wrappedObject.getChannelX());
-		resources.setYColumn(wrappedObject.getChannelY());
-    }
-
-	/* (non-Javadoc)
+	/**
 	 * @see org.concord.framework.otrunk.OTWrapper#saveObject(java.lang.Object)
 	 */
 	public void saveObject(Object wrappedObject)
 	{
-		// TODO Auto-generated method stub
+		DataGraphable dg = (DataGraphable)wrappedObject;
 		
-	}
-
-	/* (non-Javadoc)
-	 * @see org.concord.framework.otrunk.OTWrapper#createWrappedObject()
-	 */
-	public Object createWrappedObject()
-	{
-		// TODO Auto-generated method stub
-		return null;
+		Color c = dg.getColor();
+		resources.setColor(c.getRGB() & 0x00FFFFFF);
+		resources.setConnectPoints(dg.isConnectPoints());
+		resources.setDrawMarks(dg.isShowCrossPoint());
+		resources.setXColumn(dg.getChannelX());
+		resources.setYColumn(dg.getChannelY());
 	}
 
 	/**
@@ -208,6 +205,48 @@ public class OTDataGraphable extends DefaultOTObject
 	 * @see org.concord.framework.otrunk.OTWrapper#registerWrappedObject(java.lang.Object)
 	 */
 	public void registerWrappedObject(Object wrappedObject)
+	{
+		DataGraphable dg = (DataGraphable)wrappedObject;
+		
+		dg.addGraphableListener(this);
+	}
+
+	/**
+	 * @return
+	 */
+	public DataGraphable getDataGraphable()
+	{
+		return wrappedObject;
+	}
+
+	/**
+	 * @param otDataStore
+	 */
+	public void setDataStore(OTDataStore otDataStore)
+	{
+		resources.setDataStore(otDataStore);
+	}
+
+	/**
+	 * @param b
+	 */
+	public void setDrawing(boolean b)
+	{
+		resources.setDrawing(b);
+	}
+
+	/**
+	 * @see org.concord.graph.event.GraphableListener#graphableChanged(java.util.EventObject)
+	 */
+	public void graphableChanged(EventObject e)
+	{
+		saveObject(e.getSource());
+	}
+
+	/**
+	 * @see org.concord.graph.event.GraphableListener#graphableRemoved(java.util.EventObject)
+	 */
+	public void graphableRemoved(EventObject e)
 	{
 		// TODO Auto-generated method stub
 		

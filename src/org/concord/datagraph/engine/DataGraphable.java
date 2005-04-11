@@ -24,9 +24,9 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.37 $
- * $Date: 2005-04-05 04:51:27 $
- * $Author: scytacki $
+ * $Revision: 1.38 $
+ * $Date: 2005-04-11 04:36:15 $
+ * $Author: imoncada $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -239,6 +239,7 @@ public class DataGraphable extends DefaultGraphable
 	public void setColor(Color c)
 	{
 		lineColor = c;
+		notifyChange();
 	}
 
 	public Color getColor()

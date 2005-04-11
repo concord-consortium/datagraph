@@ -118,7 +118,7 @@ public class DataGraphManager
 			OTDataGraphable otGraphable = (OTDataGraphable)pfGraphables.get(i);
 			
 			// dProducer.getDataDescription().setDt(0.1f);
-			DataGraphable realGraphable = otGraphable.getDataGraphable();
+			DataGraphable realGraphable = (DataGraphable)otGraphable.createWrappedObject();
 			
 			if (realGraphable.getDataProducer() != null){
 			    System.err.println("Trying to display a background graphable with a data producer");
@@ -139,7 +139,7 @@ public class DataGraphManager
 			    dataGraph.setTitle(title);
 			}
 
-			sourceGraphable = source.getDataGraphable();
+			sourceGraphable = (DataGraphable)source.createWrappedObject();
 			sourceDataProducer = sourceGraphable.findDataProducer();
 			
 			// dProducer.getDataDescription().setDt(0.1f);
@@ -258,7 +258,7 @@ public class DataGraphManager
 	 * graphables are created by some external thing
 	 *
 	 */
-	public void updateState()
+	public void updateState(Object obj)
 	{
 		Grid2D grid = dataGraph.getGrid();
 
@@ -279,7 +279,7 @@ public class DataGraphManager
 
 		OTDataGraphable source = dataCollector.getSource();
 
-		source.saveObject();		
+		source.saveObject(obj);		
 	}
 	
 	/**
@@ -294,7 +294,7 @@ public class DataGraphManager
 	 */
 	public void listGraphableChanged(EventObject e)
 	{
-		updateState();
+		updateState(e.getSource());
 	}
 	
 	/* (non-Javadoc)

@@ -24,9 +24,9 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.10 $
- * $Date: 2005-04-05 04:56:23 $
- * $Author: scytacki $
+ * $Revision: 1.11 $
+ * $Date: 2005-04-11 04:35:50 $
+ * $Author: imoncada $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -186,7 +186,7 @@ public class DataGraphStateManager
 			OTDataGraphable otGraphable = (OTDataGraphable)pfGraphables.get(i);
 			
 			// dProducer.getDataDescription().setDt(0.1f);
-			DataGraphable realGraphable = otGraphable.getDataGraphable();
+			DataGraphable realGraphable = (DataGraphable)otGraphable.createWrappedObject();
 			DataProducer dataProducer = realGraphable.getDataProducer();
 			if(dataProducer != null) {				
 				dataProducer.reset();
@@ -232,7 +232,7 @@ public class DataGraphStateManager
 	 * graphables are created by some external thing
 	 *
 	 */
-	public void updateState()
+	public void updateState(Object obj)
 	{
 		Grid2D grid = dataGraph.getGrid();
 
@@ -274,7 +274,7 @@ public class DataGraphStateManager
 				// somewhere around here				
 			}
 			
-			pfGraphable.saveObject();			
+			pfGraphable.saveObject(obj);			
 		}
 		
 	}
@@ -291,7 +291,7 @@ public class DataGraphStateManager
 	 */
 	public void listGraphableChanged(EventObject e)
 	{
-		updateState();
+		updateState(e.getSource());
 	}
 	
 	/* (non-Javadoc)
