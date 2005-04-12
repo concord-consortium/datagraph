@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.14 $
- * $Date: 2005-04-05 00:13:23 $
+ * $Revision: 1.15 $
+ * $Date: 2005-04-12 00:16:03 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -63,7 +63,7 @@ public class ControllableDataGraphable extends DataGraphable
 	public final static int DRAGMODE_ADDMULTIPLEPOINTS = 3;
 	public final static int DRAGMODE_REMOVEPOINTS = 4;
 	
-	protected int dragMode = DRAGMODE_MOVEPOINTS;
+	protected int dragMode = DRAGMODE_NONE;
 	
 	public final static int LINETYPE_FREE = 0;
 	public final static int LINETYPE_FUNCTION = 1;
@@ -450,9 +450,13 @@ public class ControllableDataGraphable extends DataGraphable
 			setDragMode(DRAGMODE_ADDMULTIPLEPOINTS);
 			return true;
 		}
+		else if (mode == DrawingObject.DRAWING_DRAG_MODE_MOVE){
+			setDragMode(DRAGMODE_NONE);
+			return true;
+		}
 		
 		//return false;
-		throw new UnsupportedOperationException("setDrawingDragMode is not supported by ControllableDataGraphable yet");
+		throw new UnsupportedOperationException("setDrawingDragMode("+mode+")is not supported by ControllableDataGraphable yet");
 	}
 
 	/**
