@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.11 $
- * $Date: 2005-04-11 04:35:50 $
+ * $Revision: 1.12 $
+ * $Date: 2005-04-12 05:00:29 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -42,17 +42,21 @@ import org.concord.data.ui.DataFlowControlAction;
 import org.concord.data.ui.DataFlowControlButton;
 import org.concord.data.ui.DataFlowControlToolBar;
 import org.concord.datagraph.engine.DataGraphable;
+import org.concord.datagraph.ui.AddDataPointLabelAction;
 import org.concord.datagraph.ui.DataGraph;
+import org.concord.datagraph.ui.DataPointLabel;
 import org.concord.datagraph.ui.SingleDataAxisGrid;
 import org.concord.framework.data.DataDimension;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.DataStore;
 import org.concord.framework.otrunk.OTObjectList;
 import org.concord.graph.engine.GraphableList;
+import org.concord.graph.engine.SelectableList;
 import org.concord.graph.event.GraphableListListener;
 import org.concord.graph.examples.GraphWindowToolBar;
 import org.concord.graph.ui.Grid2D;
 import org.concord.graph.ui.SingleAxisGrid;
+import org.concord.swing.SelectableToggleButton;
 
 
 /**
@@ -72,11 +76,19 @@ public class DataGraphStateManager
 	OTDataAxis yAxis;
 	OTObjectList pfGraphables;
 	DataGraph dataGraph;
+	SelectableList notesLayer;
 	
 	public DataGraphStateManager(OTDataGraph pfDataGraph, DataGraph dataGraph)
 	{
 		this.pfObject = pfDataGraph;
 		this.dataGraph = dataGraph;
+
+		//Add notes button
+		notesLayer = new SelectableList();
+		dataGraph.getGraph().add(notesLayer);
+		SelectableToggleButton addNoteButton = new SelectableToggleButton(new AddDataPointLabelAction(notesLayer, dataGraph.getObjList()));
+		dataGraph.getToolBar().addButton(addNoteButton, "Add a note to a point in the graph");
+		//
 	}
 
 	public static void setupAxisLabel(SingleDataAxisGrid sAxis, OTDataAxis axis)
@@ -200,6 +212,21 @@ public class DataGraphStateManager
 			dataGraph.addDataGraphable(realGraphable);
 		}
 		
+		OTObjectList pfDPLabels = pfObject.getLabels();
+		
+        //Load the data point labels
+        for (int i=0; i<pfDPLabels.size(); i++){
+			OTDataPointLabel otDPLabel = (OTDataPointLabel)pfDPLabels.get(i);
+        	
+			//Create a data point label
+			DataPointLabel l = (DataPointLabel)otDPLabel.createWrappedObject();
+						
+			l.setGraphableList(dataGraph.getObjList());
+			notesLayer.add(l);			
+        }
+        
+		notesLayer.addGraphableListListener(this);
+		
 		GraphableList graphableList = dataGraph.getObjList();
 		graphableList.addGraphableListListener(this);				
 	}
@@ -274,16 +301,36 @@ public class DataGraphStateManager
 				// somewhere around here				
 			}
 			
-			pfGraphable.saveObject(obj);			
+			pfGraphable.saveObject(dGraphable);			
 		}
 		
 	}
 	
-	/* (non-Javadoc)
+	/**
 	 * @see org.concord.graph.event.GraphableListListener#listGraphableAdded(java.util.EventObject)
 	 */
 	public void listGraphableAdded(EventObject e)
 	{
+		Object obj = e.getSource();
+		if (obj instanceof DataPointLabel){
+			DataPointLabel l;
+			OTDataPointLabel otLabel;
+
+			try{
+				otLabel = (OTDataPointLabel)pfObject.getOTDatabase().createObject(OTDataPointLabel.class);
+			}
+			catch (Exception ex) {
+				ex.printStackTrace();
+				return;
+			}
+			
+			l = (DataPointLabel)obj;
+			
+			otLabel.registerWrappedObject(l);
+			otLabel.saveObject(l);
+
+			pfObject.getLabels().add(otLabel);
+		}
 	}
 	
 	/* (non-Javadoc)

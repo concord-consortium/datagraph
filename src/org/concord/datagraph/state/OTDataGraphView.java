@@ -24,9 +24,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.10 $
- * $Date: 2005-04-05 04:56:23 $
- * $Author: scytacki $
+ * $Revision: 1.11 $
+ * $Date: 2005-04-12 05:00:29 $
+ * $Author: imoncada $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -62,7 +62,6 @@ public class OTDataGraphView
 	protected OTViewContainer viewContainer;
 	DataGraph dataGraph;
 	DataGraphStateManager manager;
-	SelectableList notesLayer;
 	
 	public OTDataGraphView(OTDataGraph pfDataGraph, OTViewContainer vContainer)
 	{
@@ -77,14 +76,7 @@ public class OTDataGraphView
 	{
 		dataGraph = new DataGraph();
 		dataGraph.changeToDataGraphToolbar();
-		
-		//Add notes button
-		notesLayer = new SelectableList();
-		dataGraph.getGraph().add(notesLayer);
-		SelectableToggleButton addNoteButton = new SelectableToggleButton(new AddDataPointLabelAction(notesLayer, dataGraph.getObjList()));
-		dataGraph.getToolBar().addButton(addNoteButton, "Add a note to a point in the graph");
-		//
-		
+				
 		manager = new DataGraphStateManager(pfObject, dataGraph);
 		manager.initialize(editable);
 				

@@ -24,9 +24,9 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.3 $
- * $Date: 2005-01-31 17:41:33 $
- * $Author: scytacki $
+ * $Revision: 1.4 $
+ * $Date: 2005-04-12 05:00:29 $
+ * $Author: imoncada $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -34,6 +34,7 @@
 package org.concord.datagraph.state;
 
 import org.concord.framework.otrunk.OTObject;
+import org.concord.framework.otrunk.OTObjectInterface;
 import org.concord.framework.otrunk.OTObjectList;
 
 
@@ -46,9 +47,11 @@ import org.concord.framework.otrunk.OTObjectList;
  * @author scott<p>
  *
  */
-public interface OTDataGraph extends OTObject
+public interface OTDataGraph extends OTObjectInterface
 {
 	public OTObjectList getGraphables();
+	
+	public OTObjectList getLabels();
 	
 	public OTObjectList getYDataAxis();
 
