@@ -117,6 +117,10 @@ public class OTDataGraphable extends DefaultOTObject
 	{
 		DataGraphable dg;
 
+		if (wrappedObject != null){
+			wrappedObject.releaseAll();
+		}
+		
 		if (resources.getDrawing()){
         	dg = new ControllableDataGraphableDrawing();
 		}

@@ -94,11 +94,10 @@ public class DataCollectorView
 			OTDataPointLabel otDPLabel = (OTDataPointLabel)pfDPLabels.get(i);
         	
 			//Create a data point label
-			DataPointLabel l = new DataPointLabel();
-			
-			notesLayer.add(l);
-			
-			loadStateLabel(l, otDPLabel);
+			DataPointLabel l = (DataPointLabel)otDPLabel.createWrappedObject();
+						
+			l.setGraphableList(dataGraphManager.getDataGraph().getObjList());
+			notesLayer.add(l);			
         }
         
 		notesLayer.addGraphableListListener(this);
@@ -132,28 +131,11 @@ public class DataCollectorView
 			
 			l = (DataPointLabel)obj;
 			
-			saveStateLabel(otLabel, l);
-			
+			otLabel.registerWrappedObject(l);
+			otLabel.saveObject(l);
+
 			dataCollector.getLabels().add(otLabel);
 		}
-	}
-	
-	/**
-	 * This only works for graphables that came from a loaded
-	 * pfgraphables.  It doesn't yet handel cases where new
-	 * graphables are created by some external thing
-	 *
-	 */
-	public void updateState()
-	{		
-		// Save data point labels
-		for (int i=0; i<notesLayer.size(); i++){
-			OTDataPointLabel otDPLabel = (OTDataPointLabel)dataCollector.getLabels().get(i);
-			DataPointLabel l = (DataPointLabel)notesLayer.elementAt(i);
-			
-			saveStateLabel(otDPLabel, l);
-        }
-		
 	}
 		
 	/* (non-Javadoc)
@@ -161,7 +143,7 @@ public class DataCollectorView
 	 */
 	public void listGraphableChanged(EventObject e)
 	{
-		updateState();
+		
 	}
 	
 	/* (non-Javadoc)
@@ -176,7 +158,7 @@ public class DataCollectorView
 	 * @param otLabel
 	 * @param l
 	 */
-	private void saveStateLabel(OTDataPointLabel otLabel, DataPointLabel l)
+/*	private void saveStateLabel(OTDataPointLabel otLabel, DataPointLabel l)
 	{
 		otLabel.setColor(l.getBackground().getRGB());
 		if (l.getDataPoint() != null){
@@ -195,12 +177,13 @@ public class DataCollectorView
 		OTDataGraphable otGraphable = (OTDataGraphable)otrunk.getWrapper(l.getDataGraphable());
 		otLabel.setDataGraphable(otGraphable);
 	}
-
+*/
+	
 	/**
 	 * @param l
 	 * @param otDPLabel
 	 */
-	private void loadStateLabel(DataPointLabel l, OTDataPointLabel otDPLabel)
+/*	private void loadStateLabel(DataPointLabel l, OTDataPointLabel otDPLabel)
 	{
 		Point2D locPoint = null;
 		Point2D dataPoint = null;
@@ -220,7 +203,9 @@ public class DataCollectorView
 				l.setLocation(locPoint);
 			}
 			else{
-				l.setLocation(l.getTextBoxDefaultLocation(null, dataPoint));
+				//This cannot be done here because the label hasn't been added to the graph,
+				//so there is no graph area yet
+				//l.setLocation(l.getTextBoxDefaultLocation(null, l.getDataPoint()));
 			}
 		}
 		else{
@@ -231,7 +216,9 @@ public class DataCollectorView
 		if (otGraphable != null){		    
 			l.setDataGraphable(otGraphable.getDataGraphable());
 		}
-		l.setGraphableList(dataGraphManager.getDataGraph().getObjList());
+		//l.setGraphableList(dataGraphManager.getDataGraph().getObjList());
 		l.setSelectionEnabled(otDPLabel.getSelectable());
 	}
+*/
 }
+

@@ -24,16 +24,21 @@
 
 /*
  * Last modification information:
- * $Revision: 1.5 $
- * $Date: 2005-04-05 04:53:06 $
- * $Author: scytacki $
+ * $Revision: 1.6 $
+ * $Date: 2005-04-12 04:20:44 $
+ * $Author: imoncada $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
 */
 package org.concord.datagraph.state;
 
+import org.concord.datagraph.ui.DataPointLabel;
 import org.concord.framework.otrunk.OTObject;
+import org.concord.framework.otrunk.OTResourceSchema;
+import org.concord.framework.otrunk.OTrunk;
+import org.concord.graph.util.state.OTPointTextLabel;
+import org.concord.graph.util.state.OTPointTextLabel.ResourceSchema;
 import org.concord.graph.util.ui.BoxTextLabel;
 
 
@@ -46,36 +51,51 @@ import org.concord.graph.util.ui.BoxTextLabel;
  * @author scott<p>
  *
  */
-public interface OTDataPointLabel
-	extends OTObject
+public class OTDataPointLabel extends OTPointTextLabel
 {
-	public static int DEFAULT_color = BoxTextLabel.DEFAULT_BACKGROUND_COLOR.getRGB();
-	public int getColor();
-	public void setColor(int color);
+	public static interface ResourceSchema extends OTPointTextLabel.ResourceSchema
+	{	
+		public OTDataGraphable getDataGraphable();
+		public void setDataGraphable(OTDataGraphable b);
+	}
+
+	private ResourceSchema resources;
 	
-	public static float DEFAULT_x = Float.NaN;
-	public float getX();
-	public void setX(float x);
-
-	public static float DEFAULT_y = Float.NaN;
-	public float getY();
-	public void setY(float y);
-
-	public static float DEFAULT_xData = Float.NaN;
-	public float getXData();
-	public void setXData(float x);
-
-	public static float DEFAULT_yData = Float.NaN;
-	public float getYData();
-	public void setYData(float y);
+	/**
+	 * 
+	 */
+	public OTDataPointLabel(ResourceSchema resources)
+	{
+		super(resources);
+		this.resources = resources;
+	}
 	
-	public String getText();
-	public void setText(String text);
-
-	public static boolean DEFAULT_selectable = true;
-	public boolean getSelectable();
-	public void setSelectable(boolean b);
-
-	public OTDataGraphable getDataGraphable();
-	public void setDataGraphable(OTDataGraphable b);
+	/**
+	 * @see org.concord.graph.util.state.OTPointTextLabel#createNewWrappedObject()
+	 */
+	protected BoxTextLabel createNewWrappedObject()
+	{
+		DataPointLabel l = new DataPointLabel();
+		
+		OTDataGraphable otGraphable = resources.getDataGraphable();
+		if (otGraphable != null){		    
+			l.setDataGraphable(otGraphable.getDataGraphable());
+		}
+		
+		return l;
+	}
+	
+	/**
+	 * @see org.concord.framework.otrunk.OTWrapper#saveObject(java.lang.Object)
+	 */
+	public void saveObject(Object wrappedObject)
+	{
+		DataPointLabel l = (DataPointLabel)wrappedObject;
+		
+		OTrunk otrunk = getOTDatabase();
+		OTDataGraphable otGraphable = (OTDataGraphable)otrunk.getWrapper(l.getDataGraphable());
+		resources.setDataGraphable(otGraphable);
+		
+		super.saveObject(wrappedObject);
+	}
 }

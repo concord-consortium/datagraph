@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.38 $
- * $Date: 2005-04-11 04:36:15 $
+ * $Revision: 1.39 $
+ * $Date: 2005-04-12 04:20:44 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -1063,4 +1063,15 @@ public class DataGraphable extends DefaultGraphable
 	{
 	}
 	*/
+	
+	public void releaseAll()
+	{
+		if (dataStore != null){
+			dataStore.removeDataStoreListener(this);
+		}
+		if (graphArea != null){
+			graphArea.removeChangeListener(this);
+		}
+		remove();
+	}
 }
