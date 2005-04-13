@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.40 $
- * $Date: 2005-04-13 03:48:35 $
+ * $Revision: 1.41 $
+ * $Date: 2005-04-13 03:55:13 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -495,9 +495,6 @@ public class DataGraphable extends DefaultGraphable
 
 				if (validPrevPoint){
 				    path.lineTo(ppx, ppy);
-				    if(ppx < lastPathX) {
-				        System.err.println("Drawing a line that goes backward i: " + i);
-				    }
 				    undrawnPoint = null;					
 				}
 				else{
