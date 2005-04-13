@@ -24,9 +24,9 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.39 $
- * $Date: 2005-04-12 04:20:44 $
- * $Author: imoncada $
+ * $Revision: 1.40 $
+ * $Date: 2005-04-13 03:48:35 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -57,6 +57,8 @@ import java.awt.Stroke;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.util.Vector;
+
+import javax.swing.event.ChangeEvent;
 
 import org.concord.framework.data.stream.DataChannelDescription;
 import org.concord.framework.data.stream.DataProducer;
@@ -185,9 +187,9 @@ public class DataGraphable extends DefaultGraphable
 		this.dataStore = dataStore;
 		// Assume someone set this from the outside with their own dataStore
 		internalProducerDataStore = false;
-		needUpdate = true;
-		lastValueCalculated = -1;
-		needUpdateDataReceived = false;
+
+		forceRecalculate();
+		
 		if (this.dataStore != null){
 			this.dataStore.addDataStoreListener(this);
 		}
@@ -213,9 +215,7 @@ public class DataGraphable extends DefaultGraphable
 	{
 		dataStore.clearValues();
 		
-		needUpdate = true;
-		needUpdateDataReceived = false;
-		lastValueCalculated = -1;
+		forceRecalculate();
 		
 		minXValue = Float.MAX_VALUE;
 		maxXValue = -Float.MAX_VALUE;
@@ -366,6 +366,15 @@ public class DataGraphable extends DefaultGraphable
 		return pathPoint;
     }
     
+	/**
+	 * Handler of the changes in the graph area
+	 */
+	public void stateChanged(ChangeEvent e)
+	{
+		needUpdate = true;
+		notifyChange();
+	}
+    
     /**
      * 
      */
@@ -399,22 +408,12 @@ public class DataGraphable extends DefaultGraphable
 		
 		// if new data was not received or no values have been
 		// calculated then all the points need to be recalculated
-    	if (!needUpdateDataReceived || lastValueCalculated < 0){
-    		path.reset();
-    		crossPath.reset();
-    		lastValueCalculated = -1;
-
-    		// the previous point is invalid because there is no
-    		// previous point
-    		validPrevPoint = false;
-    		
-    		minXValue = Float.MAX_VALUE;
-    		maxXValue = -Float.MAX_VALUE;
-    		minYValue = Float.MAX_VALUE;
-    		maxYValue = -Float.MAX_VALUE;
-    	}
-   		initialI = lastValueCalculated + 1;
-
+		synchronized(this) {
+		    if (!needUpdateDataReceived || lastValueCalculated < 0) {
+		        lastValueCalculated = -1;
+		    }
+		    initialI = lastValueCalculated + 1;
+		}
    		
    		// This is a bit a hack to handle cases that aren't handled correctly
    		// if the points are added atomically.  Then there should never be
@@ -427,7 +426,7 @@ public class DataGraphable extends DefaultGraphable
 	        // verify that the previous point really is invalid
 	        // it can happen that is it invlaid for a little while while
 	        // it is being added to the DataStore.
-	        // if there was an automic DataStore store add row this wouldn't
+	        // if there was an atomic DataStore store add row this wouldn't
 	        // be a problem.  
 	        Point2D invalidPoint = getRowPoint(initialI-1, coord, pathPointHolder);
 	        if(invalidPoint != null) {
@@ -438,7 +437,21 @@ public class DataGraphable extends DefaultGraphable
 	            }
 	        }
 	    }
-   		
+
+	    if(initialI == 0) {
+	        path.reset();
+	        crossPath.reset();
+	        
+	        // the previous point is invalid because there is no
+	        // previous point
+	        validPrevPoint = false;
+	        
+	        minXValue = Float.MAX_VALUE;
+	        maxXValue = -Float.MAX_VALUE;
+	        minYValue = Float.MAX_VALUE;
+	        maxYValue = -Float.MAX_VALUE;
+	    }
+	    
    		int i;
    		int totalNumSamples = dataStore.getTotalNumSamples();
 		float thresholdPointTheSame = (float)(lineWidth/2 - 0.01);
@@ -482,6 +495,9 @@ public class DataGraphable extends DefaultGraphable
 
 				if (validPrevPoint){
 				    path.lineTo(ppx, ppy);
+				    if(ppx < lastPathX) {
+				        System.err.println("Drawing a line that goes backward i: " + i);
+				    }
 				    undrawnPoint = null;					
 				}
 				else{
@@ -819,15 +835,20 @@ public class DataGraphable extends DefaultGraphable
 		notifyChange();
 	}
 
+	protected synchronized void forceRecalculate()
+	{
+		needUpdate = true;
+		needUpdateDataReceived = false;
+		lastValueCalculated = -1;	    
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.concord.framework.data.stream.DataStoreListener#dataRemoved(org.concord.framework.data.stream.DataStoreEvent)
 	 */
 	public void dataRemoved(DataStoreEvent evt)
 	{
-		needUpdate = true;
-		needUpdateDataReceived = false;
-		lastValueCalculated = -1;
-		
+	    forceRecalculate();
+	    
 		notifyChange();
 	}
 
@@ -836,10 +857,8 @@ public class DataGraphable extends DefaultGraphable
 	 */
 	public void dataChanged(DataStoreEvent evt)
 	{
-		needUpdate = true;
-		needUpdateDataReceived = false;
-		lastValueCalculated = -1;
-		
+	    forceRecalculate();
+	    	    
 		notifyChange();
 	}
 
