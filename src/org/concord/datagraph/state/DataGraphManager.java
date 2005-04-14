@@ -40,6 +40,8 @@ import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.concord.data.ui.DataFlowControlAction;
 import org.concord.data.ui.DataFlowControlButton;
@@ -68,7 +70,7 @@ import org.concord.swing.SelectableToggleButton;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class DataGraphManager
-	implements GraphableListListener, OTChangeListener
+	implements GraphableListListener, OTChangeListener, ChangeListener
 {
     OTDataCollector dataCollector;
     DataGraph dataGraph;
@@ -94,7 +96,7 @@ public class DataGraphManager
         dataGraph = new DataGraph();
 		dataGraph.changeToDataGraphToolbar();
 		dataGraph.setAutoFitMode(DataGraph.AUTO_SCROLL_RUNNING_MODE);
-		
+			
 		xOTAxis = dataCollector.getXDataAxis();
 		xOTAxis.addOTChangeListener(this);
 		yOTAxis = dataCollector.getYDataAxis();
@@ -197,11 +199,18 @@ public class DataGraphManager
 		    
 		    dataGraph.add(dTree, BorderLayout.WEST);
 		}
-				
+		
+		// FIXME This should be changed.  The graphables should
+		// listen to themselves, and this code then can just listen
+		// to the graph area for graph area changes.
+		// right now both graph area and source graphable changes
+		// are listened too
 		GraphableList graphableList = dataGraph.getObjList();
 		graphableList.addGraphableListListener(this);
 		
-		dataGraph.setPreferredSize(new Dimension(400,320));		
+		dataGraph.setPreferredSize(new Dimension(400,320));
+		
+		dataGraph.getGraphArea().addChangeListener(this);
     }
 
     public DataProducer getSourceDataProducer()
@@ -291,9 +300,11 @@ public class DataGraphManager
 		yOTAxis.notifyOTChange();
 		isCausingOTChange = false;
 		
-		OTDataGraphable source = dataCollector.getSource();
-
-		source.saveObject(obj);		
+		if(obj instanceof DataGraphable) {
+		    OTDataGraphable source = dataCollector.getSource();
+		    
+		    source.saveObject(obj);		
+		}
 	}
 	
 	/**
@@ -333,5 +344,14 @@ public class DataGraphManager
 	                yOTAxis.getMin(), yOTAxis.getMax());
 	    }	    	    
 	}
+	
+	/* (non-Javadoc)
+     * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
+     */
+    public void stateChanged(ChangeEvent e)
+    {
+        Object source = e.getSource();
+        updateState(source);
+    }
 	
 }
