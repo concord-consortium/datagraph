@@ -24,9 +24,9 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.2 $
- * $Date: 2004-11-12 21:18:04 $
- * $Author: eblack $
+ * $Revision: 1.3 $
+ * $Date: 2005-04-17 23:35:50 $
+ * $Author: imoncada $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -188,10 +188,10 @@ public class DataGraphAxisLimitsPanel extends JPanel
 		littleGraph.setLimitsAxisWorld(xMin, xMax, yMin, yMax);
 
 		double littlexInterval = 20 / (260 / (xMax - xMin));
-		littleGraph.getGrid().getXGrid().setInterval(SingleAxisGrid.getBestInterval(littlexInterval));	
+		littleGraph.getGrid().getXGrid().setInterval(littleGraph.getGrid().getXGrid().getBestInterval(littlexInterval));	
 		
 		double littleyInterval = 20 / (230 / (yMax - yMin)); 
-		littleGraph.getGrid().getYGrid().setInterval(SingleAxisGrid.getBestInterval(littleyInterval));	
+		littleGraph.getGrid().getYGrid().setInterval(littleGraph.getGrid().getYGrid().getBestInterval(littleyInterval));	
 		
 		littleGraph.getGrid().getXGrid().setAxisLabel(xTitleText.getText());
 		littleGraph.getGrid().getYGrid().setAxisLabel(yTitleText.getText());
@@ -255,7 +255,7 @@ public class DataGraphAxisLimitsPanel extends JPanel
 		double newXInterval = (graph.getMaxXAxisWorld() - graph.getMinXAxisWorld()) / xLines;
 		
 		//Better leave the grid interval as an integer, multiple of 2, 5 or 10
-		newXInterval = SingleAxisGrid.getBestInterval(newXInterval);						
+		newXInterval = littleGraph.getGrid().getXGrid().getBestInterval(newXInterval);						
 		graph.getGrid().getXGrid().setInterval(newXInterval);						
 		//
 		
@@ -263,7 +263,7 @@ public class DataGraphAxisLimitsPanel extends JPanel
 		double newYInterval = (graph.getMaxYAxisWorld() - graph.getMinYAxisWorld()) / yLines;
 		
 		//Better leave the grid interval as an integer, multiple of 2, 5 or 10
-		newYInterval = SingleAxisGrid.getBestInterval(newYInterval);						
+		newYInterval = littleGraph.getGrid().getYGrid().getBestInterval(newYInterval);						
 		graph.getGrid().getYGrid().setInterval(newYInterval);
 		
 		//Labels

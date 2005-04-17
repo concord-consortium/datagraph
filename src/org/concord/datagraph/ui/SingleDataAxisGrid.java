@@ -22,36 +22,41 @@
  *
  */
 
-/*
- * Created on Feb 15, 2005
+/**
+ * Last modification information:
+ * $Revision: 1.4 $
+ * $Date: 2005-04-17 23:35:50 $
+ * $Author: imoncada $
  *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
+ * Copyright 2004 The Concord Consortium
+*/
 package org.concord.datagraph.ui;
 
+import java.text.Format;
+
+import org.concord.data.Unit;
 import org.concord.framework.data.DataDimension;
 import org.concord.graph.ui.SingleAxisGrid;
 
 /**
- * @author scott
+ * SingleDataAxisGrid
  *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * Date created: Feb 15, 2005
+ *
+ * @author scott<p>
+ * @author imoncada<p>
+ *
  */
 public class SingleDataAxisGrid 
 	extends SingleAxisGrid 
 {
-	DataDimension unit = null;
+	protected DataDimension unit = null;
+	protected DataDimension dataUnit = null;
+	protected double unitScale = 1.0;
 	
 	public SingleDataAxisGrid(int orientation)
 	{
 		super(orientation);
-	}
-
-	public void setUnit(DataDimension unit)
-	{
-		this.unit = unit;
 	}
 	
 	public String getUnitString()
@@ -62,7 +67,78 @@ public class SingleDataAxisGrid
 		
 		return null;
 	}
+		
+	/**
+	 * @return Returns the dataUnit.
+	 */
+	public DataDimension getDataUnit()
+	{
+		return dataUnit;
+	}
 	
+	/**
+	 * @param dataUnit The dataUnit to set.
+	 */
+	public void setDataUnit(DataDimension dataUnit)
+	{
+		this.dataUnit = dataUnit;
+
+		calculateUnitScale();
+	}
+	
+	/**
+	 * @return Returns the unit.
+	 */
+	public DataDimension getUnit()
+	{
+		return unit;
+	}
+	
+	public void setUnit(DataDimension unit)
+	{
+		this.unit = unit;
+
+		calculateUnitScale();
+	}
+
+	/**
+	 * 
+	 */
+	protected void calculateUnitScale()
+	{
+		//calculate the scale according to seconds
+		if (unit instanceof Unit){
+			Unit objUnit = (Unit)unit;
+			Unit objUnit2;
+			
+			if (dataUnit == null){
+				//Hack. Default data unit is seconds
+				if (Unit.isUnitCompatible(objUnit.code, Unit.UNIT_CODE_S)){
+					dataUnit = Unit.getUnit(Unit.UNIT_CODE_S);
+					objUnit2 = (Unit)dataUnit;
+				}
+				else{
+					return;
+				}
+			}
+			else if (dataUnit instanceof Unit){
+				objUnit2 = (Unit)dataUnit;
+			}
+			else{
+				return;
+			}
+			
+			if (Unit.isUnitCompatible(objUnit, objUnit2)){
+				unitScale = Unit.unitConvert(objUnit, 1, objUnit2);
+				
+				//System.out.println("scale unit "+unitScale);
+			}
+		}
+	}
+	
+	/**
+	 * 
+	 */
 	protected String getAxisLabelToDraw()
 	{
 		String unitStr = getUnitString();
@@ -73,4 +149,35 @@ public class SingleDataAxisGrid
 		return getAxisLabel();
 	}
 	
+	/**
+	 * FIXME: In order to show different units in the grid, I need to override 
+	 * this three methods: getBestInterval, getGridLabel, createFormatObj.
+	 * There could be a better way to implement this, but for now, this works.
+	 */
+	
+	/**
+	 * @see org.concord.graph.ui.SingleAxisGrid#getBestInterval(double)
+	 */
+	public double getBestInterval(double newInterval)
+	{
+		double bestInt = super.getBestInterval(newInterval/unitScale);
+		return bestInt * unitScale;
+	}
+	
+	/**
+	 * @see org.concord.graph.ui.SingleAxisGrid#getGridLabel(double, double)
+	 */
+	protected String getGridLabel(double val, double threshold)
+	{
+		return super.getGridLabel(val / unitScale, threshold / unitScale);
+	}
+	
+	/**
+	 * @see org.concord.graph.ui.SingleAxisGrid#createFormatObj(double, double, double)
+	 */
+	protected Format createFormatObj(double interval, double startTick,
+			double endTick)
+	{
+		return super.createFormatObj(interval / unitScale, startTick / unitScale, endTick / unitScale);
+	}
 }
