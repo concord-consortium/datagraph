@@ -23,30 +23,40 @@
  */
 
 /*
- * Created on Feb 22, 2005
+ * Last modification information:
+ * $Revision: 1.6 $
+ * $Date: 2005-04-18 02:55:50 $
+ * $Author: imoncada $
  *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
+ * Licence Information
+ * Copyright 2004 The Concord Consortium 
+*/
 package org.concord.datagraph.ui;
+
+import javax.swing.AbstractButton;
 
 import org.concord.graph.engine.AxisScale;
 import org.concord.graph.engine.MultiRegionAxisScale;
 import org.concord.graph.examples.GraphWindowToolBar;
 
 /**
- * @author scott
+ * DataGraphToolbar
  *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * Date created: Feb 22, 2005
+ *
+ * @author Scott Cytacki<p>
+ * @author Ingrid Moncada<p>
+ *
  */
 public class DataGraphToolbar extends GraphWindowToolBar
 {
+	protected AbstractButton selButton;
+	
     public DataGraphToolbar()
     {
         super(false);
         
-		addButton("arrow.gif", 
+		selButton = addButton("arrow.gif", 
 		        "" + MultiRegionAxisScale.DRAGMODE_TRANSLATE_DILATE, 
 		        "Move and Scale graph");
 
@@ -59,5 +69,17 @@ public class DataGraphToolbar extends GraphWindowToolBar
 		        "Zoom out from a point");
 		
 		addButton("restorescale.gif", "restorescale", "Restore initial scale", false);
+
+		setDefaultButton(selButton);
+		
     }
+    
+	/**
+	 * @see org.concord.graph.examples.GraphWindowToolBar#addAxisScale(org.concord.graph.engine.AxisScale)
+	 */
+	public void addAxisScale(AxisScale ax)
+	{
+		super.addAxisScale(ax);
+		selButton.doClick();
+	}
 }
