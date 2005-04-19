@@ -23,11 +23,14 @@
  */
 
 /*
- * Created on Apr 4, 2005
+ * Last modification information:
+ * $Revision: 1.5 $
+ * $Date: 2005-04-19 15:45:48 $
+ * $Author: scytacki $
  *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
+ * Licence Information
+ * Copyright 2004 The Concord Consortium 
+*/
 package org.concord.datagraph.state;
 
 import java.awt.BorderLayout;
@@ -51,10 +54,10 @@ import org.concord.framework.otrunk.view.OTObjectView;
 import org.concord.graph.util.ui.ResourceLoader;
 
 /**
+ * SingleValueDataView
+ * 
  * @author scott
  *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 public class SingleValueDataView extends JPanel
 	implements OTObjectView
@@ -105,7 +108,7 @@ public class SingleValueDataView extends JPanel
         record.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 dataGraphManager.getSourceDataProducer().stop();
-                float currentValue = dataGraphManager.getValueLabel().getValue();
+                float currentValue = dataGraphManager.getLastValue();
                 int lastSample = dataStore.getTotalNumSamples();
                 dataStore.setValueAt(lastSample, 0, new Float(currentValue));
                 dataGraphManager.getDataGraph().reset();
@@ -164,7 +167,9 @@ public class SingleValueDataView extends JPanel
      */
     public void viewClosed()
     {
-        // TODO Auto-generated method stub
+        // This will only be called if this view is a top level view.  
+        // currently if the view is embedded in a page the viewClosed is
+        // not called when the page is closed.
     }
 
 }

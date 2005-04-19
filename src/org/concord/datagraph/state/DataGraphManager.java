@@ -46,6 +46,7 @@ import javax.swing.event.ChangeListener;
 import org.concord.data.ui.DataFlowControlAction;
 import org.concord.data.ui.DataFlowControlButton;
 import org.concord.data.ui.DataFlowControlToolBar;
+import org.concord.data.ui.DataStoreLabel;
 import org.concord.data.ui.DataValueLabel;
 import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.DataGraphable;
@@ -77,7 +78,7 @@ public class DataGraphManager
     
 	DataGraphable sourceGraphable;
 	DataProducer sourceDataProducer;
-	DataValueLabel valueLabel;
+	DataStoreLabel valueLabel;
 	
 	OTDataAxis xOTAxis;
 	OTDataAxis yOTAxis;
@@ -172,7 +173,7 @@ public class DataGraphManager
 			} 
 			else if(showDataControls){
 			    bottomPanel = new JPanel(new FlowLayout());
-			    valueLabel = new DataValueLabel(sourceDataProducer);
+			    valueLabel = new DataStoreLabel(sourceGraphable, 1);
 			    valueLabel.setColumns(4);
 			    bottomPanel.add(valueLabel);
 
@@ -218,11 +219,14 @@ public class DataGraphManager
         return sourceDataProducer;
     }
 
-    public DataValueLabel getValueLabel()
+    public float getLastValue()
     {
-        return valueLabel;
+        if(valueLabel == null) {
+            return Float.NaN;
+        }
+        return valueLabel.getValue();
     }
-
+    
     /**
      * @return
      */
