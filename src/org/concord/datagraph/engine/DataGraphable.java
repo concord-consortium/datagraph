@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.41 $
- * $Date: 2005-04-13 03:55:13 $
+ * $Revision: 1.42 $
+ * $Date: 2005-04-19 01:11:17 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -859,12 +859,8 @@ public class DataGraphable extends DefaultGraphable
 		notifyChange();
 	}
 
-	/**
-	 * @see org.concord.framework.data.stream.DataStoreListener#dataChannelDescChanged(org.concord.framework.data.stream.DataStoreEvent)
-	 */
-	public void dataChannelDescChanged(DataStoreEvent evt)
+	protected void updateDataDescription(DataStore source)
 	{
-	    DataStore source = evt.getSource();
 	    if(!(source instanceof DeltaDataStore)){
 	        return;
 	    }
@@ -879,7 +875,17 @@ public class DataGraphable extends DefaultGraphable
 	    } else if(!pDataStore.isUseDtAsChannel() && getChannelX() == -1){
 	        setChannelX(0);
 	        setChannelY(getChannelY() + 1);
-	    }
+	    }	    
+	}
+	
+	/**
+	 * @see org.concord.framework.data.stream.DataStoreListener#dataChannelDescChanged(org.concord.framework.data.stream.DataStoreEvent)
+	 */
+	public void dataChannelDescChanged(DataStoreEvent evt)
+	{
+	    DataStore source = evt.getSource();
+
+	    updateDataDescription(source);
 	    
 	    notifyChange();
 	}

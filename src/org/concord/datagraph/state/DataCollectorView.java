@@ -72,7 +72,15 @@ public class DataCollectorView
     {
         return getDataGraph(editable, true);
     }
-        
+     
+    /* (non-Javadoc)
+     * @see org.concord.framework.otrunk.view.OTObjectView#viewClosed()
+     */
+    public void viewClosed()
+    {
+        // TODO Auto-generated method stub
+    }
+    
     public DataGraph getDataGraph(boolean showToolbar, boolean showDataControls)
     {
 	    dataGraphManager = new DataGraphManager(dataCollector, showDataControls);
@@ -152,73 +160,5 @@ public class DataCollectorView
 	public void listGraphableRemoved(EventObject e)
 	{
 	}
-	
-
-	/**
-	 * @param otLabel
-	 * @param l
-	 */
-/*	private void saveStateLabel(OTDataPointLabel otLabel, DataPointLabel l)
-	{
-		otLabel.setColor(l.getBackground().getRGB());
-		if (l.getDataPoint() != null){
-			otLabel.setXData((float)l.getDataPoint().getX());
-			otLabel.setYData((float)l.getDataPoint().getY());
-		}
-		if (l.getDataGraphable() != null){
-//			otLabel.setDataGraphable();
-		}
-		otLabel.setX((float)l.getLocation().getX());
-		otLabel.setY((float)l.getLocation().getY());
-
-		otLabel.setText(l.getMessage());
-		
-		OTrunk otrunk = dataCollector.getOTDatabase();
-		OTDataGraphable otGraphable = (OTDataGraphable)otrunk.getWrapper(l.getDataGraphable());
-		otLabel.setDataGraphable(otGraphable);
-	}
-*/
-	
-	/**
-	 * @param l
-	 * @param otDPLabel
-	 */
-/*	private void loadStateLabel(DataPointLabel l, OTDataPointLabel otDPLabel)
-	{
-		Point2D locPoint = null;
-		Point2D dataPoint = null;
-		
-		l.setMessage(otDPLabel.getText());
-		l.setBackground(new Color(otDPLabel.getColor()));
-		if (!Float.isNaN(otDPLabel.getX()) && !Float.isNaN(otDPLabel.getY())){
-			locPoint = new Point2D.Double(otDPLabel.getX(), otDPLabel.getY());
-		}
-		if (!Float.isNaN(otDPLabel.getXData()) && !Float.isNaN(otDPLabel.getYData())){
-			dataPoint = new Point2D.Double(otDPLabel.getXData(), otDPLabel.getYData());
-		}
-		
-		if (dataPoint != null){
-			l.setDataPoint(dataPoint);
-			if (locPoint != null){
-				l.setLocation(locPoint);
-			}
-			else{
-				//This cannot be done here because the label hasn't been added to the graph,
-				//so there is no graph area yet
-				//l.setLocation(l.getTextBoxDefaultLocation(null, l.getDataPoint()));
-			}
-		}
-		else{
-			l.setLocation(locPoint);
-		}
-		
-		OTDataGraphable otGraphable = otDPLabel.getDataGraphable();
-		if (otGraphable != null){		    
-			l.setDataGraphable(otGraphable.getDataGraphable());
-		}
-		//l.setGraphableList(dataGraphManager.getDataGraph().getObjList());
-		l.setSelectionEnabled(otDPLabel.getSelectable());
-	}
-*/
 }
 

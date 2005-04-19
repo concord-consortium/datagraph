@@ -24,9 +24,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.2 $
- * $Date: 2005-04-11 23:28:36 $
- * $Author: maven $
+ * $Revision: 1.3 $
+ * $Date: 2005-04-19 01:11:17 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -124,4 +124,11 @@ public class OTMultiDataGraphView
         return mainPanel;
     }
 
+    /* (non-Javadoc)
+     * @see org.concord.framework.otrunk.view.OTObjectView#viewClosed()
+     */
+    public void viewClosed()
+    {
+        // TODO Auto-generated method stub
+    }
 }

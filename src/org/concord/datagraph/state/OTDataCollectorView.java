@@ -67,4 +67,13 @@ public class OTDataCollectorView
         return view.getComponent(editable);
     }
 
+    /* (non-Javadoc)
+     * @see org.concord.framework.otrunk.view.OTObjectView#viewClosed()
+     */
+    public void viewClosed()
+    {
+        if(view != null) {
+            view.viewClosed();
+        }
+    }
 }

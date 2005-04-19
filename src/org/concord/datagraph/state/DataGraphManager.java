@@ -206,7 +206,7 @@ public class DataGraphManager
 		// right now both graph area and source graphable changes
 		// are listened too
 		GraphableList graphableList = dataGraph.getObjList();
-		graphableList.addGraphableListListener(this);
+		// graphableList.addGraphableListListener(this);
 		
 		dataGraph.setPreferredSize(new Dimension(400,320));
 		
@@ -299,12 +299,14 @@ public class DataGraphManager
 		xOTAxis.notifyOTChange();
 		yOTAxis.notifyOTChange();
 		isCausingOTChange = false;
-		
+
+		/*
 		if(obj instanceof DataGraphable) {
 		    OTDataGraphable source = dataCollector.getSource();
 		    
 		    source.saveObject(obj);		
 		}
+		*/
 	}
 	
 	/**

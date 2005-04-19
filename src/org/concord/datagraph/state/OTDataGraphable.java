@@ -161,10 +161,9 @@ public class OTDataGraphable extends DefaultOTObject
 		dg.setChannelY(resources.getYColumn());
 
 		wrappedObject = dg;
-		
+
 		//Now, listen to this object so I can be updated automatically when it changes
 		registerWrappedObject(dg);
-		//
 		
         return dg;
     }

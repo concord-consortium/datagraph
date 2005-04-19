@@ -24,9 +24,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.11 $
- * $Date: 2005-04-12 05:00:29 $
- * $Author: imoncada $
+ * $Revision: 1.12 $
+ * $Date: 2005-04-19 01:11:17 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -88,4 +88,12 @@ public class OTDataGraphView
 		
 		return dataGraph;				    
 	}
+	
+    /* (non-Javadoc)
+     * @see org.concord.framework.otrunk.view.OTObjectView#viewClosed()
+     */
+    public void viewClosed()
+    {
+        // TODO Auto-generated method stub
+    }
 }

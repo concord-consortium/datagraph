@@ -159,4 +159,12 @@ public class SingleValueDataView extends JPanel
         return this;
     }
 
+    /* (non-Javadoc)
+     * @see org.concord.framework.otrunk.view.OTObjectView#viewClosed()
+     */
+    public void viewClosed()
+    {
+        // TODO Auto-generated method stub
+    }
+
 }
