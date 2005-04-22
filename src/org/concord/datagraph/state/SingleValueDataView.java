@@ -24,8 +24,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.5 $
- * $Date: 2005-04-19 15:45:48 $
+ * $Revision: 1.6 $
+ * $Date: 2005-04-22 02:03:07 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -39,6 +39,8 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -59,7 +61,7 @@ import org.concord.graph.util.ui.ResourceLoader;
  * @author scott
  *
  */
-public class SingleValueDataView extends JPanel
+public class SingleValueDataView
 	implements OTObjectView
 {
 	WritableDataStore dataStore;
@@ -71,7 +73,7 @@ public class SingleValueDataView extends JPanel
      * 
      */
     public SingleValueDataView(OTDataCollector collector)
-    {        
+    {
         dataStore = collector.getSingleDataStore();
 	    if(dataStore == null && collector.getSingleValue()) {
 	        // handle the cases where the dataStore has not been
@@ -94,6 +96,8 @@ public class SingleValueDataView extends JPanel
 	 
     public JComponent getComponent(boolean editable)
     {
+        Box box = new Box(BoxLayout.Y_AXIS);
+        
         DataStoreLabel dataLabel = new DataStoreLabel(dataStore, 0);
         dataLabel.setColumns(4);
         if (!editable){
@@ -127,9 +131,10 @@ public class SingleValueDataView extends JPanel
         bottomPanel.add(record);
         bottomPanel.add(cancel);
 
-        setLayout(new FlowLayout());
-        add(dataLabel);
+        box.add(dataLabel);
+        box.add(Box.createVerticalStrut(3));
         JButton cDataButton = new JButton();
+        cDataButton.setAlignmentX(0.5f);
         ImageIcon icon = ResourceLoader.getImageIcon("data_graph_button.gif", "Collect Data");
         cDataButton.setIcon(icon);
         cDataButton.setToolTipText(icon.getDescription());
@@ -157,9 +162,13 @@ public class SingleValueDataView extends JPanel
                 dataGraphManager.getDataGraph().start();
             }                
         });
-        add(cDataButton);
+        box.add(cDataButton);
+
+        JPanel outerPanel = new JPanel(new FlowLayout());
+        outerPanel.setOpaque(false);
+        outerPanel.add(box);
         
-        return this;
+        return outerPanel;
     }
 
     /* (non-Javadoc)
