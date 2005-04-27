@@ -24,9 +24,9 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.37 $
- * $Date: 2005-04-03 07:47:39 $
- * $Author: imoncada $
+ * $Revision: 1.38 $
+ * $Date: 2005-04-27 21:06:58 $
+ * $Author: dmarkman $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -49,6 +49,7 @@ import javax.swing.SwingConstants;
 import org.concord.datagraph.engine.DataGraphAutoScaler;
 import org.concord.datagraph.engine.DataGraphAutoScroller;
 import org.concord.datagraph.engine.DataGraphable;
+import org.concord.datagraph.engine.DataGraphableEx;
 import org.concord.framework.data.DataFlow;
 import org.concord.framework.data.DataFlowCapabilities;
 import org.concord.framework.data.stream.DataConsumer;
@@ -111,6 +112,7 @@ public class DataGraph extends JPanel
     private boolean running;
     private int autoFitMode;
     private JLabel titleLabel;		
+    private boolean useDataGraphableWithShapes = false; 
 	
 	/**
 	 * Creates a default data graph with or without a tool bar
@@ -583,7 +585,7 @@ public class DataGraph extends JPanel
 	{
 		// Create a graphable for this dataProducer
 		// add it to the graph
-		DataGraphable dGraphable = new DataGraphable();
+		DataGraphable dGraphable = (!useDataGraphableWithShapes)?new DataGraphable():new DataGraphableEx();
 		dGraphable.setDataProducer(dataProducer);
 		dGraphable.setChannelX(channelXAxis);
 		dGraphable.setChannelY(channelYAxis);
@@ -608,7 +610,7 @@ public class DataGraph extends JPanel
 	{
 		// Create a graphable for this dataProducer
 		// add it to the graph
-		DataGraphable dGraphable = new DataGraphable();
+		DataGraphable dGraphable = (!useDataGraphableWithShapes)?new DataGraphable():new DataGraphableEx();
 		dGraphable.setDataStore(dataStore);
 		dGraphable.setChannelX(channelXAxis);
 		dGraphable.setChannelY(channelYAxis);
@@ -929,4 +931,24 @@ public class DataGraph extends JPanel
 		// TODO Auto-generated method stub
 		return new DataFlowCapabilities.Capabilities(false, false, true);
 	}	
+
+/*
+ * @param useDataGraphableWithShapes if it <code>true</code>
+ * internal datagraphable will be instance of DefaultGraphableEx
+ * otherwise it will be instance of DefaultGraphable
+ * default value is <code>false</code>
+ * @see org.concord.graph.engine.DefaultGraphableEx
+ */
+    public void setUseDataGraphableWithShapes(boolean useDataGraphableWithShapes){
+        this.useDataGraphableWithShapes = useDataGraphableWithShapes;
+    }
+
+/*
+ * @param useDataGraphableWithShapes if it <code>true</code>
+ * @see setUseDataGraphableWithShapes
+ */
+    public boolean getUseDataGraphableWithShapes(){
+        return useDataGraphableWithShapes;
+    }
+
 }

@@ -24,9 +24,9 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.42 $
- * $Date: 2005-04-19 01:11:17 $
- * $Author: scytacki $
+ * $Revision: 1.43 $
+ * $Date: 2005-04-27 21:05:50 $
+ * $Author: dmarkman $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -614,7 +614,7 @@ public class DataGraphable extends DefaultGraphable
 	 * @param ppx
 	 * @param ppy
 	 */
-	private void drawPoint(float ppx, float ppy)
+	protected void drawPoint(float ppx, float ppy)//dima was private
 	{
 		//Make a vertical "dot" of 1 pixel
 		path.moveTo(ppx, ppy);
