@@ -44,7 +44,7 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
-
+import java.awt.geom.Area;
 
 public class DataGraphableEx extends DataGraphable
 {
@@ -53,10 +53,12 @@ public class DataGraphableEx extends DataGraphable
     private static GeneralPath rectanglePath = null;
     private static GeneralPath ovalPath = null;
     private static GeneralPath starPath = null;
-    
+    private static GeneralPath crossPath = null;
 		
 	GeneralPath shapePath = null;
 	GeneralPath currentPath = null;
+	
+	boolean fillShape = false;
 	
 	/**
      * Default constructor.
@@ -107,6 +109,13 @@ public class DataGraphableEx extends DataGraphable
         return (GeneralPath)starPath.clone();
     }
 
+/**
+ * @return predefined cross shape.
+ */
+    public static GeneralPath getCrossPath(){
+        return (GeneralPath)crossPath.clone();
+    }
+
     private static void initShapes()
     {
 		trianglePath = new GeneralPath();//dima
@@ -133,6 +142,13 @@ public class DataGraphableEx extends DataGraphable
 	    starPath.lineTo(-4,8);//dima
 	    starPath.lineTo(-2,4);//dima
 	    starPath.lineTo(-6,0);//dima
+	    
+        crossPath = new GeneralPath();//dima
+	    crossPath.moveTo(-3,0);//dima
+	    crossPath.lineTo(3,0);//dima
+	    crossPath.moveTo(0,-3);//dima
+	    crossPath.lineTo(0,3);//dima
+	    
     }
 /*
  * @see org.concord.graph.engine.DefaultGraphable#draw()
@@ -159,7 +175,8 @@ public class DataGraphableEx extends DataGraphable
     		    oldClip = g.getClip();
 		        ga.clipGraphics(g);
     		}
-            g.draw(shapePath);
+    		if(!fillShape)   g.draw(shapePath);
+    		else            g.fill(shapePath);
     		if(oldClip != null){
     		    g.setClip(oldClip);
     		}
@@ -218,6 +235,20 @@ public class DataGraphableEx extends DataGraphable
 	    }
 		
 		
+	}
+
+/* set way how to draw shapes
+ * @param fillShape if it is <code>true</code>
+ * shape will be filled
+ */
+ 	public void setFillShape(boolean fillShape)
+	{
+	    this.fillShape = fillShape;
+	}
+
+	public boolean getFillShape()
+	{
+	    return fillShape;
 	}
 
 }
