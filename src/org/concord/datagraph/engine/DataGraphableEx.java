@@ -153,21 +153,11 @@ public class DataGraphableEx extends DataGraphable
     protected void additionalDrawing(Graphics2D g)
     {
         if(shapePath != null){
-    		Shape needClip = null;
     		Shape oldClip = null;
 		    org.concord.graph.engine.GraphArea ga = getGraphArea();
     		if(ga != null){
-    		    Point2D leftCorner = ga.getLowerLeftCornerDisplay();
-    		    Point2D rightCorner = ga.getUpperRightCornerDisplay();
-    		    needClip = new java.awt.geom.Rectangle2D.Double(Math.min(leftCorner.getX(),rightCorner.getX()),
-    		                                          Math.min(leftCorner.getY(),rightCorner.getY()),
-    		                                          Math.abs(leftCorner.getX()-rightCorner.getX()),
-    		                                          Math.abs(leftCorner.getY()-rightCorner.getY()));
-    		}
-    		
-    		if(needClip != null){
     		    oldClip = g.getClip();
-    		    g.setClip(needClip);
+		        ga.clipGraphics(g);
     		}
             g.draw(shapePath);
     		if(oldClip != null){
