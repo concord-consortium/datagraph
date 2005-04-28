@@ -46,6 +46,7 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.awt.geom.Area;
 import java.awt.geom.AffineTransform;
+import java.awt.Color;
 
 public class DataGraphableEx extends DataGraphable
 {
@@ -63,6 +64,7 @@ public class DataGraphableEx extends DataGraphable
 	GeneralPath currentPath = null;
 	
 	boolean fillShape = false;
+	Color   shapeColor = null;
 	
 	/**
      * Default constructor.
@@ -225,8 +227,14 @@ public class DataGraphableEx extends DataGraphable
     		    oldClip = g.getClip();
 		        ga.clipGraphics(g);
     		}
+    		
+    		if(shapeColor == null) updateShapeColor();
+    		
+		    java.awt.Color oldColor = g.getColor();
+		    g.setColor(shapeColor);
     		if(!fillShape)   g.draw(shapePath);
     		else            g.fill(shapePath);
+		    g.setColor(oldColor);
     		if(oldClip != null){
     		    g.setClip(oldClip);
     		}
@@ -299,6 +307,20 @@ public class DataGraphableEx extends DataGraphable
 	public boolean getFillShape()
 	{
 	    return fillShape;
+	}
+
+	public void setColor(Color c)
+	{
+	    super.setColor(c);
+	    updateShapeColor();
+	}
+	
+	protected void updateShapeColor(){
+	    if(lineColor == null){
+	        shapeColor = Color.black;
+	    }else{
+	        shapeColor = lineColor.darker();
+	    }
 	}
 
 }
