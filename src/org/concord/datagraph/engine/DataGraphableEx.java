@@ -43,6 +43,7 @@ package org.concord.datagraph.engine;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.GeneralPath;
+import java.awt.geom.Point2D;
 
 
 public class DataGraphableEx extends DataGraphable
@@ -54,6 +55,7 @@ public class DataGraphableEx extends DataGraphable
     private static GeneralPath starPath = null;
     
 		
+	GeneralPath shapePath = null;
 	GeneralPath currentPath = null;
 	
 	/**
@@ -67,7 +69,15 @@ public class DataGraphableEx extends DataGraphable
 	public DataGraphableEx()
 	{
         super();
+        shapePath = new GeneralPath();
 	}
+
+    protected void resetPaths()
+    {
+        super.resetPaths();
+	    shapePath.reset();
+    }
+
 
 /**
  * @return predefined triangular shape.
@@ -130,7 +140,7 @@ public class DataGraphableEx extends DataGraphable
     public void draw(Graphics2D g)
 	{
 		Object oldHint = null;
-		if(!isConnectPoints() && (currentPath != null)){//dima
+		if(/*!isConnectPoints() && */(currentPath != null)){//dima
 		    oldHint = g.getRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING);
 		    g.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING,java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
 		}
@@ -142,6 +152,28 @@ public class DataGraphableEx extends DataGraphable
 
     protected void additionalDrawing(Graphics2D g)
     {
+        if(shapePath != null){
+    		Shape needClip = null;
+    		Shape oldClip = null;
+		    org.concord.graph.engine.GraphArea ga = getGraphArea();
+    		if(ga != null){
+    		    Point2D leftCorner = ga.getLowerLeftCornerDisplay();
+    		    Point2D rightCorner = ga.getUpperRightCornerDisplay();
+    		    needClip = new java.awt.geom.Rectangle2D.Double(Math.min(leftCorner.getX(),rightCorner.getX()),
+    		                                          Math.min(leftCorner.getY(),rightCorner.getY()),
+    		                                          Math.abs(leftCorner.getX()-rightCorner.getX()),
+    		                                          Math.abs(leftCorner.getY()-rightCorner.getY()));
+    		}
+    		
+    		if(needClip != null){
+    		    oldClip = g.getClip();
+    		    g.setClip(needClip);
+    		}
+            g.draw(shapePath);
+    		if(oldClip != null){
+    		    g.setClip(oldClip);
+    		}
+        }
     }
 
 /*
@@ -176,20 +208,24 @@ public class DataGraphableEx extends DataGraphable
     }
 
 /*
- * @see org.concord.graph.engine.DefaultGraphable#drawPoint()
+ * @see org.concord.graph.engine.DefaultGraphable#handleCurrentPoint()
  */
-	protected void drawPoint(float ppx, float ppy)//dima
-	{
-	    if(currentPath == null || isConnectPoints()){
-	        super.drawPoint(ppx,ppy);
-	        return;
+    protected void drawPoint(float ppx, float ppy)
+    {
+        if(isConnectPoints() || (currentPath == null)){
+            super.drawPoint(ppx,ppy);
+        }
+    }
+    
+    protected void handleCurrentPoint(float ppx, float ppy)
+    {
+	    if(currentPath != null){
+            java.awt.Rectangle bounds = currentPath.getBounds();
+            double needDX = ppx - (bounds.x + bounds.width/2);
+            double needDY = ppy - (bounds.y + bounds.height/2);
+            currentPath.transform(java.awt.geom.AffineTransform.getTranslateInstance(needDX,needDY));
+            shapePath.append(currentPath,false);
 	    }
-
-        java.awt.Rectangle bounds = currentPath.getBounds();
-        double needDX = ppx - (bounds.x + bounds.width/2);
-        double needDY = ppy - (bounds.y + bounds.height/2);
-        currentPath.transform(java.awt.geom.AffineTransform.getTranslateInstance(needDX,needDY));
-        path.append(currentPath,false);
 		
 		
 	}

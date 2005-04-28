@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.43 $
- * $Date: 2005-04-27 21:05:50 $
+ * $Revision: 1.44 $
+ * $Date: 2005-04-28 05:43:17 $
  * $Author: dmarkman $
  *
  * Licence Information
@@ -375,6 +375,16 @@ public class DataGraphable extends DefaultGraphable
 		notifyChange();
 	}
     
+    protected void handleCurrentPoint(float ppx, float ppy)
+    {
+    }
+    
+    protected void resetPaths()
+    {
+        path.reset();
+        crossPath.reset();
+    }
+    
     /**
      * 
      */
@@ -439,8 +449,7 @@ public class DataGraphable extends DefaultGraphable
 	    }
 
 	    if(initialI == 0) {
-	        path.reset();
-	        crossPath.reset();
+	        resetPaths();
 	        
 	        // the previous point is invalid because there is no
 	        // previous point
@@ -525,6 +534,7 @@ public class DataGraphable extends DefaultGraphable
 				// technically we only care about this if we are connecting points
 				// but it seemed easier to understand if this is done out here
 				validPrevPoint = true;
+				handleCurrentPoint(ppx, ppy);
 			}
 		    
 		} else {
@@ -566,6 +576,7 @@ public class DataGraphable extends DefaultGraphable
 				if (showCrossPoint){
 					drawCrossPoint(ppx, ppy);
 				}
+				handleCurrentPoint(ppx, ppy);
 				
 				// If we made it here then the current point (soon to be the prev point)
 				// is a valid point, so set the flag
