@@ -45,6 +45,7 @@ import java.awt.Shape;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.awt.geom.Area;
+import java.awt.geom.AffineTransform;
 
 public class DataGraphableEx extends DataGraphable
 {
@@ -55,6 +56,8 @@ public class DataGraphableEx extends DataGraphable
     private static GeneralPath starPath = null;
     private static GeneralPath crossPath = null;
     private static GeneralPath rhombPath = null;
+    private static GeneralPath halfFilledSquarePath = null;
+    private static GeneralPath halfFilledSquarePath2 = null;
 		
 	GeneralPath shapePath = null;
 	GeneralPath currentPath = null;
@@ -124,6 +127,17 @@ public class DataGraphableEx extends DataGraphable
         return (GeneralPath)rhombPath.clone();
     }
 
+/**
+ * @return predefined halfFilledSquarePath shape.
+ */
+    public static GeneralPath getHalfFilledSquarePath(){
+        return (GeneralPath)halfFilledSquarePath.clone();
+    }
+
+    public static GeneralPath getHalfFilledSquare2Path(){
+        return (GeneralPath)halfFilledSquarePath2.clone();
+    }
+
 
     private static void initShapes()
     {
@@ -165,6 +179,26 @@ public class DataGraphableEx extends DataGraphable
 	    rhombPath.lineTo(0,-4);
 	    rhombPath.lineTo(-3,0);
 	    
+	    halfFilledSquarePath = new GeneralPath();
+	    halfFilledSquarePath.moveTo(-3,3);
+	    halfFilledSquarePath.lineTo(-3,-3);
+	    halfFilledSquarePath.lineTo(3,-3);
+	    halfFilledSquarePath.lineTo(3,3);
+	    halfFilledSquarePath.lineTo(2,3);
+	    halfFilledSquarePath.lineTo(2,-2);
+	    halfFilledSquarePath.lineTo(1,-1);
+	    halfFilledSquarePath.lineTo(1,3);
+	    halfFilledSquarePath.lineTo(0,3);
+	    halfFilledSquarePath.lineTo(0,0);
+	    halfFilledSquarePath.lineTo(-1,1);
+	    halfFilledSquarePath.lineTo(-1,3);
+	    halfFilledSquarePath.lineTo(-2,3);
+	    halfFilledSquarePath.lineTo(-2,2);
+	    halfFilledSquarePath.lineTo(-3,3);
+	    halfFilledSquarePath.lineTo(3,-3);
+	    
+	    halfFilledSquarePath2 = (GeneralPath)halfFilledSquarePath.clone();
+        halfFilledSquarePath2.transform(AffineTransform.getRotateInstance(Math.PI));
     }
 /*
  * @see org.concord.graph.engine.DefaultGraphable#draw()
@@ -246,7 +280,7 @@ public class DataGraphableEx extends DataGraphable
             java.awt.Rectangle bounds = currentPath.getBounds();
             double needDX = ppx - (bounds.x + bounds.width/2);
             double needDY = ppy - (bounds.y + bounds.height/2);
-            currentPath.transform(java.awt.geom.AffineTransform.getTranslateInstance(needDX,needDY));
+            currentPath.transform(AffineTransform.getTranslateInstance(needDX,needDY));
             shapePath.append(currentPath,false);
 	    }
 		
