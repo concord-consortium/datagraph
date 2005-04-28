@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.38 $
- * $Date: 2005-04-27 21:06:58 $
+ * $Revision: 1.39 $
+ * $Date: 2005-04-28 03:49:45 $
  * $Author: dmarkman $
  *
  * Licence Information
@@ -949,6 +949,13 @@ public class DataGraph extends JPanel
  */
     public boolean getUseDataGraphableWithShapes(){
         return useDataGraphableWithShapes;
+    }
+
+    public void registerDataProducerForDataGraphable(DataGraphable dGraphable){
+        if(producers == null || dGraphable == null) return;
+        DataProducer dataProducer = dGraphable.getDataProducer();
+        if(dataProducer == null) return;
+		producers.put(dataProducer, dGraphable);
     }
 
 }

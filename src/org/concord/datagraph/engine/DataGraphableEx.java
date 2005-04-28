@@ -43,7 +43,6 @@ package org.concord.datagraph.engine;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.GeneralPath;
-import java.awt.geom.Point2D;
 
 
 public class DataGraphableEx extends DataGraphable
@@ -136,8 +135,14 @@ public class DataGraphableEx extends DataGraphable
 		    g.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING,java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
 		}
         super.draw(g);
+        additionalDrawing(g);
 		if(oldHint != null) g.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING,oldHint);
 	}
+	
+
+    protected void additionalDrawing(Graphics2D g)
+    {
+    }
 
 /*
  * set custom shape
