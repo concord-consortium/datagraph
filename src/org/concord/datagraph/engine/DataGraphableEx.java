@@ -54,6 +54,7 @@ public class DataGraphableEx extends DataGraphable
     private static GeneralPath ovalPath = null;
     private static GeneralPath starPath = null;
     private static GeneralPath crossPath = null;
+    private static GeneralPath rhombPath = null;
 		
 	GeneralPath shapePath = null;
 	GeneralPath currentPath = null;
@@ -116,6 +117,14 @@ public class DataGraphableEx extends DataGraphable
         return (GeneralPath)crossPath.clone();
     }
 
+/**
+ * @return predefined rhomb shape.
+ */
+    public static GeneralPath getRhombPath(){
+        return (GeneralPath)rhombPath.clone();
+    }
+
+
     private static void initShapes()
     {
 		trianglePath = new GeneralPath();//dima
@@ -148,6 +157,13 @@ public class DataGraphableEx extends DataGraphable
 	    crossPath.lineTo(3,0);//dima
 	    crossPath.moveTo(0,-3);//dima
 	    crossPath.lineTo(0,3);//dima
+	    
+	    rhombPath = new GeneralPath();
+	    rhombPath.moveTo(-3,0);
+	    rhombPath.lineTo(0,4);
+	    rhombPath.lineTo(3,0);
+	    rhombPath.lineTo(0,-4);
+	    rhombPath.lineTo(-3,0);
 	    
     }
 /*
