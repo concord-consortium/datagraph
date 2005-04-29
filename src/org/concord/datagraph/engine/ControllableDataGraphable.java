@@ -24,9 +24,9 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.15 $
- * $Date: 2005-04-12 00:16:03 $
- * $Author: imoncada $
+ * $Revision: 1.16 $
+ * $Date: 2005-04-29 02:34:47 $
+ * $Author: dmarkman $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -488,4 +488,10 @@ public class ControllableDataGraphable extends DataGraphable
 	{
 		return false;
 	}
+	
+	public String handleToolTip(Point pt)
+	{
+	    return null;
+	}
+	
 }
