@@ -58,6 +58,11 @@
       <artifactId>graphutil</artifactId>
       <version>SNAPSHOT</version>
       <type>jar</type>
+      <properties>
+        <cc.proj>GraphUtil</cc.proj>
+        <cc.path>GraphUtil/lib</cc.path>
+        <eclipse.dependency>true</eclipse.dependency>
+      </properties>
     </dependency>
   </dependencies>
 </project>
