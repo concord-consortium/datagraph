@@ -41,9 +41,11 @@ import org.concord.datagraph.ui.DataGraph;
 import org.concord.datagraph.ui.DataPointLabel;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.WritableDataStore;
+import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTObjectList;
 import org.concord.framework.otrunk.OTrunk;
 import org.concord.framework.otrunk.view.OTObjectView;
+import org.concord.framework.otrunk.view.OTViewContainer;
 import org.concord.graph.engine.SelectableList;
 import org.concord.graph.event.GraphableListListener;
 import org.concord.swing.SelectableToggleButton;
@@ -68,6 +70,15 @@ public class DataCollectorView
         dataCollector = collector;
     }
 
+    /* (non-Javadoc)
+     * @see org.concord.framework.otrunk.view.OTObjectView#initialize(org.concord.framework.otrunk.OTObject, org.concord.framework.otrunk.view.OTViewContainer)
+     */
+    public void initialize(OTObject otObject, OTViewContainer viewContainer)
+    {
+        // TODO Auto-generated method stub
+
+    }
+    
     public JComponent getComponent(boolean editable)
     {
         return getDataGraph(editable, true);

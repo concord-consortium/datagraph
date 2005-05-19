@@ -24,8 +24,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.6 $
- * $Date: 2005-04-22 02:03:07 $
+ * $Revision: 1.7 $
+ * $Date: 2005-05-19 17:05:45 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -51,8 +51,10 @@ import org.concord.data.state.OTDataStore;
 import org.concord.data.ui.DataStoreLabel;
 import org.concord.framework.data.stream.DefaultDataStore;
 import org.concord.framework.data.stream.WritableDataStore;
+import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTrunk;
 import org.concord.framework.otrunk.view.OTObjectView;
+import org.concord.framework.otrunk.view.OTViewContainer;
 import org.concord.graph.util.ui.ResourceLoader;
 
 /**
@@ -94,6 +96,14 @@ public class SingleValueDataView
 	    
     }
 	 
+    /* (non-Javadoc)
+     * @see org.concord.framework.otrunk.view.OTObjectView#initialize(org.concord.framework.otrunk.OTObject, org.concord.framework.otrunk.view.OTViewContainer)
+     */
+    public void initialize(OTObject otObject, OTViewContainer viewContainer)
+    {
+        // TODO Auto-generated method stub
+    }
+    
     public JComponent getComponent(boolean editable)
     {
         Box box = new Box(BoxLayout.Y_AXIS);

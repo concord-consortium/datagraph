@@ -24,9 +24,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.3 $
- * $Date: 2005-04-11 04:35:50 $
- * $Author: imoncada $
+ * $Revision: 1.4 $
+ * $Date: 2005-05-19 17:05:45 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -41,6 +41,7 @@ import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.ControllableDataGraphableDrawing;
 import org.concord.datagraph.engine.DataGraphable;
 
+import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTWrapper;
 import org.concord.framework.otrunk.view.OTViewContainer;
 import org.concord.graph.util.engine.DrawingObject;
@@ -61,9 +62,9 @@ import org.concord.graph.util.ui.ImageStamp;
 public class OTDataDrawingToolView extends OTDrawingToolView
 {
 	
-    public OTDataDrawingToolView(OTDrawingTool tool, OTViewContainer container)
+    public void initialize(OTObject tool, OTViewContainer container)
     {
-    	super(tool, container);
+    	super.initialize(tool, container);
     }
     
 	/**

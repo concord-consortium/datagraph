@@ -24,8 +24,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.12 $
- * $Date: 2005-04-19 01:11:17 $
+ * $Revision: 1.13 $
+ * $Date: 2005-05-19 17:05:45 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -40,6 +40,7 @@ import javax.swing.JPanel;
 
 import org.concord.datagraph.ui.AddDataPointLabelAction;
 import org.concord.datagraph.ui.DataGraph;
+import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.view.OTObjectView;
 import org.concord.framework.otrunk.view.OTViewContainer;
 import org.concord.graph.engine.SelectableList;
@@ -63,9 +64,9 @@ public class OTDataGraphView
 	DataGraph dataGraph;
 	DataGraphStateManager manager;
 	
-	public OTDataGraphView(OTDataGraph pfDataGraph, OTViewContainer vContainer)
+	public void initialize(OTObject pfDataGraph, OTViewContainer vContainer)
 	{
-		this.pfObject = pfDataGraph;
+		this.pfObject = (OTDataGraph)pfDataGraph;
 		viewContainer = vContainer;
 	}
 

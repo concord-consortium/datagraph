@@ -24,8 +24,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.3 $
- * $Date: 2005-04-19 01:11:17 $
+ * $Revision: 1.4 $
+ * $Date: 2005-05-19 17:05:45 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -45,6 +45,7 @@ import org.concord.datagraph.ui.DataGraph;
 import org.concord.datagraph.ui.DataGraphToolbar;
 import org.concord.framework.data.DataFlow;
 import org.concord.framework.data.stream.DataProducer;
+import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTObjectList;
 import org.concord.framework.otrunk.view.OTObjectView;
 import org.concord.framework.otrunk.view.OTViewContainer;
@@ -64,9 +65,9 @@ public class OTMultiDataGraphView
 {
     OTMultiDataGraph multiDataGraph;
     
-    public OTMultiDataGraphView(OTMultiDataGraph object, OTViewContainer viewContainer)
+    public void initialize(OTObject object, OTViewContainer viewContainer)
     {
-        multiDataGraph = object;        
+        multiDataGraph = (OTMultiDataGraph)object;        
     }
     
     

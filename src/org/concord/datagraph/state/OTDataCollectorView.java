@@ -32,6 +32,7 @@ package org.concord.datagraph.state;
 
 import javax.swing.JComponent;
 
+import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.view.OTObjectView;
 import org.concord.framework.otrunk.view.OTViewContainer;
 
@@ -49,8 +50,9 @@ public class OTDataCollectorView
     /**
      * 
      */
-    public OTDataCollectorView(OTDataCollector dataCollector, OTViewContainer container)
+    public void initialize(OTObject otObject, OTViewContainer container)
     {
+        OTDataCollector dataCollector = (OTDataCollector)otObject;
         if(dataCollector.getSingleValue()) {
             view = new SingleValueDataView(dataCollector);
         }
