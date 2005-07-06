@@ -24,9 +24,9 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.39 $
- * $Date: 2005-04-28 03:49:45 $
- * $Author: dmarkman $
+ * $Revision: 1.40 $
+ * $Date: 2005-07-06 20:03:49 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -46,6 +46,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import org.concord.data.stream.ProducerDataStore;
 import org.concord.datagraph.engine.DataGraphAutoScaler;
 import org.concord.datagraph.engine.DataGraphAutoScroller;
 import org.concord.datagraph.engine.DataGraphable;
@@ -55,7 +56,6 @@ import org.concord.framework.data.DataFlowCapabilities;
 import org.concord.framework.data.stream.DataConsumer;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.DataStore;
-import org.concord.framework.data.stream.ProducerDataStore;
 import org.concord.graph.engine.AxisScale;
 import org.concord.graph.engine.CoordinateSystem;
 import org.concord.graph.engine.DefaultCoordinateSystem2D;

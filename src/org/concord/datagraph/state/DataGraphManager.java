@@ -181,6 +181,15 @@ public class DataGraphManager
 			    bottomPanel.add(toolBar);
 			    toolBar.addDataFlowObject(sourceDataProducer);
 
+			    if(dataCollector.getShowTare()){
+			        // need to add a button that runs the sourceGraphable
+			        // for some amount of time and then offsets the input
+			        // values after that.
+			        // The code for the Tare can be put into a dataproducer
+			        // that wraps the input dataproducer
+			        
+			    }
+			    
 			    dataGraph.add(bottomPanel, BorderLayout.SOUTH);  			    
 			}
 

@@ -24,8 +24,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.13 $
- * $Date: 2005-05-19 17:05:45 $
+ * $Revision: 1.14 $
+ * $Date: 2005-07-06 20:03:49 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -82,9 +82,7 @@ public class OTDataGraphView
 		manager.initialize(editable);
 				
 		dataGraph.setAutoFitMode(DataGraph.AUTO_SCROLL_RUNNING_MODE);
-		
-		JPanel graphWrapper;
-		
+				
 		dataGraph.setPreferredSize(new Dimension(400,320));
 		
 		return dataGraph;				    

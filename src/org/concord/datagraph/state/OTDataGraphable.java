@@ -133,6 +133,7 @@ public class OTDataGraphable extends DefaultOTObject
         dg.setColor(new Color(resources.getColor()));
         dg.setShowCrossPoint(resources.getDrawMarks());
         dg.setLabel(resources.getName());
+        dg.setUseVirtualChannels(true);
         
 		DataProducer producer = resources.getDataProducer();
 		OTDataStore dataStore = resources.getDataStore();

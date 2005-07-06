@@ -55,6 +55,9 @@ public interface OTDataCollector
 	public final static boolean DEFAULT_singleValue = false;
 	public boolean getSingleValue();
 	
+	public final static boolean DEFAULT_showTare = false;
+	public boolean getShowTare();
+	
 	public OTDataStore getSingleDataStore();
 	public void setSingleDataStore(OTDataStore dataStore);
 	

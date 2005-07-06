@@ -24,9 +24,9 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.44 $
- * $Date: 2005-04-28 05:43:17 $
- * $Author: dmarkman $
+ * $Revision: 1.45 $
+ * $Date: 2005-07-06 20:03:49 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -60,13 +60,13 @@ import java.util.Vector;
 
 import javax.swing.event.ChangeEvent;
 
+import org.concord.data.stream.ProducerDataStore;
 import org.concord.framework.data.stream.DataChannelDescription;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.DataStore;
 import org.concord.framework.data.stream.DataStoreEvent;
 import org.concord.framework.data.stream.DataStoreListener;
 import org.concord.framework.data.stream.DeltaDataStore;
-import org.concord.framework.data.stream.ProducerDataStore;
 import org.concord.framework.data.stream.WritableDataStore;
 import org.concord.graph.engine.CoordinateSystem;
 import org.concord.graph.engine.DefaultGraphable;
@@ -108,7 +108,12 @@ public class DataGraphable extends DefaultGraphable
 	private boolean validPrevPoint = false;		
 
 	protected boolean needUpdate = true;
-	protected boolean needUpdateDataReceived = false;
+	
+	// This is used to indicate when a full recalculation is
+	// needed.  It should only be modified in synchronized regions
+	// this replaces the needUpdateDataReceived boolean.  This is basically
+	// the inverse.
+	protected boolean needRecalculate = true;
 	
 	protected boolean autoRepaintData = true;
 	
@@ -116,12 +121,17 @@ public class DataGraphable extends DefaultGraphable
 	private float maxXValue;
 	private float minYValue;
 	private float maxYValue;
-
+	private boolean validMinMax;
+	
 	// If this is true then we have internally created a ProducerDataStore
 	// this would be done if someone adds a dataProducer to us.
 	// This is useful for state saving 
 	private boolean internalProducerDataStore = false;
-	
+
+    private Point2D tmpDataPoint = new Point2D.Double();
+
+    private boolean useVirtualChannels = false;
+    
 	/**
      * Default constructor.
      */
@@ -132,12 +142,13 @@ public class DataGraphable extends DefaultGraphable
 		dataStoreListeners = new Vector();
 		updateStroke();
 		
-		minXValue = Float.NaN;
-		maxXValue = Float.NaN;
-		minYValue = Float.NaN;
-		maxYValue = Float.NaN;
+		minXValue = Float.MAX_VALUE;
+		maxXValue = -Float.MAX_VALUE;
+		minYValue = Float.MAX_VALUE;
+		maxYValue = -Float.MAX_VALUE;
+		validMinMax = false;
 	}
-	
+		
 	/**
 	 * Sets the data producer of this graphable.
 	 * By default it will graph dt vs channel 0
@@ -221,6 +232,7 @@ public class DataGraphable extends DefaultGraphable
 		maxXValue = -Float.MAX_VALUE;
 		minYValue = Float.MAX_VALUE;
 		maxYValue = -Float.MAX_VALUE;
+		validMinMax = false;
 		
 		notifyChange();
 	}
@@ -317,8 +329,6 @@ public class DataGraphable extends DefaultGraphable
 		return Float.NaN;
     }
     
-    private Point2D tmpDataPoint = new Point2D.Double();
-    
     public Point2D getRowPoint(int rowIndex, CoordinateSystem coord, 
             Point2D.Double pathPoint)
     {
@@ -328,11 +338,11 @@ public class DataGraphable extends DefaultGraphable
 		if(channelX == -1) {
 		    px = dt * rowIndex;
 		} else {
-		    objVal = dataStore.getValueAt(rowIndex, channelX);
+		    objVal = dataStore.getValueAt(rowIndex, getDataStoreChannelX());
 		    px = handleValue(objVal);
 		}
 		
-		objVal = dataStore.getValueAt(rowIndex, channelY);
+		objVal = dataStore.getValueAt(rowIndex, getDataStoreChannelY());
 		py = handleValue(objVal);
 		
 		if(Float.isNaN(px) || Float.isNaN(py)) {
@@ -360,6 +370,11 @@ public class DataGraphable extends DefaultGraphable
 			maxYValue = py;
 		}
 		
+		// record the fact that the min and maxes are now valid
+		// we could check this variable first but it is fast to just
+		// set it each time
+		validMinMax = true;
+		
 		tmpDataPoint.setLocation(px, py);
 		coord.transformToDisplay(tmpDataPoint, pathPoint);
 				
@@ -370,8 +385,8 @@ public class DataGraphable extends DefaultGraphable
 	 * Handler of the changes in the graph area
 	 */
 	public void stateChanged(ChangeEvent e)
-	{
-		needUpdate = true;
+	{		
+		forceRecalculate();
 		notifyChange();
 	}
     
@@ -391,7 +406,6 @@ public class DataGraphable extends DefaultGraphable
     public void update()
 	{		
 		float ppx, ppy;
-		float px, py;
 		int initialI;
 				
 		//undrawnPoint stores the last point that was "processed" 
@@ -419,10 +433,16 @@ public class DataGraphable extends DefaultGraphable
 		// if new data was not received or no values have been
 		// calculated then all the points need to be recalculated
 		synchronized(this) {
-		    if (!needUpdateDataReceived || lastValueCalculated < 0) {
+		    if (needRecalculate || lastValueCalculated < 0) {
 		        lastValueCalculated = -1;
+		        needRecalculate = false;
 		    }
 		    initialI = lastValueCalculated + 1;
+            
+            // We set this to false here so that if someone sets it to 
+            // true while we are updating then we will be sure to update
+            // again.
+            needUpdate = false;
 		}
    		
    		// This is a bit a hack to handle cases that aren't handled correctly
@@ -459,6 +479,7 @@ public class DataGraphable extends DefaultGraphable
 	        maxXValue = -Float.MAX_VALUE;
 	        minYValue = Float.MAX_VALUE;
 	        maxYValue = -Float.MAX_VALUE;
+	        validMinMax = false;
 	    }
 	    
    		int i;
@@ -587,8 +608,20 @@ public class DataGraphable extends DefaultGraphable
 		    
 		}
 		
-			
-		lastValueCalculated = i-1;
+		// This is to handle a threading issue
+		// the lastValueCalculated could be set by forceRecalcutate
+		// to -1.  Then this statement is reached where we want to set it to i-1
+		synchronized(this) {
+			if(needRecalculate) {
+				// This means the forceRecalculate method was called while we were 
+				// updating the paths.  That means we need to update the paths again
+				// a check for this could be put in the inner loop so we didn't waste time
+			} else {
+				// we we don't need to recalculate then we can remember the last point we
+				// did calculate and start from there next time.
+				lastValueCalculated = i-1;				
+			}
+		}
 		
 		//There is a point that hasn't been drawn yet
 		//we will draw it here, however this might cause a display glitch.  
@@ -603,10 +636,7 @@ public class DataGraphable extends DefaultGraphable
 			undrawnPoint = null;
 		}
 		
-		//System.out.println("size:"+yValues.size());
-		
-		needUpdateDataReceived = false;
-		needUpdate = false;
+		//System.out.println("size:"+yValues.size());		
 	}
 
 	/**
@@ -659,7 +689,31 @@ public class DataGraphable extends DefaultGraphable
 		
 		return g;
 	}
-		
+	
+    /** 
+     * Set this to true if you want the channel numbers presented
+     * to the outside to always start at 0.  
+     * This is to abstract the case where the datastore has a dt.
+     * In that case the dt (usually x) channel of the datastore is -1
+     * 
+     * So if useVirtualChannels is true then channel 0 will really 
+     * be -1 of the datastore if it has a dt or 0 if it doesn't.
+     * The other channels will be shifted too.
+     * 
+     * This is useful when a single datagraphable can have different
+     * datastores plugged into it.  Some of which have dts and some
+     * don't.  
+     */ 
+	public void setUseVirtualChannels(boolean flag)
+	{
+	    useVirtualChannels = flag;
+	}
+	
+	public boolean useVirtualChannels()
+	{
+	    return useVirtualChannels;
+	}
+	
 	/**
 	 * @return Returns the channelX.
 	 */
@@ -677,6 +731,21 @@ public class DataGraphable extends DefaultGraphable
 		}
 		this.channelX = channelX;
 	}
+	
+	protected int getDataStoreChannelX()
+	{
+	    if(!useVirtualChannels) {
+	        return channelX;
+	    }
+	    
+	    if(hasDtChannel()) {
+	        return channelX - 1;
+	    }
+	    else {
+	        return channelX;
+	    }	    
+	}
+	
 	/**
 	 * @return Returns the channelY.
 	 */
@@ -694,6 +763,21 @@ public class DataGraphable extends DefaultGraphable
 		}
 		this.channelY = channelY;
 	}
+
+	protected int getDataStoreChannelY()
+	{
+	    if(!useVirtualChannels) {
+	        return channelY;
+	    }
+	        
+	    if(hasDtChannel()) {
+	        return channelY - 1;
+	    }
+	    else {
+	        return channelY;
+	    }	     
+	}
+	
 	/**
 	 * @return Returns the connectPoints.
 	 */
@@ -708,8 +792,7 @@ public class DataGraphable extends DefaultGraphable
 	{
 		if (this.connectPoints == connectPoints) return;
 		this.connectPoints = connectPoints;
-		needUpdate = true;
-		needUpdateDataReceived = false;
+		forceRecalculate();
 		notifyChange();
 	}
 	
@@ -754,7 +837,7 @@ public class DataGraphable extends DefaultGraphable
 	 */
 	public void repaint()
 	{
-		if (needUpdate || needUpdateDataReceived){
+		if (needUpdate){
 			super.notifyChange();
 		}
 	}
@@ -774,8 +857,7 @@ public class DataGraphable extends DefaultGraphable
 	{
 		if (this.showCrossPoint == showCrossPoint) return;
 		this.showCrossPoint = showCrossPoint;
-		needUpdate = true;
-		needUpdateDataReceived = false;
+		forceRecalculate();
 		notifyChange();
 	}
 	
@@ -814,21 +896,33 @@ public class DataGraphable extends DefaultGraphable
 	
 	public float getMinXValue()
 	{
+		if(!validMinMax) {
+			return Float.NaN;
+		}
 		return minXValue;
 	}
 
 	public float getMaxXValue()
 	{
+		if(!validMinMax) {
+			return Float.NaN;
+		}
 		return maxXValue;
 	}
 	
 	public float getMinYValue()
 	{
+		if(!validMinMax) {
+			return Float.NaN;
+		}
 		return minYValue;
 	}
 
 	public float getMaxYValue()
 	{
+		if(!validMinMax) {
+			return Float.NaN;
+		}
 		return maxYValue;
 	}
 
@@ -838,7 +932,6 @@ public class DataGraphable extends DefaultGraphable
 	public void dataAdded(DataStoreEvent evt)
 	{
 		needUpdate = true;
-		needUpdateDataReceived = true;
 		
 		notifyChange();
 	}
@@ -846,7 +939,12 @@ public class DataGraphable extends DefaultGraphable
 	protected synchronized void forceRecalculate()
 	{
 		needUpdate = true;
-		needUpdateDataReceived = false;
+		needRecalculate = true;
+		
+		// You can't count on this value staying -1 
+		// because the update function might be in the middle
+		// of running.  At the end of the update function this value
+		// is changed. 
 		lastValueCalculated = -1;	    
 	}
 	
@@ -870,34 +968,22 @@ public class DataGraphable extends DefaultGraphable
 		notifyChange();
 	}
 
-	protected void updateDataDescription(DataStore source)
+	protected boolean hasDtChannel()
 	{
-	    if(!(source instanceof DeltaDataStore)){
-	        return;
+	    DataStore dStore = getDataStore();
+	    
+	    if((!(dStore instanceof DeltaDataStore))) {
+	        return false;
 	    }
-
-	    DeltaDataStore pDataStore = (DeltaDataStore)source;
-	    // we really need something in the pdata store that will
-	    // tell us which channel is x and which is y
-	    if(pDataStore.isUseDtAsChannel() && getChannelX() == 0){
-	        setChannelX(-1);
-	        dt = pDataStore.getDt();
-	        setChannelY(getChannelY() - 1);
-	    } else if(!pDataStore.isUseDtAsChannel() && getChannelX() == -1){
-	        setChannelX(0);
-	        setChannelY(getChannelY() + 1);
-	    }	    
-	}
+	    
+	    return ((DeltaDataStore)dStore).isUseDtAsChannel();
+	}	
 	
 	/**
 	 * @see org.concord.framework.data.stream.DataStoreListener#dataChannelDescChanged(org.concord.framework.data.stream.DataStoreEvent)
 	 */
 	public void dataChannelDescChanged(DataStoreEvent evt)
 	{
-	    DataStore source = evt.getSource();
-
-	    updateDataDescription(source);
-	    
 	    notifyChange();
 	}
 	
@@ -937,10 +1023,10 @@ public class DataGraphable extends DefaultGraphable
 	public Object getValueAt(int numSample, int numChannel)
 	{
 		if (numChannel == 0){
-			return dataStore.getValueAt(numSample, channelX);
+			return dataStore.getValueAt(numSample, getDataStoreChannelX());
 		}
 		else if (numChannel == 1){
-			return dataStore.getValueAt(numSample, channelY);
+			return dataStore.getValueAt(numSample, getDataStoreChannelY());
 		}
 		
 		return null;
@@ -960,10 +1046,10 @@ public class DataGraphable extends DefaultGraphable
 		}
 		
 		if (numChannel == 0){
-			((WritableDataStore)dataStore).setValueAt(numSample, channelX, value);
+			((WritableDataStore)dataStore).setValueAt(numSample, getDataStoreChannelX(), value);
 		}
 		else if (numChannel == 1){
-			((WritableDataStore)dataStore).setValueAt(numSample, channelY, value);
+			((WritableDataStore)dataStore).setValueAt(numSample, getDataStoreChannelY(), value);
 		}
 	}
 
@@ -1026,16 +1112,19 @@ public class DataGraphable extends DefaultGraphable
 	}
 
 	/**
+	 * Channel 0 is the x channel of the graphable and
+	 * Channel 1 is the y channel of the graphable
+	 * 
 	 * @see org.concord.framework.data.stream.DataStore#getDataChannelDescription(int)
 	 */
 	public DataChannelDescription getDataChannelDescription(int numChannel)
 	{
 		if (dataStore == null) return null;
 		if (numChannel == 0){
-			return dataStore.getDataChannelDescription(channelX);
+			return dataStore.getDataChannelDescription(getDataStoreChannelX());
 		}
 		else if (numChannel == 1){
-			return dataStore.getDataChannelDescription(channelY);
+			return dataStore.getDataChannelDescription(getDataStoreChannelY());
 		}
 				
 		throw new ArrayIndexOutOfBoundsException("requested channel: " + numChannel + 
