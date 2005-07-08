@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.45 $
- * $Date: 2005-07-06 20:03:49 $
+ * $Revision: 1.46 $
+ * $Date: 2005-07-08 18:14:04 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -54,6 +54,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.util.Vector;
@@ -89,13 +90,43 @@ public class DataGraphable extends DefaultGraphable
 	protected Stroke stroke;
 	
 	protected GeneralPath path;
-	protected GeneralPath crossPath;
+	
+	/**
+	 * This is the path used to draw all the markers on the
+	 * graph.
+	 */
+	protected GeneralPath markerListPath;
 
+	/**
+	 * This is shape of each marker.  The path is transformed
+	 * to the correct position and then added to the markerListPath. 
+	 */
+	protected GeneralPath markerPath = null;
+	
+	/**
+	 * This variable determines if the markers should be filled
+	 */
+	protected boolean fillMarkers = false;
+
+	/**
+	 * This is the color of the markers if it is null then 
+	 * they will be a little darker than the line color
+	 */
+	protected Color markerColor = null;
+	
+	
 	protected Vector dataStoreListeners;
 	
 	protected boolean connectPoints = true; 
-	protected boolean showCrossPoint = false;
-	protected int crossSize = 3;
+
+	protected static int crossSize = 3;	
+	public final static GeneralPath CROSS_MARKER_PATH = new GeneralPath();
+	static {
+		CROSS_MARKER_PATH.moveTo(-crossSize, -crossSize);
+		CROSS_MARKER_PATH.lineTo(crossSize, crossSize);
+		CROSS_MARKER_PATH.moveTo(-crossSize, crossSize);
+		CROSS_MARKER_PATH.lineTo(crossSize, -crossSize);
+	}
 	
 	private int lastValueCalculated = -1;
 
@@ -138,7 +169,7 @@ public class DataGraphable extends DefaultGraphable
 	public DataGraphable()
 	{
 		path = new GeneralPath();
-		crossPath = new GeneralPath();
+		markerListPath = new GeneralPath();
 		dataStoreListeners = new Vector();
 		updateStroke();
 		
@@ -294,14 +325,25 @@ public class DataGraphable extends DefaultGraphable
 		g.setColor(lineColor);
 		g.setStroke(stroke);
 		
-		if (!connectPoints && showCrossPoint){
-		}
-		else{
+		if (connectPoints){
 			g.draw(path);
 		}
-		if (showCrossPoint){
-			g.draw(crossPath);
+		
+		if (markerPath != null){
+			if(markerColor != null) {
+				g.setColor(markerColor);
+			} else {
+				g.setColor(lineColor.darker());
+			}
+			
+		    if(fillMarkers) {
+		    	g.fill(markerListPath);
+		    } else {
+		    	g.draw(markerListPath);
+		    }
 		}
+		
+		extendedDraw(g);
 		
 		g.setColor(oldColor);
 		g.setStroke(oldStroke);
@@ -311,6 +353,16 @@ public class DataGraphable extends DefaultGraphable
 		//System.out.println(a-b);
 	}
 
+    /**
+     * This is added so the DataGraphable class can be extended 
+     * to have addition markers around the data.  For example the
+     * DataGraphableRegresssion class uses this to put regression lines
+     * @param g
+     */
+    protected void extendedDraw(Graphics2D g)
+    {    	
+    }
+    
     public float handleValue(Object objVal)
     {    	
 		if (objVal instanceof Float){
@@ -390,14 +442,10 @@ public class DataGraphable extends DefaultGraphable
 		notifyChange();
 	}
     
-    protected void handleCurrentPoint(float ppx, float ppy)
-    {
-    }
-    
     protected void resetPaths()
     {
         path.reset();
-        crossPath.reset();
+        markerListPath.reset();
     }
     
     /**
@@ -536,26 +584,20 @@ public class DataGraphable extends DefaultGraphable
 				        throw new RuntimeException("Assert: We have an undrawn point that will be forgotten");
 				    }
 				    
-				    //If we aren't going to draw this point then we need to 
+				    //We aren't going to draw this point so we need to 
 				    //remember it so we can draw it later.
-				    if (!showCrossPoint){
-				        undrawnPoint = path.getCurrentPoint();
-				    }
+				    undrawnPoint = path.getCurrentPoint();
 				}				
 			
 				lastPathX = ppx;
 				lastPathY = ppy;
-				
-				if (showCrossPoint){
-					drawCrossPoint(ppx, ppy);
-				}
 				
 				// If we made it here then the current point (soon to be the prev point)
 				// is a valid point, so set the flag
 				// technically we only care about this if we are connecting points
 				// but it seemed easier to understand if this is done out here
 				validPrevPoint = true;
-				handleCurrentPoint(ppx, ppy);
+				drawPointMarker(ppx, ppy);
 			}
 		    
 		} else {
@@ -594,10 +636,7 @@ public class DataGraphable extends DefaultGraphable
 
 				drawPoint(ppx, ppy);
 				
-				if (showCrossPoint){
-					drawCrossPoint(ppx, ppy);
-				}
-				handleCurrentPoint(ppx, ppy);
+				drawPointMarker(ppx, ppy);
 				
 				// If we made it here then the current point (soon to be the prev point)
 				// is a valid point, so set the flag
@@ -643,20 +682,18 @@ public class DataGraphable extends DefaultGraphable
 	 * @param ppx
 	 * @param ppy
 	 */
-	private void drawCrossPoint(float ppx, float ppy)
+	protected void drawPoint(float ppx, float ppy)
 	{
-		crossPath.moveTo(ppx - crossSize, ppy - crossSize);
-		crossPath.lineTo(ppx + crossSize, ppy + crossSize);
-		crossPath.moveTo(ppx - crossSize, ppy + crossSize);
-		crossPath.lineTo(ppx + crossSize, ppy - crossSize);
-	}
-
-	/**
-	 * @param ppx
-	 * @param ppy
-	 */
-	protected void drawPoint(float ppx, float ppy)//dima was private
-	{
+		// If we are not connecting points and there is a marker
+		// then we don't need to draw these one pixel points
+		// It is not clear when these points are drawn
+		// in generall they won't be seen because the line will be
+		// be on top of them.  I believe they are to handle
+		// the case when there is a discontinutity before and
+		// after the current point.  In that case this needs 
+		// be used.
+		if(!isConnectPoints() || markerPath != null) return;
+		
 		//Make a vertical "dot" of 1 pixel
 		path.moveTo(ppx, ppy);
 		path.lineTo(ppx, ppy + 1);//TODO Is 1 because of MAC OS X
@@ -672,6 +709,17 @@ public class DataGraphable extends DefaultGraphable
 		drawPoint((float)p.getX(), (float)p.getY());
 	}
 	
+    protected void drawPointMarker(float ppx, float ppy)
+    {
+	    if(markerPath != null){
+            java.awt.Rectangle bounds = markerPath.getBounds();
+            double needDX = ppx - (bounds.x + bounds.width/2);
+            double needDY = ppy - (bounds.y + bounds.height/2);
+            markerPath.transform(AffineTransform.getTranslateInstance(needDX,needDY));
+            markerListPath.append(markerPath,false);
+	    }
+    }
+    
 	/** 
 	 * Returns a copy of itself 
 	 */
@@ -843,11 +891,53 @@ public class DataGraphable extends DefaultGraphable
 	}
 	
 	/**
+	 * This method is used to set the style of marker.
+	 *  If it is null then no marker is drawn.  A marker
+	 *  is a shape drawn at each data point on the graph.
+	 * 
+	 * @param userPath
+	 */
+    public void setMarkerPath(GeneralPath userPath){
+        markerPath = userPath;
+
+		// this should probably all be put into the 
+		// the setMarkerPath method.
+		forceRecalculate();
+		notifyChange();
+    }
+	
+    /**
+     * Set this to true if you want the markers to be filled in
+     * @param fillMarkers
+     */
+	public void setFillMarkers(boolean fillMarkers)
+	{
+		this.fillMarkers = fillMarkers;
+	}
+    
+	
+	public boolean isFillMarkers()
+	{
+		return fillMarkers;
+	}
+		
+	public void setMarkerColor(Color markerColor)
+	{
+		this.markerColor = markerColor;
+	}
+	
+	
+	public Color getMarkerColor()
+	{
+		return markerColor;
+	}
+	
+	/**
 	 * @return Returns the showCrossPoint.
 	 */
 	public boolean isShowCrossPoint()
 	{
-		return showCrossPoint;
+		return markerPath == CROSS_MARKER_PATH;
 	}
 	
 	/**
@@ -855,10 +945,15 @@ public class DataGraphable extends DefaultGraphable
 	 */
 	public void setShowCrossPoint(boolean showCrossPoint)
 	{
-		if (this.showCrossPoint == showCrossPoint) return;
-		this.showCrossPoint = showCrossPoint;
-		forceRecalculate();
-		notifyChange();
+		if (showCrossPoint) {
+    		// if we are already showing the same marker path then
+    		// we don't need to update it 
+		    if(markerPath == CROSS_MARKER_PATH) return;
+		   
+			setMarkerPath(CROSS_MARKER_PATH);
+		} else {
+			setMarkerPath(null);
+		} 
 	}
 	
 	/**

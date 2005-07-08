@@ -60,12 +60,6 @@ public class DataGraphableEx extends DataGraphable
     private static GeneralPath halfFilledSquarePath = null;
     private static GeneralPath halfFilledSquarePath2 = null;
 		
-	GeneralPath shapePath = null;
-	GeneralPath currentPath = null;
-	
-	boolean fillShape = false;
-	Color   shapeColor = null;
-	
 	/**
      * Default constructor.
      */
@@ -77,15 +71,7 @@ public class DataGraphableEx extends DataGraphable
 	public DataGraphableEx()
 	{
         super();
-        shapePath = new GeneralPath();
 	}
-
-    protected void resetPaths()
-    {
-        super.resetPaths();
-	    shapePath.reset();
-    }
-
 
 /**
  * @return predefined triangular shape.
@@ -208,52 +194,21 @@ public class DataGraphableEx extends DataGraphable
     public void draw(Graphics2D g)
 	{
 		Object oldHint = null;
-		if(/*!isConnectPoints() && */(currentPath != null)){//dima
+		if(/*!isConnectPoints() && */(markerPath != null)){//dima
 		    oldHint = g.getRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING);
 		    g.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING,java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
 		}
         super.draw(g);
-        additionalDrawing(g);
 		if(oldHint != null) g.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING,oldHint);
 	}
-	
-
-    protected void additionalDrawing(Graphics2D g)
-    {
-        if(shapePath != null){
-    		Shape oldClip = null;
-		    org.concord.graph.engine.GraphArea ga = getGraphArea();
-    		if(ga != null){
-    		    oldClip = g.getClip();
-		        ga.clipGraphics(g);
-    		}
-    		
-    		if(shapeColor == null) updateShapeColor();
-    		
-		    java.awt.Color oldColor = g.getColor();
-		    g.setColor(shapeColor);
-    		if(!fillShape)   g.draw(shapePath);
-    		else            g.fill(shapePath);
-		    g.setColor(oldColor);
-    		if(oldClip != null){
-    		    g.setClip(oldClip);
-    		}
-        }
-    }
-
+    
 /*
  * set custom shape
  * @param userPath 
  */
 	
     public void setCustomShape(GeneralPath userPath){
-        if(currentPath != null){
-            currentPath.reset();
-        }
-        currentPath = null;
-        if(userPath != null){
-            currentPath = userPath;
-        }
+    	setMarkerPath(userPath);    	
     }
 
 /*
@@ -262,38 +217,16 @@ public class DataGraphableEx extends DataGraphable
  */
 	
     public void setCustomShape(Shape userShape){
-        if(currentPath != null){
-            currentPath.reset();
-        }
-        if(userShape == null){
-            currentPath = null;
-        }else{
-            currentPath.append(userShape,false);
-        }
+    	if(userShape == null) {
+    		setMarkerPath(null);
+    		return;
+    	}
+    	
+    	GeneralPath newPath = new GeneralPath();
+    	
+    	newPath.append(userShape, false);
+    	setMarkerPath(newPath);    	
     }
-
-/*
- * @see org.concord.graph.engine.DefaultGraphable#handleCurrentPoint()
- */
-    protected void drawPoint(float ppx, float ppy)
-    {
-        if(isConnectPoints() || (currentPath == null)){
-            super.drawPoint(ppx,ppy);
-        }
-    }
-    
-    protected void handleCurrentPoint(float ppx, float ppy)
-    {
-	    if(currentPath != null){
-            java.awt.Rectangle bounds = currentPath.getBounds();
-            double needDX = ppx - (bounds.x + bounds.width/2);
-            double needDY = ppy - (bounds.y + bounds.height/2);
-            currentPath.transform(AffineTransform.getTranslateInstance(needDX,needDY));
-            shapePath.append(currentPath,false);
-	    }
-		
-		
-	}
 
 /* set way how to draw shapes
  * @param fillShape if it is <code>true</code>
@@ -301,26 +234,12 @@ public class DataGraphableEx extends DataGraphable
  */
  	public void setFillShape(boolean fillShape)
 	{
-	    this.fillShape = fillShape;
+ 		setFillMarkers(fillShape);
 	}
 
 	public boolean getFillShape()
 	{
-	    return fillShape;
-	}
-
-	public void setColor(Color c)
-	{
-	    super.setColor(c);
-	    updateShapeColor();
-	}
-	
-	protected void updateShapeColor(){
-	    if(lineColor == null){
-	        shapeColor = Color.black;
-	    }else{
-	        shapeColor = lineColor.darker();
-	    }
+		return isFillMarkers();
 	}
 
 }
