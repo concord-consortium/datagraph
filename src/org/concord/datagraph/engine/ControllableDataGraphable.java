@@ -24,9 +24,9 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.16 $
- * $Date: 2005-04-29 02:34:47 $
- * $Author: dmarkman $
+ * $Revision: 1.17 $
+ * $Date: 2005-07-08 15:22:42 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -487,11 +487,5 @@ public class ControllableDataGraphable extends DataGraphable
 	public boolean isResizeEnabled()
 	{
 		return false;
-	}
-	
-	public String handleToolTip(Point pt)
-	{
-	    return null;
-	}
-	
+	}		
 }
