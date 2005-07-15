@@ -30,8 +30,6 @@
  */
 package org.concord.datagraph.state;
 
-import java.awt.Color;
-import java.awt.geom.Point2D;
 import java.util.EventObject;
 
 import javax.swing.JComponent;
@@ -43,7 +41,6 @@ import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.WritableDataStore;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTObjectList;
-import org.concord.framework.otrunk.OTrunk;
 import org.concord.framework.otrunk.view.OTObjectView;
 import org.concord.framework.otrunk.view.OTViewContainer;
 import org.concord.graph.engine.SelectableList;
@@ -58,7 +55,6 @@ import org.concord.swing.SelectableToggleButton;
  */
 public class DataCollectorView
  implements GraphableListListener, 	OTObjectView
-
 {
     OTDataCollector dataCollector;
 	SelectableList notesLayer;
