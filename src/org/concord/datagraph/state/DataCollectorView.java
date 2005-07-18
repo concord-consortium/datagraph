@@ -30,6 +30,9 @@
  */
 package org.concord.datagraph.state;
 
+import java.awt.Color;
+import java.awt.geom.Point2D;
+import java.io.File;
 import java.util.EventObject;
 
 import javax.swing.JComponent;
@@ -60,6 +63,7 @@ public class DataCollectorView
 	SelectableList notesLayer;
 	WritableDataStore dataStore;	
 	DataGraphManager dataGraphManager;
+	OTViewContainer vContainer;
 	
     public DataCollectorView(OTDataCollector collector)
     {
@@ -72,6 +76,7 @@ public class DataCollectorView
     public void initialize(OTObject otObject, OTViewContainer viewContainer)
     {
         // TODO Auto-generated method stub
+    	this.vContainer = viewContainer;
 
     }
     
@@ -122,7 +127,7 @@ public class DataCollectorView
     
     public DataProducer getSourceDataProducer()
     {
-        return dataGraphManager.getSourceDataProducer();
+    	return dataGraphManager.getSourceDataProducer();
     }
     
     
@@ -166,6 +171,15 @@ public class DataCollectorView
 	 */
 	public void listGraphableRemoved(EventObject e)
 	{
+	}
+
+	public String getXHTMLText(File folder, int containerDisplayWidth, int containerDisplayHeight) {
+		// TODO Auto-generated method stub
+		JComponent comp = getComponent(false);
+		comp.setSize(comp.getPreferredSize());
+		String url = vContainer.saveImage(comp, 1, 1, folder, dataCollector);
+		url = "<img src='" + url + "'>";
+		return url;
 	}
 }
 
