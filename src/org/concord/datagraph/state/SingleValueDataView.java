@@ -24,9 +24,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.7 $
- * $Date: 2005-05-19 17:05:45 $
- * $Author: scytacki $
+ * $Revision: 1.8 $
+ * $Date: 2005-07-18 22:20:49 $
+ * $Author: swang $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -38,6 +38,7 @@ import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -70,6 +71,7 @@ public class SingleValueDataView
 	JDialog dialog;
 	DataGraphManager dataGraphManager;
 	OTDataCollector dataCollector;
+	OTViewContainer viewContainer;
 	
     /**
      * 
@@ -102,6 +104,7 @@ public class SingleValueDataView
     public void initialize(OTObject otObject, OTViewContainer viewContainer)
     {
         // TODO Auto-generated method stub
+    	this.viewContainer = viewContainer;
     }
     
     public JComponent getComponent(boolean editable)
@@ -191,4 +194,10 @@ public class SingleValueDataView
         // not called when the page is closed.
     }
 
+	public String getXHTMLText(File folder, int containerDisplayWidth, int containerDisplayHeight) {
+		JComponent comp = getComponent(false);
+		String url = viewContainer.saveImage(comp, 1, 1, folder, dataCollector);
+		url = "<img src='" + url + "'>";
+		return url;
+	}
 }

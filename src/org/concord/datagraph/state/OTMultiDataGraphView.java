@@ -24,9 +24,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.4 $
- * $Date: 2005-05-19 17:05:45 $
- * $Author: scytacki $
+ * $Revision: 1.5 $
+ * $Date: 2005-07-18 22:19:36 $
+ * $Author: swang $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -35,6 +35,7 @@ package org.concord.datagraph.state;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.io.File;
 import java.util.Vector;
 
 import javax.swing.JComponent;
@@ -64,10 +65,12 @@ public class OTMultiDataGraphView
     implements OTObjectView
 {
     OTMultiDataGraph multiDataGraph;
+    OTViewContainer viewContainer;
     
     public void initialize(OTObject object, OTViewContainer viewContainer)
     {
-        multiDataGraph = (OTMultiDataGraph)object;        
+        multiDataGraph = (OTMultiDataGraph)object;
+        this.viewContainer = viewContainer;
     }
     
     
@@ -132,4 +135,12 @@ public class OTMultiDataGraphView
     {
         // TODO Auto-generated method stub
     }
+
+
+	public String getXHTMLText(File folder, int containerDisplayWidth, int containerDisplayHeight) {
+		JComponent comp = getComponent(false);
+		String url = viewContainer.saveImage(comp, 1, 1, folder, multiDataGraph);
+		url = "<img src='" + url + "'>";
+		return url;
+	}
 }

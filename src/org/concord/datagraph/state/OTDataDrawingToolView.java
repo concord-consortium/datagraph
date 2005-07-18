@@ -24,31 +24,30 @@
 
 /*
  * Last modification information:
- * $Revision: 1.4 $
- * $Date: 2005-05-19 17:05:45 $
- * $Author: scytacki $
+ * $Revision: 1.5 $
+ * $Date: 2005-07-18 22:16:59 $
+ * $Author: swang $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
 */
 package org.concord.datagraph.state;
 
+import java.awt.Component;
+import java.io.File;
 import java.util.EventObject;
 
+import javax.swing.JComponent;
+
 import org.concord.data.state.OTDataStore;
-import org.concord.data.stream.PointsDataStore;
 import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.ControllableDataGraphableDrawing;
-import org.concord.datagraph.engine.DataGraphable;
 
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTWrapper;
 import org.concord.framework.otrunk.view.OTViewContainer;
 import org.concord.graph.util.engine.DrawingObject;
-import org.concord.graph.util.state.OTDrawingImageIcon;
-import org.concord.graph.util.state.OTDrawingTool;
 import org.concord.graph.util.state.OTDrawingToolView;
-import org.concord.graph.util.ui.ImageStamp;
 
 /**
  * OTDataDrawingToolView
@@ -61,10 +60,14 @@ import org.concord.graph.util.ui.ImageStamp;
  */
 public class OTDataDrawingToolView extends OTDrawingToolView
 {
+	OTObject tool;
+	OTViewContainer viewContainer;
 	
     public void initialize(OTObject tool, OTViewContainer container)
     {
     	super.initialize(tool, container);
+    	this.tool = tool;
+    	this.viewContainer = container;
     }
     
 	/**
@@ -140,5 +143,22 @@ public class OTDataDrawingToolView extends OTDrawingToolView
 		else{
 			super.loadGraphable(objOT);
 		}
+	}
+
+	public String getXHTMLText(File folder, int containerDisplayWidth, int containerDisplayHeight) {
+		JComponent comp = getComponent(false);
+		
+		Headless myHeadless = new Headless(comp);
+		myHeadless.setSize(500, 250);
+		myHeadless.show();
+		myHeadless.repaint();
+		Component[] comps = myHeadless.getComponents();
+		for(int i = 0; i < comps.length; i++) {
+			comps[i].repaint();
+		}
+
+		String url = viewContainer.saveImage(comp, 1, 1, folder, tool);
+		url = "<img src='" + url + "'>";
+		return url;
 	}
 }

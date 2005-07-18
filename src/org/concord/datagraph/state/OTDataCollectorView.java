@@ -30,6 +30,8 @@
  */
 package org.concord.datagraph.state;
 
+import java.io.File;
+
 import javax.swing.JComponent;
 
 import org.concord.framework.otrunk.OTObject;
@@ -46,19 +48,24 @@ public class OTDataCollectorView
     implements OTObjectView
 {
     OTObjectView view;
+    OTViewContainer viewContainer;
+    OTDataCollector dataCollector;
+    
     
     /**
      * 
      */
     public void initialize(OTObject otObject, OTViewContainer container)
     {
-        OTDataCollector dataCollector = (OTDataCollector)otObject;
+        this.dataCollector = (OTDataCollector)otObject;
         if(dataCollector.getSingleValue()) {
             view = new SingleValueDataView(dataCollector);
         }
         else {
             view = new DataCollectorView(dataCollector);
         }
+        this.viewContainer = container;
+        
     }
 
     /* (non-Javadoc)
@@ -78,4 +85,13 @@ public class OTDataCollectorView
             view.viewClosed();
         }
     }
+
+	public String getXHTMLText(File folder, int containerDisplayWidth, int containerDisplayHeight) {
+		// TODO Auto-generated method stub
+		JComponent comp = getComponent(false);
+		comp.setSize(comp.getPreferredSize());
+		String url = viewContainer.saveImage(comp, 1, 1, folder, dataCollector);
+		url = "<img src='" + url + "'>";
+		return url;
+	}
 }

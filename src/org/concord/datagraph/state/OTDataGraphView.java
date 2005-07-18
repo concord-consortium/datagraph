@@ -24,9 +24,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.14 $
- * $Date: 2005-07-06 20:03:49 $
- * $Author: scytacki $
+ * $Revision: 1.15 $
+ * $Date: 2005-07-18 22:19:03 $
+ * $Author: swang $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -34,6 +34,7 @@
 package org.concord.datagraph.state;
 
 import java.awt.Dimension;
+import java.io.File;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -95,4 +96,11 @@ public class OTDataGraphView
     {
         // TODO Auto-generated method stub
     }
+
+	public String getXHTMLText(File folder, int containerDisplayWidth, int containerDisplayHeight) {
+		JComponent comp = getComponent(false);
+		String url = viewContainer.saveImage(comp, 1, 1, folder, pfObject);
+		url = "<img src='" + url + "'>";
+		return url;
+	}
 }
