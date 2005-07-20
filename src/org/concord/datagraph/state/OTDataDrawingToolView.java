@@ -24,8 +24,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.6 $
- * $Date: 2005-07-20 15:04:53 $
+ * $Revision: 1.7 $
+ * $Date: 2005-07-20 17:05:31 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -149,52 +149,9 @@ public class OTDataDrawingToolView extends OTDrawingToolView
 	public String getXHTMLText(File folder, int containerDisplayWidth, int containerDisplayHeight) {
 		JComponent comp = getComponent(false);		
         
-		Headless myHeadless = new Headless(comp);
-		myHeadless.setSize(500, 250);
-		myHeadless.show();
-//		myHeadless.repaint();
-        /*
-		Component[] comps = myHeadless.getComponents();
-		for(int i = 0; i < comps.length; i++) {
-			comps[i].repaint();
-		}
-		*/
-
-        Saver saver = new Saver(comp, folder, tool);
+        comp.setSize(500, 250);        
         
-        try{
-            SwingUtilities.invokeAndWait(saver);
-        } catch (InterruptedException e){
-            e.printStackTrace();
-        } catch (InvocationTargetException e){
-            e.printStackTrace();
-        }
-                       
-		return "<img src='" + saver.getText() + "'>";
-	}
-    
-    class Saver implements Runnable
-    {
-        JComponent comp;
-        File folder;
-        OTObject tool;
-        String text = null;
-        
-        Saver(JComponent comp, File folder, OTObject tool)
-        {
-            this.comp = comp;
-            this.folder = folder;
-            this.tool = tool;
-        }
-        
-        public void run()
-        {
-            text = viewContainer.saveImage(comp, 1, 1, folder, tool);            
-        }
-        
-        String getText()
-        {
-            return text;
-        }
-    }
+        String url = viewContainer.saveImage(comp, 1, 1, folder, tool); 
+		return "<img src='" + url + "'>";
+	}    
 }
