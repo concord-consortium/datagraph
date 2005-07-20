@@ -24,25 +24,25 @@
 
 /*
  * Last modification information:
- * $Revision: 1.5 $
- * $Date: 2005-07-18 22:16:59 $
- * $Author: swang $
+ * $Revision: 1.6 $
+ * $Date: 2005-07-20 15:04:53 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
 */
 package org.concord.datagraph.state;
 
-import java.awt.Component;
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.util.EventObject;
 
 import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
 
 import org.concord.data.state.OTDataStore;
 import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.ControllableDataGraphableDrawing;
-
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTWrapper;
 import org.concord.framework.otrunk.view.OTViewContainer;
@@ -79,6 +79,7 @@ public class OTDataDrawingToolView extends OTDrawingToolView
 		OTDataStore otDataStore;
 		try{
 			otDataStore = (OTDataStore)drawingTool.getOTDatabase().createObject(OTDataStore.class);
+            otDataStore.setUseDtAsChannel(false);
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
@@ -146,19 +147,54 @@ public class OTDataDrawingToolView extends OTDrawingToolView
 	}
 
 	public String getXHTMLText(File folder, int containerDisplayWidth, int containerDisplayHeight) {
-		JComponent comp = getComponent(false);
-		
+		JComponent comp = getComponent(false);		
+        
 		Headless myHeadless = new Headless(comp);
 		myHeadless.setSize(500, 250);
 		myHeadless.show();
-		myHeadless.repaint();
+//		myHeadless.repaint();
+        /*
 		Component[] comps = myHeadless.getComponents();
 		for(int i = 0; i < comps.length; i++) {
 			comps[i].repaint();
 		}
+		*/
 
-		String url = viewContainer.saveImage(comp, 1, 1, folder, tool);
-		url = "<img src='" + url + "'>";
-		return url;
+        Saver saver = new Saver(comp, folder, tool);
+        
+        try{
+            SwingUtilities.invokeAndWait(saver);
+        } catch (InterruptedException e){
+            e.printStackTrace();
+        } catch (InvocationTargetException e){
+            e.printStackTrace();
+        }
+                       
+		return "<img src='" + saver.getText() + "'>";
 	}
+    
+    class Saver implements Runnable
+    {
+        JComponent comp;
+        File folder;
+        OTObject tool;
+        String text = null;
+        
+        Saver(JComponent comp, File folder, OTObject tool)
+        {
+            this.comp = comp;
+            this.folder = folder;
+            this.tool = tool;
+        }
+        
+        public void run()
+        {
+            text = viewContainer.saveImage(comp, 1, 1, folder, tool);            
+        }
+        
+        String getText()
+        {
+            return text;
+        }
+    }
 }

@@ -123,6 +123,11 @@ public class OTDataGraphable extends DefaultOTObject
 		
 		if (resources.getDrawing()){
         	dg = new ControllableDataGraphableDrawing();
+            
+            // this is a bit of a hack.  This should be saved
+            // in the datastore object.
+            OTDataStore dataStore = resources.getDataStore();
+            dataStore.setUseDtAsChannel(false);
 		}
         else if (resources.getControllable()){
         	dg = new ControllableDataGraphable();
@@ -143,6 +148,10 @@ public class OTDataGraphable extends DefaultOTObject
 		    return null;
 		}
 		
+        if (resources.getDrawing()) {
+            dataStore.setUseDtAsChannel(false);
+        }
+        
 		if (producer != null && dataStore != null){
 		    dataStore.setDataProducer(producer);
 		}
