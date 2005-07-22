@@ -24,8 +24,8 @@
  */
 /*
  * Last modification information:
- * $Revision: 1.40 $
- * $Date: 2005-07-06 20:03:49 $
+ * $Revision: 1.41 $
+ * $Date: 2005-07-22 14:43:58 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -63,8 +63,8 @@ import org.concord.graph.engine.GraphArea;
 import org.concord.graph.engine.GraphableList;
 import org.concord.graph.engine.MultiRegionAxisScale;
 import org.concord.graph.engine.SelectableList;
-import org.concord.graph.examples.DashedBox;
 import org.concord.graph.examples.GraphWindowToolBar;
+import org.concord.graph.ui.DashedBox;
 import org.concord.graph.ui.GraphWindow;
 import org.concord.graph.ui.Grid2D;
 import org.concord.graph.ui.SingleAxisGrid;
