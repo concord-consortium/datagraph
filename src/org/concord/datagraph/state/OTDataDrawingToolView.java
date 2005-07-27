@@ -24,15 +24,16 @@
 
 /*
  * Last modification information:
- * $Revision: 1.7 $
- * $Date: 2005-07-20 17:05:31 $
- * $Author: scytacki $
+ * $Revision: 1.8 $
+ * $Date: 2005-07-27 21:14:49 $
+ * $Author: swang $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
 */
 package org.concord.datagraph.state;
 
+import java.awt.Dimension;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.EventObject;
@@ -45,6 +46,7 @@ import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.ControllableDataGraphableDrawing;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTWrapper;
+import org.concord.framework.otrunk.view.OTPrintDimension;
 import org.concord.framework.otrunk.view.OTViewContainer;
 import org.concord.graph.util.engine.DrawingObject;
 import org.concord.graph.util.state.OTDrawingToolView;
@@ -59,7 +61,7 @@ import org.concord.graph.util.state.OTDrawingToolView;
  *
  */
 public class OTDataDrawingToolView extends OTDrawingToolView
-{
+implements OTPrintDimension {
 	OTObject tool;
 	OTViewContainer viewContainer;
 	
@@ -68,6 +70,8 @@ public class OTDataDrawingToolView extends OTDrawingToolView
     	super.initialize(tool, container);
     	this.tool = tool;
     	this.viewContainer = container;
+        //setMaximumSize(new Dimension(550, 220));
+
     }
     
 	/**
@@ -149,9 +153,18 @@ public class OTDataDrawingToolView extends OTDrawingToolView
 	public String getXHTMLText(File folder, int containerDisplayWidth, int containerDisplayHeight) {
 		JComponent comp = getComponent(false);		
         
-        comp.setSize(500, 250);        
+        comp.setSize(550, 220);        
         
         String url = viewContainer.saveImage(comp, 1, 1, folder, tool); 
 		return "<img src='" + url + "'>";
+	}
+
+	public Dimension getPrintDimention(int containerDisplayWidth, int containerDisplayHeight) {
+		Dimension dim = new Dimension(550, 225);
+        if(dim.height > containerDisplayHeight) 
+            dim.height = containerDisplayHeight;
+        if(dim.width > containerDisplayWidth) 
+            dim.width = containerDisplayWidth;
+        return dim;
 	}    
 }
