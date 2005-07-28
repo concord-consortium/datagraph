@@ -172,14 +172,5 @@ public class DataCollectorView
 	public void listGraphableRemoved(EventObject e)
 	{
 	}
-
-	public String getXHTMLText(File folder, int containerDisplayWidth, int containerDisplayHeight) {
-		// TODO Auto-generated method stub
-		JComponent comp = getComponent(false);
-		comp.setSize(comp.getPreferredSize());
-		String url = vContainer.saveImage(comp, 1, 1, folder, dataCollector);
-		url = "<img src='" + url + "'>";
-		return url;
-	}
 }
 

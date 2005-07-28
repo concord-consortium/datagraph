@@ -85,13 +85,4 @@ public class OTDataCollectorView
             view.viewClosed();
         }
     }
-
-	public String getXHTMLText(File folder, int containerDisplayWidth, int containerDisplayHeight) {
-		// TODO Auto-generated method stub
-		JComponent comp = getComponent(false);
-		comp.setSize(comp.getPreferredSize());
-		String url = viewContainer.saveImage(comp, 1, 1, folder, dataCollector);
-		url = "<img src='" + url + "'>";
-		return url;
-	}
 }

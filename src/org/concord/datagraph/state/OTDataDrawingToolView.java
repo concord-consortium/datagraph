@@ -24,9 +24,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.8 $
- * $Date: 2005-07-27 21:14:49 $
- * $Author: swang $
+ * $Revision: 1.9 $
+ * $Date: 2005-07-28 17:25:02 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -148,15 +148,6 @@ implements OTPrintDimension {
 		else{
 			super.loadGraphable(objOT);
 		}
-	}
-
-	public String getXHTMLText(File folder, int containerDisplayWidth, int containerDisplayHeight) {
-		JComponent comp = getComponent(false);		
-        
-        comp.setSize(550, 220);        
-        
-        String url = viewContainer.saveImage(comp, 1, 1, folder, tool); 
-		return "<img src='" + url + "'>";
 	}
 
 	public Dimension getPrintDimention(int containerDisplayWidth, int containerDisplayHeight) {
