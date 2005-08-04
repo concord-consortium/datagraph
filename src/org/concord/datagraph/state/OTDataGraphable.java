@@ -131,6 +131,11 @@ public class OTDataGraphable extends DefaultOTObject
 		}
         else if (resources.getControllable()){
         	dg = new ControllableDataGraphable();
+
+            // this is a bit of a hack.  This should be saved
+            // in the datastore object.
+            OTDataStore dataStore = resources.getDataStore();
+            dataStore.setUseDtAsChannel(false);
         } 
         else {
         	dg = new DataGraphable();
