@@ -212,6 +212,8 @@ public class OTDataGraphable extends DefaultOTObject
 		DataGraphable dg = (DataGraphable)wrappedObject;
 		
 		dg.addGraphableListener(this);
+        
+        getOTDatabase().putWrapper(dg, this);
 	}
 
 	/**
