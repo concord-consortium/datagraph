@@ -23,15 +23,16 @@
 
 /*
  * Last modification information:
- * $Revision: 1.7 $
- * $Date: 2005-08-04 21:46:09 $
- * $Author: maven $
+ * $Revision: 1.8 $
+ * $Date: 2005-08-05 16:57:14 $
+ * $Author: swang $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
 */
 package org.concord.datagraph.state;
 
+import org.concord.datagraph.engine.DataGraphable;
 import org.concord.datagraph.ui.DataPointLabel;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTResourceSchema;
@@ -92,7 +93,8 @@ public class OTDataPointLabel extends OTPointTextLabel
 		DataPointLabel l = (DataPointLabel)wrappedObject;
 		
 		OTrunk otrunk = getOTDatabase();
-		OTDataGraphable otGraphable = (OTDataGraphable)otrunk.getWrapper(l.getDataGraphable());
+		DataGraphable dg = l.getDataGraphable();
+		OTDataGraphable otGraphable = (OTDataGraphable)otrunk.getWrapper(dg);
 		resources.setDataGraphable(otGraphable);
 		
 		super.saveObject(wrappedObject);
