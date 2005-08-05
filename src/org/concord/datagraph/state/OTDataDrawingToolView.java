@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.10 $
- * $Date: 2005-08-04 21:46:09 $
- * $Author: maven $
+ * $Revision: 1.11 $
+ * $Date: 2005-08-05 16:16:55 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -82,7 +82,6 @@ implements OTPrintDimension {
 		OTDataStore otDataStore;
 		try{
 			otDataStore = (OTDataStore)drawingTool.getOTDatabase().createObject(OTDataStore.class);
-            otDataStore.setUseDtAsChannel(false);
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();

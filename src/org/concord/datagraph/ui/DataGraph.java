@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.42 $
- * $Date: 2005-08-04 21:46:09 $
- * $Author: maven $
+ * $Revision: 1.43 $
+ * $Date: 2005-08-05 16:16:55 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -45,7 +45,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
-import org.concord.data.stream.ProducerDataStore;
 import org.concord.datagraph.engine.DataGraphAutoScaler;
 import org.concord.datagraph.engine.DataGraphAutoScroller;
 import org.concord.datagraph.engine.DataGraphable;
@@ -557,11 +556,11 @@ public class DataGraph extends JPanel
 				Object obj = objList.elementAt(i);
 				if (obj instanceof DataGraphable){
 					dGraphable = (DataGraphable)obj;
-					if (dGraphable.getDataStore() instanceof ProducerDataStore){
-						if (((ProducerDataStore)dGraphable.getDataStore()).getDataProducer() == dataProducer){
-							return dGraphable;
-						}
-					}
+                    DataProducer gDataProducer = dGraphable.findDataProducer();
+                    if(gDataProducer != null &&
+                            gDataProducer == dataProducer) {
+                        return dGraphable;
+                    }                    
 				}
 			}
 		}
