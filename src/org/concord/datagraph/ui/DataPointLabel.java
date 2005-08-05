@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.12 $
- * $Date: 2005-08-04 21:46:09 $
- * $Author: maven $
+ * $Revision: 1.13 $
+ * $Date: 2005-08-05 18:27:18 $
+ * $Author: swang $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -35,11 +35,13 @@ package org.concord.datagraph.ui;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Point2D;
+import java.text.NumberFormat;
 
 import org.concord.datagraph.engine.DataGraphable;
+import org.concord.framework.data.stream.DataChannelDescription;
 import org.concord.framework.data.stream.DataStoreEvent;
 import org.concord.framework.data.stream.DataStoreListener;
-import org.concord.graph.engine.CoordinateSystem;
+import org.concord.graph.engine.DefaultCoordinateSystem2D;
 import org.concord.graph.engine.GraphableList;
 import org.concord.graph.util.ui.PointTextLabel;
 
@@ -66,6 +68,22 @@ public class DataPointLabel extends PointTextLabel
 	//Actual graphable that the label is linked to 
 	//(this is temporary because it should be a data point)
 	private DataGraphable dataGraphable;
+	
+	private float fx = Float.NaN;
+	private float fy = Float.NaN;
+	
+	private DashedDataLine verticalDDL = new DashedDataLine(DashedDataLine.VERTICAL_LINE);
+	private DashedDataLine horizontalDDL = new DashedDataLine(DashedDataLine.HORIZONTAL_LINE);
+	
+	//Labels and Units
+	private String xLabel = null;
+	private String xUnits = null;
+	private String yLabel = null;
+	private String yUnits = null;
+	private int xPrecision = 0;
+	private int yPrecision = 0;
+	private String valueLabel = null;
+	private String coordinateLabel = null;
 	
 	/**
 	 * 
@@ -132,6 +150,7 @@ public class DataPointLabel extends PointTextLabel
 				if (index != indexPointOver || dg != graphableOver){
 					indexPointOver = index;
 					graphableOver = dg;
+					Point2D pW = getPointDataGraphable(graphableOver, indexPointOver);
 					notifyChange();
 				}
 			}
@@ -214,6 +233,7 @@ public class DataPointLabel extends PointTextLabel
 		double x,y;
 		
 		objVal = dg.getValueAt(index, 0);
+
 		if (!(objVal instanceof Float)) return null;
 		x = ((Float)objVal).floatValue();
 		
@@ -229,22 +249,44 @@ public class DataPointLabel extends PointTextLabel
 	 */
 	public void draw(Graphics2D g)
 	{
+		float f1 = Float.NaN;
+		float f2 = Float.NaN;
+		
 		if (newNote || mouseInsideDataPoint){
 			if (indexPointOver != -1 && graphableOver != null){
+				setDataGraphable(graphableOver);
 				
-				//System.out.println("painting an oval");
-				
+				//System.out.println("painting an oval");				
 				Point2D p = getPointDataGraphable(graphableOver, indexPointOver);
-				CoordinateSystem cs = graphArea.getCoordinateSystem();
+				DefaultCoordinateSystem2D cs = (DefaultCoordinateSystem2D) graphArea.getCoordinateSystem();
 				Point2D pD = cs.transformToDisplay(p);
-
+				
 				if (p != null){
 					//System.out.println("painting an oval 2");
+					f1 = (float)(p.getX());
+					f2 = (float)(p.getY());
+					fx = f1;
+					fy = f2;
+					
 					g.drawOval((int)pD.getX() - 7, (int)pD.getY() - 7, 13, 13);
+
+					drawDashedLine(g, fx, fy);
+
+					if(xLabel != null || yLabel != null) {
+						NumberFormat nf = NumberFormat.getInstance();
+						nf.setMaximumFractionDigits(xPrecision);
+						valueLabel = xLabel + nf.format(fx) + xUnits + "        ";
+						coordinateLabel = "(" + nf.format(fx) + xUnits + ", ";
+						nf.setMaximumFractionDigits(yPrecision);
+						valueLabel += yLabel + nf.format(fy) + yUnits;
+						coordinateLabel += nf.format(fy) + yUnits + ")";
+						coordinateString = coordinateLabel;
+					}
 				}
 			}
 		}
-		super.draw(g);
+		super.draw(g, valueLabel);
+		//super.draw(g);
 	}
 	
 	/**
@@ -268,6 +310,31 @@ public class DataPointLabel extends PointTextLabel
 		this.dataGraphable = dataGraphable;
 		if (this.dataGraphable != null){
 			this.dataGraphable.addDataStoreListener(this);
+
+			int numberOfChannels = dataGraphable.getTotalNumChannels();
+			//if(numberOfChannels < 2) return;
+			System.out.println("number of channels: " + numberOfChannels);
+			
+			DataChannelDescription dcd1 = dataGraphable.getDataChannelDescription(0);
+			DataChannelDescription dcd2 = dataGraphable.getDataChannelDescription(1);
+			
+			xLabel = dcd1.getName();
+			if(xLabel == null || xLabel.length() == 0) xLabel = "";
+			else xLabel = xLabel +": ";
+			
+			if(dcd1.getUnit() != null) xUnits = dcd1.getUnit().getDimension();
+			else xUnits = "";
+
+			if(dcd1.isUsePrecision()) xPrecision = dcd1.getPrecision() + 1;
+			else xPrecision = 2;
+			
+			yLabel = dcd2.getName();
+			if(yLabel == null || yLabel.length() == 0) yLabel = "";
+			else yLabel = yLabel + ": ";
+			if(dcd2.getUnit() != null) yUnits = dcd2.getUnit().getDimension();
+			else yUnits = "";
+			if(dcd2.isUsePrecision()) yPrecision = dcd2.getPrecision() + 1;
+			else yPrecision = 2;
 		}
 	}
 	
@@ -311,5 +378,24 @@ public class DataPointLabel extends PointTextLabel
 	 */
 	public void dataChannelDescChanged(DataStoreEvent evt)
 	{
+	}
+	
+	protected void drawDashedLine(Graphics2D g, float d1, float d2) {
+		setDashedLines(d1, d2);
+		verticalDDL.draw(g);
+		horizontalDDL.draw(g);		
+	}
+
+	private void setDashedLines(float d1, float d2) {
+		Point2D pVO = new Point2D.Double(d1,0);
+		Point2D pD = new Point2D.Double(d1,d2);
+		Point2D pHO = new Point2D.Double(0, d2);
+		
+		verticalDDL.setDataPrecision(xPrecision);
+		horizontalDDL.setDataPrecision(yPrecision);
+
+		verticalDDL.setPoints(pVO, pD);
+		horizontalDDL.setPoints(pHO, pD);
+		DashedDataLine.setGraphArea(graphArea);
 	}
 }
