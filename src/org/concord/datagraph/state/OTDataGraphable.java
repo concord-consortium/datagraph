@@ -142,21 +142,28 @@ public class OTDataGraphable extends DefaultOTObject
 		    return null;
 		}
 		
-		if (producer != null && dataStore != null){
+        if(dataStore == null) {
+        	// If the dataStore is null then we create a new
+        	// one to store the data so it can retrieved 
+        	// later.  If the data needs to be referenced
+        	// within the content then it should be explictly 
+        	// defined in the content.
+            try {
+                dataStore = (OTDataStore)getOTDatabase().createObject(OTDataStore.class);
+                resources.setDataStore(dataStore);
+            } catch (Exception e) {
+                // we can't handle this
+                throw new RuntimeException(e);
+            }
+        }
+        
+        // now we can safely assume dataStore != null        
+		if (producer != null){
 		    dataStore.setDataProducer(producer);
 		}
 		
-		if (dataStore != null){
-			dg.setDataStore(dataStore);
-		}
-		else if (producer != null){
-			dg.setDataProducer(producer);
-		}
-		else {
-		    System.err.println("OTDataGraphable without a valid " + 
-		            "datastore or dataproducer");
-		}
-		
+		dg.setDataStore(dataStore);
+
 		dg.setChannelX(resources.getXColumn());
 		dg.setChannelY(resources.getYColumn());
 
