@@ -55,6 +55,7 @@ import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.otrunk.OTChangeEvent;
 import org.concord.framework.otrunk.OTChangeListener;
 import org.concord.framework.otrunk.OTObjectList;
+import org.concord.framework.otrunk.OTWrapper;
 import org.concord.graph.engine.GraphableList;
 import org.concord.graph.event.GraphableListListener;
 import org.concord.graph.examples.GraphWindowToolBar;
@@ -341,6 +342,14 @@ public class DataGraphManager
 	 */
 	public void listGraphableRemoved(EventObject e)
 	{
+		Object obj = e.getSource();
+		
+		OTWrapper otWrapper = dataCollector.getOTDatabase().getWrapper(obj);
+		
+		if (otWrapper != null){
+			if(otWrapper instanceof OTDataPointLabel)
+				dataCollector.getLabels().remove(otWrapper);
+		}
 	}
 
 	/* (non-Javadoc)

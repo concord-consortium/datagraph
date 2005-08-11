@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.13 $
- * $Date: 2005-08-04 21:46:09 $
- * $Author: maven $
+ * $Revision: 1.14 $
+ * $Date: 2005-08-11 14:28:16 $
+ * $Author: swang $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -49,6 +49,7 @@ import org.concord.framework.data.DataDimension;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.DataStore;
 import org.concord.framework.otrunk.OTObjectList;
+import org.concord.framework.otrunk.OTWrapper;
 import org.concord.graph.engine.GraphableList;
 import org.concord.graph.engine.SelectableList;
 import org.concord.graph.event.GraphableListListener;
@@ -345,6 +346,15 @@ public class DataGraphStateManager
 	 */
 	public void listGraphableRemoved(EventObject e)
 	{
+		Object obj = e.getSource();
+		
+		OTWrapper otWrapper = pfObject.getOTDatabase().getWrapper(obj);
+		
+		if (otWrapper != null){
+			if(otWrapper instanceof OTDataPointLabel)
+				pfObject.getLabels().remove(otWrapper);
+		}
+		
+		notesLayer.removeElement(obj);
 	}
-	
 }

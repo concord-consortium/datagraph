@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.13 $
- * $Date: 2005-08-05 18:27:18 $
+ * $Revision: 1.14 $
+ * $Date: 2005-08-11 14:28:40 $
  * $Author: swang $
  *
  * Licence Information
@@ -32,6 +32,9 @@
 */
 package org.concord.datagraph.ui;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Point2D;
@@ -82,9 +85,9 @@ public class DataPointLabel extends PointTextLabel
 	private String yUnits = null;
 	private int xPrecision = 0;
 	private int yPrecision = 0;
-	private String valueLabel = null;
-	private String coordinateLabel = null;
-	
+	private String pointLabel = null;	// format: (x, y)
+	private String pointInfoLabel = null;	//format: xlabel: x+unit   ylabel: y+unit
+		
 	/**
 	 * 
 	 */
@@ -273,20 +276,18 @@ public class DataPointLabel extends PointTextLabel
 					drawDashedLine(g, fx, fy);
 
 					if(xLabel != null || yLabel != null) {
-						NumberFormat nf = NumberFormat.getInstance();
-						nf.setMaximumFractionDigits(xPrecision);
-						valueLabel = xLabel + nf.format(fx) + xUnits + "        ";
-						coordinateLabel = "(" + nf.format(fx) + xUnits + ", ";
-						nf.setMaximumFractionDigits(yPrecision);
-						valueLabel += yLabel + nf.format(fy) + yUnits;
-						coordinateLabel += nf.format(fy) + yUnits + ")";
-						coordinateString = coordinateLabel;
+						setDataPoint(p);//, coordinateLabel);
 					}
 				}
 			}
 		}
-		super.draw(g, valueLabel);
-		//super.draw(g);
+		if(isSelected()) {
+			int pointInfoLabelLeft = graphArea.getInsets().left + 20;
+			int pointInfoLabelTop = Math.max(graphArea.getInsets().top, 20);
+			g.setColor(Color.RED);
+			g.drawString(pointInfoLabel, pointInfoLabelLeft, pointInfoLabelTop);
+		}
+		super.draw(g);
 	}
 	
 	/**
@@ -312,12 +313,14 @@ public class DataPointLabel extends PointTextLabel
 			this.dataGraphable.addDataStoreListener(this);
 
 			int numberOfChannels = dataGraphable.getTotalNumChannels();
-			//if(numberOfChannels < 2) return;
-			System.out.println("number of channels: " + numberOfChannels);
+			if(numberOfChannels < 2) return;
+			//System.out.println("number of channels: " + numberOfChannels);
 			
 			DataChannelDescription dcd1 = dataGraphable.getDataChannelDescription(0);
 			DataChannelDescription dcd2 = dataGraphable.getDataChannelDescription(1);
 			
+			if(dcd1 == null) return;
+			if(dcd2 == null) return;
 			xLabel = dcd1.getName();
 			if(xLabel == null || xLabel.length() == 0) xLabel = "";
 			else xLabel = xLabel +": ";
@@ -368,6 +371,7 @@ public class DataPointLabel extends PointTextLabel
 	{
 		//FIXME See if the point is still in the DataGraphable?
 		//For now, I'll check if the graphable is empty
+		if(this.dataGraphable == null) return;
 		if (this.dataGraphable.getTotalNumSamples() == 0){
 			remove();
 		}
@@ -398,4 +402,99 @@ public class DataPointLabel extends PointTextLabel
 		horizontalDDL.setPoints(pHO, pD);
 		DashedDataLine.setGraphArea(graphArea);
 	}
+	
+	public void setDataPoint(Point2D p) {
+		float f1 = (float)p.getX();
+		float f2 = (float)p.getY();
+		NumberFormat nf = NumberFormat.getInstance();
+		nf.setMaximumFractionDigits(xPrecision);
+		pointInfoLabel = xLabel + nf.format(f1) + xUnits + "        ";
+		pointLabel = "(" + nf.format(f1) + xUnits + ", ";
+		nf.setMaximumFractionDigits(yPrecision);
+		pointInfoLabel += yLabel + nf.format(f2) + yUnits;
+		pointLabel += nf.format(f2) + yUnits + ")";
+		super.setDataPoint(p);
+	}
+	
+	/**
+	 * 
+	 */
+	protected void drawMessage(Graphics2D g)
+	{
+		drawMessage(g, true);
+	}
+	
+	/**
+	 * 
+	 */
+	protected void drawMessage(Graphics2D g, boolean bDraw)
+	{
+		String words[];
+		String word;
+		double xIni = displayPositionIni.getX() + 3;
+		double yIni = displayPositionIni.getY() + 12;
+		double x = xIni;
+		double y = yIni;
+		double ww, w = 0, h;
+		FontMetrics fontM;
+		
+		fontM = g.getFontMetrics();
+		
+		h = fontM.getHeight() - 2;
+		
+		g.setColor(foreColor);
+		g.setFont(font);
+		
+		words = message.split(" ");
+		
+		for (int i=0; i < words.length; i++){
+			word = words[i] + " ";
+			
+			//System.out.println("\""+word+"\"");
+			
+			w = fontM.stringWidth(word);
+			
+			if (x + w - xIni > maxWidth){
+				y += h;
+				x = xIni;
+			}
+
+			if (bDraw){
+				g.drawString(word, (int)x, (int)y);
+			}
+			
+			x += w;				
+		}
+
+		///////////////////////////
+		//// Draw uneditable coordinate values
+		double labelWidth = Double.NaN;
+		if(pointLabel != null && pointLabel.length() > 0) {
+			y+= h;
+			Color oldColor = g.getColor();
+			Color backColor = g.getBackground();
+			Color newColor = new Color(255-backColor.getRed(), 255-backColor.getGreen(), 255-backColor.getBlue());
+			g.setColor(newColor);
+			g.drawString(pointLabel, (int)xIni, (int)y);
+			labelWidth = fontM.stringWidth(pointLabel);
+			g.setColor(oldColor);
+			msgChanged = true;
+		}
+		////
+		///////////////////////////////////////
+		
+		if (msgChanged){
+			msgChanged = false;
+
+			if(labelWidth != Double.NaN) ww = Math.max(maxWidth, labelWidth); 
+			else ww = maxWidth;
+			
+			if (y == yIni && !message.equals("")){
+				ww = x - xIni;
+			}
+			y += h;
+			Dimension d = new Dimension((int)(ww), (int)(y - yIni + 6));
+			setSize(d);
+		}	
+	}	
 }

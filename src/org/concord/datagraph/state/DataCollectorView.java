@@ -43,6 +43,7 @@ import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.WritableDataStore;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTObjectList;
+import org.concord.framework.otrunk.OTWrapper;
 import org.concord.framework.otrunk.view.OTObjectView;
 import org.concord.framework.otrunk.view.OTViewContainer;
 import org.concord.graph.engine.SelectableList;
@@ -76,7 +77,6 @@ public class DataCollectorView
     {
         // TODO Auto-generated method stub
     	this.vContainer = viewContainer;
-
     }
     
     public JComponent getComponent(boolean editable)
@@ -170,6 +170,15 @@ public class DataCollectorView
 	 */
 	public void listGraphableRemoved(EventObject e)
 	{
+		//dataGraphManager.listGraphableRemoved(e);
+		Object obj = e.getSource();
+		
+		OTWrapper otWrapper = dataCollector.getOTDatabase().getWrapper(obj);
+		
+		if (otWrapper != null){
+			if(otWrapper instanceof OTDataPointLabel)
+				dataCollector.getLabels().remove(otWrapper);
+		}
 	}
 }
 
