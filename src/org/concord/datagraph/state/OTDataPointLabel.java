@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.8 $
- * $Date: 2005-08-05 16:57:14 $
- * $Author: swang $
+ * $Revision: 1.9 $
+ * $Date: 2005-08-22 22:06:32 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -34,11 +34,8 @@ package org.concord.datagraph.state;
 
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.datagraph.ui.DataPointLabel;
-import org.concord.framework.otrunk.OTObject;
-import org.concord.framework.otrunk.OTResourceSchema;
-import org.concord.framework.otrunk.OTrunk;
+import org.concord.framework.otrunk.OTObjectService;
 import org.concord.graph.util.state.OTPointTextLabel;
-import org.concord.graph.util.state.OTPointTextLabel.ResourceSchema;
 import org.concord.graph.util.ui.BoxTextLabel;
 
 
@@ -70,17 +67,23 @@ public class OTDataPointLabel extends OTPointTextLabel
 		this.resources = resources;
 	}
 	
+    public OTDataGraphable getDataGraphable()
+    {
+        return resources.getDataGraphable();
+    }
+    
 	/**
 	 * @see org.concord.graph.util.state.OTPointTextLabel#createNewWrappedObject()
 	 */
 	protected BoxTextLabel createNewWrappedObject()
 	{
 		DataPointLabel l = new DataPointLabel();
-		
-		OTDataGraphable otGraphable = resources.getDataGraphable();
-		if (otGraphable != null){		    
-			l.setDataGraphable(otGraphable.getDataGraphable());
-		}
+
+		// we have to rely on the caller that is creating this wrapped
+		// object to initialize the dataGraphable of the label.  
+		// because the same OTDataGraphable can be displayed in more 
+		// than one place at a time the real DataGraphable that should
+		// be used here is only known by the caller of this method		
 		
 		return l;
 	}
@@ -92,9 +95,9 @@ public class OTDataPointLabel extends OTPointTextLabel
 	{
 		DataPointLabel l = (DataPointLabel)wrappedObject;
 		
-		OTrunk otrunk = getOTDatabase();
+		OTObjectService objService = getOTObjectService();
 		DataGraphable dg = l.getDataGraphable();
-		OTDataGraphable otGraphable = (OTDataGraphable)otrunk.getWrapper(dg);
+		OTDataGraphable otGraphable = (OTDataGraphable)objService.getWrapper(dg);
 		resources.setDataGraphable(otGraphable);
 		
 		super.saveObject(wrappedObject);

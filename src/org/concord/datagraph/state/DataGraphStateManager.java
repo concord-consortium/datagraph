@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.14 $
- * $Date: 2005-08-11 14:28:16 $
- * $Author: swang $
+ * $Revision: 1.15 $
+ * $Date: 2005-08-22 22:06:32 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -34,6 +34,7 @@ package org.concord.datagraph.state;
 
 import java.awt.BorderLayout;
 import java.util.EventObject;
+import java.util.Hashtable;
 import java.util.Vector;
 
 import org.concord.data.Unit;
@@ -47,8 +48,8 @@ import org.concord.datagraph.ui.DataPointLabel;
 import org.concord.datagraph.ui.SingleDataAxisGrid;
 import org.concord.framework.data.DataDimension;
 import org.concord.framework.data.stream.DataProducer;
-import org.concord.framework.data.stream.DataStore;
 import org.concord.framework.otrunk.OTObjectList;
+import org.concord.framework.otrunk.OTObjectService;
 import org.concord.framework.otrunk.OTWrapper;
 import org.concord.graph.engine.GraphableList;
 import org.concord.graph.engine.SelectableList;
@@ -154,8 +155,6 @@ public class DataGraphStateManager
 	 */
 	public void initialize(boolean showToolbar)
 	{
-		Vector areaMap = new Vector();
-		
 		OTObjectList xAxisList = pfObject.getXDataAxis();
 		OTObjectList yAxisList = pfObject.getYDataAxis();
 
@@ -194,6 +193,8 @@ public class DataGraphStateManager
 		
 		// for each list item get the data producer object
 		// add it to the data graph
+        Hashtable otGraphableMap = new Hashtable();
+        
 		for(int i=0; i<pfGraphables.size(); i++) {
 			OTDataGraphable otGraphable = (OTDataGraphable)pfGraphables.get(i);
 			
@@ -210,6 +211,7 @@ public class DataGraphStateManager
 			} 
 
 			dataGraph.addDataGraphable(realGraphable);
+            otGraphableMap.put(otGraphable, realGraphable);
 		}
 		
 		OTObjectList pfDPLabels = pfObject.getLabels();
@@ -220,7 +222,10 @@ public class DataGraphStateManager
         	
 			//Create a data point label
 			DataPointLabel l = (DataPointLabel)otDPLabel.createWrappedObject();
-						
+
+            // find the correct graphable for this label
+            OTDataGraphable otGraphable = otDPLabel.getDataGraphable();
+            l.setDataGraphable((DataGraphable)otGraphableMap.get(otGraphable));
 			l.setGraphableList(dataGraph.getObjList());
 			notesLayer.add(l);			
         }
@@ -289,7 +294,6 @@ public class DataGraphStateManager
 			// This assumes you have not added a graphable to the graph
 			OTDataGraphable pfGraphable = (OTDataGraphable)pfGraphables.get(i);
 			
-			DataStore dStore = dGraphable.getDataStore();
 			DataProducer dProducer = dGraphable.getDataProducer();
 			
 			if(dProducer != null) {
@@ -317,7 +321,8 @@ public class DataGraphStateManager
 			OTDataPointLabel otLabel;
 
 			try{
-				otLabel = (OTDataPointLabel)pfObject.getOTDatabase().createObject(OTDataPointLabel.class);
+                OTObjectService objService = pfObject.getOTObjectService();
+				otLabel = (OTDataPointLabel)objService.createObject(OTDataPointLabel.class);
 			}
 			catch (Exception ex) {
 				ex.printStackTrace();
@@ -348,7 +353,7 @@ public class DataGraphStateManager
 	{
 		Object obj = e.getSource();
 		
-		OTWrapper otWrapper = pfObject.getOTDatabase().getWrapper(obj);
+		OTWrapper otWrapper = pfObject.getOTObjectService().getWrapper(obj);
 		
 		if (otWrapper != null){
 			if(otWrapper instanceof OTDataPointLabel)

@@ -29,9 +29,6 @@
  */
 package org.concord.datagraph.state;
 
-import java.awt.Color;
-import java.awt.geom.Point2D;
-import java.io.File;
 import java.util.EventObject;
 
 import javax.swing.JComponent;
@@ -43,6 +40,7 @@ import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.WritableDataStore;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTObjectList;
+import org.concord.framework.otrunk.OTObjectService;
 import org.concord.framework.otrunk.OTWrapper;
 import org.concord.framework.otrunk.view.OTObjectView;
 import org.concord.framework.otrunk.view.OTViewContainer;
@@ -115,6 +113,10 @@ public class DataCollectorView
 			//Create a data point label
 			DataPointLabel l = (DataPointLabel)otDPLabel.createWrappedObject();
 						
+            OTDataGraphable otDataGraphable = otDPLabel.getDataGraphable();
+            if(otDataGraphable != null) {
+                l.setDataGraphable(dataGraphManager.getDataGraphable(otDataGraphable));
+            }
 			l.setGraphableList(dataGraphManager.getDataGraph().getObjList());
 			notesLayer.add(l);			
         }
@@ -141,7 +143,8 @@ public class DataCollectorView
 			OTDataPointLabel otLabel;
 
 			try{
-				otLabel = (OTDataPointLabel)dataCollector.getOTDatabase().createObject(OTDataPointLabel.class);
+                OTObjectService objService = dataCollector.getOTObjectService();
+				otLabel = (OTDataPointLabel)objService.createObject(OTDataPointLabel.class);
 			}
 			catch (Exception ex) {
 				ex.printStackTrace();
@@ -173,7 +176,7 @@ public class DataCollectorView
 		//dataGraphManager.listGraphableRemoved(e);
 		Object obj = e.getSource();
 		
-		OTWrapper otWrapper = dataCollector.getOTDatabase().getWrapper(obj);
+		OTWrapper otWrapper = dataCollector.getOTObjectService().getWrapper(obj);
 		
 		if (otWrapper != null){
 			if(otWrapper instanceof OTDataPointLabel)

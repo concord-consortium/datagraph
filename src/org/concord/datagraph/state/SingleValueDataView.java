@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.11 $
- * $Date: 2005-08-05 16:58:10 $
- * $Author: swang $
+ * $Revision: 1.12 $
+ * $Date: 2005-08-22 22:06:32 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -51,7 +51,7 @@ import org.concord.data.ui.DataStoreLabel;
 import org.concord.framework.data.stream.DefaultDataStore;
 import org.concord.framework.data.stream.WritableDataStore;
 import org.concord.framework.otrunk.OTObject;
-import org.concord.framework.otrunk.OTrunk;
+import org.concord.framework.otrunk.OTObjectService;
 import org.concord.framework.otrunk.view.OTObjectView;
 import org.concord.framework.otrunk.view.OTViewContainer;
 import org.concord.graph.util.ui.ResourceLoader;
@@ -82,9 +82,9 @@ public class SingleValueDataView
 	        // set.  In these case the data cannot be referred to
 	        // in other elements of the authoring system
 	        System.err.println(" no \"singleDataStore\" defined for a single value data collector");
-	        OTrunk otrunk = collector.getOTDatabase();
 	        try {
-	            dataStore = (OTDataStore)otrunk.createObject(OTDataStore.class);
+                OTObjectService objService = collector.getOTObjectService();
+                dataStore = (OTDataStore)objService.createObject(OTDataStore.class);
 	            collector.setSingleDataStore((OTDataStore)dataStore);
 	        } catch (Exception e) {
 	            e.printStackTrace();
@@ -153,11 +153,9 @@ public class SingleValueDataView
         cDataButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent event)
             {
-                boolean needPack = false;
                 if(dialog == null) {
                     dialog = new JDialog();
                     dialog.setSize(400,400);
-                    needPack = true;
                 }
                 dialog.getContentPane().setLayout(new BorderLayout());
                 dialog.getContentPane().removeAll();

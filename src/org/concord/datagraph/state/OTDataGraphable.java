@@ -38,6 +38,7 @@ import org.concord.datagraph.engine.ControllableDataGraphableDrawing;
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.otrunk.DefaultOTObject;
+import org.concord.framework.otrunk.OTObjectService;
 import org.concord.framework.otrunk.OTResourceSchema;
 import org.concord.framework.otrunk.OTWrapper;
 import org.concord.graph.event.GraphableListener;
@@ -94,8 +95,6 @@ public class OTDataGraphable extends DefaultOTObject
     
     private ResourceSchema resources;
     
-    protected DataGraphable wrappedObject;
-    
 	public OTDataGraphable(ResourceSchema resources)
 	{
 	    super(resources);
@@ -108,7 +107,11 @@ public class OTDataGraphable extends DefaultOTObject
 	 * objects that need DataGraphables don't need to know about
 	 * this OTDataGraphable they will just get the wrapped object.
 	 * Finally this is used ad Author time to validate the use of
-	 * this object
+	 * this object.
+     * 
+     * FIXME: in this case this is actually not good.  Because the same
+     * graph can be displayed twice at the same time so there will be need
+     * to be 2 different data graphables associated with one datagraphable 
 	 * 
 	 * @return
 	 */
@@ -116,10 +119,6 @@ public class OTDataGraphable extends DefaultOTObject
 	{
 		DataGraphable dg;
 
-		if (wrappedObject != null){
-			wrappedObject.releaseAll();
-		}
-		
 		if (resources.getDrawing()){
         	dg = new ControllableDataGraphableDrawing();            
 		}
@@ -149,7 +148,8 @@ public class OTDataGraphable extends DefaultOTObject
         	// within the content then it should be explictly 
         	// defined in the content.
             try {
-                dataStore = (OTDataStore)getOTDatabase().createObject(OTDataStore.class);
+                OTObjectService objService = getOTObjectService();
+                dataStore = (OTDataStore)objService.createObject(OTDataStore.class);
                 resources.setDataStore(dataStore);
             } catch (Exception e) {
                 // we can't handle this
@@ -166,8 +166,6 @@ public class OTDataGraphable extends DefaultOTObject
 
 		dg.setChannelX(resources.getXColumn());
 		dg.setChannelY(resources.getYColumn());
-
-		wrappedObject = dg;
 
 		//Now, listen to this object so I can be updated automatically when it changes
 		registerWrappedObject(dg);
@@ -220,15 +218,7 @@ public class OTDataGraphable extends DefaultOTObject
 		
 		dg.addGraphableListener(this);
         
-        getOTDatabase().putWrapper(dg, this);
-	}
-
-	/**
-	 * @return
-	 */
-	public DataGraphable getDataGraphable()
-	{
-		return wrappedObject;
+        getOTObjectService().putWrapper(dg, this);
 	}
 
 	/**

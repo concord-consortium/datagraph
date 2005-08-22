@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.14 $
- * $Date: 2005-08-11 14:28:40 $
- * $Author: swang $
+ * $Revision: 1.15 $
+ * $Date: 2005-08-22 22:06:32 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -153,7 +153,6 @@ public class DataPointLabel extends PointTextLabel
 				if (index != indexPointOver || dg != graphableOver){
 					indexPointOver = index;
 					graphableOver = dg;
-					Point2D pW = getPointDataGraphable(graphableOver, indexPointOver);
 					notifyChange();
 				}
 			}
@@ -257,6 +256,12 @@ public class DataPointLabel extends PointTextLabel
 		
 		if (newNote || mouseInsideDataPoint){
 			if (indexPointOver != -1 && graphableOver != null){
+
+                // FIXME: Shengyao, should the graphable be set here?
+                // the graphable over is just the one the mouse is over
+                // but they might not have clicked yet.  So this might 
+                // just be a temporary thing.  In that case the graphable 
+                // shouldn't be set yet.
 				setDataGraphable(graphableOver);
 				
 				//System.out.println("painting an oval");				
@@ -276,6 +281,11 @@ public class DataPointLabel extends PointTextLabel
 					drawDashedLine(g, fx, fy);
 
 					if(xLabel != null || yLabel != null) {
+                        // FIXME: Shengyao, should the datapoint be set here?
+                        // this point is just the one the mouse is over, but
+                        // they might not have clicked yet.  So this might 
+                        // just be a temporary thing.  In that case the point 
+                        // shouldn't be set yet.
 						setDataPoint(p);//, coordinateLabel);
 					}
 				}
@@ -338,6 +348,11 @@ public class DataPointLabel extends PointTextLabel
 			else yUnits = "";
 			if(dcd2.isUsePrecision()) yPrecision = dcd2.getPrecision() + 1;
 			else yPrecision = 2;
+            
+            Point2D point = getDataPoint();
+            if(point != null) {
+                updateDataPointLabels();
+            }
 		}
 	}
 	
@@ -403,17 +418,23 @@ public class DataPointLabel extends PointTextLabel
 		DashedDataLine.setGraphArea(graphArea);
 	}
 	
+    protected void updateDataPointLabels()
+    {
+        Point2D p = getDataPoint();
+        float f1 = (float)p.getX();
+        float f2 = (float)p.getY();
+        NumberFormat nf = NumberFormat.getInstance();
+        nf.setMaximumFractionDigits(xPrecision);
+        pointInfoLabel = xLabel + nf.format(f1) + xUnits + "        ";
+        pointLabel = "(" + nf.format(f1) + xUnits + ", ";
+        nf.setMaximumFractionDigits(yPrecision);
+        pointInfoLabel += yLabel + nf.format(f2) + yUnits;
+        pointLabel += nf.format(f2) + yUnits + ")";        
+    }
+    
 	public void setDataPoint(Point2D p) {
-		float f1 = (float)p.getX();
-		float f2 = (float)p.getY();
-		NumberFormat nf = NumberFormat.getInstance();
-		nf.setMaximumFractionDigits(xPrecision);
-		pointInfoLabel = xLabel + nf.format(f1) + xUnits + "        ";
-		pointLabel = "(" + nf.format(f1) + xUnits + ", ";
-		nf.setMaximumFractionDigits(yPrecision);
-		pointInfoLabel += yLabel + nf.format(f2) + yUnits;
-		pointLabel += nf.format(f2) + yUnits + ")";
-		super.setDataPoint(p);
+        super.setDataPoint(p);
+        updateDataPointLabels();
 	}
 	
 	/**

@@ -34,11 +34,16 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.util.EventObject;
+import java.util.Hashtable;
 import java.util.Vector;
 
+import javax.swing.AbstractAction;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -46,7 +51,6 @@ import org.concord.data.ui.DataFlowControlAction;
 import org.concord.data.ui.DataFlowControlButton;
 import org.concord.data.ui.DataFlowControlToolBar;
 import org.concord.data.ui.DataStoreLabel;
-import org.concord.data.ui.DataValueLabel;
 import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.datagraph.ui.DataGraph;
@@ -56,9 +60,9 @@ import org.concord.framework.otrunk.OTChangeEvent;
 import org.concord.framework.otrunk.OTChangeListener;
 import org.concord.framework.otrunk.OTObjectList;
 import org.concord.framework.otrunk.OTWrapper;
-import org.concord.graph.engine.GraphableList;
 import org.concord.graph.event.GraphableListListener;
 import org.concord.graph.examples.GraphWindowToolBar;
+import org.concord.graph.ui.GraphTreeView;
 import org.concord.graph.ui.Grid2D;
 import org.concord.graph.ui.SingleAxisGrid;
 import org.concord.graph.util.control.DrawingAction;
@@ -83,6 +87,8 @@ public class DataGraphManager
 	OTDataAxis xOTAxis;
 	OTDataAxis yOTAxis;
 	
+    Hashtable otDataGraphableMap = new Hashtable();
+    
 	JPanel bottomPanel;
 
 	boolean isCausingOTChange = false;
@@ -97,7 +103,26 @@ public class DataGraphManager
         dataGraph = new DataGraph();
 		dataGraph.changeToDataGraphToolbar();
 		dataGraph.setAutoFitMode(DataGraph.AUTO_SCROLL_RUNNING_MODE);
-			
+		
+        dataGraph.setFocusable(true);
+        
+        KeyStroke keyStroke = KeyStroke.getKeyStroke(new Character('t'), InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK);
+        dataGraph.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStroke, "ShowTree");
+        dataGraph.getActionMap().put("ShowTree", new AbstractAction(){
+            /**
+             * First version of action
+             */
+            private static final long serialVersionUID = 1L;
+
+            public void actionPerformed(ActionEvent e)
+            {
+                System.out.println("Got event: " + e);
+                GraphTreeView gtv = new GraphTreeView();
+                gtv.setGraph(dataGraph.getGraph());
+                GraphTreeView.showAsDialog(gtv, "graph tree");                
+            }            
+        });
+        
 		xOTAxis = dataCollector.getXDataAxis();
 		xOTAxis.addOTChangeListener(this);
 		yOTAxis = dataCollector.getYDataAxis();
@@ -135,6 +160,7 @@ public class DataGraphManager
 			
 			realGraphables.add(realGraphable);
 			dataGraph.addBackgroundDataGraphable(realGraphable);
+            otDataGraphableMap.put(otGraphable, realGraphable);
 		}
 
 		OTDataGraphable source = dataCollector.getSource();
@@ -196,6 +222,7 @@ public class DataGraphManager
 			if(sourceGraphable != null) {
 			    realGraphables.insertElementAt(sourceGraphable, 0);
 			    dataGraph.addDataGraphable(sourceGraphable);
+                otDataGraphableMap.put(source, sourceGraphable);
 			}
 		}
 
@@ -215,7 +242,7 @@ public class DataGraphManager
 		// to the graph area for graph area changes.
 		// right now both graph area and source graphable changes
 		// are listened too
-		GraphableList graphableList = dataGraph.getObjList();
+		// GraphableList graphableList = dataGraph.getObjList();
 		// graphableList.addGraphableListListener(this);
 		
 		dataGraph.setPreferredSize(new Dimension(400,320));
@@ -223,6 +250,11 @@ public class DataGraphManager
 		dataGraph.getGraphArea().addChangeListener(this);
     }
 
+    public DataGraphable getDataGraphable(OTDataGraphable otGraphable)
+    {
+        return (DataGraphable)otDataGraphableMap.get(otGraphable);
+    }
+    
     public DataProducer getSourceDataProducer()
     {
         return sourceDataProducer;
@@ -344,7 +376,7 @@ public class DataGraphManager
 	{
 		Object obj = e.getSource();
 		
-		OTWrapper otWrapper = dataCollector.getOTDatabase().getWrapper(obj);
+		OTWrapper otWrapper = dataCollector.getOTObjectService().getWrapper(obj);
 		
 		if (otWrapper != null){
 			if(otWrapper instanceof OTDataPointLabel)

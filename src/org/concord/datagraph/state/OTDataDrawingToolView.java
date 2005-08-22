@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.11 $
- * $Date: 2005-08-05 16:16:55 $
+ * $Revision: 1.12 $
+ * $Date: 2005-08-22 22:06:32 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -33,17 +33,13 @@
 package org.concord.datagraph.state;
 
 import java.awt.Dimension;
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.util.EventObject;
-
-import javax.swing.JComponent;
-import javax.swing.SwingUtilities;
 
 import org.concord.data.state.OTDataStore;
 import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.ControllableDataGraphableDrawing;
 import org.concord.framework.otrunk.OTObject;
+import org.concord.framework.otrunk.OTObjectService;
 import org.concord.framework.otrunk.OTWrapper;
 import org.concord.framework.otrunk.view.OTPrintDimension;
 import org.concord.framework.otrunk.view.OTViewContainer;
@@ -61,7 +57,12 @@ import org.concord.graph.util.state.OTDrawingToolView;
  */
 public class OTDataDrawingToolView extends OTDrawingToolView
 implements OTPrintDimension {
-	OTObject tool;
+	/**
+     * Not intended to be serialized but this is here so 
+     * the compiler warning goes away.
+     */
+    private static final long serialVersionUID = 1L;
+    OTObject tool;
 	OTViewContainer viewContainer;
 	
     public void initialize(OTObject tool, OTViewContainer container)
@@ -81,7 +82,8 @@ implements OTPrintDimension {
 		//PointsDataStore points = new PointsDataStore();
 		OTDataStore otDataStore;
 		try{
-			otDataStore = (OTDataStore)drawingTool.getOTDatabase().createObject(OTDataStore.class);
+            OTObjectService objService = drawingTool.getOTObjectService();            
+            otDataStore = (OTDataStore)objService.createObject(OTDataStore.class);
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
@@ -110,7 +112,8 @@ implements OTPrintDimension {
 			OTDataGraphable otDataGraphable;
 		
 			try{
-				otDataGraphable = (OTDataGraphable)drawingTool.getOTDatabase().createObject(OTDataGraphable.class);
+                OTObjectService objService = drawingTool.getOTObjectService();
+				otDataGraphable = (OTDataGraphable)objService.createObject(OTDataGraphable.class);
 			}
 			catch (Exception ex) {
 				ex.printStackTrace();

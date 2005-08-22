@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.43 $
- * $Date: 2005-08-05 16:16:55 $
+ * $Revision: 1.44 $
+ * $Date: 2005-08-22 22:06:32 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -84,7 +84,13 @@ import org.concord.graph.ui.SingleAxisGrid;
 public class DataGraph extends JPanel
 	implements DataFlow, DataConsumer, DataFlowCapabilities
 {
-	public final static int AUTO_FIT_NONE = 0;
+	/**
+     * This class isn't intended to be serialized but 
+     * this removed some compiler warnings.
+     */
+    private static final long serialVersionUID = 1L;
+    
+    public final static int AUTO_FIT_NONE = 0;
 	public final static int AUTO_SCALE_MODE = 1;
 	public final static int AUTO_SCROLL_MODE = 2;	
 	public final static int AUTO_SCROLL_RUNNING_MODE = 3;
@@ -107,7 +113,6 @@ public class DataGraph extends JPanel
 
 	protected DataGraphAutoScaler scaler = null;
 	protected DataGraphAutoScroller scroller = null;
-    private boolean running;
     private int autoFitMode;
     private JLabel titleLabel;		
     private boolean useDataGraphableWithShapes = false; 
@@ -174,6 +179,10 @@ public class DataGraph extends JPanel
 		////////
 		// List of Graphable Objects
 		objList = new SelectableList();
+		
+		// set the label of this list so if someone is debugging
+		// this they can identify this list easily
+        objList.setLabel("DataGraphables");
 		graph.add(objList);
 		////////
 		
@@ -723,7 +732,6 @@ public class DataGraph extends JPanel
 	 */
 	public void setToolBar(GraphWindowToolBar gwToolbar, boolean bAddToPanel)
 	{
-	    Vector axisScaleControls = null;
 	    if(toolBar != null) {
 	        // remove references to this graph from 
 	        // the old toolbar
@@ -795,7 +803,6 @@ public class DataGraph extends JPanel
 	 */
 	public void stop()
 	{
-	    running = false;
 	    if(autoFitMode == AUTO_SCROLL_RUNNING_MODE){
 	        scroller.setEnabled(false);
 	    }
@@ -806,7 +813,6 @@ public class DataGraph extends JPanel
 	 */
 	public void start()
 	{
-	    running = true;
 	    if(autoFitMode == AUTO_SCROLL_RUNNING_MODE){
 	        scroller.setEnabled(true);
 	    }
