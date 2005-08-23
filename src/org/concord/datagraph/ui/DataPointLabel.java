@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.15 $
- * $Date: 2005-08-22 22:06:32 $
- * $Author: scytacki $
+ * $Revision: 1.16 $
+ * $Date: 2005-08-23 13:42:30 $
+ * $Author: swang $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -295,7 +295,8 @@ public class DataPointLabel extends PointTextLabel
 			int pointInfoLabelLeft = graphArea.getInsets().left + 20;
 			int pointInfoLabelTop = Math.max(graphArea.getInsets().top, 20);
 			g.setColor(Color.RED);
-			g.drawString(pointInfoLabel, pointInfoLabelLeft, pointInfoLabelTop);
+			if(pointInfoLabel != null)
+				g.drawString(pointInfoLabel, pointInfoLabelLeft, pointInfoLabelTop);
 		}
 		super.draw(g);
 	}
