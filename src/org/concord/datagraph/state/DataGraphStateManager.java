@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.15 $
- * $Date: 2005-08-22 22:06:32 $
+ * $Revision: 1.16 $
+ * $Date: 2005-08-23 19:44:49 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -225,7 +225,9 @@ public class DataGraphStateManager
 
             // find the correct graphable for this label
             OTDataGraphable otGraphable = otDPLabel.getDataGraphable();
-            l.setDataGraphable((DataGraphable)otGraphableMap.get(otGraphable));
+            if(otGraphable != null) {
+                l.setDataGraphable((DataGraphable)otGraphableMap.get(otGraphable));
+            }
 			l.setGraphableList(dataGraph.getObjList());
 			notesLayer.add(l);			
         }
