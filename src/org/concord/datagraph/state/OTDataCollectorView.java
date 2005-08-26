@@ -30,6 +30,7 @@
 package org.concord.datagraph.state;
 
 import java.io.File;
+import java.util.Vector;
 
 import javax.swing.JComponent;
 
@@ -49,6 +50,7 @@ public class OTDataCollectorView
     OTObjectView view;
     OTViewContainer viewContainer;
     OTDataCollector dataCollector;
+    boolean multipleGraphableEnabled = false;
     
     
     /**
@@ -61,6 +63,9 @@ public class OTDataCollectorView
             view = new SingleValueDataView(dataCollector);
         }
         else {
+        	Vector dataCollectors = new Vector();
+        	dataCollectors.addElement(dataCollector);
+            //view = new MultiDataCollectorView(dataCollectors);
             view = new DataCollectorView(dataCollector);
         }
         this.viewContainer = container;

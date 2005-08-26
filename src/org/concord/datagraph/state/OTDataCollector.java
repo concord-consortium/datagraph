@@ -68,4 +68,10 @@ public interface OTDataCollector
 
 	//The labels on this data collector are a separate list
 	public OTObjectList getLabels();
+	
+	//public void addGraphable(OTDataGraphable graphable);
+	
+	
+	public final static boolean DEFAULT_multipleGraphableEnabled = false;
+	public boolean getMultipleGraphableEnabled();
 }
