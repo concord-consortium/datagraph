@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.16 $
- * $Date: 2005-08-23 13:42:30 $
+ * $Revision: 1.17 $
+ * $Date: 2005-08-26 14:03:08 $
  * $Author: swang $
  *
  * Licence Information
@@ -39,9 +39,12 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.text.NumberFormat;
+import java.util.Vector;
 
+import org.concord.data.state.OTDataStore;
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.framework.data.stream.DataChannelDescription;
+import org.concord.framework.data.stream.DataStore;
 import org.concord.framework.data.stream.DataStoreEvent;
 import org.concord.framework.data.stream.DataStoreListener;
 import org.concord.graph.engine.DefaultCoordinateSystem2D;
@@ -63,31 +66,35 @@ public class DataPointLabel extends PointTextLabel
 {	
 	//
 	//Variables to watch the graphables that it's mousing over
-	private GraphableList objList;
-	private int indexPointOver = -1;
-	private DataGraphable graphableOver = null;
+	protected GraphableList objList;
+	protected int indexPointOver = -1;
+	protected DataGraphable graphableOver = null;
 	//
 	
 	//Actual graphable that the label is linked to 
 	//(this is temporary because it should be a data point)
-	private DataGraphable dataGraphable;
+	protected DataGraphable dataGraphable;
 	
-	private float fx = Float.NaN;
-	private float fy = Float.NaN;
+	protected float fx = Float.NaN;
+	protected float fy = Float.NaN;
 	
 	private DashedDataLine verticalDDL = new DashedDataLine(DashedDataLine.VERTICAL_LINE);
 	private DashedDataLine horizontalDDL = new DashedDataLine(DashedDataLine.HORIZONTAL_LINE);
 	
 	//Labels and Units
-	private String xLabel = null;
-	private String xUnits = null;
-	private String yLabel = null;
-	private String yUnits = null;
-	private int xPrecision = 0;
-	private int yPrecision = 0;
-	private String pointLabel = null;	// format: (x, y)
-	private String pointInfoLabel = null;	//format: xlabel: x+unit   ylabel: y+unit
-		
+	protected String xLabel = null;
+	protected String xUnits = null;
+	protected String yLabel = null;
+	protected String yUnits = null;
+	protected int xPrecision = 0;
+	protected int yPrecision = 0;
+	protected String pointLabel = null;	// format: (x, y)
+	protected String pointInfoLabel = null;	//format: xlabel: x+unit   ylabel: y+unit
+	
+	private boolean allowOffline = false;
+	private Point2D mouseLocation = null;
+	
+	private boolean regressionApplied = false;
 	/**
 	 * 
 	 */
@@ -110,6 +117,10 @@ public class DataPointLabel extends PointTextLabel
 		super(msg);
 	}
 	
+	public void setAllowOffLine(boolean allowOffline) {
+		this.allowOffline = allowOffline;
+	}
+	
 	/**
 	 * @param gList The GraphableList to set.
 	 */
@@ -123,9 +134,16 @@ public class DataPointLabel extends PointTextLabel
 	 */
 	public boolean mouseMoved(Point p)
 	{
-		if (newNote){
-			findAvailablePointOver(p);
-		}
+		//if(allowOffline) {
+			//convertMouseLocationToWorld(p);
+			//findAvailablePointOver(p);
+			//notifyChange();
+		//} 
+		//else {
+			if (newNote){
+				findAvailablePointOver(p);
+			}
+		//}
 		return super.mouseMoved(p);
 	}
 	
@@ -142,29 +160,34 @@ public class DataPointLabel extends PointTextLabel
 				Object obj = objList.elementAt(i);
 				if (obj instanceof DataGraphable){
 					dg = (DataGraphable)obj;
-					index = dg.getIndexValueAtDisplay(p, 10);
+					if(dg.isVisible()) {
+						//if(allowOffline) graphableOver = dg;
+						index = dg.getIndexValueAtDisplay(p, 10);
+						//System.out.println("index: " + index);
+					}
 					if (index != -1) break;
 				}
+				//if(allowOffline && index == -1) index = -2;
 			}
 			
-			if (index != -1){
+			if(index == -1) {
+				if (index != indexPointOver || graphableOver != null){
+					indexPointOver = index;
+					graphableOver = null;
+				}
+			//} else if(index == -2) {
+				//foreColor = dg.getColor();				
+			} else {
 				//Found a point!
 				//System.out.println("Found a point!!!");
 				if (index != indexPointOver || dg != graphableOver){
 					indexPointOver = index;
 					graphableOver = dg;
-					notifyChange();
+					foreColor = dg.getColor(); 
 				}
 			}
-			else{
-				//System.out.println("No point!");
-				if (index != indexPointOver || graphableOver != null){
-					indexPointOver = index;
-					graphableOver = null;
-					notifyChange();
-				}
-			}
-		}
+			notifyChange();
+		}			
 	}
 	
 	/**
@@ -174,6 +197,7 @@ public class DataPointLabel extends PointTextLabel
 	{
 		if (mouseInsideDataPoint){
 			findAvailablePointOver(p);
+			notifyChange();
 		}
 		return super.mouseDragged(p);
 	}
@@ -183,17 +207,29 @@ public class DataPointLabel extends PointTextLabel
 	 */
 	public boolean mouseReleased(Point p)
 	{
-		if (dragEnabled){
+		/*if(allowOffline) {
 			if (indexPointOver != -1 && graphableOver != null){
 				Point2D pW = getPointDataGraphable(graphableOver, indexPointOver);
 				setDataPoint(pW);
+			} else {
+				convertMouseLocationToWorld(p);
+				setDataPoint(mouseLocation);
 			}
-			else{
-				restoreOriginalDataPoint();
+			//notifyChange();
+		} else {*/
+			if (dragEnabled){
+				if (indexPointOver != -1 && graphableOver != null){
+					Point2D pW = getPointDataGraphable(graphableOver, indexPointOver);
+					setDataPoint(pW);
+				}
+				else{
+					restoreOriginalDataPoint();
+				}
 			}
-		}
-		indexPointOver = -1;
-		graphableOver = null;
+			indexPointOver = -1;
+			graphableOver = null;
+		//}
+
 		return super.mouseReleased(p);
 	}
 	
@@ -229,7 +265,7 @@ public class DataPointLabel extends PointTextLabel
 	 * @param indexPointOver2
 	 * @return
 	 */
-	private static Point2D getPointDataGraphable(DataGraphable dg, int index)
+	protected static Point2D getPointDataGraphable(DataGraphable dg, int index)
 	{
 		Object objVal;
 		double x,y;
@@ -251,18 +287,18 @@ public class DataPointLabel extends PointTextLabel
 	 */
 	public void draw(Graphics2D g)
 	{
-		float f1 = Float.NaN;
-		float f2 = Float.NaN;
-		
-		if (newNote || mouseInsideDataPoint){
-			if (indexPointOver != -1 && graphableOver != null){
+		/*if(allowOffline) {
+			dataPoint = mouseLocation;
+			setDataGraphable(graphableOver);
+			if (indexPointOver >= 0 && graphableOver != null){
+				float f1 = Float.NaN;
+				float f2 = Float.NaN;
 
                 // FIXME: Shengyao, should the graphable be set here?
                 // the graphable over is just the one the mouse is over
-                // but they might not have clicked yet.  So this might 
+                // butconvertMouseLocationToWorld they might not have clicked yet.  So this might 
                 // just be a temporary thing.  In that case the graphable 
                 // shouldn't be set yet.
-				setDataGraphable(graphableOver);
 				
 				//System.out.println("painting an oval");				
 				Point2D p = getPointDataGraphable(graphableOver, indexPointOver);
@@ -278,26 +314,67 @@ public class DataPointLabel extends PointTextLabel
 					
 					g.drawOval((int)pD.getX() - 7, (int)pD.getY() - 7, 13, 13);
 
-					drawDashedLine(g, fx, fy);
+					drawDashedLines(g, fx, fy);
+					updateDataPointLabels(p);
+					drawDataPointLink(g);
+					drawMessage(g);
+					drawDataPoint(g);
+				}
+				//super.draw(g);
+			} else {
+				drawDashedLines(g, fx, fy);
+				notifyChange();
+			}
+		} else {*/
+			if (newNote || mouseInsideDataPoint){
+				if (indexPointOver != -1 && graphableOver != null){
+					float f1 = Float.NaN;
+					float f2 = Float.NaN;
 
-					if(xLabel != null || yLabel != null) {
-                        // FIXME: Shengyao, should the datapoint be set here?
-                        // this point is just the one the mouse is over, but
-                        // they might not have clicked yet.  So this might 
-                        // just be a temporary thing.  In that case the point 
-                        // shouldn't be set yet.
-						setDataPoint(p);//, coordinateLabel);
+	                // FIXME: Shengyao, should the graphable be set here?
+	                // the graphable over is just the one the mouse is over
+	                // butconvertMouseLocationToWorld they might not have clicked yet.  So this might 
+	                // just be a temporary thing.  In that case the graphable 
+	                // shouldn't be set yet.
+					
+					//System.out.println("painting an oval");				
+					Point2D p = getPointDataGraphable(graphableOver, indexPointOver);
+					DefaultCoordinateSystem2D cs = (DefaultCoordinateSystem2D) graphArea.getCoordinateSystem();
+					Point2D pD = cs.transformToDisplay(p);
+					
+					if (p != null){
+						//System.out.println("painting an oval 2");
+						f1 = (float)(p.getX());
+						f2 = (float)(p.getY());
+						fx = f1;
+						fy = f2;
+						
+						g.drawOval((int)pD.getX() - 7, (int)pD.getY() - 7, 13, 13);
+
+						drawDashedLines(g, fx, fy);
+						updateDataPointLabels(p);
+
+						if(xLabel != null || yLabel != null) {
+	                        // FIXME: Shengyao, should the datapoint be set here?
+	                        // this point is just the one the mouse is over, but
+	                        // they might not have clicked yet.  So this might 
+	                        // just be a temporary thing.  In that case the point 
+	                        // shouldn't be set yet.
+							//setDataPoint(p);//, coordinateLabel);
+							//updateDataPointLabels(p);
+						}
 					}
 				}
 			}
-		}
+		//}
 		if(isSelected()) {
 			int pointInfoLabelLeft = graphArea.getInsets().left + 20;
 			int pointInfoLabelTop = Math.max(graphArea.getInsets().top, 20);
-			g.setColor(Color.RED);
+			g.setColor(foreColor);
 			if(pointInfoLabel != null)
 				g.drawString(pointInfoLabel, pointInfoLabelLeft, pointInfoLabelTop);
 		}
+		if(dataGraphable != null && dataGraphable.isVisible()) 
 		super.draw(g);
 	}
 	
@@ -321,6 +398,7 @@ public class DataPointLabel extends PointTextLabel
 		}
 		this.dataGraphable = dataGraphable;
 		if (this.dataGraphable != null){
+			//if(!regressionApplied) refactorDataStore();
 			this.dataGraphable.addDataStoreListener(this);
 
 			int numberOfChannels = dataGraphable.getTotalNumChannels();
@@ -400,13 +478,13 @@ public class DataPointLabel extends PointTextLabel
 	{
 	}
 	
-	protected void drawDashedLine(Graphics2D g, float d1, float d2) {
+	protected void drawDashedLines(Graphics2D g, float d1, float d2) {
 		setDashedLines(d1, d2);
 		verticalDDL.draw(g);
 		horizontalDDL.draw(g);		
 	}
 
-	private void setDashedLines(float d1, float d2) {
+	protected void setDashedLines(float d1, float d2) {
 		Point2D pVO = new Point2D.Double(d1,0);
 		Point2D pD = new Point2D.Double(d1,d2);
 		Point2D pHO = new Point2D.Double(0, d2);
@@ -416,9 +494,34 @@ public class DataPointLabel extends PointTextLabel
 
 		verticalDDL.setPoints(pVO, pD);
 		horizontalDDL.setPoints(pHO, pD);
+
+		if(allowOffline) {
+			int left = graphArea.getInsets().left;
+			int bottom = graphArea.getInsets().bottom;
+			int top = graphArea.getInsets().top;
+			pD = new Point2D.Double(d1, graphArea.getSize().height - bottom + top);
+			verticalDDL.setPoints(pVO, pD);
+			pD = new Point2D.Double(graphArea.getSize().width - left, d2);
+			horizontalDDL.setPoints(pHO, pD);			
+		}
+
 		DashedDataLine.setGraphArea(graphArea);
+	
 	}
 	
+    protected void updateDataPointLabels(Point2D p)
+    {
+        float f1 = (float)p.getX();
+        float f2 = (float)p.getY();
+        NumberFormat nf = NumberFormat.getInstance();
+        nf.setMaximumFractionDigits(xPrecision);
+        pointInfoLabel = xLabel + nf.format(f1) + xUnits + "        ";
+        pointLabel = "(" + nf.format(f1) + xUnits + ", ";
+        nf.setMaximumFractionDigits(yPrecision);
+        pointInfoLabel += yLabel + nf.format(f2) + yUnits;
+        pointLabel += nf.format(f2) + yUnits + ")";        
+    }
+    
     protected void updateDataPointLabels()
     {
         Point2D p = getDataPoint();
@@ -483,7 +586,8 @@ public class DataPointLabel extends PointTextLabel
 
 			if (bDraw){
 				g.drawString(word, (int)x, (int)y);
-			}
+			} 
+			
 			
 			x += w;				
 		}
@@ -517,6 +621,56 @@ public class DataPointLabel extends PointTextLabel
 			y += h;
 			Dimension d = new Dimension((int)(ww), (int)(y - yIni + 6));
 			setSize(d);
-		}	
+		}
+		
+		if(allowOffline) drawDashedLines(g, (float)dataPoint.getX(), (float)dataPoint.getY());
 	}	
+	
+	private void convertMouseLocationToWorld(Point p) {
+		mouseLocation = new Point2D.Double(p.getX(), p.getY());
+		DefaultCoordinateSystem2D cs = 
+			(DefaultCoordinateSystem2D) graphArea.getCoordinateSystem();
+		Point2D point = new Point2D.Double(p.getX(), p.getY());
+		Point2D newPoint = cs.transformToWorld(point);
+		fx = (float)newPoint.getX();
+		fy = (float)newPoint.getY();
+	}
+	
+	public boolean isAllowOffline() {
+		return allowOffline;
+	}
+	
+	public void refactorDataStore() {
+		regressionApplied = true;
+		if(dataGraphable != null) {
+			DataStore dataStore = dataGraphable.getDataStore();
+			int numTotalSamples = dataStore.getTotalNumSamples();
+			System.out.println("numTotalSamples " + numTotalSamples);
+			if(dataStore instanceof OTDataStore) {
+				for(int i = 0; i < numTotalSamples; i++) {
+					if(i < numTotalSamples - 1) {
+						float oldX1 = (new Float(dataGraphable.getValueAt(i, 0).toString())).floatValue();
+						float oldX2 = (new Float(dataGraphable.getValueAt(i+1, 0).toString())).floatValue();
+						float oldY1 = (new Float(dataGraphable.getValueAt(i, 1).toString())).floatValue();
+						float oldY2 = (new Float(dataGraphable.getValueAt(i+1, 1).toString())).floatValue();
+						for(int j = 1; j < 10; j++) {
+							dataGraphable.addPoint(oldX1 + (oldX2 - oldX1) * i / 10, oldY1 + (oldY2 - oldY1) * i / 10);
+						}
+					}
+				}
+			}
+			System.out.println("new size: " + dataGraphable.getDataStore().getTotalNumSamples());
+		}
+	}
+	
+	public Vector getInnerValues(float value1, float value2, int size) {
+		if(size <= 0) return null;
+		
+		Vector vector = new Vector();
+		for(int i = 1; i < size; i++) {
+			vector.addElement(new Float(value1 + (value2-value1)*i/size));			
+		}
+		if(vector.size() > 0) return vector;
+		return null;
+	}
 }
