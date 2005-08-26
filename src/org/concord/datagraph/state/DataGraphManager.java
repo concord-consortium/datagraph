@@ -488,26 +488,28 @@ public class DataGraphManager
     				DataGraphable dataGraphable = 
     					(DataGraphable) nodeGraphableMap.get(nodeHolder);
 
-    				// disconnect toolBar from the last data producer
-    				toolBar.removeDataFlowObject(sourceDataProducer);
-    				Dimension labelSize = valueLabel.getSize();
-    				Point labelLocation = valueLabel.getLocation();
-    				bottomPanel.remove(valueLabel);
-    				bottomPanel.remove(toolBar);
-    				
-    				sourceDataProducer = dataGraphable.findDataProducer();
+    				if(toolBar != null) {
+        				// disconnect toolBar from the last data producer
+        				toolBar.removeDataFlowObject(sourceDataProducer);
+        				Dimension labelSize = valueLabel.getSize();
+        				Point labelLocation = valueLabel.getLocation();
+        				bottomPanel.remove(valueLabel);
+        				bottomPanel.remove(toolBar);
+        				
+        				sourceDataProducer = dataGraphable.findDataProducer();
 
-    				//Connect new data producer with toolBar and valueLabel
-    				toolBar.addDataFlowObject(sourceDataProducer);
-    			    valueLabel = new DataStoreLabel(dataGraphable, 1);
-    			    valueLabel.setColumns(4);
-    			    
-    			    bottomPanel.setLayout(new FlowLayout());
-    			    valueLabel.setSize(labelSize);
-    			    valueLabel.setLocation(labelLocation);
-    			    bottomPanel.add(valueLabel);
-    			    bottomPanel.add(toolBar);
-    			    
+        				//Connect new data producer with toolBar and valueLabel
+        				toolBar.addDataFlowObject(sourceDataProducer);
+        			    valueLabel = new DataStoreLabel(dataGraphable, 1);
+        			    valueLabel.setColumns(4);
+        			    
+        			    bottomPanel.setLayout(new FlowLayout());
+        			    valueLabel.setSize(labelSize);
+        			    valueLabel.setLocation(labelLocation);
+        			    bottomPanel.add(valueLabel);
+        			    bottomPanel.add(toolBar);
+        			    
+    				}
     			    drawCheckedDataGraphables();
     			    dataGraph.repaint();
 				}

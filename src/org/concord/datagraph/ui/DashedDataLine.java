@@ -35,13 +35,13 @@ import org.concord.graph.engine.GraphArea;
 public class DashedDataLine {
 	public static final int VERTICAL_LINE = 1;
 	public static final int HORIZONTAL_LINE = 2;
-	private Point2D startPoint = null;
-	private Point2D endPoint = null;
+	protected Point2D startPoint = null;
+	protected Point2D endPoint = null;
 	
-	private int type = VERTICAL_LINE;
-	private Stroke stroke = null;
-	private int precision = -1;
-	private static GraphArea graphArea;
+	protected int type = VERTICAL_LINE;
+	protected Stroke stroke = null;
+	protected int precision = -1;
+	protected static GraphArea graphArea;
 	
 	public DashedDataLine() {
 		precision = 2;
