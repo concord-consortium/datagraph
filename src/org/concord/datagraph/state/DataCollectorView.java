@@ -34,6 +34,7 @@ import java.util.EventObject;
 import javax.swing.JComponent;
 
 import org.concord.datagraph.ui.AddDataPointLabelAction;
+import org.concord.datagraph.ui.AddDataPointLabelActionExt;
 import org.concord.datagraph.ui.DataGraph;
 import org.concord.datagraph.ui.DataPointLabel;
 import org.concord.framework.data.stream.DataProducer;
@@ -103,6 +104,8 @@ public class DataCollectorView
 		dataGraph.getGraph().add(notesLayer);
 		SelectableToggleButton addNoteButton = new SelectableToggleButton(new AddDataPointLabelAction(notesLayer, dataGraph.getObjList()));
 		dataGraph.getToolBar().addButton(addNoteButton, "Add a note to a point in the graph");
+		SelectableToggleButton addNoteButton2 = new SelectableToggleButton(new AddDataPointLabelActionExt(notesLayer, dataGraph.getObjList()));
+		dataGraph.getToolBar().addButton(addNoteButton2, "Add a special note to a point in the graph");
 
 		OTObjectList pfDPLabels = dataCollector.getLabels();
 		
