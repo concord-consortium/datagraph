@@ -29,7 +29,7 @@ import java.awt.Stroke;
 import java.awt.geom.Point2D;
 import java.text.NumberFormat;
 
-import org.concord.graph.engine.DefaultCoordinateSystem2D;
+import org.concord.graph.engine.CoordinateSystem;
 import org.concord.graph.engine.GraphArea;
 
 public class DashedDataLine {
@@ -112,7 +112,7 @@ public class DashedDataLine {
 		int left = graphArea.getInsets().left;
 		int top = graphArea.getInsets().top;
 		
-		DefaultCoordinateSystem2D cs = (DefaultCoordinateSystem2D)graphArea.getCoordinateSystem();
+		CoordinateSystem cs = graphArea.getCoordinateSystem();
 		Point2D pStart = 
 			cs.transformToDisplay(new Point2D.Double(startPoint.getX(), startPoint.getY()));
 		Point2D pEnd = 
