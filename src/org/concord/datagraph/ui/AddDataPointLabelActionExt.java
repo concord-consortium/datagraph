@@ -45,10 +45,8 @@ public class AddDataPointLabelActionExt extends AddDataPointLabelAction{
 	protected BoxTextLabel createTextLabel()
 	{
 		//DataPointLabelExt label = new DataPointLabelExt(true);
-		DataPointLabel label = new DataPointLabel(true);
+		DataPointRuler label = new DataPointRuler(true);
 		label.setGraphableList(dataGraphablesList);
-		label.setMessage("Data Point");
-		label.setAllowOffLine(true);
 		return label;
 	}
 }
