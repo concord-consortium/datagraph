@@ -82,6 +82,7 @@ import org.concord.graph.util.control.DrawingAction;
 import org.concord.swing.CCJCheckBoxRenderer;
 import org.concord.swing.CCJCheckBoxTree;
 import org.concord.swing.SelectableToggleButton;
+import org.concord.swing.about.AboutBox;
 
 /**
  * @author scott
@@ -231,7 +232,10 @@ public class DataGraphManager
 
 			    toolBar = createFlowToolBar();
 			    toolBar.addDataFlowObject(sourceDataProducer);
+			    
+			    //AboutBox about = new AboutBox("DataCollector");
 			    bottomPanel.add(toolBar);
+			    //bottomPanel.add(about);
 			    
 			    if(dataCollector.getShowTare()){
 			        // need to add a button that runs the sourceGraphable
@@ -551,11 +555,11 @@ public class DataGraphManager
     	
     	// get color and name of the new node
     	Color color = getNewColor();
-    	String name = null;
-    	while(name == null || name.trim().length() == 0)
-    		name = 
-    			JOptionPane.showInputDialog(null, "Enter the name of new DataGraphable");
+    	String name = 
+    		JOptionPane.showInputDialog(null, "Enter the name of new DataGraphable");
     	
+    	if(name == null || name.trim().length() == 0) return;
+
     	// add new node to tree
     	cTree.removeTreeSelectionListener(tsl);
     	cTree.setSelectionPath(null);
