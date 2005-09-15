@@ -37,6 +37,7 @@ import org.concord.datagraph.ui.AddDataPointLabelAction;
 import org.concord.datagraph.ui.AddDataPointLabelActionExt;
 import org.concord.datagraph.ui.DataGraph;
 import org.concord.datagraph.ui.DataPointLabel;
+import org.concord.datagraph.ui.DataPointRuler;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.WritableDataStore;
 import org.concord.framework.otrunk.OTObject;
@@ -105,23 +106,40 @@ public class DataCollectorView
 		SelectableToggleButton addNoteButton = new SelectableToggleButton(new AddDataPointLabelAction(notesLayer, dataGraph.getObjList()));
 		dataGraph.getToolBar().addButton(addNoteButton, "Add a note to a point in the graph");
 		SelectableToggleButton addNoteButton2 = new SelectableToggleButton(new AddDataPointLabelActionExt(notesLayer, dataGraph.getObjList()));
-		dataGraph.getToolBar().addButton(addNoteButton2, "Add a special note to a point in the graph");
+		dataGraph.getToolBar().addButton(addNoteButton2, "Add a ruler to a point in the graph");
 
 		OTObjectList pfDPLabels = dataCollector.getLabels();
 		
         //Load the data point labels
         for (int i=0; i<pfDPLabels.size(); i++){
-			OTDataPointLabel otDPLabel = (OTDataPointLabel)pfDPLabels.get(i);
-        	
-			//Create a data point label
-			DataPointLabel l = (DataPointLabel)otDPLabel.createWrappedObject();
-						
-            OTDataGraphable otDataGraphable = otDPLabel.getDataGraphable();
-            if(otDataGraphable != null) {
-                l.setDataGraphable(dataGraphManager.getDataGraphable(otDataGraphable));
-            }
-			l.setGraphableList(dataGraphManager.getDataGraph().getObjList());
-			notesLayer.add(l);			
+        	Object obj = pfDPLabels.get(i);
+        	if(obj instanceof OTDataPointLabel) {
+    			OTDataPointLabel otDPLabel = (OTDataPointLabel)obj;
+            	
+    			//Create a data point label
+    			DataPointLabel l = (DataPointLabel)otDPLabel.createWrappedObject();
+    						
+                OTDataGraphable otDataGraphable = otDPLabel.getDataGraphable();
+                if(otDataGraphable != null) {
+                    l.setDataGraphable(dataGraphManager.getDataGraphable(otDataGraphable));                    
+                    l.setForeground(dataGraphManager.getDataGraphable(otDataGraphable).getColor());
+                }
+    			l.setGraphableList(dataGraphManager.getDataGraph().getObjList());
+    			notesLayer.add(l);			
+        	} else if(obj instanceof OTDataPointRuler) {
+    			OTDataPointRuler otDPRuler = (OTDataPointRuler)obj;
+            	
+    			//Create a data point label
+    			DataPointRuler l = (DataPointRuler)otDPRuler.createWrappedObject();
+    						
+                OTDataGraphable otDataGraphable = otDPRuler.getDataGraphable();
+                if(otDataGraphable != null) {
+                	//System.out.println(dataGraphManager.getDataGraphable(otDataGraphable));
+                    l.setDataGraphable(dataGraphManager.getDataGraphable(otDataGraphable));
+                }
+    			l.setGraphableList(dataGraphManager.getDataGraph().getObjList());
+    			notesLayer.add(l);
+        	}
         }
         
 		notesLayer.addGraphableListListener(this);
@@ -160,6 +178,23 @@ public class DataCollectorView
 			otLabel.saveObject(l);
 
 			dataCollector.getLabels().add(otLabel);
+		} else if (obj instanceof DataPointRuler){
+			DataPointRuler ruler = (DataPointRuler)obj;
+			OTDataPointRuler otRuler;
+
+			try{
+                OTObjectService objService = dataCollector.getOTObjectService();
+				otRuler = (OTDataPointRuler)objService.createObject(OTDataPointRuler.class);
+			}
+			catch (Exception ex) {
+				ex.printStackTrace();
+				return;
+			}
+			
+			otRuler.registerWrappedObject(ruler);
+			otRuler.saveObject(ruler);
+
+			dataCollector.getLabels().add(otRuler);
 		}
 	}
 		
@@ -182,9 +217,12 @@ public class DataCollectorView
 		OTWrapper otWrapper = dataCollector.getOTObjectService().getWrapper(obj);
 		
 		if (otWrapper != null){
-			if(otWrapper instanceof OTDataPointLabel)
+			if(otWrapper instanceof OTDataPointLabel || 
+			   otWrapper instanceof OTDataPointRuler   ) {
 				dataCollector.getLabels().remove(otWrapper);
+				//System.out.println("deleted");
+			}
+			
 		}
 	}
 }
-
