@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.18 $
- * $Date: 2005-08-29 15:36:51 $
+ * $Revision: 1.19 $
+ * $Date: 2005-09-15 14:10:42 $
  * $Author: swang $
  *
  * Licence Information
@@ -86,7 +86,7 @@ public class DataPointLabel extends PointTextLabel
 	protected int xPrecision = 0;
 	protected int yPrecision = 0;
 	protected String pointLabel = null;	// format: (x, y)
-	protected String pointInfoLabel = null;	//format: xlabel: x+unit   ylabel: y+unit
+	protected String pointInfoLabel = null;	//format: xlabel: x unit   ylabel: y unit
 	
 	/**
 	 * 
@@ -143,13 +143,10 @@ public class DataPointLabel extends PointTextLabel
 				if (obj instanceof DataGraphable){
 					dg = (DataGraphable)obj;
 					if(dg.isVisible()) {
-						//if(allowOffline) graphableOver = dg;
 						index = dg.getIndexValueAtDisplay(p, 10);
-						//System.out.println("index: " + index);
 					}
 					if (index != -1) break;
 				}
-				//if(allowOffline && index == -1) index = -2;
 			}
 			
 			if(index == -1) {
@@ -157,8 +154,6 @@ public class DataPointLabel extends PointTextLabel
 					indexPointOver = index;
 					graphableOver = null;
 				}
-			//} else if(index == -2) {
-				//foreColor = dg.getColor();				
 			} else {
 				//Found a point!
 				//System.out.println("Found a point!!!");
@@ -262,13 +257,6 @@ public class DataPointLabel extends PointTextLabel
 				float f1 = Float.NaN;
 				float f2 = Float.NaN;
 
-                // FIXME: Shengyao, should the graphable be set here?
-                // the graphable over is just the one the mouse is over
-                // butconvertMouseLocationToWorld they might not have clicked yet.  So this might 
-                // just be a temporary thing.  In that case the graphable 
-                // shouldn't be set yet.
-				
-				//System.out.println("painting an oval");				
 				Point2D p = getPointDataGraphable(graphableOver, indexPointOver);
 				CoordinateSystem cs = graphArea.getCoordinateSystem();
 				Point2D pD = cs.transformToDisplay(p);
@@ -284,16 +272,6 @@ public class DataPointLabel extends PointTextLabel
 
 					drawDashedLines(g, fx, fy);
 					updateDataPointLabels(p);
-
-					if(xLabel != null || yLabel != null) {
-                        // FIXME: Shengyao, should the datapoint be set here?
-                        // this point is just the one the mouse is over, but
-                        // they might not have clicked yet.  So this might 
-                        // just be a temporary thing.  In that case the point 
-                        // shouldn't be set yet.
-						//setDataPoint(p);//, coordinateLabel);
-						//updateDataPointLabels(p);
-					}
 				}
 			}
 		}
@@ -327,12 +305,10 @@ public class DataPointLabel extends PointTextLabel
 		}
 		this.dataGraphable = dataGraphable;
 		if (this.dataGraphable != null){
-			//if(!regressionApplied) refactorDataStore();
 			this.dataGraphable.addDataStoreListener(this);
 
 			int numberOfChannels = dataGraphable.getTotalNumChannels();
 			if(numberOfChannels < 2) return;
-			//System.out.println("number of channels: " + numberOfChannels);
 			
 			DataChannelDescription dcd1 = dataGraphable.getDataChannelDescription(0);
 			DataChannelDescription dcd2 = dataGraphable.getDataChannelDescription(1);
@@ -433,11 +409,11 @@ public class DataPointLabel extends PointTextLabel
         float f2 = (float)p.getY();
         NumberFormat nf = NumberFormat.getInstance();
         nf.setMaximumFractionDigits(xPrecision);
-        pointInfoLabel = xLabel + nf.format(f1) + xUnits + "        ";
-        pointLabel = "(" + nf.format(f1) + xUnits + ", ";
+        pointInfoLabel = ((xLabel== null)?"":xLabel) + nf.format(f1) + ((xUnits== null)?"":xUnits) + "        ";
+        pointLabel = "(" + nf.format(f1) + ((xUnits== null)?"":xUnits) + ", ";
         nf.setMaximumFractionDigits(yPrecision);
-        pointInfoLabel += yLabel + nf.format(f2) + yUnits;
-        pointLabel += nf.format(f2) + yUnits + ")";        
+        pointInfoLabel += ((yLabel== null)?"":yLabel) + nf.format(f2) + ((yUnits== null)?"":yUnits);
+        pointLabel += nf.format(f2) + ((yUnits== null)?"":yUnits) + ")";        
     }
     
     protected void updateDataPointLabels()
@@ -447,11 +423,11 @@ public class DataPointLabel extends PointTextLabel
         float f2 = (float)p.getY();
         NumberFormat nf = NumberFormat.getInstance();
         nf.setMaximumFractionDigits(xPrecision);
-        pointInfoLabel = xLabel + nf.format(f1) + xUnits + "        ";
-        pointLabel = "(" + nf.format(f1) + xUnits + ", ";
+        pointInfoLabel = ((xLabel== null)?"":xLabel) + nf.format(f1) + ((xUnits== null)?"":xUnits) + "        ";
+        pointLabel = "(" + nf.format(f1) + ((xUnits== null)?"":xUnits) + ", ";
         nf.setMaximumFractionDigits(yPrecision);
-        pointInfoLabel += yLabel + nf.format(f2) + yUnits;
-        pointLabel += nf.format(f2) + yUnits + ")";        
+        pointInfoLabel += ((yLabel== null)?"":yLabel) + nf.format(f2) + ((yUnits== null)?"":yUnits);
+        pointLabel += nf.format(f2) + ((yUnits== null)?"":yUnits) + ")";        
     }
     
 	public void setDataPoint(Point2D p) {

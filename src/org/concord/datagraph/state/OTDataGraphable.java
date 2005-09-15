@@ -186,6 +186,10 @@ public class OTDataGraphable extends DefaultOTObject
         return resources.getDataProducer();
     }
     
+    public void setDataProducer(DataProducer producer) {
+    	resources.setDataProducer(producer);
+    }
+    
 	/**
 	 * @see org.concord.framework.otrunk.OTWrapper#saveObject(java.lang.Object)
 	 */
@@ -199,6 +203,7 @@ public class OTDataGraphable extends DefaultOTObject
 		resources.setDrawMarks(dg.isShowCrossPoint());
 		resources.setXColumn(dg.getChannelX());
 		resources.setYColumn(dg.getChannelY());
+		resources.setName(dg.getLabel());
 	}
 
 	/**
@@ -252,5 +257,9 @@ public class OTDataGraphable extends DefaultOTObject
 	{
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public void setDrawMarks(boolean b) {
+		resources.setDrawMarks(b);
 	}
 }

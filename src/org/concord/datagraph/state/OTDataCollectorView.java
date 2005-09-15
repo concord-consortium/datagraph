@@ -63,9 +63,6 @@ public class OTDataCollectorView
             view = new SingleValueDataView(dataCollector);
         }
         else {
-        	Vector dataCollectors = new Vector();
-        	dataCollectors.addElement(dataCollector);
-            //view = new MultiDataCollectorView(dataCollectors);
             view = new DataCollectorView(dataCollector);
         }
         this.viewContainer = container;

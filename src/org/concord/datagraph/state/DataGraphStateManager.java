@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.16 $
- * $Date: 2005-08-23 19:44:49 $
- * $Author: scytacki $
+ * $Revision: 1.17 $
+ * $Date: 2005-09-15 14:08:47 $
+ * $Author: swang $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -45,6 +45,7 @@ import org.concord.datagraph.engine.DataGraphable;
 import org.concord.datagraph.ui.AddDataPointLabelAction;
 import org.concord.datagraph.ui.DataGraph;
 import org.concord.datagraph.ui.DataPointLabel;
+import org.concord.datagraph.ui.DataPointRuler;
 import org.concord.datagraph.ui.SingleDataAxisGrid;
 import org.concord.framework.data.DataDimension;
 import org.concord.framework.data.stream.DataProducer;
@@ -332,6 +333,26 @@ public class DataGraphStateManager
 			}
 			
 			l = (DataPointLabel)obj;
+			
+			otLabel.registerWrappedObject(l);
+			otLabel.saveObject(l);
+
+			pfObject.getLabels().add(otLabel);
+		}
+		else if (obj instanceof DataPointRuler){
+			DataPointRuler l;
+			OTDataPointRuler otLabel;
+
+			try{
+                OTObjectService objService = pfObject.getOTObjectService();
+				otLabel = (OTDataPointRuler)objService.createObject(OTDataPointRuler.class);
+			}
+			catch (Exception ex) {
+				ex.printStackTrace();
+				return;
+			}
+			
+			l = (DataPointRuler)obj;
 			
 			otLabel.registerWrappedObject(l);
 			otLabel.saveObject(l);

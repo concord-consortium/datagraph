@@ -23,16 +23,20 @@
 
 /*
  * Last modification information:
- * $Revision: 1.6 $
- * $Date: 2005-08-04 21:46:09 $
- * $Author: maven $
+ * $Revision: 1.7 $
+ * $Date: 2005-09-15 14:10:27 $
+ * $Author: swang $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
 */
 package org.concord.datagraph.ui;
 
+import java.util.EventObject;
+import java.util.Vector;
+
 import org.concord.framework.data.stream.DataStore;
+import org.concord.graph.engine.Graphable;
 import org.concord.graph.engine.GraphableList;
 import org.concord.graph.util.control.AddLabelAction;
 import org.concord.graph.util.ui.BoxTextLabel;
@@ -89,4 +93,18 @@ public class AddDataPointLabelAction extends AddLabelAction
 	{
 		this.dataStore = dataStore;
 	}
+	
+	/*
+	public void graphableRemoved(EventObject e) {
+		Object obj = e.getSource();
+		if(obj instanceof DataPointLabel) {
+			DataPointLabel dataPointLabel = (DataPointLabel)obj;
+			if(dataGraphablesList.contains(dataPointLabel))
+				dataGraphablesList.remove(dataPointLabel);
+			if(notesList.contains(dataPointLabel))
+				notesList.remove(dataPointLabel);
+		}
+		super.graphableRemoved(e);
+	}
+	*/
 }

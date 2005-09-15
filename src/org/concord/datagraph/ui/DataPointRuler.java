@@ -42,12 +42,8 @@ import org.concord.graph.util.ui.PointTextLabel;
 public class DataPointRuler extends PointTextLabel
 	implements DataStoreListener
 {	
-	//
-	//Variables to watch the graphables that it's mousing over
+
 	protected GraphableList objList;
-	protected int indexPointOver = -1;
-	protected DataGraphable graphableOver = null;
-	//
 	
 	//Actual graphable that the label is linked to 
 	//(this is temporary because it should be a data point)
@@ -59,18 +55,9 @@ public class DataPointRuler extends PointTextLabel
 	private DashedDataLine verticalDDL = new DashedDataLine(DashedDataLine.VERTICAL_LINE);
 	private DashedDataLine horizontalDDL = new DashedDataLine(DashedDataLine.HORIZONTAL_LINE);
 	
-	//Labels and Units
-	protected String xLabel = null;
-	protected String xUnits = null;
-	protected String yLabel = null;
-	protected String yUnits = null;
-	protected int xPrecision = 0;
-	protected int yPrecision = 0;
-	protected String pointLabel = null;	// format: (x, y)
-	protected String pointInfoLabel = null;	//format: xlabel: x+unit   ylabel: y+unit
-	
-	private Point2D mouseLocation = null;
-	
+	private int xPrecision = 0;
+	private int yPrecision = 0;
+
 	/**
 	 * 
 	 */
@@ -112,8 +99,7 @@ public class DataPointRuler extends PointTextLabel
 					mouseInsideDataPoint = true;
 					notifyChange();
 				}
-			}
-			else{
+			} else{
 				if (mouseInsideDataPoint){
 					mouseInsideDataPoint = false;
 					notifyChange();
@@ -127,21 +113,14 @@ public class DataPointRuler extends PointTextLabel
 	}
 	
 	/**
-	 * @see org.concord.graph.engine.MouseControllable#mouseDragged(java.awt.Point)
-	 */
-	public boolean mouseDragged(Point p)
-	{
-		return true;
-	}
-	
-	/**
 	 * @see org.concord.graph.engine.MouseControllable#mouseReleased(java.awt.Point)
 	 */
 	public boolean mouseReleased(Point p)
 	{
+		if(objList != null && objList.size() > 0) {
+			dataGraphable = (DataGraphable)objList.get(0);
+		}
 		convertMouseLocationToWorld(p);
-		//setDataPoint(mouseLocation);
-		
 		notifyChange();
 		return true;
 	}
@@ -163,7 +142,6 @@ public class DataPointRuler extends PointTextLabel
 		}
 		
 		if (super.mousePressed(p)){
-			
 			if (this.isPointInProximity(p)){
 				showPopUpMenu(p);
 				dragEnabled = false;
@@ -180,8 +158,8 @@ public class DataPointRuler extends PointTextLabel
 	 */
 	public void draw(Graphics2D g)
 	{
-		drawMessage(g);
-		//if(dataGraphable != null && dataGraphable.isVisible()) super.draw(g);
+		drawRuler(g);
+		if(dataPoint != null && dataGraphable != null) super.draw(g);
 	}
 	
 	/**
@@ -190,6 +168,18 @@ public class DataPointRuler extends PointTextLabel
 	public DataGraphable getDataGraphable()
 	{
 		return dataGraphable;
+	}
+	
+	public void drawMessage(Graphics2D g) {
+		
+	}
+	
+	public void drawMessage(Graphics2D g, boolean b) {
+		
+	}
+	
+	public void drawDataPointLink(Graphics2D g) {
+		
 	}
 	
 	/**
@@ -205,6 +195,8 @@ public class DataPointRuler extends PointTextLabel
 		this.dataGraphable = dataGraphable;
 	}
 	
+	
+
 	/**
 	 * @see org.concord.graph.util.ui.BoxTextLabel#doRemove()
 	 */
@@ -240,7 +232,7 @@ public class DataPointRuler extends PointTextLabel
 			remove();
 		}
 	}
-
+	
 	/**
 	 * @see org.concord.framework.data.stream.DataStoreListener#dataChannelDescChanged(org.concord.framework.data.stream.DataStoreEvent)
 	 */
@@ -264,12 +256,9 @@ public class DataPointRuler extends PointTextLabel
 		verticalDDL.setDataPrecision(xPrecision);
 		horizontalDDL.setDataPrecision(yPrecision);
 
-		int left = graphArea.getInsets().left;
-		int bottom = graphArea.getInsets().bottom;
-		int top = graphArea.getInsets().top;
-		pD = new Point2D.Double(d1, graphArea.getSize().height - bottom + top);
+		pD = new Point2D.Double(d1, graphArea.getUpperRightCornerWorld().getY());
 		verticalDDL.setPoints(pVO, pD);
-		pD = new Point2D.Double(graphArea.getSize().width - left, d2);
+		pD = new Point2D.Double(graphArea.getUpperRightCornerWorld().getX(), d2);
 		horizontalDDL.setPoints(pHO, pD);			
 
 		DashedDataLine.setGraphArea(graphArea);	
@@ -282,49 +271,50 @@ public class DataPointRuler extends PointTextLabel
 	/**
 	 * 
 	 */
-	protected void drawMessage(Graphics2D g)
+	protected void drawRuler(Graphics2D g)
 	{
-		drawMessage(g, true);
+		drawRuler(g, true);
 	}
 	
 	/**
 	 * 
 	 */
-	protected void drawMessage(Graphics2D g, boolean bDraw)
+	protected void drawRuler(Graphics2D g, boolean bDraw)
 	{
+		if(dataPoint!= null) {
+			fx = (float)dataPoint.getX();
+			fy = (float)dataPoint.getY();
+		}		
 		drawDashedLines(g, fx, fy);
-		
+
 		CoordinateSystem cs = graphArea.getCoordinateSystem();
 		Point2D p = cs.transformToDisplay(new Point2D.Double(fx, fy));
 		Color oldColor = g.getColor();
 		g.setColor(Color.BLUE);
 		g.fillOval((int)p.getX()-4,(int)p.getY()-4,8,8);
 		g.setColor(oldColor);
-	}	
+	}
 	
 	private void convertMouseLocationToWorld(Point p) {
-		mouseLocation = new Point2D.Double(p.getX(), p.getY());
 		CoordinateSystem cs = graphArea.getCoordinateSystem();
-		Point2D point = new Point2D.Double(p.getX(), p.getY());
-		dataPoint = cs.transformToWorld(point);
+		displayDataPoint = new Point2D.Double(p.getX(), p.getY());
+		dataPoint = cs.transformToWorld(displayDataPoint);
 		fx = (float)dataPoint.getX();
 		fy = (float)dataPoint.getY();
-		displayDataPoint = point;
 	}
 	
 	protected void populatePopUpMenu()
 	{
 		newNote = false;
-		JMenuItem changeColorItem = new JMenuItem("Move ruler");
+		JMenuItem moveRulerItem = new JMenuItem("Move ruler");
 		JMenuItem deleteItem = new JMenuItem("Delete ruler");
-		popUpMenu.add(changeColorItem);
+		popUpMenu.add(moveRulerItem);
 		popUpMenu.add(deleteItem);
 		
-		changeColorItem.addActionListener(new ActionListener()
+		moveRulerItem.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				//doRemove();
 				newNote = true;
 			}
 		});
@@ -333,7 +323,6 @@ public class DataPointRuler extends PointTextLabel
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				newNote = false;
 				doRemove();
 			}
 		});
