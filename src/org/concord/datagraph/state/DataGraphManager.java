@@ -31,12 +31,15 @@ package org.concord.datagraph.state;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Enumeration;
 import java.util.EventObject;
 import java.util.HashMap;
@@ -120,7 +123,7 @@ public class DataGraphManager
 			Color.ORANGE, Color.PINK, Color.RED, Color.YELLOW, Color.BLACK};
 	Vector usedColors = new Vector();
 
-	AboutBox about = new AboutBox("FunctionAnalyzer");
+	AboutBox about = new AboutBox("OTrunk");
 	
     /**
      * 
@@ -319,6 +322,7 @@ public class DataGraphManager
 		dataGraph.getGraphArea().addChangeListener(this);
 		
 		cTree.addTreeSelectionListener(tsl);
+		cTree.addMouseListener(ml);
     }
 
     public DataGraphable getDataGraphable(OTDataGraphable otGraphable)
@@ -372,6 +376,12 @@ public class DataGraphManager
 		toolbar.addDataFlowObject(dataGraph);
 		
 	    return toolbar;
+	}
+	
+	public void setToolBarEnabled(boolean enabled) {
+		Component[] components = toolBar.getComponents();
+		for(int i = 0; i < components.length; i++) 
+			components[i].setEnabled(enabled);
 	}
 
 	public void setToolbarVisible(boolean visible)
@@ -481,6 +491,29 @@ public class DataGraphManager
         updateState(source);
     }
     
+    MouseAdapter ml = new MouseAdapter() {
+    	public void mouseReleased(MouseEvent e) {
+    		TreePath newSelectedPath = cTree.getSelectionPath();
+			if(newSelectedPath != null) {
+				DefaultMutableTreeNode node = 
+					(DefaultMutableTreeNode)newSelectedPath.getLastPathComponent();
+				CCJCheckBoxTree.NodeHolder nodeHolder = 
+					(CCJCheckBoxTree.NodeHolder)node.getUserObject();
+				DataGraphable dataGraphable = 
+					(DataGraphable) nodeGraphableMap.get(nodeHolder);
+
+				if(toolBar != null) {
+    			    setToolBarEnabled(nodeHolder.checked);
+    			    if(dataGraphable != null)
+    			    	dataGraphable.setVisible(nodeHolder.checked);
+				}
+				
+				drawCheckedDataGraphables();
+				dataGraph.repaint();
+			}
+    	}
+    };
+    
     TreeSelectionListener tsl = new TreeSelectionListener() {
     	public void valueChanged(TreeSelectionEvent e) {
     		if(e.getSource() == cTree) {
@@ -515,10 +548,12 @@ public class DataGraphManager
         			    bottomPanel.add(valueLabel);
         			    bottomPanel.add(toolBar);
         			    bottomPanel.add(about);
-        			    
+
+       			    	//dataGraphable.setVisible(nodeHolder.checked);
+       			    	//setToolBarEnabled(nodeHolder.checked);
     				}
-    			    drawCheckedDataGraphables();
-    			    dataGraph.repaint();
+    			    //drawCheckedDataGraphables();
+    			    //dataGraph.repaint();
 				}
     		}
     	}
@@ -534,24 +569,24 @@ public class DataGraphManager
     		if(dataGraphable != null) {
     			if(checkedTreeNodes.contains(obj)) {
     				dataGraphable.setVisible(true);
-        			dataGraph.removeDataGraphable(dataGraphable);
-        			dataGraph.addDataGraphable(dataGraphable);
+        			//dataGraph.removeDataGraphable(dataGraphable);
+        			//dataGraph.addDataGraphable(dataGraphable);
     			}
     			else {
     				dataGraphable.setVisible(false);
-        			dataGraph.removeDataGraphable(dataGraphable);
+        			//dataGraph.removeDataGraphable(dataGraphable);
         			//dataGraph.addDataGraphable(dataGraphable);
     			}
     		}
     	}
     	
-    	DefaultMutableTreeNode node = 
-    		(DefaultMutableTreeNode)cTree.getLastSelectedPathComponent();
-    	Object object = node.getUserObject();
-       	DataGraphable dataGraphable = (DataGraphable)nodeGraphableMap.get(object);
-		dataGraphable.setVisible(true);
-		dataGraph.removeDataGraphable(dataGraphable);
-		dataGraph.addDataGraphable(dataGraphable);
+    	//DefaultMutableTreeNode node = 
+    		//(DefaultMutableTreeNode)cTree.getLastSelectedPathComponent();
+    	//Object object = node.getUserObject();
+       	//DataGraphable dataGraphable = (DataGraphable)nodeGraphableMap.get(object);
+		//dataGraphable.setVisible(true);
+		//dataGraph.removeDataGraphable(dataGraphable);
+		//dataGraph.addDataGraphable(dataGraphable);
     }
     
     private void addDataGraphable() {
