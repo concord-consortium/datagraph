@@ -501,7 +501,7 @@ public class DataGraphManager
 					(CCJCheckBoxTree.NodeHolder)node.getUserObject();
 				DataGraphable dataGraphable = 
 					(DataGraphable) nodeGraphableMap.get(nodeHolder);
-
+				
 				if(toolBar != null) {
     			    setToolBarEnabled(nodeHolder.checked);
     			    if(dataGraphable != null)
@@ -549,11 +549,13 @@ public class DataGraphManager
         			    bottomPanel.add(toolBar);
         			    bottomPanel.add(about);
 
-       			    	//dataGraphable.setVisible(nodeHolder.checked);
-       			    	//setToolBarEnabled(nodeHolder.checked);
+       			    	dataGraphable.setVisible(nodeHolder.checked);
+       			    	setToolBarEnabled(nodeHolder.checked);
     				}
     			    //drawCheckedDataGraphables();
     			    //dataGraph.repaint();
+				} else {
+   			    	setToolBarEnabled(false);
 				}
     		}
     	}
@@ -672,7 +674,7 @@ public class DataGraphManager
 	    	DataGraphable dataGraphable = (DataGraphable)nodeGraphableMap.get(obj);
 	    	nodeGraphableMap.remove(obj);
 	   		dataGraph.removeDataGraphable(dataGraphable);
-	   		dataGraphable.setVisible(false);
+	   		//dataGraphable.setVisible(false);
 	    	OTDataGraphable otDataGraphable = getOTDataGraphable(dataGraphable);
 	   		dataCollector.getGraphables().remove(otDataGraphable);
 	   		removeLabelsFrom(otDataGraphable);
@@ -681,6 +683,7 @@ public class DataGraphManager
 	    	if(checkedTreeNodes.contains(obj))checkedTreeNodes.removeElement(obj);
 	    	//System.out.println(dataGraphable + " removed too");
     	}
+    	setToolBarEnabled(false);
     }
     
     private OTDataGraphable getOTDataGraphable(DataGraphable dataGraphable) {
