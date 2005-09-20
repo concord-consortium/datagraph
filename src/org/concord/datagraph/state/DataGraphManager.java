@@ -114,7 +114,7 @@ public class DataGraphManager
 	CCJCheckBoxTree cTree = new CCJCheckBoxTree("Data Collector");
 	TreePath lastSelectedPath;
 	
-	HashMap nodeGraphableMap = new HashMap();
+	Hashtable nodeGraphableMap = new Hashtable();
 	Vector checkedTreeNodes = new Vector();
 
 	boolean isCausingOTChange = false;
@@ -507,10 +507,10 @@ public class DataGraphManager
     			    if(dataGraphable != null)
     			    	dataGraphable.setVisible(nodeHolder.checked);
 				}
-				
-				drawCheckedDataGraphables();
-				dataGraph.repaint();
 			}
+
+			drawCheckedDataGraphables();
+			dataGraph.repaint();
     	}
     };
     
