@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.47 $
- * $Date: 2005-08-04 21:46:08 $
- * $Author: maven $
+ * $Revision: 1.48 $
+ * $Date: 2005-09-23 19:53:29 $
+ * $Author: swang $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -128,6 +128,7 @@ public class DataGraphable extends DefaultGraphable
 	}
 	
 	private int lastValueCalculated = -1;
+	protected boolean locked = false;
 
 	/*
 	 * validPrevPoint indicates that last point "processed" 
@@ -254,6 +255,8 @@ public class DataGraphable extends DefaultGraphable
 	 */
 	public void reset()
 	{
+		if(locked) return;
+		
 		dataStore.clearValues();
 		
 		forceRecalculate();
@@ -1289,5 +1292,12 @@ public class DataGraphable extends DefaultGraphable
 			graphArea.removeChangeListener(this);
 		}
 		remove();
+	}
+	
+	public void setLocked(boolean locked) {
+		this.locked = locked;
+	}
+	public boolean isLocked() {
+		return locked;
 	}
 }

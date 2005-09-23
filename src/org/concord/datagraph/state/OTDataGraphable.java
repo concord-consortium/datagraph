@@ -91,6 +91,10 @@ public class OTDataGraphable extends DefaultOTObject
     	public static int DEFAULT_yColumn = 1;
     	public int getYColumn();
     	public void setYColumn(int yCol);
+    	
+    	public static boolean DEFAULT_locked = false;
+    	public boolean getLocked();
+    	public void setLocked(boolean locked);
     }
     
     private ResourceSchema resources;
@@ -132,6 +136,7 @@ public class OTDataGraphable extends DefaultOTObject
         dg.setShowCrossPoint(resources.getDrawMarks());
         dg.setLabel(resources.getName());
         dg.setUseVirtualChannels(true);
+        dg.setLocked(resources.getLocked());
         
 		DataProducer producer = resources.getDataProducer();
 		OTDataStore dataStore = resources.getDataStore();
@@ -261,5 +266,12 @@ public class OTDataGraphable extends DefaultOTObject
 	
 	public void setDrawMarks(boolean b) {
 		resources.setDrawMarks(b);
+	}
+	
+	public boolean getLocked() {
+		return resources.getLocked();
+	}
+	public void setLocked(boolean locked) {
+		resources.setLocked(locked);
 	}
 }
