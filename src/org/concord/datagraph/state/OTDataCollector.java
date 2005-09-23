@@ -41,7 +41,7 @@ import org.concord.framework.otrunk.OTObjectList;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public interface OTDataCollector
-    extends OTObjectInterface
+    extends OTDataGraph
 {
     public String getTitle();
     
@@ -74,4 +74,7 @@ public interface OTDataCollector
 	
 	public final static boolean DEFAULT_multipleGraphableEnabled = false;
 	public boolean getMultipleGraphableEnabled();
+	
+	public final static boolean DEFAULT_rulerEnabled = false;
+	public boolean getRulerEnabled();
 }
