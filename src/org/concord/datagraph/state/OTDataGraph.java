@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.5 $
- * $Date: 2005-08-04 21:46:09 $
- * $Author: maven $
+ * $Revision: 1.6 $
+ * $Date: 2005-09-23 19:55:25 $
+ * $Author: swang $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -52,7 +52,7 @@ public interface OTDataGraph extends OTObjectInterface
 	
 	public OTObjectList getLabels();
 	
-	public OTObjectList getYDataAxis();
+	public OTDataAxis getYDataAxis();
 
-	public OTObjectList getXDataAxis();	
+	public OTDataAxis getXDataAxis();	
 }
