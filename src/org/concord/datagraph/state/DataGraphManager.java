@@ -34,6 +34,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -42,13 +43,15 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Enumeration;
 import java.util.EventObject;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
@@ -61,14 +64,20 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import org.concord.data.Unit;
 import org.concord.data.ui.DataFlowControlAction;
 import org.concord.data.ui.DataFlowControlButton;
 import org.concord.data.ui.DataFlowControlToolBar;
 import org.concord.data.ui.DataStoreLabel;
 import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.DataGraphable;
+import org.concord.datagraph.ui.AddDataPointLabelAction;
+import org.concord.datagraph.ui.AddDataPointLabelActionExt;
 import org.concord.datagraph.ui.DataGraph;
+import org.concord.datagraph.ui.DataPointLabel;
+import org.concord.datagraph.ui.DataPointRuler;
 import org.concord.datagraph.ui.SingleDataAxisGrid;
+import org.concord.framework.data.DataDimension;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.otrunk.OTChangeEvent;
 import org.concord.framework.otrunk.OTChangeListener;
@@ -76,6 +85,8 @@ import org.concord.framework.otrunk.OTObjectList;
 import org.concord.framework.otrunk.OTObjectService;
 import org.concord.framework.otrunk.OTWrapper;
 import org.concord.framework.util.Copyable;
+import org.concord.graph.engine.GraphableList;
+import org.concord.graph.engine.SelectableList;
 import org.concord.graph.event.GraphableListListener;
 import org.concord.graph.examples.GraphWindowToolBar;
 import org.concord.graph.ui.GraphTreeView;
@@ -97,11 +108,15 @@ public class DataGraphManager
 	implements GraphableListListener, OTChangeListener, ChangeListener
 {
     OTDataCollector dataCollector;
+    OTDataGraph pfObject;
     DataGraph dataGraph;
     
 	DataGraphable sourceGraphable;
 	DataProducer sourceDataProducer;
 	DataStoreLabel valueLabel;
+	
+	OTObjectList labels;
+	SelectableList notesLayer;
 	
 	OTDataAxis xOTAxis;
 	OTDataAxis yOTAxis;
@@ -119,215 +134,44 @@ public class DataGraphManager
 
 	boolean isCausingOTChange = false;
 	boolean showDataControls;
+	
 	Color[] colors = {Color.BLUE, Color.CYAN, Color.GRAY, Color.GREEN, Color.MAGENTA,
 			Color.ORANGE, Color.PINK, Color.RED, Color.YELLOW, Color.BLACK};
 	Vector usedColors = new Vector();
 
 	AboutBox about = new AboutBox("OTrunk");
 	
+	AbstractAction newDataSetAction;
+	AbstractAction deleteDataSetAction;
+	AbstractAction renameAction;
+	AbstractAction clearAction;
+	
+	DataFlowControlButton bStart;
+	DataFlowControlButton bStop;
+	DataFlowControlButton bClear;
+	
     /**
      * 
      */
-    public DataGraphManager(OTDataCollector collector, boolean showDataControls)
+    public DataGraphManager(OTDataGraph pfObject, boolean showDataControls)
     {
-        dataCollector = collector;
+    	createActions();
+
+    	this.pfObject = pfObject;
+        if(pfObject instanceof OTDataCollector)
+        	dataCollector = (OTDataCollector)pfObject;
         this.showDataControls = showDataControls;
-
-        dataGraph = new DataGraph();
-		dataGraph.changeToDataGraphToolbar();
-		dataGraph.setAutoFitMode(DataGraph.AUTO_SCROLL_RUNNING_MODE);
-		
-        dataGraph.setFocusable(true);
         
-        KeyStroke keyStroke = KeyStroke.getKeyStroke(new Character('t'), InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK);
-        dataGraph.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStroke, "ShowTree");
-        dataGraph.getActionMap().put("ShowTree", new AbstractAction(){
-            /**
-             * First version of action
-             */
-            private static final long serialVersionUID = 1L;
-
-            public void actionPerformed(ActionEvent e)
-            {
-                System.out.println("Got event: " + e);
-                GraphTreeView gtv = new GraphTreeView();
-                gtv.setGraph(dataGraph.getGraph());
-                GraphTreeView.showAsDialog(gtv, "graph tree");                
-            }            
-        });
-        
-		xOTAxis = dataCollector.getXDataAxis();
-		xOTAxis.addOTChangeListener(this);
-		yOTAxis = dataCollector.getYDataAxis();
-		yOTAxis.addOTChangeListener(this);
-
-		OTObjectList pfGraphables = dataCollector.getGraphables();
-
-		dataGraph.setLimitsAxisWorld(xOTAxis.getMin(), xOTAxis.getMax(),
-				yOTAxis.getMin(), yOTAxis.getMax());
-
-		Grid2D grid = dataGraph.getGrid();
-
-		SingleDataAxisGrid sXAxis = (SingleDataAxisGrid)grid.getXGrid();
-
-		DataGraphStateManager.setupAxisLabel(sXAxis, xOTAxis);
-		
-		SingleDataAxisGrid sYAxis = (SingleDataAxisGrid)grid.getYGrid();
-		DataGraphStateManager.setupAxisLabel(sYAxis, yOTAxis);
-
-		Vector realGraphables = new Vector();
-		
-		// for each list item get the data producer object
-		// add it to the data graph
-		for(int i=0; i<pfGraphables.size(); i++) {
-			OTDataGraphable otGraphable = (OTDataGraphable)pfGraphables.get(i);
-
-			DataGraphable realGraphable = (DataGraphable)otGraphable.createWrappedObject();
-
-			if (realGraphable.getDataProducer() != null){
-			    System.err.println("Trying to display a background graphable with a data producer");
-			}
-			
-			realGraphables.add(realGraphable);
-		    dataGraph.addDataGraphable(realGraphable);
-		    //dataGraph.addBackgroundDataGraphable(realGraphable);
-            otDataGraphableMap.put(otGraphable, realGraphable);
-		}
-
-		OTDataGraphable source = dataCollector.getSource();
-		if(source != null) {
-			String title = dataCollector.getTitle(); 
-			if(title == null) {
-			    title = source.getName();			    
-			}
-			
-			if(title != null) {
-			    dataGraph.setTitle(title);
-			}
-
-			sourceGraphable = (DataGraphable)source.createWrappedObject();
-			sourceDataProducer = sourceGraphable.findDataProducer();
-			
-			// dProducer.getDataDescription().setDt(0.1f);
-			if(sourceGraphable instanceof ControllableDataGraphable) {
-
-			    bottomPanel = new JPanel(new FlowLayout());
-			    JButton clearButton = new JButton("Clear");
-			    clearButton.addActionListener(new ActionListener(){
-			       public void actionPerformed(ActionEvent e){
-			           dataGraph.reset();			           
-			       }
-			    });
-			    
-				DrawingAction a = new DrawingAction();
-				a.setDrawingObject((ControllableDataGraphable)sourceGraphable);
-				GraphWindowToolBar gwToolbar = dataGraph.getToolBar();
-				gwToolbar.addButton(new SelectableToggleButton(a), "Draw a function");
-				
-				bottomPanel.add(clearButton);
-			    bottomPanel.add(about);
-			    
-			    dataGraph.add(bottomPanel, BorderLayout.SOUTH);
-			    
-			} else if(showDataControls) {
-			    bottomPanel = new JPanel(new FlowLayout());
-			    valueLabel = new DataStoreLabel(sourceGraphable, 1);
-			    valueLabel.setColumns(4);
-			    bottomPanel.add(valueLabel);
-
-			    toolBar = createFlowToolBar();
-			    toolBar.addDataFlowObject(sourceDataProducer);
-			    
-			    bottomPanel.add(toolBar);
-			    bottomPanel.add(about);
-			    
-			    if(dataCollector.getShowTare()){
-			        // need to add a button that runs the sourceGraphable
-			        // for some amount of time and then offsets the input
-			        // values after that.
-			        // The code for the Tare can be put into a dataproducer
-			        // that wraps the input dataproducer
-			    }
-			    
-			    dataGraph.add(bottomPanel, BorderLayout.SOUTH);  			    
-			}
-
-			if(sourceGraphable != null) {
-			    realGraphables.insertElementAt(sourceGraphable, 0);
-			    dataGraph.addDataGraphable(sourceGraphable);
-                otDataGraphableMap.put(source, sourceGraphable);
-			}
-		}
-
-		if(realGraphables.size() > 1 || dataCollector.getMultipleGraphableEnabled()) {
-		    
-		    cTree.setCellRenderer(new CCJCheckBoxRenderer());
-		    cTree.setRootVisible(false);
-
-		    for(int i=0; i<realGraphables.size(); i++){
-		    	DataGraphable dataGraphable = (DataGraphable) realGraphables.get(i);
-		        String name = dataGraphable.getLabel();
-		        Color color = dataGraphable.getColor();
-		        CCJCheckBoxTree.NodeHolder nodeHolder = 
-		        	new CCJCheckBoxTree.NodeHolder(name, true, color);
-		        usedColors.addElement(color);
-		        cTree.setSelectionPath(null);
-		        cTree.addObject(nodeHolder);
-		        nodeGraphableMap.put(nodeHolder, dataGraphable);
-		    }
-		    
-		    TreeNode rootNode = cTree.getRootNode();
-		    if(rootNode.getChildCount() > 1) {
-		    	lastSelectedPath = cTree.getPathForRow(0);
-		    	cTree.setSelectionPath(lastSelectedPath);
-		    }
-		    
-		    JPanel treePanel = new JPanel();
-		    treePanel.setLayout(new BorderLayout());
-		    JButton newButton = new JButton("New");
-		    newButton.addActionListener(new ActionListener() {
-		    	public void actionPerformed(ActionEvent e) {
-		    		addDataGraphable();
-		    	}
-		    });
-		    JButton deleteButton = new JButton("Delete");
-		    deleteButton.addActionListener(new ActionListener() {
-		    	public void actionPerformed(ActionEvent e) {
-		    		removeNode();
-		    	}
-		    });
-		    
-		    JPanel controlPanel = new JPanel();
-		    controlPanel.add(newButton);
-		    controlPanel.add(deleteButton);
-		    controlPanel.setBackground(Color.WHITE);
-		    
-		    treePanel.setBackground(UIManager.getColor("Tree.textBackground"));
-		    treePanel.add(cTree, BorderLayout.CENTER);
-		    treePanel.add(controlPanel, BorderLayout.NORTH);
-		   
-		    dataGraph.add(treePanel, BorderLayout.WEST);
-		}
-		
-		// FIXME This should be changed.  The graphables should
-		// listen to themselves, and this code then can just listen
-		// to the graph area for graph area changes.
-		// right now both graph area and source graphable changes
-		// are listened too
-		// GraphableList graphableList = dataGraph.getObjList();
-		// graphableList.addGraphableListListener(this);
-		
-		dataGraph.setPreferredSize(new Dimension(400,320));
-		
-		dataGraph.getGraphArea().addChangeListener(this);
-		
-		cTree.addTreeSelectionListener(tsl);
-		cTree.addMouseListener(ml);
+        initialize(showDataControls);
     }
 
     public DataGraphable getDataGraphable(OTDataGraphable otGraphable)
     {
         return (DataGraphable)otDataGraphableMap.get(otGraphable);
+    }
+    
+    public DataGraphable getDataGraphable(CCJCheckBoxTree.NodeHolder holder) {
+    	return (DataGraphable)nodeGraphableMap.get(holder);
     }
     
     public DataProducer getSourceDataProducer()
@@ -363,25 +207,49 @@ public class DataGraphManager
 
 		DataFlowControlButton b = null;
 		
-		b = new DataFlowControlButton(DataFlowControlAction.FLOW_CONTROL_START);
-		toolbar.add(b);
+		bStart = new DataFlowControlButton(DataFlowControlAction.FLOW_CONTROL_START);
+		toolbar.add(bStart);
 
-		b = new DataFlowControlButton(DataFlowControlAction.FLOW_CONTROL_STOP);
-		toolbar.add(b);
+		bStop = new DataFlowControlButton(DataFlowControlAction.FLOW_CONTROL_STOP);
+		toolbar.add(bStop);
 		
-		b = new DataFlowControlButton(DataFlowControlAction.FLOW_CONTROL_RESET);
-		b.setText("Clear");
-		toolbar.add(b);
+		bClear = new DataFlowControlButton(DataFlowControlAction.FLOW_CONTROL_RESET);
+		bClear.setText("Clear");
+		toolbar.add(bClear);
 	 
 		toolbar.addDataFlowObject(dataGraph);
+		
+		bStart.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e){
+				bClear.setEnabled(true);
+				bStart.setEnabled(false);
+				bStop.setEnabled(true);
+			}
+		});
+		
+		bStop.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e){
+				bClear.setEnabled(true);
+				bStart.setEnabled(false);
+				bStop.setEnabled(false);
+			}
+		});
+		
+		bClear.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e){
+				bClear.setEnabled(false);
+				bStart.setEnabled(true);
+				bStop.setEnabled(false);
+			}
+		});
 		
 	    return toolbar;
 	}
 	
 	public void setToolBarEnabled(boolean enabled) {
-		Component[] components = toolBar.getComponents();
-		for(int i = 0; i < components.length; i++) 
-			components[i].setEnabled(enabled);
+		if(bStart != null) bStart.setEnabled(enabled);
+		if(bStop != null) bStop.setEnabled(enabled);
+		if(bClear != null) bClear.setEnabled(enabled);			
 	}
 
 	public void setToolbarVisible(boolean visible)
@@ -440,6 +308,46 @@ public class DataGraphManager
 	 */
 	public void listGraphableAdded(EventObject e)
 	{
+		Object obj = e.getSource();
+		if (obj instanceof DataPointLabel){
+			DataPointLabel l;
+			OTDataPointLabel otLabel;
+
+			try{
+                OTObjectService objService = pfObject.getOTObjectService();
+				otLabel = (OTDataPointLabel)objService.createObject(OTDataPointLabel.class);
+			}
+			catch (Exception ex) {
+				ex.printStackTrace();
+				return;
+			}
+			
+			l = (DataPointLabel)obj;
+			
+			otLabel.registerWrappedObject(l);
+			otLabel.saveObject(l);
+
+			pfObject.getLabels().add(otLabel);
+		} else if (obj instanceof DataPointRuler){
+			DataPointRuler l;
+			OTDataPointRuler otRuler;
+
+			try{
+                OTObjectService objService = pfObject.getOTObjectService();
+				otRuler = (OTDataPointRuler)objService.createObject(OTDataPointRuler.class);
+			}
+			catch (Exception ex) {
+				ex.printStackTrace();
+				return;
+			}
+			
+			l = (DataPointRuler)obj;
+			
+			otRuler.registerWrappedObject(l);
+			otRuler.saveObject(l);
+
+			pfObject.getLabels().add(otRuler);
+		}
 	}
 		
 	/**
@@ -457,12 +365,12 @@ public class DataGraphManager
 	{
 		Object obj = e.getSource();
 		
-		OTWrapper otWrapper = dataCollector.getOTObjectService().getWrapper(obj);
+		OTWrapper otWrapper = pfObject.getOTObjectService().getWrapper(obj);
 		
 		if (otWrapper != null){
 			if(otWrapper instanceof OTDataPointLabel ||
 					otWrapper instanceof OTDataPointRuler )
-				dataCollector.getLabels().remove(otWrapper);
+				pfObject.getLabels().remove(otWrapper);
 		}
 	}
 
@@ -499,14 +407,22 @@ public class DataGraphManager
 					(DefaultMutableTreeNode)newSelectedPath.getLastPathComponent();
 				CCJCheckBoxTree.NodeHolder nodeHolder = 
 					(CCJCheckBoxTree.NodeHolder)node.getUserObject();
-				DataGraphable dataGraphable = 
+				DataGraphable dg = 
 					(DataGraphable) nodeGraphableMap.get(nodeHolder);
 				
 				if(toolBar != null) {
-    			    setToolBarEnabled(nodeHolder.checked);
-    			    if(dataGraphable != null)
-    			    	dataGraphable.setVisible(nodeHolder.checked);
+					if(dg.isLocked())
+						setToolBarEnabled(false);
+					else {
+						setToolBarEnabled(nodeHolder.checked);
+					}
+    			    if(dg != null)
+    			    	dg.setVisible(nodeHolder.checked);
 				}
+			}
+			
+			if(e.getClickCount() == 2) {
+				renameNode();
 			}
 
 			drawCheckedDataGraphables();
@@ -524,7 +440,8 @@ public class DataGraphManager
     					(DefaultMutableTreeNode)lastSelectedPath.getLastPathComponent();
     				CCJCheckBoxTree.NodeHolder nodeHolder = 
     					(CCJCheckBoxTree.NodeHolder)node.getUserObject();
-    				DataGraphable dataGraphable = 
+
+    				DataGraphable dg = 
     					(DataGraphable) nodeGraphableMap.get(nodeHolder);
 
     				if(toolBar != null) {
@@ -535,11 +452,13 @@ public class DataGraphManager
         				bottomPanel.remove(valueLabel);
         				bottomPanel.remove(toolBar);
         				
-        				sourceDataProducer = dataGraphable.findDataProducer();
-
         				//Connect new data producer with toolBar and valueLabel
+        				DataProducer dp = dg.findDataProducer();
+        				if(dp != null) sourceDataProducer = dp;
+        				//sourceDataProducer = dg.findDataProducer();
+        				
         				toolBar.addDataFlowObject(sourceDataProducer);
-        			    valueLabel = new DataStoreLabel(dataGraphable, 1);
+        			    valueLabel = new DataStoreLabel(dg, 1);
         			    valueLabel.setColumns(4);
         			    
         			    bottomPanel.setLayout(new FlowLayout());
@@ -549,8 +468,10 @@ public class DataGraphManager
         			    bottomPanel.add(toolBar);
         			    bottomPanel.add(about);
 
-       			    	dataGraphable.setVisible(nodeHolder.checked);
-       			    	setToolBarEnabled(nodeHolder.checked);
+        			    dg.setVisible(nodeHolder.checked);
+       			    	
+       			    	if(dg.isLocked()) setToolBarEnabled(false);
+       			    	else setToolBarEnabled(nodeHolder.checked);
     				}
     			    //drawCheckedDataGraphables();
     			    //dataGraph.repaint();
@@ -610,7 +531,7 @@ public class DataGraphManager
     	cTree.setSelectionPath(lastSelectedPath);
     	cTree.addTreeSelectionListener(tsl);
     	
-    	OTObjectService service = dataCollector.getOTObjectService();
+    	OTObjectService service = pfObject.getOTObjectService();
     	try {
     		OTDataGraphable otGraphable = 
 				(OTDataGraphable)service.createObject(OTDataGraphable.class);
@@ -631,9 +552,12 @@ public class DataGraphManager
 			graphable.setColor(color);
 			
 			otDataGraphableMap.put(otGraphable, graphable);
-			dataCollector.getGraphables().add(otGraphable);
+			pfObject.getGraphables().add(otGraphable);
 	    	dataGraph.addDataGraphable(graphable);
 	    	nodeGraphableMap.put(newNodeHolder, graphable);
+
+	    	//select the new created datastore
+	    	cTree.setSelectionRow(cTree.getRowCount()-1);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -676,7 +600,7 @@ public class DataGraphManager
 	   		dataGraph.removeDataGraphable(dataGraphable);
 	   		//dataGraphable.setVisible(false);
 	    	OTDataGraphable otDataGraphable = getOTDataGraphable(dataGraphable);
-	   		dataCollector.getGraphables().remove(otDataGraphable);
+	   		pfObject.getGraphables().remove(otDataGraphable);
 	   		removeLabelsFrom(otDataGraphable);
 	   		otDataGraphableMap.remove(dataGraphable);
 	   		usedColors.removeElement(dataGraphable.getColor());
@@ -698,7 +622,7 @@ public class DataGraphManager
     }
     
     private void removeLabelsFrom(OTDataGraphable dataGraphable) {
-    	OTObjectList labelList = dataCollector.getGraphables();
+    	OTObjectList labelList = pfObject.getGraphables();
     	for(int i = 0; i < labelList.size(); i++) {
     		Object obj = labelList.get(i);
     		if(obj.equals(dataGraphable)) {
@@ -721,4 +645,357 @@ public class DataGraphManager
     		}
     	}
     }
+    
+    private void createActions() {
+    	newDataSetAction = new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				addDataGraphable();
+			}
+    	};
+    	newDataSetAction.putValue(Action.NAME, "New");
+
+    	deleteDataSetAction = new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				removeNode();
+			}
+    	};
+    	deleteDataSetAction.putValue(Action.NAME, "Delete");
+
+    	renameAction = new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				renameNode();
+			}
+    	};
+    	renameAction.putValue(Action.NAME, "Rename");
+    	
+    	/*
+    	clearAction = new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+		   		Enumeration enu = otDataGraphableMap.keys();
+		   		while(enu.hasMoreElements()) {
+		   			OTDataGraphable otDataGraphable = (OTDataGraphable) enu.nextElement();
+		   			if(!otDataGraphable.getLocked()) {
+		   				((DataGraphable)(otDataGraphableMap.get(otDataGraphable))).reset();
+		   			}
+		   		}
+			}
+    	};
+    	clearAction.putValue(Action.NAME, "Clear");
+    	*/    	
+    }
+    
+    private void renameNode() {
+    	String newLabel = cTree.renameCurrentNode();
+    	DefaultMutableTreeNode node = (DefaultMutableTreeNode) cTree.getLastSelectedPathComponent();
+    	CCJCheckBoxTree.NodeHolder holder = 
+    		(CCJCheckBoxTree.NodeHolder)node.getUserObject();
+    	DataGraphable dg = 
+    		(DataGraphable)nodeGraphableMap.get(holder);
+       	if(dg != null && newLabel != null && newLabel.trim().length() > 0) dg.setLabel(newLabel);
+    }
+    
+	public static void setupAxisLabel(SingleDataAxisGrid sAxis, OTDataAxis axis)
+	{
+		if(axis.getLabel() != null) {
+			sAxis.setAxisLabel(axis.getLabel());
+		}
+	
+		if(axis.getUnits() != null) {
+			String unitStr = axis.getUnits();
+			Unit unit = Unit.findUnit(unitStr);
+			if(unit == null) {
+				System.err.println("Can't find unit: " + unitStr);
+				sAxis.setUnit(new UnknownUnit(unitStr)); 
+			} 
+			else {
+				sAxis.setUnit(unit);
+			}
+		}		
+	}
+	
+	public void initialize() {
+		this.initialize(true);
+	}
+	
+	protected void initialize(boolean showToolBar) {
+        dataGraph = new DataGraph();
+		dataGraph.changeToDataGraphToolbar();
+		dataGraph.setAutoFitMode(DataGraph.AUTO_SCROLL_RUNNING_MODE);
+		
+        dataGraph.setFocusable(true);
+        
+        KeyStroke keyStroke = KeyStroke.getKeyStroke(new Character('t'), InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK);
+        dataGraph.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStroke, "ShowTree");
+        dataGraph.getActionMap().put("ShowTree", new AbstractAction(){
+            /**
+             * First version of action
+             */
+            private static final long serialVersionUID = 1L;
+
+            public void actionPerformed(ActionEvent e)
+            {
+                System.out.println("Got event: " + e);
+                GraphTreeView gtv = new GraphTreeView();
+                gtv.setGraph(dataGraph.getGraph());
+                GraphTreeView.showAsDialog(gtv, "graph tree");                
+            }            
+        });
+        
+		xOTAxis = pfObject.getXDataAxis();
+		xOTAxis.addOTChangeListener(this);
+		yOTAxis = pfObject.getYDataAxis();
+		yOTAxis.addOTChangeListener(this);
+
+		dataGraph.setLimitsAxisWorld(xOTAxis.getMin(), xOTAxis.getMax(),
+				yOTAxis.getMin(), yOTAxis.getMax());
+
+		Grid2D grid = dataGraph.getGrid();
+
+		SingleDataAxisGrid sXAxis = (SingleDataAxisGrid)grid.getXGrid();
+
+		//DataGraphStateManager.setupAxisLabel(sXAxis, xOTAxis);
+		setupAxisLabel(sXAxis, xOTAxis);
+		
+		SingleDataAxisGrid sYAxis = (SingleDataAxisGrid)grid.getYGrid();
+		//DataGraphStateManager.setupAxisLabel(sYAxis, yOTAxis);
+		setupAxisLabel(sYAxis, yOTAxis);
+
+		// FIXME This should be changed.  The graphables should
+		// listen to themselves, and this code then can just listen
+		// to the graph area for graph area changes.
+		// right now both graph area and source graphable changes
+		// are listened too
+		// GraphableList graphableList = dataGraph.getObjList();
+		// graphableList.addGraphableListListener(this);
+		
+		initGraphables();
+		
+		dataGraph.setPreferredSize(new Dimension(400,320));
+		
+		dataGraph.getGraphArea().addChangeListener(this);
+		
+		initLabels();
+	}
+	
+	protected void initGraphables() {
+		OTObjectList pfGraphables = pfObject.getGraphables();
+		Vector realGraphables = new Vector();
+		
+		// for each list item get the data producer object
+		// add it to the data graph
+		for(int i=0; i<pfGraphables.size(); i++) {
+			OTDataGraphable otGraphable = (OTDataGraphable)pfGraphables.get(i);
+
+			DataGraphable realGraphable = (DataGraphable)otGraphable.createWrappedObject();
+
+			if (realGraphable.getDataProducer() != null){
+			    System.err.println("Trying to display a background graphable with a data producer");
+			}
+			
+			realGraphables.add(realGraphable);
+		    dataGraph.addDataGraphable(realGraphable);
+		    //dataGraph.addBackgroundDataGraphable(realGraphable);
+            otDataGraphableMap.put(otGraphable, realGraphable);
+		}
+
+		OTDataGraphable source = null;
+		if(dataCollector != null)
+			source = dataCollector.getSource();
+		
+		if(source != null) {
+			String title = dataCollector.getTitle(); 
+			if(title == null) {
+			    title = source.getName();			    
+			}
+			
+			if(title != null) {
+			    dataGraph.setTitle(title);
+			}
+
+			sourceGraphable = (DataGraphable)source.createWrappedObject();
+			sourceDataProducer = sourceGraphable.findDataProducer();
+			
+			// dProducer.getDataDescription().setDt(0.1f);
+			if(sourceGraphable instanceof ControllableDataGraphable) {
+			    bottomPanel = new JPanel(new FlowLayout());
+			    JButton clearButton = new JButton("Clear");
+			    clearButton.addActionListener(new ActionListener(){
+			       public void actionPerformed(ActionEvent e){
+			           dataGraph.reset();			           
+			       }
+			    });
+			    
+				DrawingAction a = new DrawingAction();
+				a.setDrawingObject((ControllableDataGraphable)sourceGraphable);
+				GraphWindowToolBar gwToolbar = dataGraph.getToolBar();
+				gwToolbar.addButton(new SelectableToggleButton(a), "Draw a function");
+				
+				bottomPanel.add(clearButton);
+			    bottomPanel.add(about);
+			    
+			    dataGraph.add(bottomPanel, BorderLayout.SOUTH);
+			    
+			} else if(showDataControls) {
+			    bottomPanel = new JPanel(new FlowLayout());
+			    valueLabel = new DataStoreLabel(sourceGraphable, 1);
+			    valueLabel.setColumns(4);
+			    bottomPanel.add(valueLabel);
+
+			    toolBar = createFlowToolBar();
+			    toolBar.addDataFlowObject(sourceDataProducer);
+			    
+			    bottomPanel.add(toolBar);
+			    bottomPanel.add(about);
+			    
+			    //if(dataCollector.getShowTare()){
+			        // need to add a button that runs the sourceGraphable
+			        // for some amount of time and then offsets the input
+			        // values after that.
+			        // The code for the Tare can be put into a dataproducer
+			        // that wraps the input dataproducer
+			    //}
+			    
+			    dataGraph.add(bottomPanel, BorderLayout.SOUTH);  			    
+			}
+
+			if(sourceGraphable != null) {
+			    realGraphables.insertElementAt(sourceGraphable, 0);
+			    dataGraph.addDataGraphable(sourceGraphable);
+                otDataGraphableMap.put(source, sourceGraphable);
+			}
+		}
+
+		if(realGraphables.size() > 1 || (dataCollector != null && dataCollector.getMultipleGraphableEnabled()) ){
+		    
+		    cTree.setCellRenderer(new CCJCheckBoxRenderer());
+		    cTree.setRootVisible(false);
+
+		    for(int i=0; i<realGraphables.size(); i++){
+		    	DataGraphable dataGraphable = (DataGraphable) realGraphables.get(i);
+		        String name = dataGraphable.getLabel();
+		        Color color = dataGraphable.getColor();
+		        CCJCheckBoxTree.NodeHolder nodeHolder = 
+		        	new CCJCheckBoxTree.NodeHolder(name, true, color);
+		        usedColors.addElement(color);
+		        cTree.setSelectionPath(null);
+		        cTree.addObject(nodeHolder);
+		        nodeGraphableMap.put(nodeHolder, dataGraphable);
+		    }
+		    
+		    TreeNode rootNode = cTree.getRootNode();
+		    if(rootNode.getChildCount() > 1) {
+		    	lastSelectedPath = cTree.getPathForRow(0);
+		    	cTree.setSelectionPath(lastSelectedPath);
+		    	
+		    	DefaultMutableTreeNode node = (DefaultMutableTreeNode)cTree.getLastSelectedPathComponent();
+		    	CCJCheckBoxTree.NodeHolder holder = (CCJCheckBoxTree.NodeHolder)node.getUserObject();
+		    	DataGraphable dg = getDataGraphable(holder);
+		    	sourceDataProducer = dg.findDataProducer();
+		    }		    
+
+		    JPanel treePanel = new JPanel();
+		    treePanel.setLayout(new BorderLayout());
+
+		    JPanel controlPanel = new JPanel();
+		    controlPanel.setLayout(new GridLayout(3,1));
+		    JButton bNew = new JButton(newDataSetAction);
+		    JButton bDelete = new JButton(deleteDataSetAction);
+		    JButton bRename = new JButton(renameAction);
+		    controlPanel.add(bNew);
+		    controlPanel.add(bDelete);
+		    controlPanel.add(bRename);
+		    bNew.setOpaque(false);
+		    bDelete.setOpaque(false);
+		    bRename.setOpaque(false);
+		    
+		    controlPanel.setBackground(Color.WHITE);
+		    
+		    treePanel.setBackground(UIManager.getColor("Tree.textBackground"));
+		    treePanel.add(cTree, BorderLayout.CENTER);
+		    treePanel.add(controlPanel, BorderLayout.NORTH);
+		   
+		    dataGraph.add(treePanel, BorderLayout.WEST);
+			
+			cTree.addTreeSelectionListener(tsl);
+			cTree.addMouseListener(ml);
+		}
+	}
+
+	protected void initLabels() {
+		notesLayer = new SelectableList();
+		dataGraph.getGraph().add(notesLayer);
+
+		SelectableToggleButton addNoteButton = new SelectableToggleButton(new AddDataPointLabelAction(notesLayer, dataGraph.getObjList()));
+		dataGraph.getToolBar().addButton(addNoteButton, "Add a note to a point in the graph");
+		if(dataCollector != null && dataCollector.getRulerEnabled()) {
+			SelectableToggleButton addNoteButton2 = new SelectableToggleButton(new AddDataPointLabelActionExt(notesLayer, dataGraph.getObjList()));
+			dataGraph.getToolBar().addButton(addNoteButton2, "Add a ruler to a point in the graph");			
+		}
+
+		OTObjectList pfDPLabels = pfObject.getLabels();
+
+        //Load the data point labels
+        for (int i=0; i<pfDPLabels.size(); i++){
+        	Object obj = pfDPLabels.get(i);
+        	if(obj instanceof OTDataPointLabel) {
+    			OTDataPointLabel otDPLabel = (OTDataPointLabel)obj;
+            	
+    			//Create a data point label
+    			DataPointLabel l = (DataPointLabel)otDPLabel.createWrappedObject();
+
+                // find the correct graphable for this label
+                OTDataGraphable otGraphable = otDPLabel.getDataGraphable();
+                if(otGraphable != null) {
+                    l.setDataGraphable((DataGraphable)otDataGraphableMap.get(otGraphable));
+                    l.setForeground(getDataGraphable(otGraphable).getColor());
+                }
+    			l.setGraphableList(dataGraph.getObjList());
+    			notesLayer.add(l);			        		
+        	} else if (obj instanceof OTDataPointRuler) {
+    			OTDataPointRuler otDPRuler = (OTDataPointRuler)obj;
+            	
+    			//Create a data point label
+    			DataPointRuler r = (DataPointRuler)otDPRuler.createWrappedObject();
+
+                // find the correct graphable for this label
+                OTDataGraphable otGraphable = otDPRuler.getDataGraphable();
+                if(otGraphable != null) {
+                    r.setDataGraphable((DataGraphable)otDataGraphableMap.get(otGraphable));
+                }
+    			r.setGraphableList(dataGraph.getObjList());
+    			notesLayer.add(r);			
+        	}
+        }
+        
+		notesLayer.addGraphableListListener(this);
+		
+		GraphableList graphableList = dataGraph.getObjList();
+		graphableList.addGraphableListListener(this);				
+	}
+	
+	public static class UnknownUnit implements DataDimension
+	{
+		String unit;
+		
+		public UnknownUnit(String unit)
+		{
+			this.unit = unit;
+		}
+		
+		/* (non-Javadoc)
+		 * @see org.concord.framework.data.DataDimension#getDimension()
+		 */
+		public String getDimension() 
+		{
+			return unit;
+		}
+		
+		/* (non-Javadoc)
+		 * @see org.concord.framework.data.DataDimension#setDimension(java.lang.String)
+		 */
+		public void setDimension(String dimension) 
+		{
+			unit = dimension;
+		}
+	}
 }
