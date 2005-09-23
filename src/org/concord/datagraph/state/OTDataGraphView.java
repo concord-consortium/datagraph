@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.17 $
- * $Date: 2005-08-04 21:46:09 $
- * $Author: maven $
+ * $Revision: 1.18 $
+ * $Date: 2005-09-23 19:56:15 $
+ * $Author: swang $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -62,7 +62,7 @@ public class OTDataGraphView
 	OTDataGraph pfObject;
 	protected OTViewContainer viewContainer;
 	DataGraph dataGraph;
-	DataGraphStateManager manager;
+	DataGraphManager manager;
 	
 	public void initialize(OTObject pfDataGraph, OTViewContainer vContainer)
 	{
@@ -75,11 +75,13 @@ public class OTDataGraphView
 	 */
 	public JComponent getComponent(boolean editable)
 	{
-		dataGraph = new DataGraph();
-		dataGraph.changeToDataGraphToolbar();
+		//dataGraph = new DataGraph();
+		//dataGraph.changeToDataGraphToolbar();
 				
-		manager = new DataGraphStateManager(pfObject, dataGraph);
-		manager.initialize(editable);
+		//manager = new DataGraphStateManager(pfObject, dataGraph);
+		manager = new DataGraphManager(pfObject, editable);
+
+		dataGraph = manager.getDataGraph();
 				
 		dataGraph.setAutoFitMode(DataGraph.AUTO_SCROLL_RUNNING_MODE);
 				
