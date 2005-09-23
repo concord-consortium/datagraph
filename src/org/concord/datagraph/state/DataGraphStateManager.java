@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.17 $
- * $Date: 2005-09-15 14:08:47 $
+ * $Revision: 1.18 $
+ * $Date: 2005-09-23 20:43:32 $
  * $Author: swang $
  *
  * Licence Information
@@ -156,14 +156,16 @@ public class DataGraphStateManager
 	 */
 	public void initialize(boolean showToolbar)
 	{
-		OTObjectList xAxisList = pfObject.getXDataAxis();
-		OTObjectList yAxisList = pfObject.getYDataAxis();
+		//OTObjectList xAxisList = pfObject.getXDataAxis();
+		//OTObjectList yAxisList = pfObject.getYDataAxis();
 
 		pfGraphables = pfObject.getGraphables();
 		
 		// we are ignoring the complicated code above for now
-		xAxis = (OTDataAxis)xAxisList.get(0);
-		yAxis = (OTDataAxis)yAxisList.get(0);
+		//xAxis = (OTDataAxis)xAxisList.get(0);
+		//yAxis = (OTDataAxis)yAxisList.get(0);
+		xAxis = pfObject.getXDataAxis();
+		yAxis = pfObject.getYDataAxis();
 		
 		// OTObjectList dataProducers = pfObject.getDataProducers();				
 		DataFlowControlToolBar toolBar = null;
@@ -219,18 +221,34 @@ public class DataGraphStateManager
 		
         //Load the data point labels
         for (int i=0; i<pfDPLabels.size(); i++){
-			OTDataPointLabel otDPLabel = (OTDataPointLabel)pfDPLabels.get(i);
-        	
-			//Create a data point label
-			DataPointLabel l = (DataPointLabel)otDPLabel.createWrappedObject();
+        	Object obj = pfDPLabels.get(i);
+        	if(obj instanceof OTDataPointLabel) {
+    			OTDataPointLabel otDPLabel = (OTDataPointLabel)obj;
+            	
+    			//Create a data point label
+    			DataPointLabel l = (DataPointLabel)otDPLabel.createWrappedObject();
 
-            // find the correct graphable for this label
-            OTDataGraphable otGraphable = otDPLabel.getDataGraphable();
-            if(otGraphable != null) {
-                l.setDataGraphable((DataGraphable)otGraphableMap.get(otGraphable));
-            }
-			l.setGraphableList(dataGraph.getObjList());
-			notesLayer.add(l);			
+                // find the correct graphable for this label
+                OTDataGraphable otGraphable = otDPLabel.getDataGraphable();
+                if(otGraphable != null) {
+                    l.setDataGraphable((DataGraphable)otGraphableMap.get(otGraphable));
+                }
+    			l.setGraphableList(dataGraph.getObjList());
+    			notesLayer.add(l);			        		
+        	} else if (obj instanceof OTDataPointRuler) {
+    			OTDataPointRuler otDPRuler = (OTDataPointRuler)obj;
+            	
+    			//Create a data point label
+    			DataPointRuler r = (DataPointRuler)otDPRuler.createWrappedObject();
+
+                // find the correct graphable for this label
+                OTDataGraphable otGraphable = otDPRuler.getDataGraphable();
+                if(otGraphable != null) {
+                    r.setDataGraphable((DataGraphable)otGraphableMap.get(otGraphable));
+                }
+    			r.setGraphableList(dataGraph.getObjList());
+    			notesLayer.add(r);			
+        	}
         }
         
 		notesLayer.addGraphableListListener(this);
@@ -338,8 +356,7 @@ public class DataGraphStateManager
 			otLabel.saveObject(l);
 
 			pfObject.getLabels().add(otLabel);
-		}
-		else if (obj instanceof DataPointRuler){
+		} else if (obj instanceof DataPointRuler){
 			DataPointRuler l;
 			OTDataPointRuler otLabel;
 
@@ -379,7 +396,8 @@ public class DataGraphStateManager
 		OTWrapper otWrapper = pfObject.getOTObjectService().getWrapper(obj);
 		
 		if (otWrapper != null){
-			if(otWrapper instanceof OTDataPointLabel)
+			if(otWrapper instanceof OTDataPointLabel ||
+					otWrapper instanceof OTDataPointRuler)
 				pfObject.getLabels().remove(otWrapper);
 		}
 		
