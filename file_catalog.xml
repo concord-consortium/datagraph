@@ -3,7 +3,7 @@
     <server>cvs.concord.org</server>
     <repo>/home/buildspace/CodeBank</repo>
     <module>Projects/DataGraph</module>
-    <tagname>rel_SNAPSHOT</tagname>
+    <tagname>rel_1_3</tagname>
     <file>
         <name>.classpath</name>
         <rev>1.3</rev>
@@ -41,10 +41,10 @@
     </file>
     <file>
         <name>file_catalog.xml</name>
-        <rev>1.6</rev>
-        <modtime>1122571315000</modtime>
-        <size>10018</size>
-        <md5sum>1855df0c8ce53d4a8b8667ee2dc6f4b3</md5sum>
+        <rev>1.7</rev>
+        <modtime>1122571545000</modtime>
+        <size>10019</size>
+        <md5sum>d2e37f1642202301563ec1471a57b2ee</md5sum>
     </file>
     <file>
         <name>graph_example.xml</name>
@@ -55,241 +55,269 @@
     </file>
     <file>
         <name>project.xml</name>
-        <rev>1.16</rev>
-        <modtime>1122571541000</modtime>
-        <size>2394</size>
-        <md5sum>763cc8c4c2aeeec998b1fae4901a1f99</md5sum>
+        <rev>1.18</rev>
+        <modtime>1128626495000</modtime>
+        <size>2364</size>
+        <md5sum>577c110eaeb62a03f7e4db8316817c1a</md5sum>
     </file>
     <file>
         <name>src/org/concord/datagraph/engine/ControllableDataGraphable.java</name>
-        <rev>1.17</rev>
-        <modtime>1120836162000</modtime>
-        <size>12018</size>
-        <md5sum>a6302acb4228205ddfc86a1f41ef9bf7</md5sum>
+        <rev>1.18</rev>
+        <modtime>1123191968000</modtime>
+        <size>12028</size>
+        <md5sum>990907e1fe5a350d57fb49f1ed6ac256</md5sum>
     </file>
     <file>
         <name>src/org/concord/datagraph/engine/ControllableDataGraphableDrawing.java</name>
-        <rev>1.6</rev>
-        <modtime>1112676687000</modtime>
-        <size>9505</size>
-        <md5sum>911af71689cd637b5d880ca668a08d04</md5sum>
+        <rev>1.7</rev>
+        <modtime>1123191968000</modtime>
+        <size>9515</size>
+        <md5sum>860fdd24b6c30e89497715ece39d83a9</md5sum>
     </file>
     <file>
         <name>src/org/concord/datagraph/engine/DataGraphAutoScaler.java</name>
-        <rev>1.7</rev>
-        <modtime>1100548208000</modtime>
-        <size>2806</size>
-        <md5sum>4da6cd754fed2d3eb15b1b6657074226</md5sum>
+        <rev>1.8</rev>
+        <modtime>1123191968000</modtime>
+        <size>2816</size>
+        <md5sum>6b5c1580f58ddd3feb37a96e2b38be02</md5sum>
     </file>
     <file>
         <name>src/org/concord/datagraph/engine/DataGraphAutoScroller.java</name>
-        <rev>1.6</rev>
-        <modtime>1102921511000</modtime>
-        <size>6308</size>
-        <md5sum>167f17411bfb727abf0f12e3ee38dcb4</md5sum>
+        <rev>1.7</rev>
+        <modtime>1123191968000</modtime>
+        <size>6318</size>
+        <md5sum>98bd63b8ab62bb7dd855741d2a36f105</md5sum>
     </file>
     <file>
         <name>src/org/concord/datagraph/engine/DataGraphDaemon.java</name>
-        <rev>1.2</rev>
-        <modtime>1100294283000</modtime>
-        <size>3258</size>
-        <md5sum>4e2f33d1076ee2bc89b7c0cd09ee821c</md5sum>
+        <rev>1.3</rev>
+        <modtime>1123191968000</modtime>
+        <size>3270</size>
+        <md5sum>f4748f12f62706e8c082296b0509e48d</md5sum>
     </file>
     <file>
         <name>src/org/concord/datagraph/engine/DataGraphable.java</name>
-        <rev>1.46</rev>
-        <modtime>1120846444000</modtime>
-        <size>33732</size>
-        <md5sum>9ed6c9c60c6a4d81a01684e4667ec003</md5sum>
+        <rev>1.48</rev>
+        <modtime>1127505209000</modtime>
+        <size>33920</size>
+        <md5sum>70669ec4b1e13293c128a89262272c24</md5sum>
     </file>
     <file>
         <name>src/org/concord/datagraph/engine/DataGraphableEx.java</name>
-        <rev>1.9</rev>
-        <modtime>1120846444000</modtime>
-        <size>6720</size>
-        <md5sum>513389a30d64efe261909f75c7ad9829</md5sum>
+        <rev>1.10</rev>
+        <modtime>1123191969000</modtime>
+        <size>6732</size>
+        <md5sum>c95760be6533a9e002adfcde5b63f50e</md5sum>
     </file>
     <file>
         <name>src/org/concord/datagraph/state/DataCollectorView.java</name>
-        <rev>1.9</rev>
-        <modtime>1122571502000</modtime>
-        <size>5310</size>
-        <md5sum>f52e8231517d37a6ef84644cf2257f86</md5sum>
+        <rev>1.15</rev>
+        <modtime>1127505227000</modtime>
+        <size>5507</size>
+        <md5sum>3e2b9765e61e1065b24763018e9071dc</md5sum>
     </file>
     <file>
         <name>src/org/concord/datagraph/state/DataGraphManager.java</name>
-        <rev>1.8</rev>
-        <modtime>1120680229000</modtime>
-        <size>11005</size>
-        <md5sum>ee42bfcf92878fa65fa9f55158f50f5c</md5sum>
+        <rev>1.19</rev>
+        <modtime>1127505247000</modtime>
+        <size>32291</size>
+        <md5sum>d5c76d1bcd50a5f75992c034b28af8c7</md5sum>
     </file>
     <file>
         <name>src/org/concord/datagraph/state/DataGraphStateManager.java</name>
-        <rev>1.12</rev>
-        <modtime>1113282029000</modtime>
-        <size>9952</size>
-        <md5sum>768868974b7ba354886b9401a133c0bd</md5sum>
+        <rev>1.18</rev>
+        <modtime>1127508212000</modtime>
+        <size>12043</size>
+        <md5sum>83a7e6251a3fa27e4cf261c84d74ac1d</md5sum>
     </file>
     <file>
         <name>src/org/concord/datagraph/state/DataGraphableTree.java</name>
-        <rev>1.2</rev>
-        <modtime>1110388577000</modtime>
-        <size>1805</size>
-        <md5sum>e1f5249e04a37f938354f79c163df71e</md5sum>
+        <rev>1.3</rev>
+        <modtime>1123191969000</modtime>
+        <size>1818</size>
+        <md5sum>077ea08d17117d903c4bc6e4b2849414</md5sum>
     </file>
     <file>
         <name>src/org/concord/datagraph/state/OTDataAxis.java</name>
-        <rev>1.4</rev>
-        <modtime>1113261685000</modtime>
-        <size>1757</size>
-        <md5sum>5ca61b0efaabd7650c926eb91ef4c4f8</md5sum>
+        <rev>1.5</rev>
+        <modtime>1123191969000</modtime>
+        <size>1767</size>
+        <md5sum>ba46f7b423999a1af1c151cbad78bbc8</md5sum>
     </file>
     <file>
         <name>src/org/concord/datagraph/state/OTDataCollector.java</name>
-        <rev>1.8</rev>
-        <modtime>1120680229000</modtime>
-        <size>2213</size>
-        <md5sum>639fc79c12e4c68ef291c2f2a5ebfeb2</md5sum>
+        <rev>1.1</rev>
+        <modtime>1127505297000</modtime>
+        <size>2496</size>
+        <md5sum>68d4ab4b91de0da097a56287f39c79a4</md5sum>
     </file>
     <file>
         <name>src/org/concord/datagraph/state/OTDataCollectorView.java</name>
-        <rev>1.21</rev>
-        <modtime>1122571502000</modtime>
-        <size>2504</size>
-        <md5sum>31aeb7f701f62c1cca36267b3af4a9dc</md5sum>
+        <rev>1.24</rev>
+        <modtime>1126793358000</modtime>
+        <size>2588</size>
+        <md5sum>42d62435789988d9cea7e7184af14c41</md5sum>
     </file>
     <file>
         <name>src/org/concord/datagraph/state/OTDataDrawingToolView.java</name>
-        <rev>1.9</rev>
-        <modtime>1122571502000</modtime>
-        <size>4753</size>
-        <md5sum>c5fa341c42ad977827c68bb3fb83e4b8</md5sum>
+        <rev>1.12</rev>
+        <modtime>1124748392000</modtime>
+        <size>4937</size>
+        <md5sum>851ab519abb871d25bf89832248c100e</md5sum>
     </file>
     <file>
         <name>src/org/concord/datagraph/state/OTDataGraph.java</name>
-        <rev>1.4</rev>
-        <modtime>1113282029000</modtime>
-        <size>1624</size>
-        <md5sum>ca22f190c049ce4a9315d9cfc6783763</md5sum>
+        <rev>1.6</rev>
+        <modtime>1127505325000</modtime>
+        <size>1630</size>
+        <md5sum>86a85ab607fb4a490ee3de4b918ce4c4</md5sum>
     </file>
     <file>
         <name>src/org/concord/datagraph/state/OTDataGraphView.java</name>
-        <rev>1.16</rev>
-        <modtime>1122571502000</modtime>
-        <size>2731</size>
-        <md5sum>4ff0f986aeb6a57af7c53a614cf680c1</md5sum>
+        <rev>1.18</rev>
+        <modtime>1127505375000</modtime>
+        <size>2803</size>
+        <md5sum>efae8fa1f9fa0c2875619c8af9aa97ee</md5sum>
     </file>
     <file>
         <name>src/org/concord/datagraph/state/OTDataGraphable.java</name>
-        <rev>1.16</rev>
-        <modtime>1121871893000</modtime>
-        <size>7608</size>
-        <md5sum>648e050222575480078fdba16679697a</md5sum>
+        <rev>1.24</rev>
+        <modtime>1127505347000</modtime>
+        <size>8449</size>
+        <md5sum>cf59cc0d8ab3e92604796c7e4b8dcb89</md5sum>
     </file>
     <file>
         <name>src/org/concord/datagraph/state/OTDataPointLabel.java</name>
-        <rev>1.6</rev>
-        <modtime>1113279644000</modtime>
-        <size>2795</size>
-        <md5sum>15ce04f257625b74dda9b7d6f3042031</md5sum>
+        <rev>1.9</rev>
+        <modtime>1124748392000</modtime>
+        <size>3014</size>
+        <md5sum>03d57b6e096677f2bece87b51da9118f</md5sum>
+    </file>
+    <file>
+        <name>src/org/concord/datagraph/state/OTDataPointRuler.java</name>
+        <rev>1.2</rev>
+        <modtime>1126793557000</modtime>
+        <size>2785</size>
+        <md5sum>917dc995cc8d695ec2ee2cf67eafae20</md5sum>
     </file>
     <file>
         <name>src/org/concord/datagraph/state/OTMultiDataGraph.java</name>
-        <rev>1.2</rev>
-        <modtime>1113262116000</modtime>
-        <size>1529</size>
-        <md5sum>952919efc90d880302be007da1ccb3e8</md5sum>
+        <rev>1.3</rev>
+        <modtime>1123191969000</modtime>
+        <size>1542</size>
+        <md5sum>0d62b276c5454c95a7b0faba0750e991</md5sum>
     </file>
     <file>
         <name>src/org/concord/datagraph/state/OTMultiDataGraphView.java</name>
-        <rev>1.6</rev>
-        <modtime>1122571502000</modtime>
-        <size>4207</size>
-        <md5sum>0836df7b5ec523e5c8fc498906428fe7</md5sum>
+        <rev>1.7</rev>
+        <modtime>1123191969000</modtime>
+        <size>4217</size>
+        <md5sum>56c796e30c81d4aba0f376aa33d9f021</md5sum>
     </file>
     <file>
         <name>src/org/concord/datagraph/state/SingleValueDataView.java</name>
-        <rev>1.9</rev>
-        <modtime>1122571502000</modtime>
-        <size>6722</size>
-        <md5sum>b5020dac07827cebb4554c5651928b7e</md5sum>
+        <rev>1.12</rev>
+        <modtime>1124748392000</modtime>
+        <size>6677</size>
+        <md5sum>68112baa07bdef990016d68f30d0af34</md5sum>
     </file>
     <file>
         <name>src/org/concord/datagraph/ui/AddDataPointLabelAction.java</name>
-        <rev>1.5</rev>
-        <modtime>1112580357000</modtime>
-        <size>2351</size>
-        <md5sum>fbb97279e0b13440d52a669c4da47759</md5sum>
+        <rev>1.7</rev>
+        <modtime>1126793427000</modtime>
+        <size>2855</size>
+        <md5sum>8512583acb4bb522871356de0feade3b</md5sum>
+    </file>
+    <file>
+        <name>src/org/concord/datagraph/ui/AddDataPointLabelActionExt.java</name>
+        <rev>1.3</rev>
+        <modtime>1125329764000</modtime>
+        <size>1758</size>
+        <md5sum>c395388db4c06438b10f2880d8693bd4</md5sum>
+    </file>
+    <file>
+        <name>src/org/concord/datagraph/ui/DashedDataLine.java</name>
+        <rev>1.4</rev>
+        <modtime>1125329779000</modtime>
+        <size>4217</size>
+        <md5sum>c3eb751d47ca4ac99c723f4d0a3c8048</md5sum>
     </file>
     <file>
         <name>src/org/concord/datagraph/ui/DataGraph.java</name>
-        <rev>1.41</rev>
-        <modtime>1122043438000</modtime>
-        <size>27768</size>
-        <md5sum>5868a24b319ed56f8495917ab02e4793</md5sum>
+        <rev>1.44</rev>
+        <modtime>1124748392000</modtime>
+        <size>28019</size>
+        <md5sum>cd29be4e5036ad25cd3a76d6f2b0306c</md5sum>
     </file>
     <file>
         <name>src/org/concord/datagraph/ui/DataGraphActions.java</name>
-        <rev>1.7</rev>
-        <modtime>1100294284000</modtime>
-        <size>10478</size>
-        <md5sum>27a15f0645860a9a3f97386adbee06a8</md5sum>
+        <rev>1.8</rev>
+        <modtime>1123191969000</modtime>
+        <size>10490</size>
+        <md5sum>cc0806bec809d7618452b9d1f45cf759</md5sum>
     </file>
     <file>
         <name>src/org/concord/datagraph/ui/DataGraphAxisLimitsPanel.java</name>
-        <rev>1.3</rev>
-        <modtime>1113780950000</modtime>
-        <size>9341</size>
-        <md5sum>28b7658bcc9407f25a0743886edc06de</md5sum>
+        <rev>1.4</rev>
+        <modtime>1123191969000</modtime>
+        <size>9351</size>
+        <md5sum>18543f059eb092b41da744e769b2149b</md5sum>
     </file>
     <file>
         <name>src/org/concord/datagraph/ui/DataGraphToolbar.java</name>
-        <rev>1.6</rev>
-        <modtime>1113792950000</modtime>
-        <size>2315</size>
-        <md5sum>4b8d8cff46a83b0a00121fb123a41c19</md5sum>
+        <rev>1.7</rev>
+        <modtime>1123191969000</modtime>
+        <size>2325</size>
+        <md5sum>b3841bac19990e7b33727c46050f7bc0</md5sum>
     </file>
     <file>
         <name>src/org/concord/datagraph/ui/DataGraphableTableCellColor.java</name>
-        <rev>1.4</rev>
-        <modtime>1100294284000</modtime>
-        <size>4774</size>
-        <md5sum>8c6e105f9f7672d5e67e1a558eb7cfee</md5sum>
+        <rev>1.5</rev>
+        <modtime>1123191969000</modtime>
+        <size>4786</size>
+        <md5sum>89996cff11f784d50a148a68188a79a7</md5sum>
     </file>
     <file>
         <name>src/org/concord/datagraph/ui/DataGraphablesPanel.java</name>
-        <rev>1.3</rev>
-        <modtime>1110388452000</modtime>
-        <size>6056</size>
-        <md5sum>e7c378c9561f9e782e88628e4c015abe</md5sum>
+        <rev>1.4</rev>
+        <modtime>1123191969000</modtime>
+        <size>6066</size>
+        <md5sum>85e339844f82348e4aac098b1722e8b0</md5sum>
     </file>
     <file>
         <name>src/org/concord/datagraph/ui/DataPointLabel.java</name>
-        <rev>1.1</rev>
-        <modtime>1112334468000</modtime>
-        <size>7442</size>
-        <md5sum>d53fef326f1cd6a399bfadc5aa1102e5</md5sum>
+        <rev>1.19</rev>
+        <modtime>1126793442000</modtime>
+        <size>13591</size>
+        <md5sum>a08b3dbbbccaf7405b279a6f2a43aa45</md5sum>
+    </file>
+    <file>
+        <name>src/org/concord/datagraph/ui/DataPointRuler.java</name>
+        <rev>1.3</rev>
+        <modtime>1126793613000</modtime>
+        <size>8523</size>
+        <md5sum>a9c51107699991583d8b10fefb2b0fb3</md5sum>
     </file>
     <file>
         <name>src/org/concord/datagraph/ui/MultipleDataGraph.java</name>
-        <rev>1.8</rev>
-        <modtime>1112676716000</modtime>
-        <size>6635</size>
-        <md5sum>2e3dc1be962d4b805b44c25b48dcc785</md5sum>
+        <rev>1.9</rev>
+        <modtime>1123191969000</modtime>
+        <size>6645</size>
+        <md5sum>db1410c680c7bc0ca243b9903872e10c</md5sum>
     </file>
     <file>
         <name>src/org/concord/datagraph/ui/MultipleGrid2D.java</name>
-        <rev>1.5</rev>
-        <modtime>1112514459000</modtime>
-        <size>4859</size>
-        <md5sum>e3e14713dec8aa4850292104a3eacee1</md5sum>
+        <rev>1.6</rev>
+        <modtime>1123191969000</modtime>
+        <size>4869</size>
+        <md5sum>7beba173024e1f8550290ea5004e3f53</md5sum>
     </file>
     <file>
         <name>src/org/concord/datagraph/ui/SingleDataAxisGrid.java</name>
-        <rev>1.4</rev>
-        <modtime>1113780950000</modtime>
-        <size>4106</size>
-        <md5sum>2d18ee6521794d4cfd7842299dde8bb4</md5sum>
+        <rev>1.5</rev>
+        <modtime>1123191969000</modtime>
+        <size>4116</size>
+        <md5sum>c19351976e19388d41f6a35e5b318a6c</md5sum>
     </file>
 </filecatalog>
 
