@@ -73,6 +73,7 @@ import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.datagraph.ui.AddDataPointLabelAction;
 import org.concord.datagraph.ui.AddDataPointLabelActionExt;
+import org.concord.datagraph.ui.AutoScaleAction;
 import org.concord.datagraph.ui.DataGraph;
 import org.concord.datagraph.ui.DataPointLabel;
 import org.concord.datagraph.ui.DataPointRuler;
@@ -139,7 +140,7 @@ public class DataGraphManager
 			Color.ORANGE, Color.PINK, Color.RED, Color.YELLOW, Color.BLACK};
 	Vector usedColors = new Vector();
 
-	AboutBox about = new AboutBox("OTrunk");
+	//AboutBox about = new AboutBox("OTrunk");
 	
 	AbstractAction newDataSetAction;
 	AbstractAction deleteDataSetAction;
@@ -466,7 +467,7 @@ public class DataGraphManager
         			    valueLabel.setLocation(labelLocation);
         			    bottomPanel.add(valueLabel);
         			    bottomPanel.add(toolBar);
-        			    bottomPanel.add(about);
+        			    //bottomPanel.add(about);
 
         			    dg.setVisible(nodeHolder.checked);
        			    	
@@ -724,6 +725,24 @@ public class DataGraphManager
 		
         dataGraph.setFocusable(true);
         
+		notesLayer = new SelectableList();
+		dataGraph.getGraph().add(notesLayer);
+
+		SelectableToggleButton addNoteButton = new SelectableToggleButton(new AddDataPointLabelAction(notesLayer, dataGraph.getObjList()));
+		dataGraph.getToolBar().addButton(addNoteButton, "Add a note to a point in the graph");
+		if(dataCollector != null && dataCollector.getRulerEnabled()) {
+			SelectableToggleButton addNoteButton2 = new SelectableToggleButton(new AddDataPointLabelActionExt(notesLayer, dataGraph.getObjList()));
+			dataGraph.getToolBar().addButton(addNoteButton2, "Add a ruler to a point in the graph");			
+		}
+		
+		JButton autoScaleButton = new JButton(new AutoScaleAction(dataGraph));
+		JButton autoScaleXButton = new JButton(new AutoScaleAction(AutoScaleAction.AUTOSCALE_X, dataGraph));
+		JButton autoScaleYButton = new JButton(new AutoScaleAction(AutoScaleAction.AUTOSCALE_Y, dataGraph));
+
+		dataGraph.getToolBar().addButton(autoScaleButton, "Autoscale the graph");
+		dataGraph.getToolBar().addButton(autoScaleXButton, "Autoscale X axis");
+		dataGraph.getToolBar().addButton(autoScaleYButton, "Autoscale Y axis");
+		
         KeyStroke keyStroke = KeyStroke.getKeyStroke(new Character('t'), InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK);
         dataGraph.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStroke, "ShowTree");
         dataGraph.getActionMap().put("ShowTree", new AbstractAction(){
@@ -831,7 +850,7 @@ public class DataGraphManager
 				gwToolbar.addButton(new SelectableToggleButton(a), "Draw a function");
 				
 				bottomPanel.add(clearButton);
-			    bottomPanel.add(about);
+			    //bottomPanel.add(about);
 			    
 			    dataGraph.add(bottomPanel, BorderLayout.SOUTH);
 			    
@@ -845,7 +864,7 @@ public class DataGraphManager
 			    toolBar.addDataFlowObject(sourceDataProducer);
 			    
 			    bottomPanel.add(toolBar);
-			    bottomPanel.add(about);
+			    //bottomPanel.add(about);
 			    
 			    //if(dataCollector.getShowTare()){
 			        // need to add a button that runs the sourceGraphable
@@ -865,7 +884,7 @@ public class DataGraphManager
 			}
 		}
 
-		if(realGraphables.size() > 1 || (dataCollector != null && dataCollector.getMultipleGraphableEnabled()) ){
+		if((dataCollector != null && dataCollector.getMultipleGraphableEnabled()) ){
 		    
 		    cTree.setCellRenderer(new CCJCheckBoxRenderer());
 		    cTree.setRootVisible(false);
@@ -922,16 +941,6 @@ public class DataGraphManager
 	}
 
 	protected void initLabels() {
-		notesLayer = new SelectableList();
-		dataGraph.getGraph().add(notesLayer);
-
-		SelectableToggleButton addNoteButton = new SelectableToggleButton(new AddDataPointLabelAction(notesLayer, dataGraph.getObjList()));
-		dataGraph.getToolBar().addButton(addNoteButton, "Add a note to a point in the graph");
-		if(dataCollector != null && dataCollector.getRulerEnabled()) {
-			SelectableToggleButton addNoteButton2 = new SelectableToggleButton(new AddDataPointLabelActionExt(notesLayer, dataGraph.getObjList()));
-			dataGraph.getToolBar().addButton(addNoteButton2, "Add a ruler to a point in the graph");			
-		}
-
 		OTObjectList pfDPLabels = pfObject.getLabels();
 
         //Load the data point labels
