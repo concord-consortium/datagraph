@@ -1,0 +1,104 @@
+package org.concord.datagraph.ui;
+
+import java.awt.event.ActionEvent;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.Icon;
+
+import org.concord.datagraph.engine.DataGraphAutoScaler;
+import org.concord.graph.util.ui.ResourceLoader;
+
+/**
+ * 
+ * @author swang
+ *
+ */
+public class AutoScaleAction extends AbstractAction{
+
+	public static final int AUTOSCALE_X = 0;
+	public static final int AUTOSCALE_Y = 1;
+	public static final int AUTOSCALE_XY = 2;
+	public static final int DEFAULT_MARGIN = 10;
+	
+	int autoScaleMode = AUTOSCALE_XY;
+	int margin = DEFAULT_MARGIN;
+	
+	DataGraph dataGraph;
+	
+	public AutoScaleAction() {
+		this(AUTOSCALE_XY, null);
+	}
+	
+	public AutoScaleAction(DataGraph graph) {
+		this(AUTOSCALE_XY, graph);
+	}
+	
+	public AutoScaleAction(int autoScaleMode) {
+		this(autoScaleMode, null);
+	}
+	
+	public AutoScaleAction(int autoScaleMode, DataGraph dataGraph) {
+		setAutoScaleMode(autoScaleMode);
+		setDataGraph(dataGraph);
+		setDefaultIcon();
+	}
+	
+	public void setAutoScaleMode(int autoScaleMode) {
+		if(autoScaleMode != AUTOSCALE_X && 
+				autoScaleMode != AUTOSCALE_Y &&
+				autoScaleMode != AUTOSCALE_XY)
+			throw new IllegalArgumentException("autoScaleMode exception: " +
+					"Must be either AutoScaleAction.AUTOSCALE_X, " +
+					"AutoScaleAction.AUTOSCALE_Y, or" +
+					"AutoScaleAction.AUTOSCALE_XY");
+		this.autoScaleMode = autoScaleMode;
+	}
+	
+	public void setDataGraph(DataGraph graph) {
+		if(graph == null) return;
+		this.dataGraph = graph;
+	}
+
+	public void actionPerformed(ActionEvent e) {
+		autoScale();
+	}
+	
+	public void autoScale() {
+		if(dataGraph == null) return;
+		
+		DataGraphAutoScaler autoScaler = dataGraph.getAutoScaler();
+
+		autoScaler.setAutoScaleX(autoScaleMode == AUTOSCALE_X 
+				|| autoScaleMode == AUTOSCALE_XY);
+		autoScaler.setAutoScaleY(autoScaleMode == AUTOSCALE_Y
+				|| autoScaleMode == AUTOSCALE_XY);
+
+		autoScaler.handleUpdate();
+	}
+	
+	private void setDefaultIcon() {
+		if(autoScaleMode == AUTOSCALE_X) {
+			setIcon("auto-scale-x.png");
+		} else if(autoScaleMode == AUTOSCALE_Y) {
+			setIcon("auto-scale-y.png");
+		} else if(autoScaleMode == AUTOSCALE_XY) {
+			setIcon("auto-scale.png");
+		}
+	}
+	
+	public void setIcon(String strURL)
+	{
+		setIcon(ResourceLoader.getImageIcon(strURL, ""));
+	}
+	
+	/**
+	 * Sets the icon of the action
+	 * (Equivalent to the Action.SMALL_ICON property)
+	 * @param icon	icon of the action
+	 */
+	public void setIcon(Icon icon)
+	{
+		putValue(Action.SMALL_ICON, icon);
+	}
+}
