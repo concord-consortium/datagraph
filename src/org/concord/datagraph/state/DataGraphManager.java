@@ -31,7 +31,6 @@ package org.concord.datagraph.state;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -50,8 +49,6 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
@@ -884,7 +881,7 @@ public class DataGraphManager
 			}
 		}
 
-		if((dataCollector != null && dataCollector.getMultipleGraphableEnabled()) ){
+		if(realGraphables.size() > 1 || (dataCollector != null && dataCollector.getMultipleGraphableEnabled()) ){
 		    
 		    cTree.setCellRenderer(new CCJCheckBoxRenderer());
 		    cTree.setRootVisible(false);
