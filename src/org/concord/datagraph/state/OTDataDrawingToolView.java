@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.12 $
- * $Date: 2005-08-22 22:06:32 $
- * $Author: scytacki $
+ * $Revision: 1.13 $
+ * $Date: 2005-11-09 16:28:50 $
+ * $Author: swang $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -45,6 +45,7 @@ import org.concord.framework.otrunk.view.OTPrintDimension;
 import org.concord.framework.otrunk.view.OTViewContainer;
 import org.concord.graph.util.engine.DrawingObject;
 import org.concord.graph.util.state.OTDrawingToolView;
+import org.concord.graph.util.ui.EraserStamp;
 
 /**
  * OTDataDrawingToolView
@@ -145,8 +146,13 @@ implements OTPrintDimension {
 			OTDataGraphable otDataGraphable = (OTDataGraphable)objOT;	
 			
 			addDrawingObject((ControllableDataGraphableDrawing)otDataGraphable.createWrappedObject());
-		}
-		else{
+		} else if (objOT instanceof OTEraserGraphable){
+			OTEraserGraphable otEraserGraphable = (OTEraserGraphable)objOT;	
+			
+			EraserStamp eraser = (EraserStamp)otEraserGraphable.createWrappedObject() ;
+			addDrawingObject(eraser);
+			eraser.setImage(backImage);
+		} else{
 			super.loadGraphable(objOT);
 		}
 	}
