@@ -92,7 +92,6 @@ implements OTWrapper, GraphableListener{
 	public OTEraserGraphable(ResourceSchema resources) {
 		super(resources);
 		this.resources = resources;
-		// TODO Auto-generated constructor stub
 	}
 
 	public void setEraser(OTDrawingEraser eraser)
@@ -164,42 +163,6 @@ implements OTWrapper, GraphableListener{
 		}
 		//
 	}
-
-	/**
-	 * @see org.concord.framework.otrunk.OTWrapper#saveObject(java.lang.Object)
-	 */
-	/*
-	public void saveObject(Object wrappedObject)
-	{
-		DataGraphable dg = (DataGraphable)wrappedObject;
-		
-		Color c = dg.getColor();
-		resources.setColor(c.getRGB() & 0x00FFFFFF);
-		resources.setConnectPoints(dg.isConnectPoints());
-		resources.setDrawMarks(dg.isShowCrossPoint());
-		resources.setXColumn(dg.getChannelX());
-		resources.setYColumn(dg.getChannelY());
-		resources.setName(dg.getLabel());
-	}
-	*/
-
-	/**
-	 * @see org.concord.framework.otrunk.OTWrapper#saveObject(java.lang.Object)
-	 */
-	/*
-	public void saveObject(Object wrappedObject)
-	{
-		EraserStamp eraser = (EraserStamp)wrappedObject;
-		
-		Color c = eraser.getBgColor();
-		resources.setBgColor(c.getRGB() & 0x00FFFFFF);
-		resources.setConnectPoints(dg.isConnectPoints());
-		resources.setDrawMarks(dg.isShowCrossPoint());
-		resources.setXColumn(dg.getChannelX());
-		resources.setYColumn(dg.getChannelY());
-		resources.setName(dg.getLabel());
-	}
-	*/
 
 	/**
 	 * @see org.concord.framework.otrunk.OTWrapper#getWrappedObjectClass()
