@@ -23,14 +23,16 @@
 
 /*
  * Last modification information:
- * $Revision: 1.8 $
- * $Date: 2005-08-04 21:46:08 $
- * $Author: maven $
+ * $Revision: 1.9 $
+ * $Date: 2005-11-09 16:24:40 $
+ * $Author: swang $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
 */
 package org.concord.datagraph.engine;
+
+import java.awt.geom.Point2D;
 
 
 
@@ -45,8 +47,12 @@ package org.concord.datagraph.engine;
  */
 public class DataGraphAutoScaler extends DataGraphDaemon
 {
+	public static final int DEFAULT_MARGIN = 10;
+	
 	protected boolean autoScaleX = true;
 	protected boolean autoScaleY = false;
+	
+	int margin = DEFAULT_MARGIN;
 	
 	/**
 	 * 
@@ -54,16 +60,20 @@ public class DataGraphAutoScaler extends DataGraphDaemon
 	public void handleUpdate()
 	{
 		DataGraphable dg;
-		float minX=0, maxX=0, minY=0, maxY=0;
+		float minX=Float.MAX_VALUE, maxX=0, minY=Float.MAX_VALUE, maxY=0;
 		float val;
 		
 		if (!autoScaleX && !autoScaleY) return;
+		
+		if(graphables.size() < 1) return;
+		
+		boolean needUpdate = false;
 		
 		for (int i=0; i<graphables.size(); i++){
 			Object obj = graphables.elementAt(i);
 			if (obj instanceof DataGraphable){
 				dg = (DataGraphable)obj;
-				if(dg.getTotalNumSamples() < 1) {
+				if(dg.getTotalNumSamples() < 1 || !dg.isVisible()) {
 					continue;
 				}
 				
@@ -71,19 +81,43 @@ public class DataGraphAutoScaler extends DataGraphDaemon
 				maxX = Math.max(dg.getMaxXValue(), maxX);
 				minY = Math.min(dg.getMinYValue(), minY);
 				maxY = Math.max(dg.getMaxYValue(), maxY);
+				needUpdate = true;
 			}
 		}
+		
+		if(!needUpdate) return;
+		
 		if (!Float.isNaN(minX) && !Float.isNaN(maxX) && !Float.isNaN(minY) && !Float.isNaN(maxY)){
 			
 			//System.out.println(minX + " " + maxX +  " " + minY +  " " + maxY);
 			
 			if (autoScaleX && autoScaleY){			
 				graph.setLimitsAxisWorld(minX, maxX, minY, maxY);
+				
+				Point2D scale = graph.getGraphArea().getCoordinateSystem().getScale();
+
+				minY = (float) (minY - margin/scale.getY());
+				maxX = (float) (maxX + margin/scale.getX());
+				maxY = (float) (maxY + margin/scale.getY());
+				graph.setLimitsAxisWorld(minX, maxX, minY, maxY);
 			}
 			else if (autoScaleX){			
 				graph.setLimitsAxisWorld(minX, maxX, graph.getMinYAxisWorld(), graph.getMaxYAxisWorld());
+				
+				Point2D scale = graph.getGraphArea().getCoordinateSystem().getScale();
+				
+				maxX = (float) (maxX + margin/scale.getX());
+				
+				graph.setLimitsAxisWorld(minX, maxX, graph.getMinYAxisWorld(), graph.getMaxYAxisWorld());
 			}
 			else if (autoScaleY){			
+				graph.setLimitsAxisWorld(graph.getMinXAxisWorld(), graph.getMaxXAxisWorld(), minY, maxY);
+				
+				Point2D scale = graph.getGraphArea().getCoordinateSystem().getScale();
+				
+				minY = (float) (minY - margin/scale.getY());
+				maxY = (float) (maxY + margin/scale.getY());
+				
 				graph.setLimitsAxisWorld(graph.getMinXAxisWorld(), graph.getMaxXAxisWorld(), minY, maxY);
 			}
 		}
@@ -105,5 +139,9 @@ public class DataGraphAutoScaler extends DataGraphDaemon
 	public void setAutoScaleY(boolean autoScaleY)
 	{
 		this.autoScaleY = autoScaleY;
+	}
+	
+	public void setMargin(int margin) {
+		this.margin = margin;
 	}
 }
