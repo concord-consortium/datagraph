@@ -73,9 +73,11 @@ implements OTWrapper, GraphableListener{
     	public boolean getLocked();
     	public void setLocked(boolean locked);
     	
+    	// points are the path that eraser is drawn.
     	public float[] getPoints();
     	public void setPoints(float[] points);
     	
+    	// weight is the pixel that the eraser should occupy.
     	public static int DEFAULT_weightX = 1;
     	public int getWeightX();
     	public void setWeightX(int weightX);
