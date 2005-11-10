@@ -727,18 +727,23 @@ public class DataGraphManager
 
 		SelectableToggleButton addNoteButton = new SelectableToggleButton(new AddDataPointLabelAction(notesLayer, dataGraph.getObjList()));
 		dataGraph.getToolBar().addButton(addNoteButton, "Add a note to a point in the graph");
+		
+		//DataPointRuler need to be explicitly enabled to show per Brad's request.
 		if(dataCollector != null && dataCollector.getRulerEnabled()) {
 			SelectableToggleButton addNoteButton2 = new SelectableToggleButton(new AddDataPointLabelActionExt(notesLayer, dataGraph.getObjList()));
 			dataGraph.getToolBar().addButton(addNoteButton2, "Add a ruler to a point in the graph");			
 		}
 		
-		JButton autoScaleButton = new JButton(new AutoScaleAction(dataGraph));
-		JButton autoScaleXButton = new JButton(new AutoScaleAction(AutoScaleAction.AUTOSCALE_X, dataGraph));
-		JButton autoScaleYButton = new JButton(new AutoScaleAction(AutoScaleAction.AUTOSCALE_Y, dataGraph));
-
-		dataGraph.getToolBar().addButton(autoScaleButton, "Autoscale the graph");
-		dataGraph.getToolBar().addButton(autoScaleXButton, "Autoscale X axis");
-		dataGraph.getToolBar().addButton(autoScaleYButton, "Autoscale Y axis");
+		//AutoScale need to be explicitly enabled to show per Brad's request.
+		if(dataCollector != null && dataCollector.getAutoScaleEnabled()) {
+			JButton autoScaleButton = new JButton(new AutoScaleAction(dataGraph));
+			JButton autoScaleXButton = new JButton(new AutoScaleAction(AutoScaleAction.AUTOSCALE_X, dataGraph));
+			JButton autoScaleYButton = new JButton(new AutoScaleAction(AutoScaleAction.AUTOSCALE_Y, dataGraph));
+	
+			dataGraph.getToolBar().addButton(autoScaleButton, "Autoscale the graph");
+			dataGraph.getToolBar().addButton(autoScaleXButton, "Autoscale X axis");
+			dataGraph.getToolBar().addButton(autoScaleYButton, "Autoscale Y axis");
+		}
 		
         KeyStroke keyStroke = KeyStroke.getKeyStroke(new Character('t'), InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK);
         dataGraph.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStroke, "ShowTree");
