@@ -75,7 +75,9 @@ public interface OTDataCollector
 	public final static boolean DEFAULT_multipleGraphableEnabled = false;
 	public boolean getMultipleGraphableEnabled();
 	
-	public final static boolean DEFAULT_rulerEnabled = false;
+	// change default to true so that the old database 
+	// can use this w/o any modification.
+	public final static boolean DEFAULT_rulerEnabled = true;
 	public boolean getRulerEnabled();
 	
 	public final static boolean DEFAULT_autoScaleEnabled = false;
