@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.7 $
- * $Date: 2005-08-04 21:46:08 $
- * $Author: maven $
+ * $Revision: 1.8 $
+ * $Date: 2005-11-23 19:27:40 $
+ * $Author: swang $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -84,8 +84,10 @@ public class DataGraphAutoScroller extends DataGraphDaemon
 			if (obj instanceof DataGraphable){
 				dg = (DataGraphable)obj;
 				
-				maxX = Math.max(dg.getMaxXValue(), maxX);
-				maxY = Math.max(dg.getMaxYValue(), maxY);
+				if(!dg.isLocked()) {
+					maxX = Math.max(dg.getMaxXValue(), maxX);
+					maxY = Math.max(dg.getMaxYValue(), maxY);
+				}
 			}
 		}
 		if (!Float.isNaN(maxX) && !Float.isNaN(maxY)){
