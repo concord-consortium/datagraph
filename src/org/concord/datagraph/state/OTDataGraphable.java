@@ -178,6 +178,13 @@ public class OTDataGraphable extends DefaultOTObject
         return dg;
     }
 
+    public void initWrappedObject(Object container, Object wrappedObject)
+    {
+        // this should do any tasks needed to setup this
+        // wrapped object in its container. 
+        // the container is generally a vew object.  
+    }
+    
     /**
      * There should be a better way to do this.  Given a DataGraphable that can be started and 
      * stopped (similar to implementing DataFlow interface), it should be possible to get that

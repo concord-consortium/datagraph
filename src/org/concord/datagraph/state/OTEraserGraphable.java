@@ -37,6 +37,7 @@ import org.concord.framework.otrunk.OTResourceSchema;
 import org.concord.framework.otrunk.OTWrapper;
 import org.concord.graph.event.GraphableListener;
 import org.concord.graph.util.state.OTDrawingEraser;
+import org.concord.graph.util.state.OTDrawingToolView;
 import org.concord.graph.util.ui.EraserStamp;
 import org.concord.graph.util.ui.ImageStamp;
 
@@ -142,6 +143,19 @@ implements OTWrapper, GraphableListener{
         return eraserObj;
     }
     
+    public void initWrappedObject(Object container, Object wrappedObject)
+    {
+        // this should do any tasks needed to setup this
+        // wrapped object in its container. 
+        // the container is generally a vew object.  
+
+        EraserStamp eraser = (EraserStamp)wrappedObject;
+        
+        if(container instanceof OTDrawingToolView){
+            eraser.setImage(((OTDrawingToolView)container).getBackImage());
+        }
+    }
+
 	/**
 	 * @see org.concord.framework.otrunk.OTWrapper#saveObject(java.lang.Object)
 	 */

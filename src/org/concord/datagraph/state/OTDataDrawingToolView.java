@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.13 $
- * $Date: 2005-11-09 16:28:50 $
- * $Author: swang $
+ * $Revision: 1.14 $
+ * $Date: 2006-02-01 21:53:28 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -137,26 +137,6 @@ implements OTPrintDimension {
 		}
 	}
 	
-	/**
-	 * @see org.concord.graph.util.state.OTDrawingToolView#loadGraphable(java.lang.Object)
-	 */
-	protected void loadGraphable(Object objOT)
-	{
-		if (objOT instanceof OTDataGraphable){
-			OTDataGraphable otDataGraphable = (OTDataGraphable)objOT;	
-			
-			addDrawingObject((ControllableDataGraphableDrawing)otDataGraphable.createWrappedObject());
-		} else if (objOT instanceof OTEraserGraphable){
-			OTEraserGraphable otEraserGraphable = (OTEraserGraphable)objOT;	
-			
-			EraserStamp eraser = (EraserStamp)otEraserGraphable.createWrappedObject() ;
-			addDrawingObject(eraser);
-			eraser.setImage(backImage);
-		} else{
-			super.loadGraphable(objOT);
-		}
-	}
-
 	public Dimension getPrintDimention(int containerDisplayWidth, int containerDisplayHeight) {
 		Dimension dim = new Dimension(550, 225);
         if(dim.height > containerDisplayHeight) 
