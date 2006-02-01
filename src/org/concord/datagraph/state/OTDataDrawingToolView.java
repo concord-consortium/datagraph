@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.14 $
- * $Date: 2006-02-01 21:53:28 $
+ * $Revision: 1.15 $
+ * $Date: 2006-02-01 22:09:55 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -57,7 +57,7 @@ import org.concord.graph.util.ui.EraserStamp;
  *
  */
 public class OTDataDrawingToolView extends OTDrawingToolView
-implements OTPrintDimension {
+{
 	/**
      * Not intended to be serialized but this is here so 
      * the compiler warning goes away.
@@ -137,12 +137,4 @@ implements OTPrintDimension {
 		}
 	}
 	
-	public Dimension getPrintDimention(int containerDisplayWidth, int containerDisplayHeight) {
-		Dimension dim = new Dimension(550, 225);
-        if(dim.height > containerDisplayHeight) 
-            dim.height = containerDisplayHeight;
-        if(dim.width > containerDisplayWidth) 
-            dim.width = containerDisplayWidth;
-        return dim;
-	}    
 }
