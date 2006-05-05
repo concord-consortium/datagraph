@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.3 $
- * $Date: 2005-08-04 21:46:09 $
- * $Author: maven $
+ * $Revision: 1.4 $
+ * $Date: 2006-05-05 16:04:17 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -50,4 +50,6 @@ public interface OTMultiDataGraph extends OTObjectInterface
     
     public int getRows();
     public int getColumns();
+    
+    public OTObjectList getPluginViews();
 }

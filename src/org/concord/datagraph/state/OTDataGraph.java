@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.6 $
- * $Date: 2005-09-23 19:55:25 $
- * $Author: swang $
+ * $Revision: 1.7 $
+ * $Date: 2006-05-05 16:04:17 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -48,11 +48,21 @@ import org.concord.framework.otrunk.OTObjectList;
  */
 public interface OTDataGraph extends OTObjectInterface
 {
-	public OTObjectList getGraphables();
+    /**
+     * The graphables are cloned when a new data store is 
+     * added to the graph.  This could happen when the new button
+     * is pressed to create a spot to store newly collected data
+     * or this could happen when data is imported into the graph. 
+     * @return
+     */
+    public OTObjectList getPrototypeGraphables();
+
+    public OTObjectList getGraphables();
 	
 	public OTObjectList getLabels();
 	
 	public OTDataAxis getYDataAxis();
 
-	public OTDataAxis getXDataAxis();	
+	public OTDataAxis getXDataAxis();
+    
 }

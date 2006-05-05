@@ -106,6 +106,11 @@ public class DataCollectorView
     	return dataGraphManager.getSourceDataProducer();
     }
     
+    public DataGraphManager getDataGraphManager()
+    {
+        return dataGraphManager;
+    }
+    
 	/**
 	 * @see org.concord.graph.event.GraphableListListener#listGraphableAdded(java.util.EventObject)
 	 */

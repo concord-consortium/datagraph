@@ -281,4 +281,14 @@ public class OTDataGraphable extends DefaultOTObject
 	public void setLocked(boolean locked) {
 		resources.setLocked(locked);
 	}
+    
+    public void setColor(Color c)
+    {
+        resources.setColor(c.getRGB());
+    }
+    
+    public void copyInto(OTDataGraphable copy)
+    {        
+        resources.copyInto(copy.resources);
+    }
 }
