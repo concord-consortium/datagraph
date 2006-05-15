@@ -23,9 +23,9 @@
 
 /**
  * Last modification information:
- * $Revision: 1.5 $
- * $Date: 2005-08-04 21:46:09 $
- * $Author: maven $
+ * $Revision: 1.6 $
+ * $Date: 2006-05-15 20:54:50 $
+ * $Author: scytacki $
  *
  * Copyright 2004 The Concord Consortium
 */
@@ -68,6 +68,14 @@ public class SingleDataAxisGrid
 	}
 		
 	/**
+	 * This is the unit of the data being displayed on the graph 
+	 * When this axis is used to figure out screen coordinates of 
+	 * data points, this is the unit that is used.
+	 * 
+	 * This can be different than the unit which is displayed on
+	 * the axis.  For example the data points being displayed might
+	 * be in seconds, but the unit used by the axis is actually hours
+	 *
 	 * @return Returns the dataUnit.
 	 */
 	public DataDimension getDataUnit()

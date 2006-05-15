@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.8 $
- * $Date: 2006-05-05 16:04:17 $
+ * $Revision: 1.9 $
+ * $Date: 2006-05-15 20:54:50 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -117,6 +117,12 @@ public class OTMultiDataGraphView
             OTObject pluginControl = pluginView.getControl();
             JComponent pluginComponent = 
                 viewContainer.getComponent(pluginControl, true);
+            // change the alignment of the component so 
+            // when it is put in the box it can fill the whole width
+            // The default alignment of a button for example is 0
+            // which tries to make the buttons left edge align with the 
+            // center of other components.
+            pluginComponent.setAlignmentX(0.5f);
             pluginPanel.add(pluginComponent);
             pluginComponents.add(pluginComponent);
         }
