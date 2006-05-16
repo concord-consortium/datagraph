@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.2 $
- * $Date: 2006-05-05 16:14:05 $
- * $Author: maven $
+ * $Revision: 1.3 $
+ * $Date: 2006-05-16 19:12:19 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -37,4 +37,6 @@ import org.concord.framework.otrunk.OTObjectInterface;
 public interface OTMultiDataSetControl extends
     OTObjectInterface
 {
+	public final static boolean DEFAULT_showNew = true;
+	public boolean getShowNew();
 }

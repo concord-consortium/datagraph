@@ -682,7 +682,7 @@ public class DataGraphManager
 		if(multiEnabled || (multiAllowed && realGraphables.size() > 1 )){
 		    CheckedColorTreeControler dataSetTree = new CheckedColorTreeControler();
             JComponent treeComponent = 
-                dataSetTree.setup(this);
+                dataSetTree.setup(this, true);
             
             dataGraph.add(treeComponent, BorderLayout.WEST);
 		}
@@ -780,12 +780,22 @@ public class DataGraphManager
             }
             
             otGraphable.setDrawMarks(false);
-            otGraphable.setName(name);
+            
+            // Might need to set default values for color
+            // and the name.  
         } else {
             prototype.copyInto(otGraphable);
         }
         
-        otGraphable.setColor(color);
+        // I don't know if this should be done or not
+        if(name != null) {
+        	otGraphable.setName(name);
+        }
+
+        if(color != null) {
+        	otGraphable.setColor(color);
+        }
+        
         DataGraphable graphable = (DataGraphable)otGraphable.createWrappedObject();
         
         otDataGraphableMap.put(otGraphable, graphable);
@@ -795,6 +805,9 @@ public class DataGraphManager
         return graphable;
     }
     
+    /* (non-Javadoc)
+     * @see org.concord.framework.util.CheckedColorTreeModel#addItem(java.lang.Object, java.lang.String, java.awt.Color)
+     */
     public Object addItem(Object parent, String name, Color color)
     {
         DataGraphable newGraphable = null;

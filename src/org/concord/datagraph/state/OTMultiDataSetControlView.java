@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.2 $
- * $Date: 2006-05-05 16:14:05 $
- * $Author: maven $
+ * $Revision: 1.3 $
+ * $Date: 2006-05-16 19:12:19 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -55,10 +55,12 @@ public class OTMultiDataSetControlView extends JPanel
     Vector graphViews = new Vector();
     MultiCheckedColorTreeModel multiTreeModel;
     CheckedColorTreeControler treeControler;
+    OTMultiDataSetControl otControl;
     
     public void initialize(OTObject otObject, OTViewContainer viewContainer)
     {
         this.viewContainer = viewContainer;
+        otControl = (OTMultiDataSetControl)otObject;
         
         multiTreeModel = new MultiCheckedColorTreeModel();
         
@@ -76,7 +78,8 @@ public class OTMultiDataSetControlView extends JPanel
     public void initialize()
     {
         treeControler = new CheckedColorTreeControler();
-        JComponent treeComponent = treeControler.setup(multiTreeModel);
+        JComponent treeComponent = treeControler.setup(multiTreeModel,
+        		otControl.getShowNew());
         this.setLayout(new BorderLayout());
         add(treeComponent, BorderLayout.CENTER);        
     }

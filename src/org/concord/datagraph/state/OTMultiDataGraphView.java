@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.9 $
- * $Date: 2006-05-15 20:54:50 $
+ * $Revision: 1.10 $
+ * $Date: 2006-05-16 19:12:19 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -34,6 +34,7 @@ package org.concord.datagraph.state;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.util.Vector;
 
@@ -167,6 +168,14 @@ public class OTMultiDataGraphView
             }
         }
 
+        // Need to adjust the preferred size of the graphPanel
+        // we want to keep the view from scrolling because it
+        // is too large.   This needs to be higher than 
+        // a single graph bacause it might be mutliple graph
+        // These numbers are just made up at this point
+        // we'll probably have to adjust them.
+        graphsPanel.setPreferredSize(
+        		new Dimension(400,graphManagers.size() * 200));
 		mainPanel.add(graphsPanel, BorderLayout.CENTER);
 
 		if(needFlowToolbar) {
@@ -209,6 +218,11 @@ public class OTMultiDataGraphView
         // producer, which this method can use to create
         // its own data store.
         
+        // TODO it would be better if this class created the 
+    	// checked colortreemodel to hand off to its plugins
+    	// or views.  However the tree model doesn't have events
+    	// yet, so it possible yet to abstract the events that
+    	// cause the tree model to update. 
         Color newColor = null;
         if(graphManagers.size() > 0){
             DataGraphManager graphManager =
@@ -220,11 +234,7 @@ public class OTMultiDataGraphView
             DataGraphManager graphManager =
                 (DataGraphManager)graphManagers.get(i);
             
-            // FIXME we need a better way to handle colors
-            // currently the list plugin handles them also
-            // but that functionality should be shared some
-            // how, perhaps getting an unused color from
-            // the ColorTreeModel
+            
             DataGraphable graphable = 
                 (DataGraphable)graphManager.addItem(null, name, newColor);
             
