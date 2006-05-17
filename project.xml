@@ -10,6 +10,17 @@
   <currentVersion>1.2</currentVersion>
   <dependencies>
     <dependency>
+      <groupId>frameworkview</groupId>
+      <artifactId>frameworkview</artifactId>
+      <version>SNAPSHOT</version>
+      <type>jar</type>
+      <properties>
+        <cc.proj>FrameworkView</cc.proj>
+        <cc.path>FrameworkView/lib</cc.path>
+        <eclipse.dependency>true</eclipse.dependency>
+      </properties>
+    </dependency>
+    <dependency>
       <groupId>framework</groupId>
       <artifactId>framework</artifactId>
       <version>SNAPSHOT</version>
