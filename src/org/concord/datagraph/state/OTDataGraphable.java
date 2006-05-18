@@ -37,6 +37,7 @@ import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.ControllableDataGraphableDrawing;
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.framework.data.stream.DataProducer;
+import org.concord.framework.data.stream.DataStore;
 import org.concord.framework.otrunk.DefaultOTObject;
 import org.concord.framework.otrunk.OTObjectService;
 import org.concord.framework.otrunk.OTResourceSchema;
@@ -216,6 +217,13 @@ public class OTDataGraphable extends DefaultOTObject
 		resources.setXColumn(dg.getChannelX());
 		resources.setYColumn(dg.getChannelY());
 		resources.setName(dg.getLabel());
+        
+        // This might not be quite right, lets cross our fingers
+        // that it doesn't screw anything else up
+        DataStore ds = dg.getDataStore();
+        if(ds instanceof OTDataStore){
+            resources.setDataStore((OTDataStore)ds);
+        }
 	}
 
 	/**
