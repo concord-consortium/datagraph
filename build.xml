@@ -6,6 +6,7 @@
 	<!-- depends framework -->
 	<path id="build-classpath">
     	<pathelement location="../Framework/lib/framework.jar"/>
+    	<pathelement location="../FrameworkView/lib/frameworkview.jar"/>
     	<pathelement location="../Data/lib/data.jar"/>
     	<pathelement location="../Graph/lib/graph.jar"/>
     	<pathelement location="../Swing/lib/ccswing.jar"/>
