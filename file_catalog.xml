@@ -3,7 +3,7 @@
     <server>cvs.concord.org</server>
     <repo>/home/buildspace/CodeBank</repo>
     <module>Projects/DataGraph</module>
-    <tagname>rel_1_10</tagname>
+    <tagname>rel_1_11</tagname>
     <file>
         <name>.classpath</name>
         <rev>1.4</rev>
@@ -34,17 +34,17 @@
     </file>
     <file>
         <name>build.xml</name>
-        <rev>1.4</rev>
-        <modtime>1110097348000</modtime>
-        <size>595</size>
-        <md5sum>e329bf51a72c9d4d93462660989a2c4a</md5sum>
+        <rev>1.5</rev>
+        <modtime>1152209133000</modtime>
+        <size>665</size>
+        <md5sum>230fecd235d79d7fb0ba127ffb299009</md5sum>
     </file>
     <file>
         <name>file_catalog.xml</name>
-        <rev>1.14</rev>
-        <modtime>1147898698000</modtime>
-        <size>12981</size>
-        <md5sum>93be1993c56cd5a2178dc0b61ed3a65d</md5sum>
+        <rev>1.15</rev>
+        <modtime>1147991366000</modtime>
+        <size>12982</size>
+        <md5sum>d98ad6e86d35b03a9c70e270cae7cd15</md5sum>
     </file>
     <file>
         <name>graph_example.xml</name>
@@ -55,10 +55,10 @@
     </file>
     <file>
         <name>project.xml</name>
-        <rev>1.33</rev>
-        <modtime>1147991356000</modtime>
+        <rev>1.35</rev>
+        <modtime>1152825542000</modtime>
         <size>2783</size>
-        <md5sum>eeaa9cf9f7658c195a45e1e2a015612a</md5sum>
+        <md5sum>90df9f7469261f18e1b25715cc948131</md5sum>
     </file>
     <file>
         <name>src/org/concord/datagraph/engine/ControllableDataGraphable.java</name>
