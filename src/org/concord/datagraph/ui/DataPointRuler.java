@@ -40,7 +40,7 @@ import org.concord.graph.engine.GraphableList;
 import org.concord.graph.util.ui.PointTextLabel;
 
 public class DataPointRuler extends PointTextLabel
-	implements DataStoreListener
+	implements DataStoreListener, DataAnnotation
 {	
 
 	protected GraphableList objList;

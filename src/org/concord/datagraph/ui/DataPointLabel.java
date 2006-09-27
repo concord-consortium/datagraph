@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.19 $
- * $Date: 2005-09-15 14:10:42 $
- * $Author: swang $
+ * $Revision: 1.20 $
+ * $Date: 2006-09-27 18:46:31 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -59,7 +59,7 @@ import org.concord.graph.util.ui.PointTextLabel;
  *
  */
 public class DataPointLabel extends PointTextLabel 
-	implements DataStoreListener
+	implements DataStoreListener, DataAnnotation
 {	
 	//
 	//Variables to watch the graphables that it's mousing over
@@ -282,7 +282,13 @@ public class DataPointLabel extends PointTextLabel
 			if(pointInfoLabel != null)
 				g.drawString(pointInfoLabel, pointInfoLabelLeft, pointInfoLabelTop);
 		}
-		if(dataGraphable != null && dataGraphable.isVisible()) super.draw(g);
+		
+		// If the graphable is null we draw ourselves no mater what
+		// if the graphable is not null then we only draw ourselves 
+		// if it is visible 
+		if(dataGraphable == null || dataGraphable.isVisible()) {
+			super.draw(g);
+		}
 	}
 	
 	/**

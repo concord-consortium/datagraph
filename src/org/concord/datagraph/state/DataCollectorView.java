@@ -29,26 +29,15 @@
  */
 package org.concord.datagraph.state;
 
-import java.util.EventObject;
-
 import javax.swing.JComponent;
 
-import org.concord.datagraph.ui.AddDataPointLabelAction;
-import org.concord.datagraph.ui.AddDataPointLabelActionExt;
 import org.concord.datagraph.ui.DataGraph;
-import org.concord.datagraph.ui.DataPointLabel;
-import org.concord.datagraph.ui.DataPointRuler;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.WritableDataStore;
 import org.concord.framework.otrunk.OTObject;
-import org.concord.framework.otrunk.OTObjectList;
-import org.concord.framework.otrunk.OTObjectService;
-import org.concord.framework.otrunk.OTWrapper;
 import org.concord.framework.otrunk.view.OTObjectView;
 import org.concord.framework.otrunk.view.OTViewContainer;
 import org.concord.graph.engine.SelectableList;
-import org.concord.graph.event.GraphableListListener;
-import org.concord.swing.SelectableToggleButton;
 
 /**
  * @author scott
@@ -57,7 +46,7 @@ import org.concord.swing.SelectableToggleButton;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class DataCollectorView
- implements GraphableListListener, 	OTObjectView
+ implements OTObjectView
 {
     OTDataCollector dataCollector;
 	SelectableList notesLayer;
@@ -77,6 +66,12 @@ public class DataCollectorView
     {
         // TODO Auto-generated method stub
     	this.vContainer = viewContainer;
+
+    	// For safety verify that the otObject is the same
+    	// as the one used in the constructor
+    	if(!otObject.equals(dataCollector)){
+    		throw new RuntimeException("otObject != dataCollector");
+    	}    	
     }
     
     public JComponent getComponent(boolean editable)
@@ -109,78 +104,5 @@ public class DataCollectorView
     public DataGraphManager getDataGraphManager()
     {
         return dataGraphManager;
-    }
-    
-	/**
-	 * @see org.concord.graph.event.GraphableListListener#listGraphableAdded(java.util.EventObject)
-	 */
-	public void listGraphableAdded(EventObject e)
-	{
-		Object obj = e.getSource();
-		if (obj instanceof DataPointLabel){
-			DataPointLabel l;
-			OTDataPointLabel otLabel;
-
-			try{
-                OTObjectService objService = dataCollector.getOTObjectService();
-				otLabel = (OTDataPointLabel)objService.createObject(OTDataPointLabel.class);
-			}
-			catch (Exception ex) {
-				ex.printStackTrace();
-				return;
-			}
-			
-			l = (DataPointLabel)obj;
-			
-			otLabel.registerWrappedObject(l);
-			otLabel.saveObject(l);
-
-			dataCollector.getLabels().add(otLabel);
-		} else if (obj instanceof DataPointRuler){
-			DataPointRuler ruler = (DataPointRuler)obj;
-			OTDataPointRuler otRuler;
-
-			try{
-                OTObjectService objService = dataCollector.getOTObjectService();
-				otRuler = (OTDataPointRuler)objService.createObject(OTDataPointRuler.class);
-			}
-			catch (Exception ex) {
-				ex.printStackTrace();
-				return;
-			}
-			
-			otRuler.registerWrappedObject(ruler);
-			otRuler.saveObject(ruler);
-
-			dataCollector.getLabels().add(otRuler);
-		}
-	}
-		
-	/* (non-Javadoc)
-	 * @see org.concord.graph.event.GraphableListListener#listGraphableChanged(java.util.EventObject)
-	 */
-	public void listGraphableChanged(EventObject e)
-	{
-		
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.concord.graph.event.GraphableListListener#listGraphableRemoved(java.util.EventObject)
-	 */
-	public void listGraphableRemoved(EventObject e)
-	{
-		//dataGraphManager.listGraphableRemoved(e);
-		Object obj = e.getSource();
-		
-		OTWrapper otWrapper = dataCollector.getOTObjectService().getWrapper(obj);
-		
-		if (otWrapper != null){
-			if(otWrapper instanceof OTDataPointLabel || 
-			   otWrapper instanceof OTDataPointRuler   ) {
-				dataCollector.getLabels().remove(otWrapper);
-				//System.out.println("deleted");
-			}
-			
-		}
-	}
+    }    
 }

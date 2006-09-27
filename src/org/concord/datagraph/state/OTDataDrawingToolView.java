@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.15 $
- * $Date: 2006-02-01 22:09:55 $
+ * $Revision: 1.16 $
+ * $Date: 2006-09-27 18:46:31 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -32,20 +32,14 @@
 */
 package org.concord.datagraph.state;
 
-import java.awt.Dimension;
-import java.util.EventObject;
-
 import org.concord.data.state.OTDataStore;
 import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.ControllableDataGraphableDrawing;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTObjectService;
-import org.concord.framework.otrunk.OTWrapper;
-import org.concord.framework.otrunk.view.OTPrintDimension;
 import org.concord.framework.otrunk.view.OTViewContainer;
 import org.concord.graph.util.engine.DrawingObject;
 import org.concord.graph.util.state.OTDrawingToolView;
-import org.concord.graph.util.ui.EraserStamp;
 
 /**
  * OTDataDrawingToolView
@@ -72,7 +66,8 @@ public class OTDataDrawingToolView extends OTDrawingToolView
     	this.tool = tool;
     	this.viewContainer = container;
         //setMaximumSize(new Dimension(550, 220));
-
+    	
+    	wrapperService.registerWrapperClass(OTDataGraphable.class);
     }
     
 	/**
@@ -97,44 +92,5 @@ public class OTDataDrawingToolView extends OTDrawingToolView
 		dg.setLineType(ControllableDataGraphable.LINETYPE_FREE);
 		objList.add(dg);
 		return dg;
-	}
-	
-	/**
-	 * @see org.concord.graph.event.GraphableListListener#listGraphableAdded(java.util.EventObject)
-	 */
-	public void listGraphableAdded(EventObject e)
-	{
-		Object obj = e.getSource();
-		OTWrapper otWrapper = null;
-		
-		if (obj instanceof ControllableDataGraphableDrawing){
-			
-			ControllableDataGraphableDrawing drawObj = (ControllableDataGraphableDrawing)obj;
-			OTDataGraphable otDataGraphable;
-		
-			try{
-                OTObjectService objService = drawingTool.getOTObjectService();
-				otDataGraphable = (OTDataGraphable)objService.createObject(OTDataGraphable.class);
-			}
-			catch (Exception ex) {
-				ex.printStackTrace();
-				return;
-			}
-			otDataGraphable.setDrawing(true);
-			otDataGraphable.setDataStore((OTDataStore)drawObj.getDataStore());
-			
-			otWrapper = otDataGraphable;
-			drawingTool.getGraphables().add(otDataGraphable);
-			
-			if (otWrapper != null){
-				otWrapper.registerWrappedObject(obj);
-				otWrapper.saveObject(obj);
-			}
-			
-		}
-		else{
-			super.listGraphableAdded(e);
-		}
-	}
-	
+	}	
 }

@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.1 $
- * $Date: 2006-02-06 18:24:08 $
+ * $Revision: 1.2 $
+ * $Date: 2006-09-27 18:46:31 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -33,20 +33,12 @@
 
 package org.concord.datagraph.state;
 
-import java.awt.Color;
-import java.awt.geom.Point2D;
-import java.util.EventObject;
-
-import javax.swing.ImageIcon;
-
 import org.concord.datagraph.ui.DataFlowingLine;
 import org.concord.framework.data.stream.DataProducer;
-import org.concord.framework.otrunk.DefaultOTObject;
 import org.concord.framework.otrunk.OTResourceSchema;
-import org.concord.framework.otrunk.OTWrapper;
-import org.concord.graph.event.GraphableListener;
+import org.concord.framework.otrunk.OTWrapperService;
 import org.concord.graph.util.state.OTDrawingImageIcon;
-import org.concord.graph.util.state.OTDrawingToolView;
+import org.concord.graph.util.state.OTGraphableWrapper;
 import org.concord.graph.util.ui.ImageStamp;
 
 /**
@@ -58,9 +50,10 @@ import org.concord.graph.util.ui.ImageStamp;
  * @author imoncada<p>
  *
  */
-public class OTDataFlowingLine extends DefaultOTObject
-	implements OTWrapper, GraphableListener
+public class OTDataFlowingLine extends OTGraphableWrapper
 {
+	public static Class [] realObjectClasses = {DataFlowingLine.class};
+	
 	public static interface ResourceSchema extends OTResourceSchema
 	{		
 	    public OTDrawingImageIcon getImage1();
@@ -80,16 +73,7 @@ public class OTDataFlowingLine extends DefaultOTObject
 		this.resources = resources;
 	}
 	
-	public Object createWrappedObject()
-	{
-        DataFlowingLine fLine = new DataFlowingLine();
-        
-		registerWrappedObject(fLine);
-		
-		return fLine;
-	}
-	
-    public void initWrappedObject(Object container, Object wrappedObject)
+    public void loadRealObject(OTWrapperService wrapperService, Object wrappedObject)
     {
         // this should do any tasks needed to setup this
         // wrapped object in its container. 
@@ -97,65 +81,36 @@ public class OTDataFlowingLine extends DefaultOTObject
         
         // in this particular case we need to get the graphable object
         // map from our container, and look up our graphable objects
-        if(container instanceof OTDrawingToolView) {
-            OTDrawingToolView drawingView = (OTDrawingToolView)container;
-            Object image1 = drawingView.getWrappedObject(resources.getImage1());
-            Object image2 = drawingView.getWrappedObject(resources.getImage2());
-            
-            DataFlowingLine fLine = (DataFlowingLine)wrappedObject;
-            fLine.setImage1((ImageStamp)image1);
-            fLine.setImage2((ImageStamp)image2);
-            
-            fLine.setCycleDistance(20);
-            
-            fLine.addDataProducer(resources.getDataProducer());
-        }
+
+    	Object image1 = wrapperService.getRealObject(resources.getImage1());
+        Object image2 = wrapperService.getRealObject(resources.getImage2());;
+    	
+        DataFlowingLine fLine = (DataFlowingLine)wrappedObject;
+        fLine.setImage1((ImageStamp)image1);
+        fLine.setImage2((ImageStamp)image2);
         
+        fLine.setCycleDistance(20);
+        
+        fLine.addDataProducer(resources.getDataProducer());
     }
     
 	/**
 	 * @see org.concord.framework.otrunk.OTWrapper#saveObject(java.lang.Object)
 	 */
-	public void saveObject(Object wrappedObject)
+	public void saveRealObject(OTWrapperService wrapperService, Object wrappedObject)
 	{
 	    // we currently don't support saving
 	}
 
 	/**
-	 * @see org.concord.framework.otrunk.OTWrapper#getWrappedObjectClass()
-	 */
-	public Class getWrappedObjectClass()
-	{
-		return DataFlowingLine.class;
-	}
-
-	/**
 	 * @see org.concord.framework.otrunk.OTWrapper#registerWrappedObject(java.lang.Object)
 	 */
-	public void registerWrappedObject(Object wrappedObject)
+	public void registerRealObject(OTWrapperService wrapperService, Object wrappedObject)
 	{
+		super.registerRealObject(wrapperService, wrappedObject);
+
 		DataFlowingLine fLine = (DataFlowingLine)wrappedObject;
-		
-		//Now, listen to this object so I can be updated automatically when it changes
-		fLine.addGraphableListener(this);		
-		getOTObjectService().putWrapper(wrappedObject, this);
         fLine.start();
 	}
 
-	/**
-	 * @see org.concord.graph.event.GraphableListener#graphableChanged(java.util.EventObject)
-	 */
-	public void graphableChanged(EventObject e)
-	{
-		saveObject(e.getSource());
-	}
-
-	/**
-	 * @see org.concord.graph.event.GraphableListener#graphableRemoved(java.util.EventObject)
-	 */
-	public void graphableRemoved(EventObject e)
-	{
-		// TODO Auto-generated method stub
-		
-	}	
 }

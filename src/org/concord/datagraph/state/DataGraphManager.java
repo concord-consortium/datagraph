@@ -37,9 +37,7 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
-import java.util.Enumeration;
 import java.util.EventObject;
-import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
@@ -60,9 +58,8 @@ import org.concord.datagraph.engine.DataGraphable;
 import org.concord.datagraph.ui.AddDataPointLabelAction;
 import org.concord.datagraph.ui.AddDataPointLabelActionExt;
 import org.concord.datagraph.ui.AutoScaleAction;
+import org.concord.datagraph.ui.DataAnnotation;
 import org.concord.datagraph.ui.DataGraph;
-import org.concord.datagraph.ui.DataPointLabel;
-import org.concord.datagraph.ui.DataPointRuler;
 import org.concord.datagraph.ui.SingleDataAxisGrid;
 import org.concord.framework.data.DataDimension;
 import org.concord.framework.data.DataFlow;
@@ -72,8 +69,10 @@ import org.concord.framework.otrunk.OTChangeListener;
 import org.concord.framework.otrunk.OTObjectList;
 import org.concord.framework.otrunk.OTObjectService;
 import org.concord.framework.otrunk.OTWrapper;
+import org.concord.framework.otrunk.OTWrapperService;
 import org.concord.framework.util.CheckedColorTreeModel;
 import org.concord.framework.util.Copyable;
+import org.concord.graph.engine.Graphable;
 import org.concord.graph.engine.GraphableList;
 import org.concord.graph.engine.SelectableList;
 import org.concord.graph.event.GraphableListListener;
@@ -92,7 +91,7 @@ import org.concord.view.CheckedColorTreeControler;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class DataGraphManager
-	implements GraphableListListener, OTChangeListener, 
+	implements OTChangeListener, 
         ChangeListener, CheckedColorTreeModel, DataFlow
 {
     OTDataCollector dataCollector;
@@ -109,8 +108,6 @@ public class DataGraphManager
 	OTDataAxis xOTAxis;
 	OTDataAxis yOTAxis;
 	
-    Hashtable otDataGraphableMap = new Hashtable();
-    
 	JPanel bottomPanel;
 	DataFlowControlToolBar toolBar = null;
 	
@@ -123,6 +120,8 @@ public class DataGraphManager
 	
     Color[] colors = {Color.BLUE, Color.CYAN, Color.GRAY, Color.GREEN, Color.MAGENTA,
             Color.ORANGE, Color.PINK, Color.RED, Color.YELLOW, Color.BLACK};
+
+    protected OTWrapperService wrapperService;
 
     /**
      * 
@@ -137,11 +136,6 @@ public class DataGraphManager
         initialize(showDataControls);
     }
 
-    public DataGraphable getDataGraphable(OTDataGraphable otGraphable)
-    {
-        return (DataGraphable)otDataGraphableMap.get(otGraphable);
-    }
-    
     public DataProducer getSourceDataProducer()
     {
         return sourceDataProducer;
@@ -289,77 +283,6 @@ public class DataGraphManager
 		*/
 	}
 	
-	/**
-	 * @see org.concord.graph.event.GraphableListListener#listGraphableAdded(java.util.EventObject)
-	 */
-	public void listGraphableAdded(EventObject e)
-	{
-		Object obj = e.getSource();
-		if (obj instanceof DataPointLabel){
-			DataPointLabel l;
-			OTDataPointLabel otLabel;
-
-			try{
-                OTObjectService objService = otDataGraph.getOTObjectService();
-				otLabel = (OTDataPointLabel)objService.createObject(OTDataPointLabel.class);
-			}
-			catch (Exception ex) {
-				ex.printStackTrace();
-				return;
-			}
-			
-			l = (DataPointLabel)obj;
-			
-			otLabel.registerWrappedObject(l);
-			otLabel.saveObject(l);
-
-			otDataGraph.getLabels().add(otLabel);
-		} else if (obj instanceof DataPointRuler){
-			DataPointRuler l;
-			OTDataPointRuler otRuler;
-
-			try{
-                OTObjectService objService = otDataGraph.getOTObjectService();
-				otRuler = (OTDataPointRuler)objService.createObject(OTDataPointRuler.class);
-			}
-			catch (Exception ex) {
-				ex.printStackTrace();
-				return;
-			}
-			
-			l = (DataPointRuler)obj;
-			
-			otRuler.registerWrappedObject(l);
-			otRuler.saveObject(l);
-
-			otDataGraph.getLabels().add(otRuler);
-		}
-	}
-		
-	/**
-	 * @see org.concord.graph.event.GraphableListListener#listGraphableChanged(java.util.EventObject)
-	 */
-	public void listGraphableChanged(EventObject e)
-	{
-		updateState(e.getSource());
-	}
-	
-	/**
-	 * @see org.concord.graph.event.GraphableListListener#listGraphableRemoved(java.util.EventObject)
-	 */
-	public void listGraphableRemoved(EventObject e)
-	{
-		Object obj = e.getSource();
-		
-		OTWrapper otWrapper = otDataGraph.getOTObjectService().getWrapper(obj);
-		
-		if (otWrapper != null){
-			if(otWrapper instanceof OTDataPointLabel ||
-					otWrapper instanceof OTDataPointRuler )
-				otDataGraph.getLabels().remove(otWrapper);
-		}
-	}
-
 	/* (non-Javadoc)
 	 * @see org.concord.framework.otrunk.OTChangeListener#stateChanged(org.concord.framework.otrunk.OTChangeEvent)
 	 */
@@ -436,40 +359,16 @@ public class DataGraphManager
         }
     }
     
-    private OTDataGraphable getOTDataGraphable(DataGraphable dataGraphable) {
-   		Enumeration enu = otDataGraphableMap.keys();
-   		while(enu.hasMoreElements()) {
-   			OTDataGraphable otDataGraphable = (OTDataGraphable) enu.nextElement();
-   			if(otDataGraphableMap.get(otDataGraphable).equals(dataGraphable)) {
-   	   			return otDataGraphable;
-   			}
-   		}
-    	return null;
-    }
-    
-    private void removeLabelsFrom(OTDataGraphable dataGraphable) {
-    	OTObjectList labelList = otDataGraph.getGraphables();
-    	for(int i = 0; i < labelList.size(); i++) {
-    		Object obj = labelList.get(i);
-    		if(obj.equals(dataGraphable)) {
-    			labelList.remove(i);
-        		//return;
-    		}
-    		//System.out.println("label: " + obj.toString());
-    		if(obj instanceof OTDataPointLabel) {
-    			//System.out.println("ot datapoint label");
-    			OTDataPointLabel dataPointLabel = (OTDataPointLabel)obj;
-    			if(dataPointLabel.getDataGraphable().equals(dataGraphable)) {
-    				labelList.remove(dataPointLabel);
-    			}
-    		} else if(obj instanceof OTDataPointRuler) {
-    			//System.out.println("ot datapoint ruler");
-    			OTDataPointRuler dataPointRuler = (OTDataPointRuler)obj;
-    			if(dataPointRuler.getDataGraphable().equals(dataGraphable)) {
-    				labelList.remove(dataPointRuler);
+    private void removeLabelsFrom(DataGraphable dataGraphable, GraphableList graphables) {    	
+    	for(int i=0; i<graphables.size(); i++){
+    		Object graphable = graphables.get(i);
+    		if(graphable instanceof DataAnnotation){
+    			if(((DataAnnotation)graphable).getDataGraphable() == dataGraphable){
+    				graphables.remove(i);
+    				continue;
     			}
     		}
-    	}
+    	}    	
     }
     
 	public static void setupAxisLabel(SingleDataAxisGrid sAxis, OTDataAxis axis)
@@ -496,6 +395,14 @@ public class DataGraphManager
 	}
 	
 	protected void initialize(boolean showToolBar) {
+    	wrapperService = otDataGraph.getOTObjectService().createWrapperService();
+    	
+    	// TODO these register calls should be de coupled from
+    	// this class so graphables it doesn't know about could be handled
+        wrapperService.registerWrapperClass(OTDataGraphable.class);
+        wrapperService.registerWrapperClass(OTDataPointLabel.class);
+        wrapperService.registerWrapperClass(OTDataPointRuler.class);
+		
         dataGraph = new DataGraph();
 		dataGraph.changeToDataGraphToolbar();
 		dataGraph.setAutoFitMode(DataGraph.AUTO_SCROLL_RUNNING_MODE);
@@ -560,14 +467,6 @@ public class DataGraphManager
 		SingleDataAxisGrid sYAxis = (SingleDataAxisGrid)grid.getYGrid();
 		//DataGraphStateManager.setupAxisLabel(sYAxis, yOTAxis);
 		setupAxisLabel(sYAxis, yOTAxis);
-
-		// FIXME This should be changed.  The graphables should
-		// listen to themselves, and this code then can just listen
-		// to the graph area for graph area changes.
-		// right now both graph area and source graphable changes
-		// are listened too
-		// GraphableList graphableList = dataGraph.getObjList();
-		// graphableList.addGraphableListListener(this);
 		
 		initGraphables();
 		
@@ -586,22 +485,21 @@ public class DataGraphManager
 		// add it to the data graph
 		for(int i=0; i<pfGraphables.size(); i++) {
 			OTDataGraphable otGraphable = (OTDataGraphable)pfGraphables.get(i);
-
-			DataGraphable realGraphable = (DataGraphable)otGraphable.createWrappedObject();
+			
+			DataGraphable realGraphable = (DataGraphable)wrapperService.getRealObject(otGraphable);
 
 			if (realGraphable.getDataProducer() != null){
 			    System.err.println("Trying to display a background graphable with a data producer");
 			}
 			
 			realGraphables.add(realGraphable);
-		    dataGraph.addDataGraphable(realGraphable);
-		    //dataGraph.addBackgroundDataGraphable(realGraphable);
-            otDataGraphableMap.put(otGraphable, realGraphable);
+		    dataGraph.addDataGraphable(realGraphable);		    
 		}
 
 		OTDataGraphable source = null;
-		if(dataCollector != null)
+		if(dataCollector != null){
 			source = dataCollector.getSource();
+		}
 		
 		if(source != null) {
 			String title = dataCollector.getTitle(); 
@@ -613,7 +511,8 @@ public class DataGraphManager
 			    dataGraph.setTitle(title);
 			}
 
-			sourceGraphable = (DataGraphable)source.createWrappedObject();
+			sourceGraphable = (DataGraphable)wrapperService.getRealObject(source);
+			
 			sourceDataProducer = sourceGraphable.findDataProducer();
 			
 			// dProducer.getDataDescription().setDt(0.1f);
@@ -662,7 +561,6 @@ public class DataGraphManager
 			if(sourceGraphable != null) {
 			    realGraphables.insertElementAt(sourceGraphable, 0);
 			    dataGraph.addDataGraphable(sourceGraphable);
-                otDataGraphableMap.put(source, sourceGraphable);
 			}
 		}
 
@@ -694,40 +592,55 @@ public class DataGraphManager
         //Load the data point labels
         for (int i=0; i<pfDPLabels.size(); i++){
         	Object obj = pfDPLabels.get(i);
-        	if(obj instanceof OTDataPointLabel) {
-    			OTDataPointLabel otDPLabel = (OTDataPointLabel)obj;
-            	
-    			//Create a data point label
-    			DataPointLabel l = (DataPointLabel)otDPLabel.createWrappedObject();
+        	Graphable label = (Graphable)wrapperService.getRealObject((OTWrapper)obj);
 
-                // find the correct graphable for this label
-                OTDataGraphable otGraphable = otDPLabel.getDataGraphable();
-                if(otGraphable != null) {
-                    l.setDataGraphable((DataGraphable)otDataGraphableMap.get(otGraphable));
-                    l.setForeground(getDataGraphable(otGraphable).getColor());
-                }
-    			l.setGraphableList(dataGraph.getObjList());
-    			notesLayer.add(l);			        		
-        	} else if (obj instanceof OTDataPointRuler) {
-    			OTDataPointRuler otDPRuler = (OTDataPointRuler)obj;
-            	
-    			//Create a data point label
-    			DataPointRuler r = (DataPointRuler)otDPRuler.createWrappedObject();
-
-                // find the correct graphable for this label
-                OTDataGraphable otGraphable = otDPRuler.getDataGraphable();
-                if(otGraphable != null) {
-                    r.setDataGraphable((DataGraphable)otDataGraphableMap.get(otGraphable));
-                }
-    			r.setGraphableList(dataGraph.getObjList());
-    			notesLayer.add(r);			
+        	if(label instanceof DataAnnotation) {
+        		((DataAnnotation)label).setGraphableList(dataGraph.getObjList());
         	}
+        	notesLayer.add(label);        	
         }
         
-		notesLayer.addGraphableListListener(this);
-		
+		notesLayer.addGraphableListListener(new GraphableListListener(){
+			public void listGraphableAdded(EventObject e) {
+				Object obj = e.getSource();
+				OTWrapper wrapper = wrapperService.getWrapper(obj);
+				otDataGraph.getLabels().add(wrapper);
+			}
+			
+			public void listGraphableChanged(EventObject e) {
+				// TODO verify this is necessary
+				// this is just copied from the old code
+				updateState(e.getSource());
+
+			}
+			public void listGraphableRemoved(EventObject e) {
+				Object obj = e.getSource();
+				OTWrapper otWrapper = wrapperService.getWrapper(obj);
+				otDataGraph.getLabels().remove(otWrapper);
+			}
+		});
+
 		GraphableList graphableList = dataGraph.getObjList();
-		graphableList.addGraphableListListener(this);				
+		
+		graphableList.addGraphableListListener(new GraphableListListener(){
+			public void listGraphableAdded(EventObject e) {
+				// TODO verify this is doesn't screw up things
+				Object obj = e.getSource();
+				OTWrapper wrapper = wrapperService.getWrapper(obj);
+				otDataGraph.getGraphables().add(wrapper);
+			}
+			public void listGraphableChanged(EventObject e) {
+				// TODO verify this is necessary
+				// this is just copied from the old code
+				updateState(e.getSource());
+			}
+			public void listGraphableRemoved(EventObject e) {
+				// TODO verify this is doesn't screw up things
+				Object obj = e.getSource();
+				OTWrapper otWrapper = wrapperService.getWrapper(obj);
+				otDataGraph.getGraphables().remove(otWrapper);				
+			}
+		});				
 	}
 	
 	public static class UnknownUnit implements DataDimension
@@ -756,12 +669,23 @@ public class DataGraphManager
 		}
 	}
     
+	/**
+	 * This should work with Graphable protoypes not
+	 * OTGraphable prototypes that would make it more generally 
+	 * useful.
+	 * 
+	 * @param name
+	 * @param color
+	 * @param prototype
+	 * @return
+	 * @throws Exception
+	 */
     protected DataGraphable addGraphable(String name, Color color, 
             OTDataGraphable prototype)
         throws Exception
     {
         OTObjectService service = getOTDataGraph().getOTObjectService();
-
+        
         OTDataGraphable otGraphable = 
             (OTDataGraphable)service.createObject(OTDataGraphable.class);
 
@@ -769,6 +693,8 @@ public class DataGraphManager
         
             DataProducer sourceDataProducer = getSourceDataProducer();
             if(sourceDataProducer != null) {
+            	// copy the the producer, otherwise we would add to
+            	// the current source
                 DataProducer producer = 
                     (DataProducer)service.createObject(sourceDataProducer.getClass());
                 
@@ -787,20 +713,23 @@ public class DataGraphManager
             prototype.copyInto(otGraphable);
         }
         
+        DataGraphable graphable = 
+        	(DataGraphable)wrapperService.getRealObject(otGraphable);
+
         // I don't know if this should be done or not
         if(name != null) {
-        	otGraphable.setName(name);
+        	// This doesn't fire a graphable changed event it should
+            graphable.setLabel(name);
         }
 
         if(color != null) {
-        	otGraphable.setColor(color);
+        	graphable.setColor(color);
         }
-        
-        DataGraphable graphable = (DataGraphable)otGraphable.createWrappedObject();
-        
-        otDataGraphableMap.put(otGraphable, graphable);
-        otDataGraph.getGraphables().add(otGraphable);
+                
         dataGraph.addDataGraphable(graphable);
+        // adding the graphable to the dataGraph will cause an event to 
+        // be thrown so the ot graphable is added to the ot data graph 
+        // otDataGraph.getGraphables().add(otGraphable);
         
         return graphable;
     }
@@ -835,11 +764,13 @@ public class DataGraphManager
     {
         DataGraphable dataGraphable = (DataGraphable)item;
         dataGraph.removeDataGraphable(dataGraphable);
-        //dataGraphable.setVisible(false);
-        OTDataGraphable otDataGraphable = getOTDataGraphable(dataGraphable);
-        otDataGraph.getGraphables().remove(otDataGraphable);
-        removeLabelsFrom(otDataGraphable);
-        otDataGraphableMap.remove(dataGraphable);
+
+        
+        // remove any graphables that reference this one in
+        // either of the 2 graphable lists
+        removeLabelsFrom(dataGraphable, dataGraph.getObjList());
+        removeLabelsFrom(dataGraphable, notesLayer);
+        
         return null;
     }
     

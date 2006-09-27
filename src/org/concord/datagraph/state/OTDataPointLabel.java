@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.9 $
- * $Date: 2005-08-22 22:06:32 $
+ * $Revision: 1.10 $
+ * $Date: 2006-09-27 18:46:30 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -32,11 +32,8 @@
 */
 package org.concord.datagraph.state;
 
-import org.concord.datagraph.engine.DataGraphable;
 import org.concord.datagraph.ui.DataPointLabel;
-import org.concord.framework.otrunk.OTObjectService;
-import org.concord.graph.util.state.OTPointTextLabel;
-import org.concord.graph.util.ui.BoxTextLabel;
+import org.concord.framework.otrunk.OTWrapperService;
 
 
 /**
@@ -48,58 +45,27 @@ import org.concord.graph.util.ui.BoxTextLabel;
  * @author scott<p>
  *
  */
-public class OTDataPointLabel extends OTPointTextLabel
+public class OTDataPointLabel extends OTDataAnnotation
 {
-	public static interface ResourceSchema extends OTPointTextLabel.ResourceSchema
-	{	
-		public OTDataGraphable getDataGraphable();
-		public void setDataGraphable(OTDataGraphable b);
-	}
+	public final static Class [] realObjectClasses = {DataPointLabel.class};
 
-	private ResourceSchema resources;
-	
 	/**
 	 * 
 	 */
 	public OTDataPointLabel(ResourceSchema resources)
 	{
 		super(resources);
-		this.resources = resources;
 	}
 	
-    public OTDataGraphable getDataGraphable()
+    public void loadRealObject(OTWrapperService wrapperService, Object wrappedObject) 
     {
-        return resources.getDataGraphable();
-    }
-    
-	/**
-	 * @see org.concord.graph.util.state.OTPointTextLabel#createNewWrappedObject()
-	 */
-	protected BoxTextLabel createNewWrappedObject()
-	{
-		DataPointLabel l = new DataPointLabel();
+    	// TODO Auto-generated method stub
+    	super.loadRealObject(wrapperService, wrappedObject);
 
-		// we have to rely on the caller that is creating this wrapped
-		// object to initialize the dataGraphable of the label.  
-		// because the same OTDataGraphable can be displayed in more 
-		// than one place at a time the real DataGraphable that should
-		// be used here is only known by the caller of this method		
-		
-		return l;
-	}
-	
-	/**
-	 * @see org.concord.framework.otrunk.OTWrapper#saveObject(java.lang.Object)
-	 */
-	public void saveObject(Object wrappedObject)
-	{
-		DataPointLabel l = (DataPointLabel)wrappedObject;
-		
-		OTObjectService objService = getOTObjectService();
-		DataGraphable dg = l.getDataGraphable();
-		OTDataGraphable otGraphable = (OTDataGraphable)objService.getWrapper(dg);
-		resources.setDataGraphable(otGraphable);
-		
-		super.saveObject(wrappedObject);
-	}
+    	
+    	DataPointLabel l = (DataPointLabel)wrappedObject;
+    	if(l.getDataGraphable() != null){
+    		l.setForeground(l.getDataGraphable().getColor());
+    	}    	
+    }
 }

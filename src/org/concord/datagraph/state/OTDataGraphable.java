@@ -30,7 +30,6 @@
 package org.concord.datagraph.state;
 
 import java.awt.Color;
-import java.util.EventObject;
 
 import org.concord.data.state.OTDataStore;
 import org.concord.datagraph.engine.ControllableDataGraphable;
@@ -38,11 +37,10 @@ import org.concord.datagraph.engine.ControllableDataGraphableDrawing;
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.DataStore;
-import org.concord.framework.otrunk.DefaultOTObject;
 import org.concord.framework.otrunk.OTObjectService;
 import org.concord.framework.otrunk.OTResourceSchema;
-import org.concord.framework.otrunk.OTWrapper;
-import org.concord.graph.event.GraphableListener;
+import org.concord.framework.otrunk.OTWrapperService;
+import org.concord.graph.util.state.OTGraphableWrapper;
 
 /**
  * @author scott
@@ -50,9 +48,13 @@ import org.concord.graph.event.GraphableListener;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public class OTDataGraphable extends DefaultOTObject
-	implements OTWrapper, GraphableListener
+public class OTDataGraphable extends OTGraphableWrapper
 {
+	public static Class [] realObjectClasses =  {
+		DataGraphable.class, ControllableDataGraphable.class, 
+		ControllableDataGraphableDrawing.class
+	};
+	
     public static interface ResourceSchema extends OTResourceSchema
     {
     	public static int DEFAULT_color = 0x00FF0000;
@@ -106,33 +108,10 @@ public class OTDataGraphable extends DefaultOTObject
 	    this.resources = resources;
 	}
 	
-	/**
-	 * This method is used by the otrunk framework to save this
-	 * object.  It will also be using during instanciation so 
-	 * objects that need DataGraphables don't need to know about
-	 * this OTDataGraphable they will just get the wrapped object.
-	 * Finally this is used ad Author time to validate the use of
-	 * this object.
-     * 
-     * FIXME: in this case this is actually not good.  Because the same
-     * graph can be displayed twice at the same time so there will be need
-     * to be 2 different data graphables associated with one datagraphable 
-	 * 
-	 * @return
-	 */
-	public Object createWrappedObject()
-	{
-		DataGraphable dg;
+    public void loadRealObject(OTWrapperService wrapperService, Object wrappedObject)
+    {
+		DataGraphable dg = (DataGraphable)wrappedObject;
 
-		if (resources.getDrawing()){
-        	dg = new ControllableDataGraphableDrawing();            
-		}
-        else if (resources.getControllable()){
-        	dg = new ControllableDataGraphable();
-        } 
-        else {
-        	dg = new DataGraphable();
-        }
         dg.setColor(new Color(resources.getColor()));
         dg.setShowCrossPoint(resources.getDrawMarks());
         dg.setLabel(resources.getName());
@@ -143,8 +122,9 @@ public class OTDataGraphable extends DefaultOTObject
 		OTDataStore dataStore = resources.getDataStore();
 
 		if (resources.getControllable() && producer != null){
-		    System.err.println("Can't control a graphable with a data producer");
-		    return null;
+			// This is a schema type error
+			// we should give more information about tracking it down
+		    throw new RuntimeException("Can't control a graphable with a data producer");
 		}
 		
         if(dataStore == null) {
@@ -172,18 +152,6 @@ public class OTDataGraphable extends DefaultOTObject
 
 		dg.setChannelX(resources.getXColumn());
 		dg.setChannelY(resources.getYColumn());
-
-		//Now, listen to this object so I can be updated automatically when it changes
-		registerWrappedObject(dg);
-		
-        return dg;
-    }
-
-    public void initWrappedObject(Object container, Object wrappedObject)
-    {
-        // this should do any tasks needed to setup this
-        // wrapped object in its container. 
-        // the container is generally a vew object.  
     }
     
     /**
@@ -206,7 +174,7 @@ public class OTDataGraphable extends DefaultOTObject
 	/**
 	 * @see org.concord.framework.otrunk.OTWrapper#saveObject(java.lang.Object)
 	 */
-	public void saveObject(Object wrappedObject)
+	public void saveRealObject(OTWrapperService wrapperService, Object wrappedObject)
 	{
 		DataGraphable dg = (DataGraphable)wrappedObject;
 		
@@ -224,26 +192,28 @@ public class OTDataGraphable extends DefaultOTObject
         if(ds instanceof OTDataStore){
             resources.setDataStore((OTDataStore)ds);
         }
-	}
-
-	/**
-	 * @see org.concord.framework.otrunk.OTWrapper#getWrappedObjectClass()
-	 */
-	public Class getWrappedObjectClass()
-	{
-		return DataGraphable.class;
-	}
-
-	/**
-	 * @see org.concord.framework.otrunk.OTWrapper#registerWrappedObject(java.lang.Object)
-	 */
-	public void registerWrappedObject(Object wrappedObject)
-	{
-		DataGraphable dg = (DataGraphable)wrappedObject;
-		
-		dg.addGraphableListener(this);
         
-        getOTObjectService().putWrapper(dg, this);
+		// This is needed for some reason by the OTDrawingToolView
+        // Apparently it is to set the realObject class.
+        if(dg instanceof ControllableDataGraphableDrawing) {
+    		resources.setDrawing(true);    		
+        }
+	}
+
+	/**
+	 * @see org.concord.framework.otrunk.OTWrapper#getRealObjectClass()
+	 */
+	public Class getRealObjectClass()
+	{
+		if (resources.getDrawing()){
+        	return ControllableDataGraphableDrawing.class;            
+		}
+        else if (resources.getControllable()){
+        	return ControllableDataGraphable.class;
+        } 
+        else {
+        	return DataGraphable.class;
+        }
 	}
 
 	/**
@@ -254,47 +224,10 @@ public class OTDataGraphable extends DefaultOTObject
 		resources.setDataStore(otDataStore);
 	}
 
-	/**
-	 * @param b
-	 */
-	public void setDrawing(boolean b)
-	{
-		resources.setDrawing(b);
-	}
-
-	/**
-	 * @see org.concord.graph.event.GraphableListener#graphableChanged(java.util.EventObject)
-	 */
-	public void graphableChanged(EventObject e)
-	{
-		saveObject(e.getSource());
-	}
-
-	/**
-	 * @see org.concord.graph.event.GraphableListener#graphableRemoved(java.util.EventObject)
-	 */
-	public void graphableRemoved(EventObject e)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-	
 	public void setDrawMarks(boolean b) {
 		resources.setDrawMarks(b);
 	}
 	
-	public boolean getLocked() {
-		return resources.getLocked();
-	}
-	public void setLocked(boolean locked) {
-		resources.setLocked(locked);
-	}
-    
-    public void setColor(Color c)
-    {
-        resources.setColor(c.getRGB());
-    }
-    
     public void copyInto(OTDataGraphable copy)
     {        
         resources.copyInto(copy.resources);

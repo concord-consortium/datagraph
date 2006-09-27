@@ -25,25 +25,19 @@ package org.concord.datagraph.state;
 
 import java.awt.Color;
 import java.awt.geom.Point2D;
-import java.util.EventObject;
-
-import javax.swing.ImageIcon;
 
 import org.concord.data.state.OTDataStore;
-import org.concord.framework.data.stream.DataProducer;
-import org.concord.framework.otrunk.DefaultOTObject;
 import org.concord.framework.otrunk.OTObjectService;
 import org.concord.framework.otrunk.OTResourceSchema;
-import org.concord.framework.otrunk.OTWrapper;
-import org.concord.graph.event.GraphableListener;
+import org.concord.framework.otrunk.OTWrapperService;
 import org.concord.graph.util.state.OTDrawingEraser;
-import org.concord.graph.util.state.OTDrawingToolView;
+import org.concord.graph.util.state.OTGraphableWrapper;
 import org.concord.graph.util.ui.EraserStamp;
-import org.concord.graph.util.ui.ImageStamp;
 
-public class OTEraserGraphable extends DefaultOTObject 
-implements OTWrapper, GraphableListener{
-
+public class OTEraserGraphable extends OTGraphableWrapper
+{
+	public static Class [] realObjectClasses = {EraserStamp.class};
+	
     public static interface ResourceSchema extends OTResourceSchema
     {
 		public byte [] getSrc();
@@ -99,11 +93,15 @@ implements OTWrapper, GraphableListener{
 	{
 		resources.setEraser(eraser);
 	}
-		
-	public Object createWrappedObject()
-	{
-		EraserStamp eraserObj = new EraserStamp();
-		
+		    
+    public void loadRealObject(OTWrapperService wrapperService, Object wrappedObject)
+    {
+        // this should do any tasks needed to setup this
+        // wrapped object in its container. 
+        // the container is generally a vew object.  
+
+        EraserStamp eraserObj = (EraserStamp)wrappedObject;
+        
 		//
 		OTDataStore dataStore = resources.getDataStore();
 
@@ -137,29 +135,13 @@ implements OTWrapper, GraphableListener{
         eraserObj.setBgColor(new Color(resources.getBgColor()));
         int[] weight = {resources.getWeightX(), resources.getWeightY()};
         eraserObj.setWeight(weight);
-
-		registerWrappedObject(eraserObj);
-		
-        return eraserObj;
-    }
-    
-    public void initWrappedObject(Object container, Object wrappedObject)
-    {
-        // this should do any tasks needed to setup this
-        // wrapped object in its container. 
-        // the container is generally a vew object.  
-
-        EraserStamp eraser = (EraserStamp)wrappedObject;
         
-        if(container instanceof OTDrawingToolView){
-            eraser.setImage(((OTDrawingToolView)container).getBackImage());
-        }
     }
 
 	/**
 	 * @see org.concord.framework.otrunk.OTWrapper#saveObject(java.lang.Object)
 	 */
-	public void saveObject(Object wrappedObject)
+	public void saveRealObject(OTWrapperService wrapperService, Object wrappedObject)
 	{
 		EraserStamp eraserObj = (EraserStamp)wrappedObject;
 		Point2D loc = eraserObj.getLocation();
@@ -178,43 +160,6 @@ implements OTWrapper, GraphableListener{
 		//
 	}
 
-	/**
-	 * @see org.concord.framework.otrunk.OTWrapper#getWrappedObjectClass()
-	 */
-	public Class getWrappedObjectClass()
-	{
-		return EraserStamp.class;
-	}
-
-	/**
-	 * @see org.concord.framework.otrunk.OTWrapper#registerWrappedObject(java.lang.Object)
-	 */
-	public void registerWrappedObject(Object wrappedObject)
-	{
-		EraserStamp imgObj = (EraserStamp)wrappedObject;
-		
-		//Now, listen to this object so I can be updated automatically when it changes
-		imgObj.addGraphableListener(this);		
-		getOTObjectService().putWrapper(wrappedObject, this);
-	}
-
-	/**
-	 * @see org.concord.graph.event.GraphableListener#graphableChanged(java.util.EventObject)
-	 */
-	public void graphableChanged(EventObject e)
-	{
-		saveObject(e.getSource());
-	}
-
-	/**
-	 * @see org.concord.graph.event.GraphableListener#graphableRemoved(java.util.EventObject)
-	 */
-	public void graphableRemoved(EventObject e)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-	
 	public void setX(float x) {
 		resources.setX(x);
 	}
