@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.1 $
- * $Date: 2006-09-27 18:46:31 $
+ * $Revision: 1.2 $
+ * $Date: 2006-09-29 14:01:00 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -77,7 +77,6 @@ public class OTDataAnnotation extends OTPointTextLabel
 	}
 	
     public void loadRealObject(OTWrapperService wrapperService, Object wrappedObject) {
-    	// TODO Auto-generated method stub
     	super.loadRealObject(wrapperService, wrappedObject);
 
     	DataAnnotation a = (DataAnnotation)wrappedObject;
