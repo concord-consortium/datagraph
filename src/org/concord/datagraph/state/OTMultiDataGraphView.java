@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.10 $
- * $Date: 2006-05-16 19:12:19 $
+ * $Revision: 1.11 $
+ * $Date: 2006-10-03 21:09:02 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -49,9 +49,9 @@ import org.concord.datagraph.ui.DataGraph;
 import org.concord.datagraph.ui.DataGraphToolbar;
 import org.concord.framework.data.DataFlow;
 import org.concord.framework.data.stream.DataProducer;
+import org.concord.framework.data.stream.DataStore;
 import org.concord.framework.data.stream.DataStoreCollection;
 import org.concord.framework.data.stream.DataStoreImporter;
-import org.concord.framework.data.stream.DataStore;
 import org.concord.framework.data.stream.WritableArrayDataStore;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTObjectList;
@@ -105,11 +105,14 @@ public class OTMultiDataGraphView
 		boolean needFlowToolbar = false;
 		Vector dataFlowObjects = new Vector();
 		
-        JPanel pluginPanel = new JPanel();
+        JPanel westPanel = new JPanel();
         // This is weird but we'll try it
-        pluginPanel.setLayout(new BoxLayout(pluginPanel, BoxLayout.Y_AXIS));
+        westPanel.setLayout(new BoxLayout(westPanel, BoxLayout.Y_AXIS));        
+        mainPanel.add(westPanel, BorderLayout.WEST);
         
-        mainPanel.add(pluginPanel, BorderLayout.WEST);
+        JPanel southPanel = new JPanel();
+        southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.X_AXIS));
+        mainPanel.add(southPanel, BorderLayout.SOUTH);
         
         OTObjectList plugins = multiDataGraph.getPluginViews();
         Vector pluginComponents = new Vector();
@@ -123,8 +126,15 @@ public class OTMultiDataGraphView
             // The default alignment of a button for example is 0
             // which tries to make the buttons left edge align with the 
             // center of other components.
-            pluginComponent.setAlignmentX(0.5f);
-            pluginPanel.add(pluginComponent);
+            if(pluginView.getLocation() == null ||
+            	pluginView.getLocation().equals("west")) {
+            	pluginComponent.setAlignmentX(0.5f);
+            	westPanel.add(pluginComponent);
+            } else if(pluginView.getLocation().equals("south")){
+            	// pluginComponent.setAlignmentX(0.5f);
+            	southPanel.add(pluginComponent);           	
+            }
+            
             pluginComponents.add(pluginComponent);
         }
         
@@ -185,7 +195,7 @@ public class OTMultiDataGraphView
 			    toolBar.addDataFlowObject((DataFlow)dataFlowObjects.get(i));
 			}
 			
-			mainPanel.add(toolBar, BorderLayout.SOUTH);		    
+			southPanel.add(toolBar);
 		}
 		
         // TODO Auto-generated method stub
