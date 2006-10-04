@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.48 $
- * $Date: 2005-09-23 19:53:29 $
- * $Author: swang $
+ * $Revision: 1.49 $
+ * $Date: 2006-10-04 00:58:23 $
+ * $Author: eburke $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -178,6 +178,25 @@ public class DataGraphable extends DefaultGraphable
 		minYValue = Float.MAX_VALUE;
 		maxYValue = -Float.MAX_VALUE;
 		validMinMax = false;
+	}
+
+	
+	public void connect(DataProducer dataProducer)
+	{
+		if(internalProducerDataStore) {
+			ProducerDataStore pDataStore = (ProducerDataStore) dataStore;
+			if (pDataStore.getDataProducer() == null)
+				pDataStore.setDataProducer(dataProducer);
+		}
+	}
+	
+	public void disconnect(DataProducer dataProducer)
+	{
+		if(internalProducerDataStore) {
+			ProducerDataStore pDataStore = (ProducerDataStore) dataStore;
+			if (pDataStore.getDataProducer() == dataProducer)
+				pDataStore.setDataProducer(null);
+		}
 	}
 		
 	/**
