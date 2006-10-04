@@ -227,6 +227,10 @@ public class OTDataGraphable extends OTGraphableWrapper
 	public void setDrawMarks(boolean b) {
 		resources.setDrawMarks(b);
 	}
+
+	public void setDrawing(boolean b) {
+		resources.setDrawing(b);
+	}
 	
     public void copyInto(OTDataGraphable copy)
     {        
