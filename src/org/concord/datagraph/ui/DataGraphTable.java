@@ -23,7 +23,7 @@
 
 /* Author: Edward Burke
  * Based on work by Eric Brown-Munoz
-   $Revision: 1.1 $
+   $Revision: 1.2 $
 */
 package org.concord.datagraph.ui;
 
@@ -42,6 +42,7 @@ import org.concord.graph.event.*;
 public class DataGraphTable extends JTable 
 {
     private SelectableList graphablesList = null;
+    private TableModel extraModel;
 
     ListSelectionListener listSelectionListener = new ListSelectionListener() 
 	{
@@ -85,20 +86,21 @@ public class DataGraphTable extends JTable
 		super();
 	
 		setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		//table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		
-		//table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-				
 		setSelectionBackground(Color.white);
-		
-		//scroll.setViewportView(table);
 		setPreferredSize(new Dimension(200, 200));
     }
 
 	private void setupColWidth()
 	{
 		TableColumn column = getColumnModel().getColumn(0);
-		column.setMaxWidth(50);
+		column.setPreferredWidth(80);
+		column = getColumnModel().getColumn(1);
+		column.setPreferredWidth(200);
+	}
+	
+	public void setExtraModel(TableModel model)
+	{
+		extraModel = model;
 	}
 	
 	public void setSelectableList( SelectableList list ) 
@@ -174,15 +176,15 @@ public class DataGraphTable extends JTable
 		lsm.addListSelectionListener(listSelectionListener);
 	}
 	
-    public void setTableModel(Model model) 
+    public void setTableModel(TableModel model) 
 	{
     	setModel(model);
     	getSelectionModel().addListSelectionListener(listSelectionListener);
     }
 
-    public Model getTableModel() 
+    public TableModel getTableModel() 
 	{
-		return (Model) getModel();
+		return getModel();
     }
     
     public class Renderer extends DefaultTableCellRenderer
@@ -334,7 +336,10 @@ public class DataGraphTable extends JTable
     	
     	public int getColumnCount() 
     	{
-    		return 2;
+    		int count = colNames.length;
+    		if (extraModel != null)
+    			count += extraModel.getColumnCount();
+    		return count;
     	}
     	
     	public int getRowCount() 
@@ -344,13 +349,18 @@ public class DataGraphTable extends JTable
     	
     	public String getColumnName(int column) 
     	{
+    		if (column >= colNames.length && extraModel != null)
+    			return extraModel.getColumnName(column - colNames.length);
     		return colNames[column];
     	}
     	
     	public void setColumnName(int column, String name) 
     	{
-    		colNames[column] = name;
-    		fireTableStructureChanged();
+    		if (column < colNames.length)
+    		{
+    			colNames[column] = name;
+    			fireTableStructureChanged();
+    		}
     	}
     	
     	public Object getValueAt(int rowIndex, int columnIndex) 
@@ -365,6 +375,11 @@ public class DataGraphTable extends JTable
     			case 1:
     				retval = " " + graphable.getLabel();
     				break;
+    			default:
+    				if (extraModel != null)
+    				{
+    					retval = extraModel.getValueAt(rowIndex, columnIndex - colNames.length);
+    				}
     		}
     	
     		return retval;
@@ -376,6 +391,10 @@ public class DataGraphTable extends JTable
     		if (columnIndex == 0 ) {
     			retval = Boolean.class;
     		} 
+    		if (columnIndex > colNames.length && extraModel != null)
+    		{
+    			retval = extraModel.getColumnClass(columnIndex - colNames.length);
+    		}
     		return retval;
     	}
     	
@@ -383,6 +402,10 @@ public class DataGraphTable extends JTable
     	{
     		boolean retval = false;
     		if (columnIndex == 0) retval = true;
+    		if (columnIndex > colNames.length && extraModel != null)
+    		{
+    			retval = extraModel.isCellEditable(rowIndex, columnIndex - colNames.length);
+    		}
     		return retval;
     	}
     	
@@ -392,6 +415,10 @@ public class DataGraphTable extends JTable
     		{
     			Graphable theOne = (Graphable)graphables.elementAt(rowIndex);
     			theOne.setVisible(((Boolean)aValue).booleanValue());
+    		}
+    		else if (extraModel != null)
+    		{
+    			extraModel.setValueAt(aValue, rowIndex, columnIndex - colNames.length);
     		}
     	}
     }
