@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.16 $
- * $Date: 2006-09-27 18:46:31 $
- * $Author: scytacki $
+ * $Revision: 1.17 $
+ * $Date: 2006-12-18 16:07:53 $
+ * $Author: swang $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -68,6 +68,7 @@ public class OTDataDrawingToolView extends OTDrawingToolView
         //setMaximumSize(new Dimension(550, 220));
     	
     	wrapperService.registerWrapperClass(OTDataGraphable.class);
+    	wrapperService.registerWrapperClass(OTEraserGraphable.class);
     }
     
 	/**
