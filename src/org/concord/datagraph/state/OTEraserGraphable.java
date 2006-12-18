@@ -26,6 +26,8 @@ package org.concord.datagraph.state;
 import java.awt.Color;
 import java.awt.geom.Point2D;
 
+import javax.swing.ImageIcon;
+
 import org.concord.data.state.OTDataStore;
 import org.concord.framework.otrunk.OTObjectService;
 import org.concord.framework.otrunk.OTResourceSchema;
@@ -99,8 +101,28 @@ public class OTEraserGraphable extends OTGraphableWrapper
         // this should do any tasks needed to setup this
         // wrapped object in its container. 
         // the container is generally a vew object.  
+		byte [] eraserBytes = resources.getSrc();
+		
+		if (eraserBytes == null) {
+			
+			//Maybe icon comes from a stamp
+			OTDrawingEraser otEraser = resources.getEraser();
+			if (otEraser != null) {
+				eraserBytes = otEraser.getSrc();
+			}
+			
+		}
+		
+		if (eraserBytes == null) {
+			// nothing to initialize
+			return;
+		}
+			
+		ImageIcon eraserIcon = new ImageIcon(eraserBytes);
 
         EraserStamp eraserObj = (EraserStamp)wrappedObject;
+        
+        eraserObj.setImage(eraserIcon);
         
 		//
 		OTDataStore dataStore = resources.getDataStore();
