@@ -152,12 +152,13 @@ public class OTEraserGraphable extends OTGraphableWrapper
 		resources.setWeightX(eraserObj.getWeight()[0]);
 		resources.setWeightY(eraserObj.getWeight()[1]);
 		
+        resources.setPoints(eraserObj.getPoints());
+
 		//Color
 		Color c = eraserObj.getBgColor();
 		if (c != null){
 			resources.setBgColor(c.getRGB() & 0x00FFFFFF);
 		}
-		//
 	}
 
 	public void setX(float x) {
