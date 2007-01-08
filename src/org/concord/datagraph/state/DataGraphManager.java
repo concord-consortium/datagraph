@@ -66,10 +66,10 @@ import org.concord.framework.data.DataFlow;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.otrunk.OTChangeEvent;
 import org.concord.framework.otrunk.OTChangeListener;
+import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTObjectList;
 import org.concord.framework.otrunk.OTObjectService;
-import org.concord.framework.otrunk.OTWrapper;
-import org.concord.framework.otrunk.OTWrapperService;
+import org.concord.framework.otrunk.OTControllerService;
 import org.concord.framework.util.CheckedColorTreeModel;
 import org.concord.framework.util.Copyable;
 import org.concord.graph.engine.Graphable;
@@ -121,7 +121,7 @@ public class DataGraphManager
     Color[] colors = {Color.BLUE, Color.CYAN, Color.GRAY, Color.GREEN, Color.MAGENTA,
             Color.ORANGE, Color.PINK, Color.RED, Color.YELLOW, Color.BLACK};
 
-    protected OTWrapperService wrapperService;
+    protected OTControllerService controllerService;
 
     /**
      * 
@@ -395,13 +395,13 @@ public class DataGraphManager
 	}
 	
 	protected void initialize(boolean showToolBar) {
-    	wrapperService = otDataGraph.getOTObjectService().createWrapperService();
+    	controllerService = otDataGraph.getOTObjectService().createControllerService();
     	
     	// TODO these register calls should be de coupled from
     	// this class so graphables it doesn't know about could be handled
-        wrapperService.registerWrapperClass(OTDataGraphable.class);
-        wrapperService.registerWrapperClass(OTDataPointLabel.class);
-        wrapperService.registerWrapperClass(OTDataPointRuler.class);
+        controllerService.registerControllerClass(OTDataPointLabelController.class);
+        controllerService.registerControllerClass(OTDataPointRulerController.class);
+        controllerService.registerControllerClass(OTDataGraphableController.class);
 		
         dataGraph = new DataGraph();
 		dataGraph.changeToDataGraphToolbar();
@@ -484,9 +484,9 @@ public class DataGraphManager
 		// for each list item get the data producer object
 		// add it to the data graph
 		for(int i=0; i<pfGraphables.size(); i++) {
-			OTDataGraphable otGraphable = (OTDataGraphable)pfGraphables.get(i);
-			
-			DataGraphable realGraphable = (DataGraphable)wrapperService.getRealObject(otGraphable);
+			OTObject otGraphable = (OTObject)pfGraphables.get(i);			
+			DataGraphable realGraphable = 
+				(DataGraphable)controllerService.getRealObject(otGraphable);
 
 			if (realGraphable.getDataProducer() != null){
 			    System.err.println("Trying to display a background graphable with a data producer");
@@ -511,7 +511,7 @@ public class DataGraphManager
 			    dataGraph.setTitle(title);
 			}
 
-			sourceGraphable = (DataGraphable)wrapperService.getRealObject(source);
+			sourceGraphable = (DataGraphable)controllerService.getRealObject(source);
 			
 			sourceDataProducer = sourceGraphable.findDataProducer();
 			
@@ -545,15 +545,6 @@ public class DataGraphManager
 			    toolBar.addDataFlowObject(sourceDataProducer);
 			    
 			    bottomPanel.add(toolBar);
-			    //bottomPanel.add(about);
-			    
-			    //if(dataCollector.getShowTare()){
-			        // need to add a button that runs the sourceGraphable
-			        // for some amount of time and then offsets the input
-			        // values after that.
-			        // The code for the Tare can be put into a dataproducer
-			        // that wraps the input dataproducer
-			    //}
 			    
 			    dataGraph.add(bottomPanel, BorderLayout.SOUTH);  			    
 			}
@@ -591,8 +582,8 @@ public class DataGraphManager
 
         //Load the data point labels
         for (int i=0; i<pfDPLabels.size(); i++){
-        	Object obj = pfDPLabels.get(i);
-        	Graphable label = (Graphable)wrapperService.getRealObject((OTWrapper)obj);
+        	OTObject obj = pfDPLabels.get(i);
+        	Graphable label = (Graphable)controllerService.getRealObject(obj);
 
         	if(label instanceof DataAnnotation) {
         		((DataAnnotation)label).setGraphableList(dataGraph.getObjList());
@@ -603,8 +594,8 @@ public class DataGraphManager
 		notesLayer.addGraphableListListener(new GraphableListListener(){
 			public void listGraphableAdded(EventObject e) {
 				Object obj = e.getSource();
-				OTWrapper wrapper = wrapperService.getWrapper(obj);
-				otDataGraph.getLabels().add(wrapper);
+				OTObject otObject = controllerService.getOTObject(obj);
+				otDataGraph.getLabels().add(otObject);
 			}
 			
 			public void listGraphableChanged(EventObject e) {
@@ -615,8 +606,8 @@ public class DataGraphManager
 			}
 			public void listGraphableRemoved(EventObject e) {
 				Object obj = e.getSource();
-				OTWrapper otWrapper = wrapperService.getWrapper(obj);
-				otDataGraph.getLabels().remove(otWrapper);
+				OTObject otObject = controllerService.getOTObject(obj);
+				otDataGraph.getLabels().remove(otObject);
 			}
 		});
 
@@ -626,8 +617,8 @@ public class DataGraphManager
 			public void listGraphableAdded(EventObject e) {
 				// TODO verify this is doesn't screw up things
 				Object obj = e.getSource();
-				OTWrapper wrapper = wrapperService.getWrapper(obj);
-				otDataGraph.getGraphables().add(wrapper);
+				OTObject otObject = controllerService.getOTObject(obj);
+				otDataGraph.getGraphables().add(otObject);
 			}
 			public void listGraphableChanged(EventObject e) {
 				// TODO verify this is necessary
@@ -637,8 +628,8 @@ public class DataGraphManager
 			public void listGraphableRemoved(EventObject e) {
 				// TODO verify this is doesn't screw up things
 				Object obj = e.getSource();
-				OTWrapper otWrapper = wrapperService.getWrapper(obj);
-				otDataGraph.getGraphables().remove(otWrapper);				
+				OTObject otObject = controllerService.getOTObject(obj);
+				otDataGraph.getGraphables().remove(otObject);				
 			}
 		});				
 	}
@@ -714,7 +705,7 @@ public class DataGraphManager
         }
         
         DataGraphable graphable = 
-        	(DataGraphable)wrapperService.getRealObject(otGraphable);
+        	(DataGraphable)controllerService.getRealObject(otGraphable);
 
         // I don't know if this should be done or not
         if(name != null) {

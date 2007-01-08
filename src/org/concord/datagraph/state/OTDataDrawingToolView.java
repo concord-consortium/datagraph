@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.17 $
- * $Date: 2006-12-18 16:07:53 $
- * $Author: swang $
+ * $Revision: 1.18 $
+ * $Date: 2007-01-08 20:06:15 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -67,8 +67,8 @@ public class OTDataDrawingToolView extends OTDrawingToolView
     	this.viewContainer = container;
         //setMaximumSize(new Dimension(550, 220));
     	
-    	wrapperService.registerWrapperClass(OTDataGraphable.class);
-    	wrapperService.registerWrapperClass(OTEraserGraphable.class);
+    	controllerService.registerControllerClass(OTDataGraphableController.class);
+    	controllerService.registerControllerClass(OTEraserGraphableController.class);
     }
     
 	/**
