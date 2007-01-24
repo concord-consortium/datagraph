@@ -36,7 +36,6 @@ import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.WritableDataStore;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.view.OTObjectView;
-import org.concord.framework.otrunk.view.OTViewContainer;
 import org.concord.graph.engine.SelectableList;
 
 /**
@@ -52,31 +51,21 @@ public class DataCollectorView
 	SelectableList notesLayer;
 	WritableDataStore dataStore;	
 	DataGraphManager dataGraphManager;
-	OTViewContainer vContainer;
 	
     public DataCollectorView(OTDataCollector collector)
     {
         dataCollector = collector;
     }
 
-    /* (non-Javadoc)
-     * @see org.concord.framework.otrunk.view.OTObjectView#initialize(org.concord.framework.otrunk.OTObject, org.concord.framework.otrunk.view.OTViewContainer)
-     */
-    public void initialize(OTObject otObject, OTViewContainer viewContainer)
+    public JComponent getComponent(OTObject otObject, boolean editable)
     {
-        // TODO Auto-generated method stub
-    	this.vContainer = viewContainer;
-
     	// For safety verify that the otObject is the same
     	// as the one used in the constructor
     	if(!otObject.equals(dataCollector)){
     		throw new RuntimeException("otObject != dataCollector");
     	}    	
-    }
-    
-    public JComponent getComponent(boolean editable)
-    {
-        return getDataGraph(editable, true);
+
+    	return getDataGraph(editable, true);
     }
      
     /* (non-Javadoc)

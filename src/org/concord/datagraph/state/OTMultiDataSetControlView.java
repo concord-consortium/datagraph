@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.3 $
- * $Date: 2006-05-16 19:12:19 $
+ * $Revision: 1.4 $
+ * $Date: 2007-01-24 22:11:22 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -42,7 +42,6 @@ import javax.swing.JPanel;
 import org.concord.datagraph.ui.DataGraph;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.view.OTObjectView;
-import org.concord.framework.otrunk.view.OTViewContainer;
 import org.concord.graph.engine.GraphableList;
 import org.concord.graph.event.GraphableListListener;
 import org.concord.view.CheckedColorTreeControler;
@@ -51,15 +50,18 @@ import org.concord.view.MultiCheckedColorTreeModel;
 public class OTMultiDataSetControlView extends JPanel
     implements OTObjectView, DataGraphViewPlugin
 {
-    OTViewContainer viewContainer;
+	/**
+	 * Not intended to be serialized, just added remove compile warning
+	 */
+	private static final long serialVersionUID = 1L;
+	
     Vector graphViews = new Vector();
     MultiCheckedColorTreeModel multiTreeModel;
     CheckedColorTreeControler treeControler;
     OTMultiDataSetControl otControl;
     
-    public void initialize(OTObject otObject, OTViewContainer viewContainer)
+    public JComponent getComponent(OTObject otObject, boolean editable)
     {
-        this.viewContainer = viewContainer;
         otControl = (OTMultiDataSetControl)otObject;
         
         multiTreeModel = new MultiCheckedColorTreeModel();
@@ -68,10 +70,7 @@ public class OTMultiDataSetControlView extends JPanel
         // relavent to this view.  If I control the graphs are sub views
         // that is ok, but I don't want to require that. 
         // TODO Auto-generated method stub
-    }
 
-    public JComponent getComponent(boolean editable)
-    {
         return this;
     }
 

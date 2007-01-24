@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.18 $
- * $Date: 2007-01-08 20:06:15 $
+ * $Revision: 1.19 $
+ * $Date: 2007-01-24 22:11:23 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -37,7 +37,6 @@ import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.ControllableDataGraphableDrawing;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTObjectService;
-import org.concord.framework.otrunk.view.OTViewContainer;
 import org.concord.graph.util.engine.DrawingObject;
 import org.concord.graph.util.state.OTDrawingToolView;
 
@@ -58,13 +57,11 @@ public class OTDataDrawingToolView extends OTDrawingToolView
      */
     private static final long serialVersionUID = 1L;
     OTObject tool;
-	OTViewContainer viewContainer;
 	
-    public void initialize(OTObject tool, OTViewContainer container)
+    protected void setup(OTObject tool)
     {
-    	super.initialize(tool, container);
+    	super.setup(tool);
     	this.tool = tool;
-    	this.viewContainer = container;
         //setMaximumSize(new Dimension(550, 220));
     	
     	controllerService.registerControllerClass(OTDataGraphableController.class);

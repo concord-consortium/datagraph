@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.11 $
- * $Date: 2006-10-03 21:09:02 $
+ * $Revision: 1.12 $
+ * $Date: 2007-01-24 22:11:23 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -57,7 +57,8 @@ import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTObjectList;
 import org.concord.framework.otrunk.OTObjectService;
 import org.concord.framework.otrunk.view.OTObjectView;
-import org.concord.framework.otrunk.view.OTViewContainer;
+import org.concord.framework.otrunk.view.OTViewFactory;
+import org.concord.framework.otrunk.view.OTViewFactoryAware;
 import org.concord.graph.examples.GraphWindowToolBar;
 
 /**
@@ -70,25 +71,20 @@ import org.concord.graph.examples.GraphWindowToolBar;
  *
  */
 public class OTMultiDataGraphView
-    implements OTObjectView, DataStoreCollection
+    implements OTObjectView, OTViewFactoryAware, DataStoreCollection
 {
     OTMultiDataGraph multiDataGraph;
-    OTViewContainer viewContainer;
-
+    OTViewFactory viewFactory;
+    
     Vector graphManagers = new Vector();
-    
-    public void initialize(OTObject object, OTViewContainer viewContainer)
-    {
-        multiDataGraph = (OTMultiDataGraph)object;
-        this.viewContainer = viewContainer;
-    }
-    
     
     /* (non-Javadoc)
      * @see org.concord.framework.otrunk.view.OTObjectView#getComponent(boolean)
      */
-    public JComponent getComponent(boolean editable)
+    public JComponent getComponent(OTObject otObject, boolean editable)
     {
+        multiDataGraph = (OTMultiDataGraph)otObject;
+
         JPanel mainPanel = new JPanel(new BorderLayout());
 
 		GraphWindowToolBar gwToolBar = new DataGraphToolbar(); //GraphWindowToolBar();	
@@ -120,7 +116,8 @@ public class OTMultiDataGraphView
             OTPluginView pluginView = (OTPluginView)plugins.get(i);            
             OTObject pluginControl = pluginView.getControl();
             JComponent pluginComponent = 
-                viewContainer.getComponent(pluginControl, true);
+            	viewFactory.getComponent(pluginControl, null, editable);
+
             // change the alignment of the component so 
             // when it is put in the box it can fill the whole width
             // The default alignment of a button for example is 0
@@ -267,4 +264,9 @@ public class OTMultiDataGraphView
         // TODO Auto-generated method stub
         return null;
     }
+
+
+	public void setViewFactory(OTViewFactory factory) {
+		viewFactory = factory;
+	}
 }

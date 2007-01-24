@@ -29,14 +29,10 @@
  */
 package org.concord.datagraph.state;
 
-import java.io.File;
-import java.util.Vector;
-
 import javax.swing.JComponent;
 
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.view.OTObjectView;
-import org.concord.framework.otrunk.view.OTViewContainer;
 
 /**
  * @author scott
@@ -48,15 +44,13 @@ public class OTDataCollectorView
     implements OTObjectView
 {
     OTObjectView view;
-    OTViewContainer viewContainer;
     OTDataCollector dataCollector;
     boolean multipleGraphableEnabled = false;
-    
-    
-    /**
-     * 
+        
+    /* (non-Javadoc)
+     * @see org.concord.framework.otrunk.view.OTObjectView#getComponent(boolean)
      */
-    public void initialize(OTObject otObject, OTViewContainer container)
+    public JComponent getComponent(OTObject otObject, boolean editable)
     {
         this.dataCollector = (OTDataCollector)otObject;
         if(dataCollector.getSingleValue()) {
@@ -65,16 +59,7 @@ public class OTDataCollectorView
         else {
             view = new DataCollectorView(dataCollector);
         }
-        this.viewContainer = container;
-        
-    }
-
-    /* (non-Javadoc)
-     * @see org.concord.framework.otrunk.view.OTObjectView#getComponent(boolean)
-     */
-    public JComponent getComponent(boolean editable)
-    {
-        return view.getComponent(editable);
+        return view.getComponent(otObject, editable);
     }
 
     /* (non-Javadoc)

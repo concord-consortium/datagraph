@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.12 $
- * $Date: 2005-08-22 22:06:32 $
+ * $Revision: 1.13 $
+ * $Date: 2007-01-24 22:11:23 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -53,7 +53,6 @@ import org.concord.framework.data.stream.WritableDataStore;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTObjectService;
 import org.concord.framework.otrunk.view.OTObjectView;
-import org.concord.framework.otrunk.view.OTViewContainer;
 import org.concord.graph.util.ui.ResourceLoader;
 
 /**
@@ -69,7 +68,6 @@ public class SingleValueDataView
 	JDialog dialog;
 	DataGraphManager dataGraphManager;
 	OTDataCollector dataCollector;
-	OTViewContainer viewContainer;
 	
     /**
      * 
@@ -96,16 +94,7 @@ public class SingleValueDataView
 	    
     }
 	 
-    /* (non-Javadoc)
-     * @see org.concord.framework.otrunk.view.OTObjectView#initialize(org.concord.framework.otrunk.OTObject, org.concord.framework.otrunk.view.OTViewContainer)
-     */
-    public void initialize(OTObject otObject, OTViewContainer viewContainer)
-    {
-        // TODO Auto-generated method stub
-    	this.viewContainer = viewContainer;
-    }
-    
-    public JComponent getComponent(boolean editable)
+    public JComponent getComponent(OTObject otObject, boolean editable)
     {
         Box box = new Box(BoxLayout.Y_AXIS);
         

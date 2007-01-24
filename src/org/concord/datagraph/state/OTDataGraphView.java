@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.18 $
- * $Date: 2005-09-23 19:56:15 $
- * $Author: swang $
+ * $Revision: 1.19 $
+ * $Date: 2007-01-24 22:11:23 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -33,18 +33,12 @@
 package org.concord.datagraph.state;
 
 import java.awt.Dimension;
-import java.io.File;
 
 import javax.swing.JComponent;
-import javax.swing.JPanel;
 
-import org.concord.datagraph.ui.AddDataPointLabelAction;
 import org.concord.datagraph.ui.DataGraph;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.view.OTObjectView;
-import org.concord.framework.otrunk.view.OTViewContainer;
-import org.concord.graph.engine.SelectableList;
-import org.concord.swing.SelectableToggleButton;
 
 
 /**
@@ -60,21 +54,16 @@ public class OTDataGraphView
 	implements OTObjectView
 {
 	OTDataGraph pfObject;
-	protected OTViewContainer viewContainer;
 	DataGraph dataGraph;
 	DataGraphManager manager;
 	
-	public void initialize(OTObject pfDataGraph, OTViewContainer vContainer)
-	{
-		this.pfObject = (OTDataGraph)pfDataGraph;
-		viewContainer = vContainer;
-	}
-
 	/* (non-Javadoc)
 	 * @see org.concord.portfolio.views.PortfolioView#getComponent(boolean)
 	 */
-	public JComponent getComponent(boolean editable)
+	public JComponent getComponent(OTObject otObject, boolean editable)
 	{
+		this.pfObject = (OTDataGraph)otObject;
+
 		//dataGraph = new DataGraph();
 		//dataGraph.changeToDataGraphToolbar();
 				
