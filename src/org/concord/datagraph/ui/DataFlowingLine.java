@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.1 $
- * $Date: 2006-02-06 18:24:08 $
- * $Author: scytacki $
+ * $Revision: 1.2 $
+ * $Date: 2007-02-23 18:48:35 $
+ * $Author: sfentress $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -324,6 +324,13 @@ public class DataFlowingLine extends DefaultControllable
     {
         // TODO Auto-generated method stub
         return null;
+    }
+    
+    public Rectangle2D getBoundingRectangle()
+    {
+    	//TODO change to return actual bounding box
+    	Rectangle2D fakeRect = new Rectangle2D.Double();
+    	return fakeRect;
     }
     
     public boolean isResizeEnabled()

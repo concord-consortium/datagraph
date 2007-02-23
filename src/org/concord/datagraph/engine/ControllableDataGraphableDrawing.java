@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.7 $
- * $Date: 2005-08-04 21:46:08 $
- * $Author: maven $
+ * $Revision: 1.8 $
+ * $Date: 2007-02-23 18:48:35 $
+ * $Author: sfentress $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -35,6 +35,7 @@ package org.concord.datagraph.engine;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.Point2D;
@@ -47,9 +48,11 @@ import org.concord.graph.engine.CoordinateSystem;
 import org.concord.graph.engine.Graphable;
 import org.concord.graph.engine.MathUtil;
 import org.concord.graph.engine.Selectable;
+import org.concord.graph.engine.SelectableByTool;
 import org.concord.graph.event.GraphableListener;
 import org.concord.graph.event.SelectableListener;
 import org.concord.graph.util.engine.DrawingObject;
+import org.concord.graph.util.ui.DrawingGraph;
 
 
 /**
@@ -62,13 +65,14 @@ import org.concord.graph.util.engine.DrawingObject;
  *
  */
 public class ControllableDataGraphableDrawing extends ControllableDataGraphable
-	implements Selectable
+	implements SelectableByTool
 {
 	protected boolean selected = false;
 	protected boolean selectable = true;
 	protected Vector selectableListeners;
 	
-	private Rectangle2D boundingBox;
+	private boolean wasSelectedBySelectionTool = false;
+
 	private Color boundingBoxColor;
 	
 	private boolean clickOnBoundingBox = false;
@@ -89,6 +93,9 @@ public class ControllableDataGraphableDrawing extends ControllableDataGraphable
 	 */
 	public void draw(Graphics2D g)
 	{
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+				RenderingHints.VALUE_ANTIALIAS_ON);
+		
 		Shape oldClip = g.getClip();
 		Color oldColor = g.getColor();
 		Stroke oldStroke = g.getStroke();
@@ -150,8 +157,6 @@ public class ControllableDataGraphableDrawing extends ControllableDataGraphable
 	 */
 	protected void updateBoundingBox()
 	{
-		//System.out.println("bounding box update");
-		
 		CoordinateSystem cs = graphArea.getCoordinateSystem();
 		
 		if (getTotalNumSamples() == 0) return;
@@ -196,19 +201,19 @@ public class ControllableDataGraphableDrawing extends ControllableDataGraphable
 			return true;
 		}
 		
-		//System.out.println("drag mode: "+dragMode);
 		if (dragMode == DrawingObject.DRAWING_DRAG_MODE_SELECT ||
-				dragMode == DRAGMODE_NONE){
+				dragMode == DRAGMODE_NONE){ 
 			if (isPointAValue(p)){
 				return true;
 			}
 		}
-		else if (dragMode == DrawingObject.DRAWING_DRAG_MODE_MOVE){
+		
+		//if (dragMode == DrawingObject.DRAWING_DRAG_MODE_MOVE || true){
 			if (isSelected()){
 				return isPointInBoundingBox(p);
-				//return true;
+			//	return true;
 			}
-		}
+	//	}
 		
 		return false;
 		
@@ -262,10 +267,11 @@ public class ControllableDataGraphableDrawing extends ControllableDataGraphable
 			return true;
 		}
 		
-		if (dragMode == DrawingObject.DRAWING_DRAG_MODE_MOVE){
-			//System.out.println("mouse dragged");
+		if (dragMode == DrawingObject.DRAWING_DRAG_MODE_MOVE ||true){
+		//	int a = 1/0;
+			System.out.println("mouse dragged");
 			
-			if (!clickOnBoundingBox) return false;
+		//	if (!clickOnBoundingBox) return false;
 			
 			CoordinateSystem cs = graphArea.getCoordinateSystem();
 			Point2D pW = cs.transformToWorld(p);
@@ -321,7 +327,7 @@ public class ControllableDataGraphableDrawing extends ControllableDataGraphable
 	 */
 	public void deselect()
 	{
-		if (selected){
+		if (selected && !wasSelectedBySelectionTool){
 			selected = false;
 			dragMode = DrawingObject.DRAWING_DRAG_MODE_SELECT;
 			notifyDeselect();
@@ -408,5 +414,21 @@ public class ControllableDataGraphableDrawing extends ControllableDataGraphable
 		//}
 		
 		return g;
+	}
+
+	public void forceDeselect() {
+		wasSelectedBySelectionTool = false;
+		deselect();
+		
+	}
+
+	public void selectBySelectionTool() {
+		wasSelectedBySelectionTool = true;
+		select();
+		
+	}
+	
+	public void setSelectedBySelectionTool(boolean b){
+		wasSelectedBySelectionTool = b;
 	}
 }

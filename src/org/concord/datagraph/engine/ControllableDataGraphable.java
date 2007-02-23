@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.18 $
- * $Date: 2005-08-04 21:46:08 $
- * $Author: maven $
+ * $Revision: 1.19 $
+ * $Date: 2007-02-23 18:48:35 $
+ * $Author: sfentress $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -68,6 +68,8 @@ public class ControllableDataGraphable extends DataGraphable
 	public final static int LINETYPE_FUNCTION = 1;
 	
 	protected int lineType = LINETYPE_FUNCTION;//LINETYPE_FREE;	
+	
+	Rectangle2D boundingBox;
 	
 	private boolean mouseClicked = false;
 	private int indexPointClicked = -1;
@@ -262,6 +264,10 @@ public class ControllableDataGraphable extends DataGraphable
 	public int getDragMode()
 	{
 		return dragMode;
+	}
+	
+	public Rectangle2D getBoundingRectangle(){
+		return boundingBox;
 	}
 	
 	/**
