@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.19 $
- * $Date: 2007-02-23 18:48:35 $
+ * $Revision: 1.20 $
+ * $Date: 2007-03-04 23:39:56 $
  * $Author: sfentress $
  *
  * Licence Information
@@ -32,15 +32,25 @@
 */
 package org.concord.datagraph.engine;
 
+import java.awt.BasicStroke;
+import java.awt.Cursor;
 import java.awt.Point;
+import java.awt.Shape;
+import java.awt.Stroke;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.EventObject;
+import java.util.Vector;
 
 import org.concord.data.stream.DataStoreFunctionUtil;
 import org.concord.framework.data.stream.DataStore;
 import org.concord.framework.data.stream.WritableDataStore;
 import org.concord.graph.engine.CoordinateSystem;
+import org.concord.graph.engine.Cursorable;
 import org.concord.graph.engine.MouseControllable;
+import org.concord.graph.engine.MouseMotionReceiver;
+import org.concord.graph.event.CursorListener;
 import org.concord.graph.util.engine.DrawingObject;
 
 
@@ -54,7 +64,7 @@ import org.concord.graph.util.engine.DrawingObject;
  *
  */
 public class ControllableDataGraphable extends DataGraphable
-	implements MouseControllable, DrawingObject
+	implements MouseControllable, MouseMotionReceiver, Cursorable, DrawingObject
 {
 	public final static int DRAGMODE_NONE = 0;
 	public final static int DRAGMODE_MOVEPOINTS = 1;
@@ -83,6 +93,14 @@ public class ControllableDataGraphable extends DataGraphable
 		
 	protected int drawingMode = DrawingObject.DRAWING_DRAG_MODE_NONE;
 	
+	protected boolean bNewShape;
+	
+	protected Cursor cursor;
+
+	protected Vector cursorListeners;
+	
+	protected boolean isMouseInside = false;
+	
 	/**
 	 * 
 	 */
@@ -91,6 +109,8 @@ public class ControllableDataGraphable extends DataGraphable
 		super();
 		functionUtil = new DataStoreFunctionUtil();
 		lastPointW = new Point2D.Double();
+		cursorListeners = new Vector();
+		bNewShape = true;
 	}
 	
 	/**
@@ -207,6 +227,13 @@ public class ControllableDataGraphable extends DataGraphable
 	 */
 	public boolean mouseReleased(Point p)
 	{
+		if (bNewShape){
+			Cursor standard = new Cursor(Cursor.DEFAULT_CURSOR);
+			setCursor(standard);
+			isMouseInside = false;
+		}
+		bNewShape = false;
+		
 		indexPointClicked = -1;
 		mouseClicked = false;
 		lastPointW = null;
@@ -492,5 +519,88 @@ public class ControllableDataGraphable extends DataGraphable
 	public boolean isResizeEnabled()
 	{
 		return false;
+	}
+
+	public boolean isMouseReceiving() {
+		return isMouseInside;
+	}
+
+	public boolean mouseEntered(Point p) {
+		isMouseInside = true;
+		return false;
+	}
+
+	public boolean mouseExited(Point p) {
+		isMouseInside = false;
+		return false;
+	}
+
+	public boolean mouseMoved(Point p) {
+		if (bNewShape)
+			return false;
+		if (isMouseInside){
+			Cursor move = new Cursor(Cursor.HAND_CURSOR);
+			setCursor(move);
+		} else {
+			Cursor standard = new Cursor(Cursor.DEFAULT_CURSOR);
+			setCursor(standard);
+		}
+		return false;
+	}
+
+	public boolean isInsideBox(Rectangle2D box) {
+		Stroke perimeter = new BasicStroke(1);
+		Shape outline = perimeter.createStrokedShape(path);
+		if (box.getHeight() < 1 || box.getWidth() < 1){
+			// make a slightly larger rectangle
+			double iniX = box.getMinX()-1;
+			double iniY = box.getMinY()-1;
+			double w = (box.getMaxX() - iniX) + 2;
+			double h = (box.getMaxY() - iniY) + 2;
+			return outline.intersects(iniX, iniY, w, h);
+		}
+		return outline.intersects(box);
+	}
+
+	/**
+	 * @see org.concord.graph.engine.Cursorable#setCursor(java.awt.Cursor)
+	 */
+	public void setCursor(Cursor cursor) {
+		this.cursor = cursor;
+		notifyCursorChange();
+	}
+
+	/**
+	 * 
+	 */
+	protected void notifyCursorChange() {
+		EventObject e = new EventObject(this);
+		for (int i = 0; i < cursorListeners.size(); i++) {
+			CursorListener l = (CursorListener) cursorListeners.elementAt(i);
+			l.cursorChanged(e);
+		}
+	}
+
+	/**
+	 * @see org.concord.graph.engine.Cursorable#getCursor()
+	 */
+	public Cursor getCursor() {
+		return cursor;
+	}
+
+	/**
+	 * @see org.concord.graph.engine.Cursorable#addCursorListener(org.concord.graph.event.CursorListener)
+	 */
+	public void addCursorListener(CursorListener l) {
+		if (!cursorListeners.contains(l)) {
+			cursorListeners.add(l);
+		}
+	}
+
+	/**
+	 * @see org.concord.graph.engine.Cursorable#removeCursorListener(org.concord.graph.event.CursorListener)
+	 */
+	public void removeCursorListener(CursorListener l) {
+		cursorListeners.remove(l);
 	}		
 }

@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.8 $
- * $Date: 2007-02-23 18:48:35 $
+ * $Revision: 1.9 $
+ * $Date: 2007-03-04 23:39:56 $
  * $Author: sfentress $
  *
  * Licence Information
@@ -106,7 +106,7 @@ public class ControllableDataGraphableDrawing extends ControllableDataGraphable
 		}
 		
 		//Draw a bounding box around the graphable
-		if (isShowBoundingBox()){
+		if (isShowBoundingBox()){  // && !bNewShape){
 			g.setColor(boundingBoxColor);
 			g.draw(boundingBox);
 		}
@@ -233,6 +233,8 @@ public class ControllableDataGraphableDrawing extends ControllableDataGraphable
 	 */
 	public boolean mousePressed(Point p)
 	{
+		if (!isPointInBoundingBox(p))
+			bNewShape = true;
 		boolean b = super.mousePressed(p);
 		if (dragMode == DrawingObject.DRAWING_DRAG_MODE_MOVE){			
 			clickOnBoundingBox = isPointInBoundingBox(p);

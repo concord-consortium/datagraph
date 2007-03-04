@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.2 $
- * $Date: 2007-02-23 18:48:35 $
+ * $Revision: 1.3 $
+ * $Date: 2007-03-04 23:39:56 $
  * $Author: sfentress $
  *
  * Licence Information
@@ -385,5 +385,30 @@ public class DataFlowingLine extends DefaultControllable
 	{
 		// TODO Auto-generated method stub
 		
+	}
+
+	public boolean isInsideBox(Rectangle2D box) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean isMouseReceiving() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean mouseEntered(Point p) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean mouseExited(Point p) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean mouseMoved(Point p) {
+		// TODO Auto-generated method stub
+		return false;
 	}	
 }
