@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.9 $
- * $Date: 2007-03-04 23:39:56 $
- * $Author: sfentress $
+ * $Revision: 1.10 $
+ * $Date: 2007-03-05 05:45:38 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -271,7 +271,7 @@ public class ControllableDataGraphableDrawing extends ControllableDataGraphable
 		
 		if (dragMode == DrawingObject.DRAWING_DRAG_MODE_MOVE ||true){
 		//	int a = 1/0;
-			System.out.println("mouse dragged");
+		//	System.out.println("mouse dragged");
 			
 		//	if (!clickOnBoundingBox) return false;
 			
