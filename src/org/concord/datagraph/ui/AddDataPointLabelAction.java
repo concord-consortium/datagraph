@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.7 $
- * $Date: 2005-09-15 14:10:27 $
- * $Author: swang $
+ * $Revision: 1.8 $
+ * $Date: 2007-03-06 16:26:28 $
+ * $Author: sfentress $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -38,6 +38,8 @@ import java.util.Vector;
 import org.concord.framework.data.stream.DataStore;
 import org.concord.graph.engine.Graphable;
 import org.concord.graph.engine.GraphableList;
+import org.concord.graph.engine.SelectableList;
+import org.concord.graph.examples.GraphWindowToolBar;
 import org.concord.graph.util.control.AddLabelAction;
 import org.concord.graph.util.ui.BoxTextLabel;
 
@@ -55,6 +57,7 @@ public class AddDataPointLabelAction extends AddLabelAction
 {
 	protected DataStore dataStore;
 	protected GraphableList dataGraphablesList;
+	private GraphWindowToolBar toolBar;
 	
 	/**
 	 * @param gList
@@ -67,6 +70,13 @@ public class AddDataPointLabelAction extends AddLabelAction
 		setIcon("toolbar_icon_note.gif");
 	}
 
+	public AddDataPointLabelAction(GraphableList gList, GraphableList objList, GraphWindowToolBar toolBar) {
+		super(gList);
+		dataGraphablesList = objList;
+		setIcon("toolbar_icon_note.gif");
+		this.toolBar = toolBar;
+	}
+
 	/**
 	 * @see org.concord.graph.util.control.AddLabelAction.createTextLabel
 	 */
@@ -75,6 +85,8 @@ public class AddDataPointLabelAction extends AddLabelAction
 		DataPointLabel label = new DataPointLabel(true);
 		label.setGraphableList(dataGraphablesList);
 		label.setMessage("Data Point");
+		if (toolBar != null)
+			label.setToolBar(toolBar);
 		return label;
 	}
 	

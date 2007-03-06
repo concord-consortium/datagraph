@@ -412,12 +412,12 @@ public class DataGraphManager
 		notesLayer = new SelectableList();
 		dataGraph.getGraph().add(notesLayer);
 
-		SelectableToggleButton addNoteButton = new SelectableToggleButton(new AddDataPointLabelAction(notesLayer, dataGraph.getObjList()));
+		SelectableToggleButton addNoteButton = new SelectableToggleButton(new AddDataPointLabelAction(notesLayer, dataGraph.getObjList(), dataGraph.getToolBar()));
 		dataGraph.getToolBar().addButton(addNoteButton, "Add a note to a point in the graph");
 		
 		//DataPointRuler need to be explicitly enabled to show per Brad's request.
 		if(dataCollector != null && dataCollector.getRulerEnabled()) {
-			SelectableToggleButton addNoteButton2 = new SelectableToggleButton(new AddDataPointLabelActionExt(notesLayer, dataGraph.getObjList()));
+			SelectableToggleButton addNoteButton2 = new SelectableToggleButton(new AddDataPointLabelActionExt(notesLayer, dataGraph.getObjList(), dataGraph.getToolBar()));
 			dataGraph.getToolBar().addButton(addNoteButton2, "Add a ruler to a point in the graph");			
 		}
 		

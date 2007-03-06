@@ -24,6 +24,8 @@
 package org.concord.datagraph.ui;
 
 import org.concord.graph.engine.GraphableList;
+import org.concord.graph.engine.SelectableList;
+import org.concord.graph.examples.GraphWindowToolBar;
 import org.concord.graph.util.ui.BoxTextLabel;
 
 /**
@@ -34,9 +36,17 @@ import org.concord.graph.util.ui.BoxTextLabel;
  */
 public class AddDataPointLabelActionExt extends AddDataPointLabelAction{
 
+	private GraphWindowToolBar toolBar;
+	
 	public AddDataPointLabelActionExt(GraphableList gList, GraphableList objList) {
 		super(gList, objList);
 		setIcon("toolbar_icon_note_ext.gif");
+	}
+
+	public AddDataPointLabelActionExt(GraphableList gList, GraphableList objList, GraphWindowToolBar toolBar) {
+		super(gList, objList);
+		setIcon("toolbar_icon_note_ext.gif");
+		this.toolBar = toolBar;
 	}
 
 	/**
@@ -47,6 +57,8 @@ public class AddDataPointLabelActionExt extends AddDataPointLabelAction{
 		//DataPointLabelExt label = new DataPointLabelExt(true);
 		DataPointRuler label = new DataPointRuler(true);
 		label.setGraphableList(dataGraphablesList);
+		if (toolBar != null)
+			label.setToolBar(toolBar);
 		return label;
 	}
 }
