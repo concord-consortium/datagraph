@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.44 $
- * $Date: 2005-08-22 22:06:32 $
- * $Author: scytacki $
+ * $Revision: 1.45 $
+ * $Date: 2007-03-08 22:10:52 $
+ * $Author: sfentress $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -795,7 +795,7 @@ public class DataGraph extends JPanel
 		frame.getContentPane().add(fa);
 		frame.setSize(800,600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.show();
+		frame.setVisible(true);
 	}
 
 	/**

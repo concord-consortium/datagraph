@@ -41,10 +41,7 @@ package org.concord.datagraph.engine;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.GeneralPath;
-import java.awt.geom.Point2D;
-import java.awt.geom.Area;
 import java.awt.geom.AffineTransform;
-import java.awt.Color;
 
 public class DataGraphableEx extends DataGraphable
 {

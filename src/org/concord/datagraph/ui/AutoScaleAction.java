@@ -39,6 +39,7 @@ import org.concord.graph.util.ui.ResourceLoader;
  */
 public class AutoScaleAction extends AbstractAction{
 
+	private static final long serialVersionUID = 1L;
 	public static final int AUTOSCALE_X = 0;
 	public static final int AUTOSCALE_Y = 1;
 	public static final int AUTOSCALE_XY = 2;

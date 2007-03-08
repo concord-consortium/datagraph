@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.10 $
- * $Date: 2007-03-05 05:45:38 $
- * $Author: scytacki $
+ * $Revision: 1.11 $
+ * $Date: 2007-03-08 22:10:53 $
+ * $Author: sfentress $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -47,12 +47,10 @@ import java.util.Vector;
 import org.concord.graph.engine.CoordinateSystem;
 import org.concord.graph.engine.Graphable;
 import org.concord.graph.engine.MathUtil;
-import org.concord.graph.engine.Selectable;
 import org.concord.graph.engine.SelectableByTool;
 import org.concord.graph.event.GraphableListener;
 import org.concord.graph.event.SelectableListener;
 import org.concord.graph.util.engine.DrawingObject;
-import org.concord.graph.util.ui.DrawingGraph;
 
 
 /**

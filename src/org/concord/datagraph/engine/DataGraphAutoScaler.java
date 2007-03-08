@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.9 $
- * $Date: 2005-11-09 16:24:40 $
- * $Author: swang $
+ * $Revision: 1.10 $
+ * $Date: 2007-03-08 22:10:53 $
+ * $Author: sfentress $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -61,7 +61,7 @@ public class DataGraphAutoScaler extends DataGraphDaemon
 	{
 		DataGraphable dg;
 		float minX=Float.MAX_VALUE, maxX=0, minY=Float.MAX_VALUE, maxY=0;
-		float val;
+		//float val;
 		
 		if (!autoScaleX && !autoScaleY) return;
 		

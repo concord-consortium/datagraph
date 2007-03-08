@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.8 $
- * $Date: 2007-03-06 16:26:28 $
+ * $Revision: 1.9 $
+ * $Date: 2007-03-08 22:10:52 $
  * $Author: sfentress $
  *
  * Licence Information
@@ -32,13 +32,8 @@
 */
 package org.concord.datagraph.ui;
 
-import java.util.EventObject;
-import java.util.Vector;
-
 import org.concord.framework.data.stream.DataStore;
-import org.concord.graph.engine.Graphable;
 import org.concord.graph.engine.GraphableList;
-import org.concord.graph.engine.SelectableList;
 import org.concord.graph.examples.GraphWindowToolBar;
 import org.concord.graph.util.control.AddLabelAction;
 import org.concord.graph.util.ui.BoxTextLabel;
@@ -55,6 +50,7 @@ import org.concord.graph.util.ui.BoxTextLabel;
  */
 public class AddDataPointLabelAction extends AddLabelAction
 {
+	private static final long serialVersionUID = 1L;
 	protected DataStore dataStore;
 	protected GraphableList dataGraphablesList;
 	private GraphWindowToolBar toolBar;
@@ -85,8 +81,9 @@ public class AddDataPointLabelAction extends AddLabelAction
 		DataPointLabel label = new DataPointLabel(true);
 		label.setGraphableList(dataGraphablesList);
 		label.setMessage("Data Point");
-		if (toolBar != null)
+		if (toolBar != null){
 			label.setToolBar(toolBar);
+		}
 		return label;
 	}
 	

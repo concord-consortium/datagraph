@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.3 $
- * $Date: 2007-03-04 23:39:56 $
+ * $Revision: 1.4 $
+ * $Date: 2007-03-08 22:10:52 $
  * $Author: sfentress $
  *
  * Licence Information
@@ -196,7 +196,6 @@ public class DataFlowingLine extends DefaultControllable
 	 */
 	public Graphable getCopy()
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
     
@@ -277,7 +276,7 @@ public class DataFlowingLine extends DefaultControllable
         	// probably we need to save the old gradient
         	g.setPaint(cyclePaint);
         	
-        	Stroke lineStroke = getStroke();
+        	//Stroke lineStroke = getStroke();
         	if(stroke == null) {
         		stroke = new BasicStroke(20, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND);;
         	}
@@ -364,7 +363,7 @@ public class DataFlowingLine extends DefaultControllable
 	public void dataReceived(DataStreamEvent dataEvent) 
 	{
 		int numSamples = dataEvent.getNumSamples();
-		int channelsPerSample = dataEvent.getDataDescription().getChannelsPerSample();
+		//int channelsPerSample = dataEvent.getDataDescription().getChannelsPerSample();
 		int nextSampleOff = dataEvent.getDataDescription().getNextSampleOffset();
 		float value = dataEvent.data[(numSamples-1)*nextSampleOff+channelNumber];
 

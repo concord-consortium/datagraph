@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.8 $
- * $Date: 2005-11-23 19:27:40 $
- * $Author: swang $
+ * $Revision: 1.9 $
+ * $Date: 2007-03-08 22:10:53 $
+ * $Author: sfentress $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -75,7 +75,7 @@ public class DataGraphAutoScroller extends DataGraphDaemon
 	{
 		DataGraphable dg;
 		float minX=0, maxX=0, minY=0, maxY=0;
-		float val;
+		//float val;
 		
 		if (!autoScrollX && !autoScrollY) return;
 		

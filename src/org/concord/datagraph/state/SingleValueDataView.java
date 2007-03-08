@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.13 $
- * $Date: 2007-01-24 22:11:23 $
- * $Author: scytacki $
+ * $Revision: 1.14 $
+ * $Date: 2007-03-08 22:10:53 $
+ * $Author: sfentress $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -116,7 +116,7 @@ public class SingleValueDataView
                 int lastSample = dataStore.getTotalNumSamples();
                 dataStore.setValueAt(lastSample, 0, new Float(currentValue));
                 dataGraphManager.getDataGraph().reset();
-                dialog.hide();
+                dialog.setVisible(false);
             }
         });
         
@@ -125,7 +125,7 @@ public class SingleValueDataView
             public void actionPerformed(ActionEvent e){
                 dataGraphManager.getSourceDataProducer().stop();
                 dataGraphManager.getDataGraph().reset();
-                dialog.hide();
+                dialog.setVisible(false);
             }
         });
         bottomPanel.add(record);
@@ -155,7 +155,7 @@ public class SingleValueDataView
                 }
                 */
                 
-                dialog.show();
+                dialog.setVisible(true);
                 dataGraphManager.getSourceDataProducer().start();
                 dataGraphManager.getDataGraph().start();
             }                

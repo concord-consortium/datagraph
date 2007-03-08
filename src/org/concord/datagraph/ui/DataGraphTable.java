@@ -23,7 +23,7 @@
 
 /* Author: Edward Burke
  * Based on work by Eric Brown-Munoz
-   $Revision: 1.2 $
+   $Revision: 1.3 $
 */
 package org.concord.datagraph.ui;
 
@@ -41,7 +41,11 @@ import org.concord.graph.event.*;
 
 public class DataGraphTable extends JTable 
 {
-    private SelectableList graphablesList = null;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private SelectableList graphablesList = null;
     private TableModel extraModel;
 
     ListSelectionListener listSelectionListener = new ListSelectionListener() 
@@ -140,7 +144,7 @@ public class DataGraphTable extends JTable
 			int newIndex = graphablesList.indexOf((Graphable)e.getSource());
 			if (newIndex!=-1){
 				ListSelectionModel lsm = getSelectionModel();
-				int index = lsm.getMinSelectionIndex();
+				//int index = lsm.getMinSelectionIndex();
 				//if (index!=newIndex){
 					addSelectionIndexInternal(lsm, newIndex);
 				//}
@@ -153,7 +157,7 @@ public class DataGraphTable extends JTable
 			int newIndex = graphablesList.indexOf((Graphable)e.getSource());
 			if (newIndex!=-1){
 				ListSelectionModel lsm = getSelectionModel();
-				int index = lsm.getMinSelectionIndex();
+				//int index = lsm.getMinSelectionIndex();
 				//if (index!=newIndex){
 					removeSelectionIndexInternal(lsm, newIndex);
 				//}
@@ -189,7 +193,8 @@ public class DataGraphTable extends JTable
     
     public class Renderer extends DefaultTableCellRenderer
     {
-    	SelectableList graphableList;
+		private static final long serialVersionUID = 1L;
+		SelectableList graphableList;
     	
         public void setSelectableList( SelectableList list ) 
     	{
@@ -269,7 +274,8 @@ public class DataGraphTable extends JTable
     
     public class Model extends AbstractTableModel 
     {
-    	SelectableList graphables;
+		private static final long serialVersionUID = 1L;
+		SelectableList graphables;
     	TableCellRenderer cellRenderer;
     	
     	private String colNames[] = {"Visible","Function"};

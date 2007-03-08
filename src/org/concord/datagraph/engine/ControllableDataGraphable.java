@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.20 $
- * $Date: 2007-03-04 23:39:56 $
+ * $Revision: 1.21 $
+ * $Date: 2007-03-08 22:10:53 $
  * $Author: sfentress $
  *
  * Licence Information
@@ -37,7 +37,6 @@ import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.Shape;
 import java.awt.Stroke;
-import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.EventObject;

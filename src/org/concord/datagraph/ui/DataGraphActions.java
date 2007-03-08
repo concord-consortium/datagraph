@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.8 $
- * $Date: 2005-08-04 21:46:09 $
- * $Author: maven $
+ * $Revision: 1.9 $
+ * $Date: 2007-03-08 22:10:52 $
+ * $Author: sfentress $
  *
  * License Information
  * Copyright 2004 The Concord Consortium 
@@ -212,7 +212,7 @@ public class DataGraphActions
     		f.getContentPane().add(panel);
     		f.setSize(800, 600);
     		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    		f.show();
+    		f.setVisible(true);
         }
 	    else{
     		Frame f = new Frame();
@@ -231,12 +231,13 @@ public class DataGraphActions
 					System.exit(0);
 				}
     		});
-    		f.show();
+    		f.setVisible(true);
         }
 	}
 
 	class GraphAction extends AbstractAction
 	{
+		private static final long serialVersionUID = 1L;
 		protected int type;
 		MenuItem    awtMenuOwner = null;  
 		

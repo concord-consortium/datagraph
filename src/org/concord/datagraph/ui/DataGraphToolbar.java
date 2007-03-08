@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.7 $
- * $Date: 2005-08-04 21:46:09 $
- * $Author: maven $
+ * $Revision: 1.8 $
+ * $Date: 2007-03-08 22:10:52 $
+ * $Author: sfentress $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -49,6 +49,7 @@ import org.concord.graph.examples.GraphWindowToolBar;
  */
 public class DataGraphToolbar extends GraphWindowToolBar
 {
+	private static final long serialVersionUID = 1L;
 	protected AbstractButton selButton;
 	
     public DataGraphToolbar()

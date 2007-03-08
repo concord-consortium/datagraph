@@ -24,7 +24,6 @@
 package org.concord.datagraph.ui;
 
 import org.concord.graph.engine.GraphableList;
-import org.concord.graph.engine.SelectableList;
 import org.concord.graph.examples.GraphWindowToolBar;
 import org.concord.graph.util.ui.BoxTextLabel;
 
@@ -36,6 +35,7 @@ import org.concord.graph.util.ui.BoxTextLabel;
  */
 public class AddDataPointLabelActionExt extends AddDataPointLabelAction{
 
+	private static final long serialVersionUID = 1L;
 	private GraphWindowToolBar toolBar;
 	
 	public AddDataPointLabelActionExt(GraphableList gList, GraphableList objList) {

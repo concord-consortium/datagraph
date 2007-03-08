@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.9 $
- * $Date: 2005-08-04 21:46:09 $
- * $Author: maven $
+ * $Revision: 1.10 $
+ * $Date: 2007-03-08 22:10:52 $
+ * $Author: sfentress $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -58,6 +58,7 @@ import org.concord.graph.ui.Grid2D;
 public class MultipleDataGraph extends DataGraph
 	implements DataConsumer
 {
+	private static final long serialVersionUID = 1L;
 	public static final int TYPE_HORIZONTAL = 1;
 	public static final int TYPE_VERTICAL = 2;
 	
@@ -107,7 +108,7 @@ public class MultipleDataGraph extends DataGraph
 		subGraphAreas = new Vector();
 
 		//Create more graph areas that share the same y axis
-		GraphArea ga;
+		//GraphArea ga;
 		for (int i=0; i<numGraphAreas; i++){
 			addGraphArea();
 		}
@@ -242,7 +243,7 @@ public class MultipleDataGraph extends DataGraph
 		frame.getContentPane().add(fa);
 		frame.setSize(800,600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.show();
+		frame.setVisible(true);
 	}
     
 }

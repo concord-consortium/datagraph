@@ -23,16 +23,15 @@
 
 /*
  * Last modification information:
- * $Revision: 1.7 $
- * $Date: 2006-05-05 16:04:17 $
- * $Author: scytacki $
+ * $Revision: 1.8 $
+ * $Date: 2007-03-08 22:10:53 $
+ * $Author: sfentress $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
 */
 package org.concord.datagraph.state;
 
-import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTObjectInterface;
 import org.concord.framework.otrunk.OTObjectList;
 

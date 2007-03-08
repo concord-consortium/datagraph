@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.4 $
- * $Date: 2005-08-04 21:46:09 $
- * $Author: maven $
+ * $Revision: 1.5 $
+ * $Date: 2007-03-08 22:10:52 $
+ * $Author: sfentress $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -60,6 +60,7 @@ import org.concord.graph.engine.GraphableList;
  */
 public class DataGraphablesPanel extends JPanel
 {
+	private static final long serialVersionUID = 1L;
 	protected DataGraph graph;
 	protected JDialog tableDialog = null;
 
@@ -183,12 +184,14 @@ public class DataGraphablesPanel extends JPanel
 		tableDialog.setSize(400, 300);
 		//dialog.invalidate();
 		tableDialog.pack();
-		tableDialog.show();
+		tableDialog.setVisible(true);
 	}
 	
 	class InputPanel extends JPanel
 		implements ActionListener
 	{
+		private static final long serialVersionUID = 1L;
+
 		public InputPanel(boolean connect, boolean cross)
 		{
 			connectPointsBox = new JCheckBox("Connect points", connect);
