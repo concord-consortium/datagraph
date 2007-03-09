@@ -35,7 +35,7 @@ import org.concord.datagraph.ui.DataGraph;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.WritableDataStore;
 import org.concord.framework.otrunk.OTObject;
-import org.concord.framework.otrunk.view.OTObjectView;
+import org.concord.framework.otrunk.view.OTJComponentView;
 import org.concord.graph.engine.SelectableList;
 
 /**
@@ -45,7 +45,7 @@ import org.concord.graph.engine.SelectableList;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class DataCollectorView
- implements OTObjectView
+ implements OTJComponentView
 {
     OTDataCollector dataCollector;
 	SelectableList notesLayer;
@@ -69,7 +69,7 @@ public class DataCollectorView
     }
      
     /* (non-Javadoc)
-     * @see org.concord.framework.otrunk.view.OTObjectView#viewClosed()
+     * @see org.concord.framework.otrunk.view.OTJComponentView#viewClosed()
      */
     public void viewClosed()
     {

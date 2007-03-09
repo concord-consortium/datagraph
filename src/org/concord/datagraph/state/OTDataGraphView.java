@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.19 $
- * $Date: 2007-01-24 22:11:23 $
+ * $Revision: 1.20 $
+ * $Date: 2007-03-09 17:52:00 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -38,7 +38,7 @@ import javax.swing.JComponent;
 
 import org.concord.datagraph.ui.DataGraph;
 import org.concord.framework.otrunk.OTObject;
-import org.concord.framework.otrunk.view.OTObjectView;
+import org.concord.framework.otrunk.view.OTJComponentView;
 
 
 /**
@@ -51,7 +51,7 @@ import org.concord.framework.otrunk.view.OTObjectView;
  *
  */
 public class OTDataGraphView
-	implements OTObjectView
+	implements OTJComponentView
 {
 	OTDataGraph pfObject;
 	DataGraph dataGraph;
@@ -80,7 +80,7 @@ public class OTDataGraphView
 	}
 	
     /* (non-Javadoc)
-     * @see org.concord.framework.otrunk.view.OTObjectView#viewClosed()
+     * @see org.concord.framework.otrunk.view.OTJComponentView#viewClosed()
      */
     public void viewClosed()
     {

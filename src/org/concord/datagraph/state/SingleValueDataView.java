@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.14 $
- * $Date: 2007-03-08 22:10:53 $
- * $Author: sfentress $
+ * $Revision: 1.15 $
+ * $Date: 2007-03-09 17:52:00 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -52,7 +52,7 @@ import org.concord.framework.data.stream.DefaultDataStore;
 import org.concord.framework.data.stream.WritableDataStore;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTObjectService;
-import org.concord.framework.otrunk.view.OTObjectView;
+import org.concord.framework.otrunk.view.OTJComponentView;
 import org.concord.graph.util.ui.ResourceLoader;
 
 /**
@@ -62,7 +62,7 @@ import org.concord.graph.util.ui.ResourceLoader;
  *
  */
 public class SingleValueDataView
-	implements OTObjectView
+	implements OTJComponentView
 {
 	WritableDataStore dataStore;
 	JDialog dialog;
@@ -170,7 +170,7 @@ public class SingleValueDataView
     }
 
     /* (non-Javadoc)
-     * @see org.concord.framework.otrunk.view.OTObjectView#viewClosed()
+     * @see org.concord.framework.otrunk.view.OTJComponentView#viewClosed()
      */
     public void viewClosed()
     {

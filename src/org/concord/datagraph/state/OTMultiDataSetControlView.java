@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.4 $
- * $Date: 2007-01-24 22:11:22 $
+ * $Revision: 1.5 $
+ * $Date: 2007-03-09 17:52:00 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -41,14 +41,14 @@ import javax.swing.JPanel;
 
 import org.concord.datagraph.ui.DataGraph;
 import org.concord.framework.otrunk.OTObject;
-import org.concord.framework.otrunk.view.OTObjectView;
+import org.concord.framework.otrunk.view.OTJComponentView;
 import org.concord.graph.engine.GraphableList;
 import org.concord.graph.event.GraphableListListener;
 import org.concord.view.CheckedColorTreeControler;
 import org.concord.view.MultiCheckedColorTreeModel;
 
 public class OTMultiDataSetControlView extends JPanel
-    implements OTObjectView, DataGraphViewPlugin
+    implements OTJComponentView, DataGraphViewPlugin
 {
 	/**
 	 * Not intended to be serialized, just added remove compile warning

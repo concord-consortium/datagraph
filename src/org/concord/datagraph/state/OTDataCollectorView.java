@@ -32,7 +32,7 @@ package org.concord.datagraph.state;
 import javax.swing.JComponent;
 
 import org.concord.framework.otrunk.OTObject;
-import org.concord.framework.otrunk.view.OTObjectView;
+import org.concord.framework.otrunk.view.OTJComponentView;
 
 /**
  * @author scott
@@ -41,14 +41,14 @@ import org.concord.framework.otrunk.view.OTObjectView;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class OTDataCollectorView
-    implements OTObjectView
+    implements OTJComponentView
 {
-    OTObjectView view;
+    OTJComponentView view;
     OTDataCollector dataCollector;
     boolean multipleGraphableEnabled = false;
         
     /* (non-Javadoc)
-     * @see org.concord.framework.otrunk.view.OTObjectView#getComponent(boolean)
+     * @see org.concord.framework.otrunk.view.OTJComponentView#getComponent(boolean)
      */
     public JComponent getComponent(OTObject otObject, boolean editable)
     {
@@ -63,7 +63,7 @@ public class OTDataCollectorView
     }
 
     /* (non-Javadoc)
-     * @see org.concord.framework.otrunk.view.OTObjectView#viewClosed()
+     * @see org.concord.framework.otrunk.view.OTJComponentView#viewClosed()
      */
     public void viewClosed()
     {

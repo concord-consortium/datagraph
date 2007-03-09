@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.12 $
- * $Date: 2007-01-24 22:11:23 $
+ * $Revision: 1.13 $
+ * $Date: 2007-03-09 17:52:00 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -56,7 +56,7 @@ import org.concord.framework.data.stream.WritableArrayDataStore;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTObjectList;
 import org.concord.framework.otrunk.OTObjectService;
-import org.concord.framework.otrunk.view.OTObjectView;
+import org.concord.framework.otrunk.view.OTJComponentView;
 import org.concord.framework.otrunk.view.OTViewFactory;
 import org.concord.framework.otrunk.view.OTViewFactoryAware;
 import org.concord.graph.examples.GraphWindowToolBar;
@@ -71,7 +71,7 @@ import org.concord.graph.examples.GraphWindowToolBar;
  *
  */
 public class OTMultiDataGraphView
-    implements OTObjectView, OTViewFactoryAware, DataStoreCollection
+    implements OTJComponentView, OTViewFactoryAware, DataStoreCollection
 {
     OTMultiDataGraph multiDataGraph;
     OTViewFactory viewFactory;
@@ -79,7 +79,7 @@ public class OTMultiDataGraphView
     Vector graphManagers = new Vector();
     
     /* (non-Javadoc)
-     * @see org.concord.framework.otrunk.view.OTObjectView#getComponent(boolean)
+     * @see org.concord.framework.otrunk.view.OTJComponentView#getComponent(boolean)
      */
     public JComponent getComponent(OTObject otObject, boolean editable)
     {
@@ -200,7 +200,7 @@ public class OTMultiDataGraphView
     }
 
     /* (non-Javadoc)
-     * @see org.concord.framework.otrunk.view.OTObjectView#viewClosed()
+     * @see org.concord.framework.otrunk.view.OTJComponentView#viewClosed()
      */
     public void viewClosed()
     {
