@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.13 $
- * $Date: 2007-03-09 17:52:00 $
+ * $Revision: 1.14 $
+ * $Date: 2007-03-11 23:38:48 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -56,9 +56,9 @@ import org.concord.framework.data.stream.WritableArrayDataStore;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTObjectList;
 import org.concord.framework.otrunk.OTObjectService;
+import org.concord.framework.otrunk.view.AbstractOTView;
 import org.concord.framework.otrunk.view.OTJComponentView;
 import org.concord.framework.otrunk.view.OTViewFactory;
-import org.concord.framework.otrunk.view.OTViewFactoryAware;
 import org.concord.graph.examples.GraphWindowToolBar;
 
 /**
@@ -70,12 +70,11 @@ import org.concord.graph.examples.GraphWindowToolBar;
  * @author scott<p>
  *
  */
-public class OTMultiDataGraphView
-    implements OTJComponentView, OTViewFactoryAware, DataStoreCollection
+public class OTMultiDataGraphView extends AbstractOTView
+    implements OTJComponentView, DataStoreCollection
 {
     OTMultiDataGraph multiDataGraph;
-    OTViewFactory viewFactory;
-    
+
     Vector graphManagers = new Vector();
     
     /* (non-Javadoc)
@@ -83,6 +82,8 @@ public class OTMultiDataGraphView
      */
     public JComponent getComponent(OTObject otObject, boolean editable)
     {
+    	OTViewFactory viewFactory = 
+    		(OTViewFactory)getViewService(OTViewFactory.class);
         multiDataGraph = (OTMultiDataGraph)otObject;
 
         JPanel mainPanel = new JPanel(new BorderLayout());
@@ -264,9 +265,4 @@ public class OTMultiDataGraphView
         // TODO Auto-generated method stub
         return null;
     }
-
-
-	public void setViewFactory(OTViewFactory factory) {
-		viewFactory = factory;
-	}
 }
