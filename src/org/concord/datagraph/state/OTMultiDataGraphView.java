@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.14 $
- * $Date: 2007-03-11 23:38:48 $
+ * $Revision: 1.15 $
+ * $Date: 2007-03-12 03:21:58 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -205,7 +205,11 @@ public class OTMultiDataGraphView extends AbstractOTView
      */
     public void viewClosed()
     {
-        // TODO Auto-generated method stub
+        for(int i=0; i<graphManagers.size(); i++) {
+            DataGraphManager graphManager =
+                (DataGraphManager)graphManagers.get(i);
+            graphManager.viewClosed();
+        }
     }
 
 

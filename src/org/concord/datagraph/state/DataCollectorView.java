@@ -73,7 +73,7 @@ public class DataCollectorView
      */
     public void viewClosed()
     {
-        // TODO Auto-generated method stub
+    	dataGraphManager.viewClosed();
     }
     
     public DataGraph getDataGraph(boolean showToolbar, boolean showDataControls)

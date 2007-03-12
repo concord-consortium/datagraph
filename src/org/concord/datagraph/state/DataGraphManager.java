@@ -849,4 +849,10 @@ public class DataGraphManager
 
         return color;       
     }
+    
+    public void viewClosed()
+    {
+    	xOTAxis.removeOTChangeListener(this);
+    	yOTAxis.removeOTChangeListener(this);
+    }
 }

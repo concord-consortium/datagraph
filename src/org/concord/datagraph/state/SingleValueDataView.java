@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.15 $
- * $Date: 2007-03-09 17:52:00 $
+ * $Revision: 1.16 $
+ * $Date: 2007-03-12 03:21:58 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -174,8 +174,6 @@ public class SingleValueDataView
      */
     public void viewClosed()
     {
-        // This will only be called if this view is a top level view.  
-        // currently if the view is embedded in a page the viewClosed is
-        // not called when the page is closed.
+    	dataGraphManager.viewClosed();
     }
 }

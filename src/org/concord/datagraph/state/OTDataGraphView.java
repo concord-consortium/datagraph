@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.20 $
- * $Date: 2007-03-09 17:52:00 $
+ * $Revision: 1.21 $
+ * $Date: 2007-03-12 03:21:59 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -84,6 +84,6 @@ public class OTDataGraphView
      */
     public void viewClosed()
     {
-        // TODO Auto-generated method stub
+    	manager.viewClosed();
     }
 }
