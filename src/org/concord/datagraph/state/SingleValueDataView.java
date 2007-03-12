@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.16 $
- * $Date: 2007-03-12 03:21:58 $
+ * $Revision: 1.17 $
+ * $Date: 2007-03-12 19:12:10 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -174,6 +174,8 @@ public class SingleValueDataView
      */
     public void viewClosed()
     {
-    	dataGraphManager.viewClosed();
+    	if(dataGraphManager != null) {
+    		dataGraphManager.viewClosed();
+    	}
     }
 }
