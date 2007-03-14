@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.15 $
- * $Date: 2007-03-12 03:21:58 $
+ * $Revision: 1.16 $
+ * $Date: 2007-03-14 00:30:34 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -56,9 +56,7 @@ import org.concord.framework.data.stream.WritableArrayDataStore;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTObjectList;
 import org.concord.framework.otrunk.OTObjectService;
-import org.concord.framework.otrunk.view.AbstractOTView;
-import org.concord.framework.otrunk.view.OTJComponentView;
-import org.concord.framework.otrunk.view.OTViewFactory;
+import org.concord.framework.otrunk.view.AbstractOTJComponentView;
 import org.concord.graph.examples.GraphWindowToolBar;
 
 /**
@@ -70,8 +68,8 @@ import org.concord.graph.examples.GraphWindowToolBar;
  * @author scott<p>
  *
  */
-public class OTMultiDataGraphView extends AbstractOTView
-    implements OTJComponentView, DataStoreCollection
+public class OTMultiDataGraphView extends AbstractOTJComponentView
+    implements DataStoreCollection
 {
     OTMultiDataGraph multiDataGraph;
 
@@ -82,8 +80,6 @@ public class OTMultiDataGraphView extends AbstractOTView
      */
     public JComponent getComponent(OTObject otObject, boolean editable)
     {
-    	OTViewFactory viewFactory = 
-    		(OTViewFactory)getViewService(OTViewFactory.class);
         multiDataGraph = (OTMultiDataGraph)otObject;
 
         JPanel mainPanel = new JPanel(new BorderLayout());
@@ -117,7 +113,7 @@ public class OTMultiDataGraphView extends AbstractOTView
             OTPluginView pluginView = (OTPluginView)plugins.get(i);            
             OTObject pluginControl = pluginView.getControl();
             JComponent pluginComponent = 
-            	viewFactory.getComponent(pluginControl, null, editable);
+            	getChildComponent(pluginControl, null, editable);
 
             // change the alignment of the component so 
             // when it is put in the box it can fill the whole width
