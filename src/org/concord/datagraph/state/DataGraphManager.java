@@ -112,6 +112,8 @@ public class DataGraphManager
 	DataFlowControlToolBar toolBar = null;
 	
 	boolean isCausingOTChange = false;
+	boolean isCausingRealObjChange = false;
+	
 	boolean showDataControls;
 	
 	DataFlowControlButton bStart;
@@ -249,31 +251,35 @@ public class DataGraphManager
 	 */
 	public void updateState(Object obj)
 	{
-		Grid2D grid = dataGraph.getGrid();
-
-		xOTAxis.setDoNotifyChangeListeners(false);
-		yOTAxis.setDoNotifyChangeListeners(false);
-		
-		xOTAxis.setMin((float)dataGraph.getMinXAxisWorld());
-		xOTAxis.setMax((float)dataGraph.getMaxXAxisWorld());
-		yOTAxis.setMin((float)dataGraph.getMinYAxisWorld());
-		yOTAxis.setMax((float)dataGraph.getMaxYAxisWorld());
-
-		SingleAxisGrid sXAxis = grid.getXGrid();
-		if(sXAxis.getAxisLabel() != null){
-			xOTAxis.setLabel(sXAxis.getAxisLabel());
+		//If the change was due to the graph area or coordinate system
+		if (obj == dataGraph.getGraphArea() || obj == dataGraph.getGraphArea().getCoordinateSystem()){
+	
+			Grid2D grid = dataGraph.getGrid();
+	
+			xOTAxis.setDoNotifyChangeListeners(false);
+			yOTAxis.setDoNotifyChangeListeners(false);
+			
+			xOTAxis.setMin((float)dataGraph.getMinXAxisWorld());
+			xOTAxis.setMax((float)dataGraph.getMaxXAxisWorld());
+			yOTAxis.setMin((float)dataGraph.getMinYAxisWorld());
+			yOTAxis.setMax((float)dataGraph.getMaxYAxisWorld());
+	
+			SingleAxisGrid sXAxis = grid.getXGrid();
+			if(sXAxis.getAxisLabel() != null){
+				xOTAxis.setLabel(sXAxis.getAxisLabel());
+			}
+			
+			SingleAxisGrid sYAxis = grid.getYGrid();
+			if(sYAxis.getAxisLabel() != null){
+				yOTAxis.setLabel(sYAxis.getAxisLabel());
+			}
+	
+			isCausingOTChange = true;
+			xOTAxis.notifyOTChange();
+			yOTAxis.notifyOTChange();
+			isCausingOTChange = false;
 		}
 		
-		SingleAxisGrid sYAxis = grid.getYGrid();
-		if(sYAxis.getAxisLabel() != null){
-			yOTAxis.setLabel(sYAxis.getAxisLabel());
-		}
-
-		isCausingOTChange = true;
-		xOTAxis.notifyOTChange();
-		yOTAxis.notifyOTChange();
-		isCausingOTChange = false;
-
 		/*
 		if(obj instanceof DataGraphable) {
 		    OTDataGraphable source = dataCollector.getSource();
@@ -288,30 +294,51 @@ public class DataGraphManager
 	 */
 	public void stateChanged(OTChangeEvent e)
 	{
+		System.out.println("OT state changed "+e.getSource());
+		System.out.println(e.getOperation() +" "+e.getValue());
+		
 	    if(isCausingOTChange) {
 	        // we are the cause of this change
 	        return;
 	    }
 
+	    if (e.getSource() == otDataGraph){
+	    	//OT Data Graph has changed. We need to update the real DataGraph
+	    	//Find out what kind of change it is?
+	    	if (e.getOperation() == OTChangeEvent.OP_ADD ||
+	    			e.getOperation() == OTChangeEvent.OP_REMOVE){
+	    		//Graphable added or removed
+	    		OTObject otGraphable = (OTObject)e.getValue();
+	    		initNewGraphable(otGraphable);
+	    	}
+	    	else if  (e.getOperation() == OTChangeEvent.OP_CHANGE){
+	    		OTObject otGraphable = (OTObject)e.getValue();
+	    		updateGraphable(otGraphable);
+	    	}
+	    }
+	    
 	    if(e.getSource() == xOTAxis || e.getSource() == yOTAxis) {
 	        dataGraph.setLimitsAxisWorld(xOTAxis.getMin(), xOTAxis.getMax(),
 	                yOTAxis.getMin(), yOTAxis.getMax());
 	    }	    	    
 	}
 	
-	/* (non-Javadoc)
+	/**
+	 * Event triggered by the graph area changing
      * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
      */
     public void stateChanged(ChangeEvent e)
     {
+    	System.out.println("state changed "+e.getSource());
+    	
         Object source = e.getSource();
         updateState(source);
     }
     
-    public void setSelectedItem(Object item, boolean checked){
-         setSelectedDataGraphable((DataGraphable)item, checked);
-     }
-
+	public void setSelectedItem(Object item, boolean checked)
+	{
+	     setSelectedDataGraphable((DataGraphable)item, checked);
+	}
     
     protected void setSelectedDataGraphable(DataGraphable dg, boolean visible)
     {
@@ -474,6 +501,8 @@ public class DataGraphManager
 		
 		dataGraph.getGraphArea().addChangeListener(this);
 		
+		otDataGraph.addOTChangeListener(this);
+		
 		initLabels();
 	}
 	
@@ -484,16 +513,9 @@ public class DataGraphManager
 		// for each list item get the data producer object
 		// add it to the data graph
 		for(int i=0; i<pfGraphables.size(); i++) {
-			OTObject otGraphable = (OTObject)pfGraphables.get(i);			
-			DataGraphable realGraphable = 
-				(DataGraphable)controllerService.getRealObject(otGraphable);
+			DataGraphable realGraphable = initNewGraphable((OTObject)pfGraphables.get(i));
 
-			if (realGraphable.getDataProducer() != null){
-			    System.err.println("Trying to display a background graphable with a data producer");
-			}
-			
 			realGraphables.add(realGraphable);
-		    dataGraph.addDataGraphable(realGraphable);		    
 		}
 
 		OTDataGraphable source = null;
@@ -577,6 +599,48 @@ public class DataGraphManager
 		}
 	}
 
+	/**
+	 * Called when a new OT graphable was added and we need to create 
+	 * a real graphable object for it and add it to the Data Graph
+	 * @param object
+	 * @return the new DataGraphable just added to the Data Graph
+	 */
+	protected DataGraphable initNewGraphable(OTObject otGraphable)
+	{
+		isCausingRealObjChange = true;
+
+		DataGraphable realGraphable = 
+			(DataGraphable)controllerService.getRealObject(otGraphable);
+
+		if (realGraphable.getDataProducer() != null){
+		    System.err.println("Trying to display a background graphable with a data producer");
+		}
+		
+	    dataGraph.addDataGraphable(realGraphable);
+	    
+		isCausingRealObjChange = false;
+		
+	    return realGraphable;
+	}
+	
+	/**
+	 * Called when an OT graphable is changed and we need to update
+	 * the real graphable object too
+	 * @param otGraphable
+	 */
+	protected void updateGraphable(OTObject otGraphable)
+	{
+		isCausingRealObjChange = true;
+
+//		DataGraphable realGraphable = 
+//			(DataGraphable)controllerService.getRealObject(otGraphable);
+		
+		//This calls loadRealObject on the controller 
+		controllerService.getRealObject(otGraphable);
+		
+		isCausingRealObjChange = false;
+	}
+
 	protected void initLabels() {
 		OTObjectList pfDPLabels = otDataGraph.getLabels();
 
@@ -616,20 +680,30 @@ public class DataGraphManager
 		graphableList.addGraphableListListener(new GraphableListListener(){
 			public void listGraphableAdded(EventObject e) {
 				// TODO verify this is doesn't screw up things
-				Object obj = e.getSource();
-				OTObject otObject = controllerService.getOTObject(obj);
-				otDataGraph.getGraphables().add(otObject);
+				//Verify we are not triggering this change ourselves
+				if (!isCausingRealObjChange){
+					System.out.println("+++ ha +++ add graphable list listener - added");
+					Object obj = e.getSource();
+					OTObject otObject = controllerService.getOTObject(obj);
+					otDataGraph.getGraphables().add(otObject);
+				}
 			}
 			public void listGraphableChanged(EventObject e) {
 				// TODO verify this is necessary
 				// this is just copied from the old code
-				updateState(e.getSource());
+				//Verify we are not triggering this change ourselves
+				if (!isCausingRealObjChange){
+					updateState(e.getSource());
+				}
 			}
 			public void listGraphableRemoved(EventObject e) {
 				// TODO verify this is doesn't screw up things
-				Object obj = e.getSource();
-				OTObject otObject = controllerService.getOTObject(obj);
-				otDataGraph.getGraphables().remove(otObject);				
+				//Verify we are not triggering this change ourselves
+				if (!isCausingRealObjChange){
+					Object obj = e.getSource();
+					OTObject otObject = controllerService.getOTObject(obj);
+					otDataGraph.getGraphables().remove(otObject);
+				}
 			}
 		});				
 	}
