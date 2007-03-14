@@ -302,25 +302,27 @@ public class DataGraphManager
 	        return;
 	    }
 
-	    if (e.getSource() == otDataGraph){
-	    	//OT Data Graph has changed. We need to update the real DataGraph
-	    	//Find out what kind of change it is?
-	    	if (e.getOperation() == OTChangeEvent.OP_ADD ||
-	    			e.getOperation() == OTChangeEvent.OP_REMOVE){
-	    		//Graphable added or removed
-	    		OTObject otGraphable = (OTObject)e.getValue();
-	    		initNewGraphable(otGraphable);
-	    	}
-	    	else if  (e.getOperation() == OTChangeEvent.OP_CHANGE){
-	    		OTObject otGraphable = (OTObject)e.getValue();
-	    		updateGraphable(otGraphable);
-	    	}
-	    }
-	    
 	    if(e.getSource() == xOTAxis || e.getSource() == yOTAxis) {
 	        dataGraph.setLimitsAxisWorld(xOTAxis.getMin(), xOTAxis.getMax(),
 	                yOTAxis.getMin(), yOTAxis.getMax());
-	    }	    	    
+	    }
+	    else if (e.getSource() == otDataGraph){
+			//OT Data Graph has changed. We need to update the real DataGraph
+			//Find out what kind of change it is?
+			if (e.getOperation() == OTChangeEvent.OP_ADD ||
+					e.getOperation() == OTChangeEvent.OP_REMOVE){
+				//Graphable added or removed
+				OTObject otGraphable = (OTObject)e.getValue();
+				initNewGraphable(otGraphable);
+	    	}
+	    }
+	    else if (e.getSource() instanceof OTDataGraphable){
+	    	//A OT data graphable changed
+	    	if  (e.getOperation() == OTChangeEvent.OP_SET){
+	    		OTObject otGraphable = (OTObject)e.getSource();
+	    		updateGraphable(otGraphable);
+	    	}
+	    }	    
 	}
 	
 	/**
@@ -618,6 +620,9 @@ public class DataGraphManager
 		
 	    dataGraph.addDataGraphable(realGraphable);
 	    
+	    //Listen to OT graphable changes
+	    ((OTDataGraphable)otGraphable).addOTChangeListener(this);
+	    
 		isCausingRealObjChange = false;
 		
 	    return realGraphable;
@@ -632,11 +637,11 @@ public class DataGraphManager
 	{
 		isCausingRealObjChange = true;
 
-//		DataGraphable realGraphable = 
-//			(DataGraphable)controllerService.getRealObject(otGraphable);
+		DataGraphable realGraphable = 
+			(DataGraphable)controllerService.getRealObject(otGraphable);
 		
-		//This calls loadRealObject on the controller 
-		controllerService.getRealObject(otGraphable);
+		//Call loadRealObject on the controller 
+		controllerService.loadRealObject(otGraphable, realGraphable);
 		
 		isCausingRealObjChange = false;
 	}
