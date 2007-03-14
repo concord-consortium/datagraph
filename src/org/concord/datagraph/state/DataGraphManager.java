@@ -289,13 +289,13 @@ public class DataGraphManager
 		*/
 	}
 	
-	/* (non-Javadoc)
+	/**
 	 * @see org.concord.framework.otrunk.OTChangeListener#stateChanged(org.concord.framework.otrunk.OTChangeEvent)
 	 */
 	public void stateChanged(OTChangeEvent e)
 	{
-		System.out.println("OT state changed "+e.getSource());
-		System.out.println(e.getOperation() +" "+e.getValue());
+		//System.out.println("OT state changed "+e.getSource());
+		//System.out.println(e.getOperation() +" "+e.getValue());
 		
 	    if(isCausingOTChange) {
 	        // we are the cause of this change
@@ -331,7 +331,7 @@ public class DataGraphManager
      */
     public void stateChanged(ChangeEvent e)
     {
-    	System.out.println("state changed "+e.getSource());
+    	//System.out.println("state changed "+e.getSource());
     	
         Object source = e.getSource();
         updateState(source);
@@ -471,7 +471,7 @@ public class DataGraphManager
 
             public void actionPerformed(ActionEvent e)
             {
-                System.out.println("Got event: " + e);
+                //System.out.println("Got event: " + e);
                 GraphTreeView gtv = new GraphTreeView();
                 gtv.setGraph(dataGraph.getGraph());
                 GraphTreeView.showAsDialog(gtv, "graph tree");                
@@ -687,7 +687,6 @@ public class DataGraphManager
 				// TODO verify this is doesn't screw up things
 				//Verify we are not triggering this change ourselves
 				if (!isCausingRealObjChange){
-					System.out.println("+++ ha +++ add graphable list listener - added");
 					Object obj = e.getSource();
 					OTObject otObject = controllerService.getOTObject(obj);
 					otDataGraph.getGraphables().add(otObject);
