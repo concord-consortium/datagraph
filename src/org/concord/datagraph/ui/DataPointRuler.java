@@ -55,8 +55,10 @@ public class DataPointRuler extends PointTextLabel
 	private DashedDataLine verticalDDL = new DashedDataLine(DashedDataLine.VERTICAL_LINE);
 	private DashedDataLine horizontalDDL = new DashedDataLine(DashedDataLine.HORIZONTAL_LINE);
 	
-	private int xPrecision = 0;
-	private int yPrecision = 0;
+// FIXME: precision is not implemented correctly
+// it should take the precision from the channel configurations
+//	private int xPrecision = 0;
+//	private int yPrecision = 0;
 
 	/**
 	 * 
@@ -251,10 +253,10 @@ public class DataPointRuler extends PointTextLabel
 		Point2D pD = new Point2D.Double(d1,d2);
 		Point2D pHO = new Point2D.Double(0, d2);
 		
-		if(xPrecision == 0) xPrecision = 1;
-		if(yPrecision == 0) yPrecision = 1;
-		verticalDDL.setDataPrecision(xPrecision);
-		horizontalDDL.setDataPrecision(yPrecision);
+//		if(xPrecision == 0) xPrecision = 1;
+//		if(yPrecision == 0) yPrecision = 1;
+//		verticalDDL.setDataPrecision(xPrecision);
+//		horizontalDDL.setDataPrecision(yPrecision);
 
 		pD = new Point2D.Double(d1, graphArea.getUpperRightCornerWorld().getY());
 		verticalDDL.setPoints(pVO, pD);
