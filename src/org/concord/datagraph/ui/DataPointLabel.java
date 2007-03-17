@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.20 $
- * $Date: 2006-09-27 18:46:31 $
- * $Author: scytacki $
+ * $Revision: 1.21 $
+ * $Date: 2007-03-17 23:06:04 $
+ * $Author: imoncada $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -283,9 +283,8 @@ public class DataPointLabel extends PointTextLabel
 				g.drawString(pointInfoLabel, pointInfoLabelLeft, pointInfoLabelTop);
 		}
 		
-		// If the graphable is null we draw ourselves no mater what
-		// if the graphable is not null then we only draw ourselves 
-		// if it is visible 
+		// If the graphable is null we draw ourselves no matter what
+		// if the graphable is not null then we draw ourselves only if it's visible 
 		if(dataGraphable == null || dataGraphable.isVisible()) {
 			super.draw(g);
 		}
