@@ -66,12 +66,14 @@ import org.concord.framework.data.DataFlow;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.otrunk.OTChangeEvent;
 import org.concord.framework.otrunk.OTChangeListener;
+import org.concord.framework.otrunk.OTChangeNotifying;
+import org.concord.framework.otrunk.OTControllerService;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTObjectList;
 import org.concord.framework.otrunk.OTObjectService;
-import org.concord.framework.otrunk.OTControllerService;
 import org.concord.framework.util.CheckedColorTreeModel;
 import org.concord.framework.util.Copyable;
+import org.concord.graph.engine.DefaultGraphable;
 import org.concord.graph.engine.Graphable;
 import org.concord.graph.engine.GraphableList;
 import org.concord.graph.engine.SelectableList;
@@ -91,8 +93,7 @@ import org.concord.view.CheckedColorTreeControler;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class DataGraphManager
-	implements OTChangeListener, 
-        ChangeListener, CheckedColorTreeModel, DataFlow
+	implements OTChangeListener, ChangeListener, CheckedColorTreeModel, DataFlow
 {
     OTDataCollector dataCollector;
     OTDataGraph otDataGraph;
@@ -124,7 +125,7 @@ public class DataGraphManager
             Color.ORANGE, Color.PINK, Color.RED, Color.YELLOW, Color.BLACK};
 
     protected OTControllerService controllerService;
-
+    
     /**
      * 
      */
@@ -294,7 +295,7 @@ public class DataGraphManager
 	 */
 	public void stateChanged(OTChangeEvent e)
 	{
-		//System.out.println("OT state changed "+e.getSource());
+		System.err.println("---- OT state changed "+e.getSource() + " - " + isCausingOTChange+" "+this);
 		//System.out.println(e.getOperation() +" "+e.getValue());
 		
 	    if(isCausingOTChange) {
@@ -308,20 +309,28 @@ public class DataGraphManager
 	    }
 	    else if (e.getSource() == otDataGraph){
 			//OT Data Graph has changed. We need to update the real DataGraph
-			//Find out what kind of change it is?
+			//Find out what kind of change it is and whether it was a data graphable or a label
 			if (e.getOperation() == OTChangeEvent.OP_ADD ||
 					e.getOperation() == OTChangeEvent.OP_REMOVE){
+				
 				//Graphable added or removed
 				OTObject otGraphable = (OTObject)e.getValue();
-				initNewGraphable(otGraphable);
+		    	if (e.getProperty().equals("graphables")){
+					initNewGraphable(otGraphable);
+		    	}
+		    	else if (e.getProperty().equals("labels")){
+		        	initNewLabel(otGraphable);
+		    	}
 	    	}
 	    }
 	    else if (e.getSource() instanceof OTDataGraphable){
-	    	//A OT data graphable changed
+	    	//A OT data graphable changed (not implemented anymore)
+	    	/*
 	    	if  (e.getOperation() == OTChangeEvent.OP_SET){
 	    		OTObject otGraphable = (OTObject)e.getSource();
 	    		updateGraphable(otGraphable);
 	    	}
+	    	*/
 	    }	    
 	}
 	
@@ -599,6 +608,10 @@ public class DataGraphManager
             
             dataGraph.add(treeComponent, BorderLayout.WEST);
 		}
+
+		//Listen to the graphable list
+		GraphableList graphableList = dataGraph.getObjList();		
+		graphableList.addGraphableListListener(new MainLayerGraphableListener());
 	}
 
 	/**
@@ -620,8 +633,8 @@ public class DataGraphManager
 		
 	    dataGraph.addDataGraphable(realGraphable);
 	    
-	    //Listen to OT graphable changes
-	    ((OTDataGraphable)otGraphable).addOTChangeListener(this);
+	    //Listen to OT graphable changes (not anymore! the Graphable controller takes care of this)
+	    //((OTDataGraphable)otGraphable).addOTChangeListener(this);
 	    
 		isCausingRealObjChange = false;
 		
@@ -652,66 +665,28 @@ public class DataGraphManager
         //Load the data point labels
         for (int i=0; i<pfDPLabels.size(); i++){
         	OTObject obj = pfDPLabels.get(i);
-        	Graphable label = (Graphable)controllerService.getRealObject(obj);
-
-        	if(label instanceof DataAnnotation) {
-        		((DataAnnotation)label).setGraphableList(dataGraph.getObjList());
-        	}
-        	notesLayer.add(label);        	
+        	initNewLabel(obj);
         }
         
-		notesLayer.addGraphableListListener(new GraphableListListener(){
-			public void listGraphableAdded(EventObject e) {
-				Object obj = e.getSource();
-				OTObject otObject = controllerService.getOTObject(obj);
-				otDataGraph.getLabels().add(otObject);
-			}
-			
-			public void listGraphableChanged(EventObject e) {
-				// TODO verify this is necessary
-				// this is just copied from the old code
-				updateState(e.getSource());
-
-			}
-			public void listGraphableRemoved(EventObject e) {
-				Object obj = e.getSource();
-				OTObject otObject = controllerService.getOTObject(obj);
-				otDataGraph.getLabels().remove(otObject);
-			}
-		});
-
-		GraphableList graphableList = dataGraph.getObjList();
-		
-		graphableList.addGraphableListListener(new GraphableListListener(){
-			public void listGraphableAdded(EventObject e) {
-				// TODO verify this is doesn't screw up things
-				//Verify we are not triggering this change ourselves
-				if (!isCausingRealObjChange){
-					Object obj = e.getSource();
-					OTObject otObject = controllerService.getOTObject(obj);
-					otDataGraph.getGraphables().add(otObject);
-				}
-			}
-			public void listGraphableChanged(EventObject e) {
-				// TODO verify this is necessary
-				// this is just copied from the old code
-				//Verify we are not triggering this change ourselves
-				if (!isCausingRealObjChange){
-					updateState(e.getSource());
-				}
-			}
-			public void listGraphableRemoved(EventObject e) {
-				// TODO verify this is doesn't screw up things
-				//Verify we are not triggering this change ourselves
-				if (!isCausingRealObjChange){
-					Object obj = e.getSource();
-					OTObject otObject = controllerService.getOTObject(obj);
-					otDataGraph.getGraphables().remove(otObject);
-				}
-			}
-		});				
+		//Listen to the graphable list
+		notesLayer.addGraphableListListener(new NotesLayerGraphableListener());
 	}
 	
+	/**
+	 * @param obj
+	 */
+	private Graphable initNewLabel(OTObject obj)
+	{
+    	Graphable label = (Graphable)controllerService.getRealObject(obj);
+
+    	if(label instanceof DataAnnotation) {
+    		((DataAnnotation)label).setGraphableList(dataGraph.getObjList());
+    	}
+    	notesLayer.add(label); 
+    	
+    	return label;
+	}
+
 	public static class UnknownUnit implements DataDimension
 	{
 		String unit;
@@ -928,9 +903,88 @@ public class DataGraphManager
         return color;       
     }
     
-    public void viewClosed()
+	public void viewClosed()
+	{
+		//Remove all the OT listeners
+		xOTAxis.removeOTChangeListener(this);
+		yOTAxis.removeOTChangeListener(this);
+		otDataGraph.removeOTChangeListener(this);
+		//Not anymore!
+		//OTObjectList pfGraphables = otDataGraph.getGraphables();
+		//for(int i=0; i<pfGraphables.size(); i++) {
+		//	OTChangeNotifying pfGraphable = (OTChangeNotifying)pfGraphables.get(i);
+		//	pfGraphable.removeOTChangeListener(this);
+		//}
+	}
+    
+    class NotesLayerGraphableListener implements GraphableListListener
     {
-    	xOTAxis.removeOTChangeListener(this);
-    	yOTAxis.removeOTChangeListener(this);
-    }
+		public void listGraphableAdded(EventObject e) {
+			//Verify we are not triggering this change ourselves
+			if (!isCausingRealObjChange){
+				isCausingOTChange = true;
+				Object obj = e.getSource();
+				OTObject otObject = controllerService.getOTObject(obj);
+				otDataGraph.getLabels().add(otObject);
+				isCausingOTChange = false;
+			}
+		}
+		
+		public void listGraphableChanged(EventObject e) {
+			// TODO verify this is necessary
+			// this is just copied from the old code
+			//Verify we are not triggering this change ourselves
+			if (!isCausingRealObjChange){
+				isCausingOTChange = true;
+				updateState(e.getSource());
+				isCausingOTChange = false;
+			}
+		}
+		public void listGraphableRemoved(EventObject e) {
+			//Verify we are not triggering this change ourselves
+			if (!isCausingRealObjChange){
+				isCausingOTChange = true;
+				Object obj = e.getSource();
+				OTObject otObject = controllerService.getOTObject(obj);
+				otDataGraph.getLabels().remove(otObject);
+				isCausingOTChange = false;
+			}
+		}
+    }    
+    
+    class MainLayerGraphableListener implements GraphableListListener
+    {
+    	public void listGraphableAdded(EventObject e) {
+			// TODO verify this is doesn't screw up things
+			//Verify we are not triggering this change ourselves
+			if (!isCausingRealObjChange){
+				isCausingOTChange = true;
+				Object obj = e.getSource();
+				OTObject otObject = controllerService.getOTObject(obj);
+				otDataGraph.getGraphables().add(otObject);
+				isCausingOTChange = false;
+			}
+		}
+		public void listGraphableChanged(EventObject e) {
+			// TODO verify this is necessary
+			// this is just copied from the old code
+			//Verify we are not triggering this change ourselves
+			if (!isCausingRealObjChange){
+				isCausingOTChange = true;
+				updateState(e.getSource());
+				isCausingOTChange = false;
+			}
+		}
+		public void listGraphableRemoved(EventObject e) {
+			// TODO verify this is doesn't screw up things
+			//Verify we are not triggering this change ourselves
+			if (!isCausingRealObjChange){
+				isCausingOTChange = true;
+				Object obj = e.getSource();
+				OTObject otObject = controllerService.getOTObject(obj);
+				otDataGraph.getGraphables().remove(otObject);
+				isCausingOTChange = false;
+			}
+		}
+    }    
 }
