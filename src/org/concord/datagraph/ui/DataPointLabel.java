@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.21 $
- * $Date: 2007-03-17 23:06:04 $
+ * $Revision: 1.22 $
+ * $Date: 2007-03-18 05:33:35 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -83,8 +83,8 @@ public class DataPointLabel extends PointTextLabel
 	protected String xUnits = null;
 	protected String yLabel = null;
 	protected String yUnits = null;
-	protected int xPrecision = 0;
-	protected int yPrecision = 0;
+	protected int xPrecision = 2;
+	protected int yPrecision = 2;
 	protected String pointLabel = null;	// format: (x, y)
 	protected String pointInfoLabel = null;	//format: xlabel: x unit   ylabel: y unit
 	
@@ -443,14 +443,6 @@ public class DataPointLabel extends PointTextLabel
 	/**
 	 * 
 	 */
-	protected void drawMessage(Graphics2D g)
-	{
-		drawMessage(g, true);
-	}
-	
-	/**
-	 * 
-	 */
 	protected void drawMessage(Graphics2D g, boolean bDraw)
 	{
 		String words[];
@@ -461,6 +453,8 @@ public class DataPointLabel extends PointTextLabel
 		double y = yIni;
 		double ww, w = 0, h;
 		FontMetrics fontM;
+		
+		if (message == null) return;
 		
 		fontM = g.getFontMetrics();
 		
