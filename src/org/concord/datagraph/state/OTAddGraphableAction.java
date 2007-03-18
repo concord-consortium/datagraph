@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.1 $
- * $Date: 2007-03-14 04:53:27 $
+ * $Revision: 1.2 $
+ * $Date: 2007-03-18 04:07:34 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -58,7 +58,7 @@ public class OTAddGraphableAction extends DefaultOTObject
 		if (dataGraph.getGraphables().size() > 0){
 			//Test: modify the first OT graphable
 			OTDataGraphable otGraphable = (OTDataGraphable)dataGraph.getGraphables().get(0);
-			otGraphable.setColor(Color.blue.getRGB());
+			otGraphable.setColor((int)(Math.random()*16777216));
 			
 			return;
 		}
