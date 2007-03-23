@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.49 $
- * $Date: 2006-10-04 00:58:23 $
- * $Author: eburke $
+ * $Revision: 1.50 $
+ * $Date: 2007-03-23 02:00:21 $
+ * $Author: imoncada $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -657,6 +657,7 @@ public class DataGraphable extends DefaultGraphable
 
 				drawPoint(ppx, ppy);
 				
+				System.out.println("draw marker at "+ppx +","+ppy);
 				drawPointMarker(ppx, ppy);
 				
 				// If we made it here then the current point (soon to be the prev point)
@@ -730,16 +731,16 @@ public class DataGraphable extends DefaultGraphable
 		drawPoint((float)p.getX(), (float)p.getY());
 	}
 	
-    protected void drawPointMarker(float ppx, float ppy)
-    {
-	    if(markerPath != null){
-            java.awt.Rectangle bounds = markerPath.getBounds();
-            double needDX = ppx - (bounds.x + bounds.width/2);
-            double needDY = ppy - (bounds.y + bounds.height/2);
-            markerPath.transform(AffineTransform.getTranslateInstance(needDX,needDY));
-            markerListPath.append(markerPath,false);
-	    }
-    }
+	protected void drawPointMarker(float ppx, float ppy)
+	{
+		if(markerPath != null){
+			java.awt.Rectangle bounds = markerPath.getBounds();
+			long needDX = Math.round((ppx - (bounds.x + bounds.width/2)));
+			long needDY = Math.round((ppy - (bounds.y + bounds.height/2)));
+			markerPath.transform(AffineTransform.getTranslateInstance(needDX,needDY));
+			markerListPath.append(markerPath,false);
+		}
+	}
     
 	/** 
 	 * Returns a copy of itself 
