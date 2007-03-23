@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.51 $
- * $Date: 2007-03-23 02:02:57 $
+ * $Revision: 1.52 $
+ * $Date: 2007-03-23 04:51:46 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -618,7 +618,7 @@ public class DataGraphable extends DefaultGraphable
 				// technically we only care about this if we are connecting points
 				// but it seemed easier to understand if this is done out here
 				validPrevPoint = true;
-				drawPointMarker(ppx, ppy);
+				drawPointMarker(ppx, ppy, i);
 			}
 		    
 		} else {
@@ -657,7 +657,7 @@ public class DataGraphable extends DefaultGraphable
 
 				drawPoint(ppx, ppy);
 				
-				drawPointMarker(ppx, ppy);
+				drawPointMarker(ppx, ppy, i);
 				
 				// If we made it here then the current point (soon to be the prev point)
 				// is a valid point, so set the flag
@@ -730,7 +730,7 @@ public class DataGraphable extends DefaultGraphable
 		drawPoint((float)p.getX(), (float)p.getY());
 	}
 	
-	protected void drawPointMarker(float ppx, float ppy)
+	protected void drawPointMarker(float ppx, float ppy, int sample)
 	{
 		if(markerPath != null){
 			java.awt.Rectangle bounds = markerPath.getBounds();
