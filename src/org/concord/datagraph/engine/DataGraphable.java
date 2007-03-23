@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.50 $
- * $Date: 2007-03-23 02:00:21 $
+ * $Revision: 1.51 $
+ * $Date: 2007-03-23 02:02:57 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -657,7 +657,6 @@ public class DataGraphable extends DefaultGraphable
 
 				drawPoint(ppx, ppy);
 				
-				System.out.println("draw marker at "+ppx +","+ppy);
 				drawPointMarker(ppx, ppy);
 				
 				// If we made it here then the current point (soon to be the prev point)
