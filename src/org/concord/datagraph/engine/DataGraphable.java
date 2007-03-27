@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.52 $
- * $Date: 2007-03-23 04:51:46 $
+ * $Revision: 1.53 $
+ * $Date: 2007-03-27 03:21:58 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -733,11 +733,12 @@ public class DataGraphable extends DefaultGraphable
 	protected void drawPointMarker(float ppx, float ppy, int sample)
 	{
 		if(markerPath != null){
-			java.awt.Rectangle bounds = markerPath.getBounds();
-			long needDX = Math.round((ppx - (bounds.x + bounds.width/2)));
-			long needDY = Math.round((ppy - (bounds.y + bounds.height/2)));
-			markerPath.transform(AffineTransform.getTranslateInstance(needDX,needDY));
-			markerListPath.append(markerPath,false);
+			GeneralPath newMarker = (GeneralPath)markerPath.clone();
+			java.awt.Rectangle bounds = newMarker.getBounds();
+			float needDX = (ppx - (bounds.x + bounds.width/2));
+			float needDY = (ppy - (bounds.y + bounds.height/2));
+			newMarker.transform(AffineTransform.getTranslateInstance(needDX, needDY));
+			markerListPath.append(newMarker, false);
 		}
 	}
     
