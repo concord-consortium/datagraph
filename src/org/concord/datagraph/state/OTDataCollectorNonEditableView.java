@@ -22,7 +22,7 @@
  * END LICENSE */
 
 /*
- * Created on Apr 4, 2005
+ * Created on Apr 5, 2005
  *
  * TODO To change the template for this generated file go to
  * Window - Preferences - Java - Code Style - Code Templates
@@ -31,12 +31,8 @@ package org.concord.datagraph.state;
 
 import javax.swing.JComponent;
 
-import org.concord.datagraph.ui.DataGraph;
-import org.concord.framework.data.stream.DataProducer;
-import org.concord.framework.data.stream.WritableDataStore;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.view.OTJComponentView;
-import org.concord.graph.engine.SelectableList;
 
 /**
  * @author scott
@@ -44,39 +40,26 @@ import org.concord.graph.engine.SelectableList;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public class DataCollectorView
- implements OTJComponentView
+public class OTDataCollectorNonEditableView
+    implements OTJComponentView
 {
+    OTJComponentView view;
     OTDataCollector dataCollector;
-	SelectableList notesLayer;
-	WritableDataStore dataStore;	
-	DataGraphManager dataGraphManager;
-	boolean controllable;
-	
-    public DataCollectorView(OTDataCollector collector)
-    {
-        dataCollector = collector;
-        controllable = true;
-    }
-    
-    public DataCollectorView(OTDataCollector collector, boolean controllable)
-    {
-        dataCollector = collector;
-        this.controllable = controllable;
-    }
-
+    boolean multipleGraphableEnabled = false;
+        
+    /* (non-Javadoc)
+     * @see org.concord.framework.otrunk.view.OTJComponentView#getComponent(boolean)
+     */
     public JComponent getComponent(OTObject otObject, boolean editable)
     {
-    	// For safety verify that the otObject is the same
-    	// as the one used in the constructor
-    	if(!otObject.equals(dataCollector)){
-    		throw new RuntimeException("otObject != dataCollector");
-    	}    	
-    	
-    	if (!controllable){
-    		editable = false;
-    	}
-    	return getDataGraph(editable, controllable);
+        this.dataCollector = (OTDataCollector)otObject;
+        if(dataCollector.getSingleValue()) {
+            view = new SingleValueDataView(dataCollector);
+        }
+        else {
+            view = new DataCollectorView(dataCollector, false);
+        }
+        return view.getComponent(otObject, editable);
     }
 
     /* (non-Javadoc)
@@ -84,25 +67,8 @@ public class DataCollectorView
      */
     public void viewClosed()
     {
-    	dataGraphManager.viewClosed();
+        if(view != null) {
+            view.viewClosed();
+        }
     }
-    
-    public DataGraph getDataGraph(boolean showToolbar, boolean showDataControls)
-    {
-	    dataGraphManager = new DataGraphManager(dataCollector, showDataControls);
-
-	    dataGraphManager.setToolbarVisible(showToolbar);
-	    
-	    return dataGraphManager.getDataGraph();
-    }
-    
-    public DataProducer getSourceDataProducer()
-    {
-    	return dataGraphManager.getSourceDataProducer();
-    }
-    
-    public DataGraphManager getDataGraphManager()
-    {
-        return dataGraphManager;
-    }    
 }
