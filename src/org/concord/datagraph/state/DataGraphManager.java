@@ -730,11 +730,11 @@ public class DataGraphManager
     {
         OTObjectService service = getOTDataGraph().getOTObjectService();
         
-        OTDataGraphable otGraphable = 
-            (OTDataGraphable)service.createObject(OTDataGraphable.class);
+        OTDataGraphable otGraphable = null;
 
         if(prototype == null) {
         
+            otGraphable = (OTDataGraphable)service.createObject(OTDataGraphable.class);
             DataProducer sourceDataProducer = getSourceDataProducer();
             if(sourceDataProducer != null) {
             	// copy the the producer, otherwise we would add to
@@ -754,7 +754,7 @@ public class DataGraphManager
             // Might need to set default values for color
             // and the name.  
         } else {
-            prototype.copyInto(otGraphable);
+        	otGraphable = (OTDataGraphable)service.copyObject(prototype, -1);
         }
         
         DataGraphable graphable = 
