@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.46 $
- * $Date: 2007-05-21 06:19:56 $
+ * $Revision: 1.47 $
+ * $Date: 2007-05-21 14:50:39 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -58,7 +58,6 @@ import org.concord.graph.engine.AxisScale;
 import org.concord.graph.engine.CoordinateSystem;
 import org.concord.graph.engine.DefaultCoordinateSystem2D;
 import org.concord.graph.engine.GraphArea;
-import org.concord.graph.engine.Graphable;
 import org.concord.graph.engine.GraphableList;
 import org.concord.graph.engine.MultiRegionAxisScale;
 import org.concord.graph.engine.SelectableList;
@@ -662,11 +661,10 @@ public class DataGraph extends JPanel
 	}
 	
 	/**
-	 * Adds a graphable to the list of graphables
-	 * TODO The method name should be changed.
+	 * Adds a data graphable to the list of graphables
 	 * @param graphable data graphable to add
 	 */
-	public void addDataGraphable(Graphable graphable)
+	public void addDataGraphable(DataGraphable graphable)
 	{
 		if (graphable.getGraphArea() == null){
 			graphable.setGraphArea(getGraphArea());
@@ -675,11 +673,10 @@ public class DataGraph extends JPanel
 	}
 		
 	/**
-	 * Removes a graphable from the list of graphables
-	 * TODO The method name should be changed.
+	 * Removes a data graphable from the list of graphables
 	 * @param graphable data graphable to remove
 	 */
-	public void removeDataGraphable(Graphable graphable)
+	public void removeDataGraphable(DataGraphable graphable)
 	{
 		objList.remove(graphable);
 	}

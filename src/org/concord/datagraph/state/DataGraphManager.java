@@ -346,9 +346,7 @@ public class DataGraphManager
     
 	public void setSelectedItem(Object item, boolean checked)
 	{
-		if(item instanceof DataGraphable){
-			setSelectedDataGraphable((DataGraphable)item, checked);
-		}
+	     setSelectedDataGraphable((DataGraphable)item, checked);
 	}
     
     protected void setSelectedDataGraphable(DataGraphable dg, boolean visible)
@@ -524,7 +522,7 @@ public class DataGraphManager
 		// for each list item get the data producer object
 		// add it to the data graph
 		for(int i=0; i<pfGraphables.size(); i++) {
-			Graphable realGraphable = initNewGraphable((OTObject)pfGraphables.get(i));
+			DataGraphable realGraphable = initNewGraphable((OTObject)pfGraphables.get(i));
 
 			realGraphables.add(realGraphable);
 		}
@@ -620,15 +618,14 @@ public class DataGraphManager
 	 * @param object
 	 * @return the new DataGraphable just added to the Data Graph
 	 */
-	protected Graphable initNewGraphable(OTObject otGraphable)
+	protected DataGraphable initNewGraphable(OTObject otGraphable)
 	{
 		isCausingRealObjChange = true;
 
-		Graphable realGraphable = 
-			(Graphable)controllerService.getRealObject(otGraphable);
+		DataGraphable realGraphable = 
+			(DataGraphable)controllerService.getRealObject(otGraphable);
 
-		if(realGraphable instanceof DataGraphable && 
-				((DataGraphable)realGraphable).getDataProducer() != null){
+		if (realGraphable.getDataProducer() != null){
 		    System.err.println("Trying to display a background graphable with a data producer");
 		}
 		
@@ -826,28 +823,23 @@ public class DataGraphManager
     
     public Color getItemColor(Object item)
     {
-    	if(item instanceof DataGraphable){
-    		return ((DataGraphable)item).getColor();
-    	}
-    	
-    	return Color.BLACK;
+        return ((DataGraphable)item).getColor();
     }
     
     public String getItemLabel(Object item)
     {
-        return ((Graphable)item).getLabel();
+        return ((DataGraphable)item).getLabel();
     }
     
     public void setItemLabel(Object item, String label)
     {
-    	if(item instanceof DataGraphable){
-    		((DataGraphable)item).setLabel(label);
-    	}    	
+        ((DataGraphable)item).setLabel(label);
+        
     }
     
     public void setItemChecked(Object item, boolean checked)
     {
-        ((Graphable)item).setVisible(checked);
+        ((DataGraphable)item).setVisible(checked);
         
     }    
     public String getItemTypeName()
