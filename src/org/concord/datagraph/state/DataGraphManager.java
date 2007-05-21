@@ -66,14 +66,12 @@ import org.concord.framework.data.DataFlow;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.otrunk.OTChangeEvent;
 import org.concord.framework.otrunk.OTChangeListener;
-import org.concord.framework.otrunk.OTChangeNotifying;
 import org.concord.framework.otrunk.OTControllerService;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTObjectList;
 import org.concord.framework.otrunk.OTObjectService;
 import org.concord.framework.util.CheckedColorTreeModel;
 import org.concord.framework.util.Copyable;
-import org.concord.graph.engine.DefaultGraphable;
 import org.concord.graph.engine.Graphable;
 import org.concord.graph.engine.GraphableList;
 import org.concord.graph.engine.SelectableList;
@@ -348,7 +346,9 @@ public class DataGraphManager
     
 	public void setSelectedItem(Object item, boolean checked)
 	{
-	     setSelectedDataGraphable((DataGraphable)item, checked);
+		if(item instanceof DataGraphable){
+			setSelectedDataGraphable((DataGraphable)item, checked);
+		}
 	}
     
     protected void setSelectedDataGraphable(DataGraphable dg, boolean visible)
@@ -524,7 +524,7 @@ public class DataGraphManager
 		// for each list item get the data producer object
 		// add it to the data graph
 		for(int i=0; i<pfGraphables.size(); i++) {
-			DataGraphable realGraphable = initNewGraphable((OTObject)pfGraphables.get(i));
+			Graphable realGraphable = initNewGraphable((OTObject)pfGraphables.get(i));
 
 			realGraphables.add(realGraphable);
 		}
@@ -620,14 +620,15 @@ public class DataGraphManager
 	 * @param object
 	 * @return the new DataGraphable just added to the Data Graph
 	 */
-	protected DataGraphable initNewGraphable(OTObject otGraphable)
+	protected Graphable initNewGraphable(OTObject otGraphable)
 	{
 		isCausingRealObjChange = true;
 
-		DataGraphable realGraphable = 
-			(DataGraphable)controllerService.getRealObject(otGraphable);
+		Graphable realGraphable = 
+			(Graphable)controllerService.getRealObject(otGraphable);
 
-		if (realGraphable.getDataProducer() != null){
+		if(realGraphable instanceof DataGraphable && 
+				((DataGraphable)realGraphable).getDataProducer() != null){
 		    System.err.println("Trying to display a background graphable with a data producer");
 		}
 		
@@ -825,23 +826,28 @@ public class DataGraphManager
     
     public Color getItemColor(Object item)
     {
-        return ((DataGraphable)item).getColor();
+    	if(item instanceof DataGraphable){
+    		return ((DataGraphable)item).getColor();
+    	}
+    	
+    	return Color.BLACK;
     }
     
     public String getItemLabel(Object item)
     {
-        return ((DataGraphable)item).getLabel();
+        return ((Graphable)item).getLabel();
     }
     
     public void setItemLabel(Object item, String label)
     {
-        ((DataGraphable)item).setLabel(label);
-        
+    	if(item instanceof DataGraphable){
+    		((DataGraphable)item).setLabel(label);
+    	}    	
     }
     
     public void setItemChecked(Object item, boolean checked)
     {
-        ((DataGraphable)item).setVisible(checked);
+        ((Graphable)item).setVisible(checked);
         
     }    
     public String getItemTypeName()
