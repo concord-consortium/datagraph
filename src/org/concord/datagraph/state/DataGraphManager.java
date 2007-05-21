@@ -435,10 +435,7 @@ public class DataGraphManager
     	
     	// TODO these register calls should be de coupled from
     	// this class so graphables it doesn't know about could be handled
-        controllerService.registerControllerClass(OTDataPointLabelController.class);
-        controllerService.registerControllerClass(OTDataPointRulerController.class);
-        controllerService.registerControllerClass(OTDataGraphableController.class);
-		
+    	
         dataGraph = new DataGraph();
 		dataGraph.changeToDataGraphToolbar();
 		dataGraph.setAutoFitMode(DataGraph.AUTO_SCROLL_RUNNING_MODE);
