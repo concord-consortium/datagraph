@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.1 $
- * $Date: 2007-04-20 13:54:18 $
- * $Author: sfentress $
+ * $Revision: 1.2 $
+ * $Date: 2007-05-22 04:01:25 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -64,8 +64,6 @@ public class OTDataDrawingToolNonEditableView extends OTDrawingToolNonEditableVi
     	this.tool = tool;
         //setMaximumSize(new Dimension(550, 220));
     	
-    	controllerService.registerControllerClass(OTDataGraphableController.class);
-    	controllerService.registerControllerClass(OTEraserGraphableController.class);
     }
     
 	/**

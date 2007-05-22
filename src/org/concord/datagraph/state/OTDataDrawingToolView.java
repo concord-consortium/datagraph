@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.19 $
- * $Date: 2007-01-24 22:11:23 $
+ * $Revision: 1.20 $
+ * $Date: 2007-05-22 04:01:25 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -64,8 +64,6 @@ public class OTDataDrawingToolView extends OTDrawingToolView
     	this.tool = tool;
         //setMaximumSize(new Dimension(550, 220));
     	
-    	controllerService.registerControllerClass(OTDataGraphableController.class);
-    	controllerService.registerControllerClass(OTEraserGraphableController.class);
     }
     
 	/**
