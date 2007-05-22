@@ -134,7 +134,7 @@ public class DataGraphManager
         	dataCollector = (OTDataCollector)pfObject;
         this.showDataControls = showDataControls;
         
-        initialize(showDataControls);
+        initialize();
     }
 
     public DataProducer getSourceDataProducer()
@@ -427,10 +427,6 @@ public class DataGraphManager
 	}
 	
 	public void initialize() {
-		this.initialize(true);
-	}
-	
-	protected void initialize(boolean showToolBar) {
     	controllerService = otDataGraph.getOTObjectService().createControllerService();
     	
     	// TODO these register calls should be de coupled from
@@ -465,9 +461,9 @@ public class DataGraphManager
 			dataGraph.getToolBar().addButton(autoScaleYButton, "Autoscale Y axis");
 		}
 		
-        KeyStroke keyStroke = KeyStroke.getKeyStroke(new Character('t'), InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK);
-        dataGraph.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStroke, "ShowTree");
-        dataGraph.getActionMap().put("ShowTree", new AbstractAction(){
+        KeyStroke keyStroke = KeyStroke.getKeyStroke(new Character('T'), InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK);
+        dataGraph.getToolBar().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStroke, "ShowTree");
+        dataGraph.getToolBar().getActionMap().put("ShowTree", new AbstractAction(){
             /**
              * First version of action
              */
@@ -475,7 +471,7 @@ public class DataGraphManager
 
             public void actionPerformed(ActionEvent e)
             {
-                //System.out.println("Got event: " + e);
+                System.out.println("Got event: " + e);
                 GraphTreeView gtv = new GraphTreeView();
                 gtv.setGraph(dataGraph.getGraph());
                 GraphTreeView.showAsDialog(gtv, "graph tree");                

@@ -35,8 +35,12 @@ import org.concord.data.state.OTDataStore;
 import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.ControllableDataGraphableDrawing;
 import org.concord.datagraph.engine.DataGraphable;
+import org.concord.framework.data.stream.DataListener;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.DataStore;
+import org.concord.framework.data.stream.DataStoreEvent;
+import org.concord.framework.data.stream.DataStoreListener;
+import org.concord.framework.data.stream.DataStreamEvent;
 import org.concord.framework.otrunk.OTObjectService;
 import org.concord.graph.util.state.OTGraphableController;
 
@@ -54,6 +58,68 @@ public class OTDataGraphableController extends OTGraphableController
 	};
 	
 	public static Class otObjectClass = OTDataGraphable.class;    
+	
+	DataStoreListener dataStoreListener = new DataStoreListener(){
+
+		public void dataAdded(DataStoreEvent evt){}
+
+		public void dataChanged(DataStoreEvent evt){}
+
+		public void dataChannelDescChanged(DataStoreEvent evt)
+		{
+			// TODO we should verify that this is coming from
+			// the producer, if the description is coming
+			// from somewhere else then it isn't clear what
+			// should happen to the producer.
+		}
+
+		public void dataRemoved(DataStoreEvent evt)
+		{
+			OTDataStore dataStore = (OTDataStore)evt.getSource();
+			OTDataGraphable model = (OTDataGraphable)otObject;
+			DataProducer dataProducer = model.getDataProducer();
+
+			if(dataProducer != null && dataStore.getTotalNumSamples() == 0){
+				dataStore.setDataProducer(dataProducer);
+			}
+			// TODO Auto-generated method stub
+		}
+	};
+	
+	DataListener dataProducerListener = new DataListener(){
+		boolean started = false;
+		
+		public void reset(){
+			started = false;
+		}
+		
+		public void dataReceived(DataStreamEvent dataEvent)
+        {
+			if(started){
+				return;
+			}
+
+			// Check if this dataProducer has already been added to the 
+			// datastore, if not then add it.
+			// This will modify the list of dataListeners in the dataStore
+			// while it is iterating over it.  It seems like this will
+			// work ok though
+			// This will happen whenever data arrives so we should 
+			// remove ourselves from the list but we can't safely do that
+			// while in the method.  So we have the boolean above instead.
+			OTDataGraphable model = (OTDataGraphable)otObject;
+			DataProducer modelDataProducer = model.getDataProducer();
+			OTDataStore dataStore = model.getDataStore();
+			
+			DataProducer oldDataProducer = dataStore.getDataProducer();
+			if(oldDataProducer != modelDataProducer){
+				dataStore.setDataProducer(modelDataProducer);
+			}
+        }			
+
+		public void dataStreamEvent(DataStreamEvent dataEvent){}
+		
+	};
 	
     public void loadRealObject(Object realObject)
     {
@@ -93,9 +159,27 @@ public class OTDataGraphableController extends OTGraphableController
             }
         }
         
-        // now we can safely assume dataStore != null        
+        // now we can safely assume dataStore != null
+        // however we should not set the producer onto the datastore
+        // if there is data in the data store, this could possibly
+        // mess up the data that is in the data store, because the data
+        // description of the data in the data store might be different
+        // from the data description in the producer.
+        // instead we need to listen to the dataStore and dataproducer
+        // and when the datastore is cleared, or the producer is started
+        // then we set the producer on the datastore.
+        // cleared, or the start 
 		if (producer != null){
-		    dataStore.setDataProducer(producer);
+			if(dataStore.getTotalNumSamples() == 0){
+				dataStore.setDataProducer(producer);
+			} 
+			
+			// listen to the dataStore so if the data is cleared at some
+			// point then we will reset the producer 
+			// we should be careful not to add a listener twice			
+			dataStore.addDataStoreListener(dataStoreListener);
+
+			producer.addDataListener(dataProducerListener);
 		}
 		
 		dg.setDataStore(dataStore);
