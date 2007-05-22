@@ -82,16 +82,11 @@ public class OTDataGraphableController extends OTGraphableController
 			if(dataProducer != null && dataStore.getTotalNumSamples() == 0){
 				dataStore.setDataProducer(dataProducer);
 			}
-			// TODO Auto-generated method stub
 		}
 	};
 	
 	DataListener dataProducerListener = new DataListener(){
 		boolean started = false;
-		
-		public void reset(){
-			started = false;
-		}
 		
 		public void dataReceived(DataStreamEvent dataEvent)
         {
@@ -99,6 +94,7 @@ public class OTDataGraphableController extends OTGraphableController
 				return;
 			}
 
+			started = true;
 			// Check if this dataProducer has already been added to the 
 			// datastore, if not then add it.
 			// This will modify the list of dataListeners in the dataStore
@@ -235,5 +231,37 @@ public class OTDataGraphableController extends OTGraphableController
         else {
         	return DataGraphable.class;
         }
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.concord.framework.otrunk.DefaultOTController#dispose()
+	 */
+	public void dispose(Object realObject)
+	{
+    	OTDataGraphable model = (OTDataGraphable)otObject;
+        
+		DataProducer producer = model.getDataProducer();
+		OTDataStore dataStore = model.getDataStore();
+
+		// listen to the dataStore so if the data is cleared at some
+		// point then we will reset the producer 
+		// we should be careful not to add a listener twice			
+		dataStore.removeDataStoreListener(dataStoreListener);
+
+		if(producer != null){
+			producer.removeDataListener(dataProducerListener);
+		}
+
+		// our realObject should be a DataGraphable
+		DataGraphable dataGraphable = (DataGraphable) realObject;
+		
+		// set the data store to null, so our graphable stops
+		// listening to the datastore.  Otherwise the datastore will
+		// keep a reference to the graphable, which might in turn keep
+		// references to other objects...
+		dataGraphable.setDataStore(null);
+		
+	    // TODO Auto-generated method stub
+	    super.dispose(realObject);
 	}
 }

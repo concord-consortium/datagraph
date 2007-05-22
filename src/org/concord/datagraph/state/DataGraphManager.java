@@ -62,8 +62,8 @@ import org.concord.datagraph.ui.DataAnnotation;
 import org.concord.datagraph.ui.DataGraph;
 import org.concord.datagraph.ui.SingleDataAxisGrid;
 import org.concord.framework.data.DataDimension;
-import org.concord.framework.data.DataFlow;
 import org.concord.framework.data.stream.DataProducer;
+import org.concord.framework.data.stream.DataStore;
 import org.concord.framework.otrunk.OTChangeEvent;
 import org.concord.framework.otrunk.OTChangeListener;
 import org.concord.framework.otrunk.OTControllerService;
@@ -91,14 +91,13 @@ import org.concord.view.CheckedColorTreeControler;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class DataGraphManager
-	implements OTChangeListener, ChangeListener, CheckedColorTreeModel, DataFlow
+	implements OTChangeListener, ChangeListener, CheckedColorTreeModel
 {
     OTDataCollector dataCollector;
     OTDataGraph otDataGraph;
     DataGraph dataGraph;
     
 	DataGraphable sourceGraphable;
-	DataProducer sourceDataProducer;
 	DataStoreLabel valueLabel;
 	
 	OTObjectList labels;
@@ -139,19 +138,15 @@ public class DataGraphManager
 
     public DataProducer getSourceDataProducer()
     {
-        return sourceDataProducer;
+    	// This will return the potential dataProducer of the 
+    	// sourceGraphable, this might be different than the current
+    	// dataProducer.  This is because of how the producerDataStores 
+    	// interact with dataDescriptions coming from their data Producer
+    	OTDataGraphable otSourceGraphable =
+    		(OTDataGraphable) controllerService.getOTObject(sourceGraphable);
+    	return otSourceGraphable.getDataProducer();
     }
 
-    /**
-     * This is required to pull out dataset tree code
-     *
-     */
-    protected void setSourceDataProducer(DataProducer sDataProducer)
-    {
-        sourceDataProducer = sDataProducer;
-    }
-    
-    
     public float getLastValue()
     {
         if(valueLabel == null) {
@@ -192,6 +187,7 @@ public class DataGraphManager
 		toolbar.add(bStart);
 
 		bStop = new DataFlowControlButton(DataFlowControlAction.FLOW_CONTROL_STOP);
+		bStop.setEnabled(false);
 		toolbar.add(bStop);
 		
 		bClear = new DataFlowControlButton(DataFlowControlAction.FLOW_CONTROL_RESET);
@@ -355,37 +351,11 @@ public class DataGraphManager
            setToolBarEnabled(false);
            return;
         }
-
-        Dimension labelSize = null;
-        Point labelLocation = null;
         
-        if(toolBar != null) {
-            // disconnect toolBar from the last data producer
-            toolBar.removeDataFlowObject(sourceDataProducer);
-            labelSize = valueLabel.getSize();
-            labelLocation = valueLabel.getLocation();
-            bottomPanel.remove(valueLabel);
-            bottomPanel.remove(toolBar);
-        }
-        
-        //Connect new data producer with toolBar and valueLabel
-        DataProducer dp = dg.findDataProducer();
-        if(dp != null) sourceDataProducer = dp;
-        //sourceDataProducer = dg.findDataProducer();
-        
-        if(toolBar != null) {
-            toolBar.addDataFlowObject(sourceDataProducer);
-            valueLabel = new DataStoreLabel(dg, 1);
-            valueLabel.setColumns(4);
-            
-            bottomPanel.setLayout(new FlowLayout());
-            valueLabel.setSize(labelSize);
-            valueLabel.setLocation(labelLocation);
-            bottomPanel.add(valueLabel);
-            bottomPanel.add(toolBar);
-            //bottomPanel.add(about);
-        }
-        
+        DataGraphable oldGraphable = sourceGraphable;
+        sourceGraphable = dg;
+        updateBottomPanel(oldGraphable, sourceGraphable);
+                
         dg.setVisible(visible);
             
         if(dg.isLocked()) {
@@ -536,9 +506,7 @@ public class DataGraphManager
 			}
 
 			sourceGraphable = (DataGraphable)controllerService.getRealObject(source);
-			
-			sourceDataProducer = sourceGraphable.findDataProducer();
-			
+						
 			// dProducer.getDataDescription().setDt(0.1f);
 			if(sourceGraphable instanceof ControllableDataGraphable) {
 			    bottomPanel = new JPanel(new FlowLayout());
@@ -561,15 +529,10 @@ public class DataGraphManager
 			    
 			} else if(showDataControls) {
 			    bottomPanel = new JPanel(new FlowLayout());
-			    valueLabel = new DataStoreLabel(sourceGraphable, 1);
-			    valueLabel.setColumns(4);
-			    bottomPanel.add(valueLabel);
-
 			    toolBar = createFlowToolBar();
-			    toolBar.addDataFlowObject(sourceDataProducer);
-			    
-			    bottomPanel.add(toolBar);
-			    
+
+			    updateBottomPanel(null, sourceGraphable);
+			    			    
 			    dataGraph.add(bottomPanel, BorderLayout.SOUTH);  			    
 			}
 
@@ -605,6 +568,61 @@ public class DataGraphManager
 		graphableList.addGraphableListListener(new MainLayerGraphableListener());
 	}
 
+	protected void updateBottomPanel(DataGraphable oldSourceGraphable, 
+		DataGraphable newSourceGraphable)
+	{
+		if(toolBar == null){
+			return;
+		}
+		
+        Dimension labelSize = null;
+		Point labelLocation = null;
+		
+		if(oldSourceGraphable != null) {
+			// disconnect toolBar from the last data producer
+			// getting the data producer from the graphable is not always safe
+			// the graphable stores the dataproducer in its datastore, so 
+			// if the datastore hasn't been updated to use the correct producer
+			// then this will return the wrong thing
+			DataProducer oldSourceDataProducer = 
+				oldSourceGraphable.findDataProducer();
+			toolBar.removeDataFlowObject(oldSourceDataProducer);
+			labelSize = valueLabel.getSize();
+			labelLocation = valueLabel.getLocation();
+			bottomPanel.remove(valueLabel);
+			bottomPanel.remove(toolBar);
+		}
+
+		// It isn't good to call newSourceGraphable.findDataProducer()
+		// because the producer might not be set data store of the 
+		// real graphable yet.  This setting is delay so previous data stored
+		// in the datastore does not get messed up.
+		OTDataGraphable newOTSourceGraphable = 
+			(OTDataGraphable) controllerService.getOTObject(newSourceGraphable);
+		DataProducer newSourceDataProducer = 
+			newOTSourceGraphable.getDataProducer();
+		toolBar.addDataFlowObject(newSourceDataProducer);
+		
+		DataStore dataStore = newSourceGraphable.getDataStore();
+		if(dataStore.getTotalNumSamples() > 0){
+			bStart.setEnabled(false);
+		}
+
+		// TODO we need a way to check if the datastore is running or not
+		// if it is not running then the stop button shoudl be disabled.
+		
+		valueLabel = new DataStoreLabel(newSourceGraphable, 1);
+		valueLabel.setColumns(8);
+
+		bottomPanel.setLayout(new FlowLayout());
+		if(oldSourceGraphable != null){
+			valueLabel.setSize(labelSize);
+			valueLabel.setLocation(labelLocation);
+		}
+		bottomPanel.add(valueLabel);
+		bottomPanel.add(toolBar);
+	}
+	
 	/**
 	 * Called when a new OT graphable was added and we need to create 
 	 * a real graphable object for it and add it to the Data Graph
@@ -845,30 +863,6 @@ public class DataGraphManager
         return (Vector)(dataGraph.getObjList().clone());
     }
 
-    public void reset()
-    {
-        if(sourceDataProducer == null) {
-            return;
-        }
-        sourceDataProducer.reset();        
-    }
-
-    public void stop()
-    {
-        if(sourceDataProducer == null) {
-            return;
-        }
-        sourceDataProducer.stop();
-    }
-
-    public void start()
-    {
-        if(sourceDataProducer == null) {
-            return;
-        }
-        sourceDataProducer.start();        
-    }
-
     public Color getNewColor() {
         Color color = null;
         
@@ -900,6 +894,11 @@ public class DataGraphManager
 		xOTAxis.removeOTChangeListener(this);
 		yOTAxis.removeOTChangeListener(this);
 		otDataGraph.removeOTChangeListener(this);
+		
+		// This should call dispose on all the controllers that are syncing
+		// the real objects with the ot objects.
+		controllerService.dispose();
+
 		//Not anymore!
 		//OTObjectList pfGraphables = otDataGraph.getGraphables();
 		//for(int i=0; i<pfGraphables.size(); i++) {
