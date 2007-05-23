@@ -29,8 +29,8 @@
  */
 package org.concord.datagraph.state;
 
+import org.concord.data.state.OTDataProducer;
 import org.concord.data.state.OTDataStore;
-import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.otrunk.OTObjectInterface;
 
 public interface OTDataGraphable extends OTObjectInterface
@@ -62,8 +62,8 @@ public interface OTDataGraphable extends OTObjectInterface
 	public OTDataStore getDataStore();
 	public void setDataStore(OTDataStore store);
 	
-	public DataProducer getDataProducer();
-	public void setDataProducer(DataProducer producer);
+	public OTDataProducer getDataProducer();
+	public void setDataProducer(OTDataProducer producer);
 	
 	public static int DEFAULT_xColumn = 0;
 	public int getXColumn();

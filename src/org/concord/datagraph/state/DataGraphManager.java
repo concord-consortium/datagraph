@@ -49,6 +49,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.concord.data.Unit;
+import org.concord.data.state.OTDataProducer;
 import org.concord.data.ui.DataFlowControlAction;
 import org.concord.data.ui.DataFlowControlButton;
 import org.concord.data.ui.DataFlowControlToolBar;
@@ -144,7 +145,7 @@ public class DataGraphManager
     	// interact with dataDescriptions coming from their data Producer
     	OTDataGraphable otSourceGraphable =
     		(OTDataGraphable) controllerService.getOTObject(sourceGraphable);
-    	return otSourceGraphable.getDataProducer();
+    	return getDataProducer(otSourceGraphable);
     }
 
     public float getLastValue()
@@ -600,7 +601,7 @@ public class DataGraphManager
 		OTDataGraphable newOTSourceGraphable = 
 			(OTDataGraphable) controllerService.getOTObject(newSourceGraphable);
 		DataProducer newSourceDataProducer = 
-			newOTSourceGraphable.getDataProducer();
+			getDataProducer(newOTSourceGraphable);
 		toolBar.addDataFlowObject(newSourceDataProducer);
 		
 		DataStore dataStore = newSourceGraphable.getDataStore();
@@ -755,7 +756,7 @@ public class DataGraphManager
                     producer = 
                         (DataProducer)((Copyable)sourceDataProducer).getCopy();
                 }
-                otGraphable.setDataProducer(producer);
+                setDataProducer(otGraphable, producer);
             }
             
             otGraphable.setDrawMarks(false);
@@ -977,4 +978,17 @@ public class DataGraphManager
 			}
 		}
     }    
+    
+	DataProducer getDataProducer(OTDataGraphable model)
+	{
+		OTDataProducer otDataProducer = model.getDataProducer();
+		return (DataProducer) controllerService.getRealObject(otDataProducer);
+	}
+	
+	void setDataProducer(OTDataGraphable model, DataProducer dp)
+	{
+		OTDataProducer otDataProducer = 
+			(OTDataProducer) controllerService.getOTObject(dp);
+		model.setDataProducer(otDataProducer);
+	}
 }

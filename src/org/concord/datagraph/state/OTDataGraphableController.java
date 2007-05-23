@@ -31,6 +31,7 @@ package org.concord.datagraph.state;
 
 import java.awt.Color;
 
+import org.concord.data.state.OTDataProducer;
 import org.concord.data.state.OTDataStore;
 import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.ControllableDataGraphableDrawing;
@@ -77,7 +78,7 @@ public class OTDataGraphableController extends OTGraphableController
 		{
 			OTDataStore dataStore = (OTDataStore)evt.getSource();
 			OTDataGraphable model = (OTDataGraphable)otObject;
-			DataProducer dataProducer = model.getDataProducer();
+			DataProducer dataProducer = getDataProducer(model);
 
 			if(dataProducer != null && dataStore.getTotalNumSamples() == 0){
 				dataStore.setDataProducer(dataProducer);
@@ -104,7 +105,7 @@ public class OTDataGraphableController extends OTGraphableController
 			// remove ourselves from the list but we can't safely do that
 			// while in the method.  So we have the boolean above instead.
 			OTDataGraphable model = (OTDataGraphable)otObject;
-			DataProducer modelDataProducer = model.getDataProducer();
+			DataProducer modelDataProducer = getDataProducer(model);
 			OTDataStore dataStore = model.getDataStore();
 			
 			DataProducer oldDataProducer = dataStore.getDataProducer();
@@ -129,7 +130,7 @@ public class OTDataGraphableController extends OTGraphableController
         dg.setUseVirtualChannels(true);
         dg.setLocked(model.getLocked());
         
-		DataProducer producer = model.getDataProducer();
+		DataProducer producer = getDataProducer(model);
 		OTDataStore dataStore = model.getDataStore();
 
 		if (model.getControllable() && producer != null){
@@ -213,6 +214,10 @@ public class OTDataGraphableController extends OTGraphableController
         if(dg instanceof ControllableDataGraphableDrawing) {
         	model.setDrawing(true);    		
         }
+        
+        // FIXME we ought to be saving the dataproducer here, but there isn't
+        // a clear way to figure out which dataproducer to save.
+        // so for now we won't save any of them.
 	}
 
 	/**
@@ -240,7 +245,7 @@ public class OTDataGraphableController extends OTGraphableController
 	{
     	OTDataGraphable model = (OTDataGraphable)otObject;
         
-		DataProducer producer = model.getDataProducer();
+		DataProducer producer = getDataProducer(model);
 		OTDataStore dataStore = model.getDataStore();
 
 		// listen to the dataStore so if the data is cleared at some
@@ -264,4 +269,11 @@ public class OTDataGraphableController extends OTGraphableController
 	    // TODO Auto-generated method stub
 	    super.dispose(realObject);
 	}
+	
+	DataProducer getDataProducer(OTDataGraphable model)
+	{
+		OTDataProducer otDataProducer = model.getDataProducer();
+		return (DataProducer) controllerService.getRealObject(otDataProducer);
+	}
+	
 }
