@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.21 $
- * $Date: 2007-03-08 22:10:53 $
+ * $Revision: 1.22 $
+ * $Date: 2007-05-23 22:37:51 $
  * $Author: sfentress $
  *
  * Licence Information
@@ -47,6 +47,7 @@ import org.concord.framework.data.stream.DataStore;
 import org.concord.framework.data.stream.WritableDataStore;
 import org.concord.graph.engine.CoordinateSystem;
 import org.concord.graph.engine.Cursorable;
+import org.concord.graph.engine.DefaultControllable;
 import org.concord.graph.engine.MouseControllable;
 import org.concord.graph.engine.MouseMotionReceiver;
 import org.concord.graph.event.CursorListener;
@@ -601,5 +602,20 @@ public class ControllableDataGraphable extends DataGraphable
 	 */
 	public void removeCursorListener(CursorListener l) {
 		cursorListeners.remove(l);
+	}
+
+	public void moveInRelation(Point2D start, Point2D end) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setAllSelectedDrawingObjects(DefaultControllable[] objects) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setCurrentLocationAsOriginal() {
+		// TODO Auto-generated method stub
+		
 	}		
 }
