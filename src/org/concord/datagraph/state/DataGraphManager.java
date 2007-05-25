@@ -63,6 +63,7 @@ import org.concord.datagraph.ui.DataAnnotation;
 import org.concord.datagraph.ui.DataGraph;
 import org.concord.datagraph.ui.SingleDataAxisGrid;
 import org.concord.framework.data.DataDimension;
+import org.concord.framework.data.DataFlow;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.DataStore;
 import org.concord.framework.otrunk.OTChangeEvent;
@@ -92,7 +93,7 @@ import org.concord.view.CheckedColorTreeControler;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class DataGraphManager
-	implements OTChangeListener, ChangeListener, CheckedColorTreeModel
+	implements OTChangeListener, ChangeListener, CheckedColorTreeModel, DataFlow
 {
     OTDataCollector dataCollector;
     OTDataGraph otDataGraph;
@@ -145,6 +146,9 @@ public class DataGraphManager
     	// interact with dataDescriptions coming from their data Producer
     	OTDataGraphable otSourceGraphable =
     		(OTDataGraphable) controllerService.getOTObject(sourceGraphable);
+    	if(otSourceGraphable == null){
+    		return null;
+    	}
     	return getDataProducer(otSourceGraphable);
     }
 
@@ -558,9 +562,16 @@ public class DataGraphManager
         }
 		if(multiEnabled || (multiAllowed && realGraphables.size() > 1 )){
 		    CheckedColorTreeControler dataSetTree = new CheckedColorTreeControler();
-            JComponent treeComponent = 
-                dataSetTree.setup(this, true);
-            
+            JComponent treeComponent = dataSetTree.setup(this, true);
+                
+            // The source should be the last item because it was setup that
+            // way above. We want it selected
+            // This works but there is some strange behavior here.  
+            // the dataSetTree.setup changes the sourceGraphable. because it sets the 
+            // selected to be the first realGraphable. 
+            if(source != null){
+            	dataSetTree.setSelectedRow(realGraphables.size() - 1);
+            }
             dataGraph.add(treeComponent, BorderLayout.WEST);
 		}
 
@@ -862,6 +873,37 @@ public class DataGraphManager
     public Vector getItems(Object parent)
     {
         return (Vector)(dataGraph.getObjList().clone());
+    }
+
+	/**
+     * This method and the other DataFlow methods are used when there
+     * are multiple datagraphs.
+     */
+    public void reset()
+    {
+    	DataProducer sourceDataProducer = getSourceDataProducer();
+        if(sourceDataProducer == null) {
+            return;
+        }
+        sourceDataProducer.reset();        
+    }
+
+    public void stop()
+    {
+    	DataProducer sourceDataProducer = getSourceDataProducer();
+        if(sourceDataProducer == null) {
+            return;
+        }
+        sourceDataProducer.stop();
+    }
+
+    public void start()
+    {
+    	DataProducer sourceDataProducer = getSourceDataProducer();
+        if(sourceDataProducer == null) {
+            return;
+        }
+        sourceDataProducer.start();        
     }
 
     public Color getNewColor() {
