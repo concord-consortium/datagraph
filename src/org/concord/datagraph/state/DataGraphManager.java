@@ -758,16 +758,18 @@ public class DataGraphManager
             otGraphable = (OTDataGraphable)service.createObject(OTDataGraphable.class);
             DataProducer sourceDataProducer = getSourceDataProducer();
             if(sourceDataProducer != null) {
-            	// copy the the producer, otherwise we would add to
-            	// the current source
-                DataProducer producer = 
-                    (DataProducer)service.createObject(sourceDataProducer.getClass());
-                
-                if(producer instanceof Copyable) {
-                    producer = 
+            	// copy the the producer, 
+            	// TODO there might be some way to use the same producer on 2 datastores
+            	// that would be a fall back for un copyable data producers
+                if(sourceDataProducer instanceof Copyable) {
+                	DataProducer producer = 
                         (DataProducer)((Copyable)sourceDataProducer).getCopy();
+                    setDataProducer(otGraphable, producer);
+                } else {
+                	System.err.println("Cannot copy the source data producer:\n" +
+                			"  " + sourceDataProducer  + "\n" + 
+                			"  It doesn't implement the Copyable interface");
                 }
-                setDataProducer(otGraphable, producer);
             }
             
             otGraphable.setDrawMarks(false);
