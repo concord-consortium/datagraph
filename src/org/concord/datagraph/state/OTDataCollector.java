@@ -77,6 +77,6 @@ public interface OTDataCollector
 	public final static boolean DEFAULT_rulerEnabled = false;
 	public boolean getRulerEnabled();
 	
-	public final static boolean DEFAULT_autoScaleEnabled = false;
+	public final static boolean DEFAULT_autoScaleEnabled = true;
 	public boolean getAutoScaleEnabled();	
 }
