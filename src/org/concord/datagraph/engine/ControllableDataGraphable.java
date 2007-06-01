@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.22 $
- * $Date: 2007-05-23 22:37:51 $
- * $Author: sfentress $
+ * $Revision: 1.23 $
+ * $Date: 2007-06-01 14:20:23 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -119,7 +119,7 @@ public class ControllableDataGraphable extends DataGraphable
 	public void setDataStore(DataStore dataStore)
 	{
 		//This Data Graphable only makes sense with a Writable Data Store!
-		if (!(dataStore instanceof WritableDataStore)) {
+		if (dataStore != null && !(dataStore instanceof WritableDataStore)) {
 			throw new IllegalArgumentException("The Data Store "+dataStore+" is not Writable!");
 		}
 		
