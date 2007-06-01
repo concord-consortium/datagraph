@@ -409,12 +409,16 @@ public class DataGraphManager
     	
         dataGraph = new DataGraph();
 		dataGraph.changeToDataGraphToolbar();
+		
+		initGraphables();
+		
 		dataGraph.setAutoFitMode(DataGraph.AUTO_SCROLL_RUNNING_MODE);
 		
         dataGraph.setFocusable(true);
         
 		notesLayer = new SelectableList();
 		dataGraph.getGraph().add(notesLayer);
+		
 
 		SelectableToggleButton addNoteButton = new SelectableToggleButton(new AddDataPointLabelAction(notesLayer, dataGraph.getObjList(), dataGraph.getToolBar()));
 		dataGraph.getToolBar().addButton(addNoteButton, "Add a note to a point in the graph");
@@ -471,8 +475,6 @@ public class DataGraphManager
 		SingleDataAxisGrid sYAxis = (SingleDataAxisGrid)grid.getYGrid();
 		//DataGraphStateManager.setupAxisLabel(sYAxis, yOTAxis);
 		setupAxisLabel(sYAxis, yOTAxis);
-		
-		initGraphables();
 		
 		dataGraph.setPreferredSize(new Dimension(400,320));
 		
