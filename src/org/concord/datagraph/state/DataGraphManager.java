@@ -425,8 +425,8 @@ public class DataGraphManager
 		//DataPointRuler need to be explicitly enabled to show per Brad's request.
 		
 		if(dataCollector != null && dataCollector.getRulerEnabled()) {
-	//		SelectableToggleButton addNoteButton2 = new SelectableToggleButton(new AddDataPointLabelActionExt(notesLayer, dataGraph.getObjList(), dataGraph.getToolBar()));
-	//		dataGraph.getToolBar().addButton(addNoteButton2, "Add a ruler to a point in the graph");			
+			SelectableToggleButton addNoteButton2 = new SelectableToggleButton(new AddDataPointLabelActionExt(notesLayer, dataGraph.getObjList(), dataGraph.getToolBar()));
+			dataGraph.getToolBar().addButton(addNoteButton2, "Add a ruler to a point in the graph");			
 		}
 		
 		//AutoScale need to be explicitly enabled to show per Brad's request.
