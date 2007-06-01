@@ -408,10 +408,9 @@ public class DataGraphManager
     	// this class so graphables it doesn't know about could be handled
     	
         dataGraph = new DataGraph();
+        
 		dataGraph.changeToDataGraphToolbar();
-		
 		initGraphables();
-		
 		dataGraph.setAutoFitMode(DataGraph.AUTO_SCROLL_RUNNING_MODE);
 		
         dataGraph.setFocusable(true);
@@ -527,7 +526,7 @@ public class DataGraphManager
 				DrawingAction a = new DrawingAction();
 				a.setDrawingObject((ControllableDataGraphable)sourceGraphable);
 				GraphWindowToolBar gwToolbar = dataGraph.getToolBar();
-				gwToolbar.addButton(new SelectableToggleButton(a), "Draw a function");
+				gwToolbar.addButton(new SelectableToggleButton(a), "Draw a function", 0, false, true);
 				
 				bottomPanel.add(clearButton);
 			    //bottomPanel.add(about);
