@@ -650,7 +650,10 @@ public class DataGraphManager
 		DataGraphable realGraphable = 
 			(DataGraphable)controllerService.getRealObject(otGraphable);
 
-		if (realGraphable.getDataProducer() != null){
+		if (realGraphable == null){
+			System.err.println("Unable to get realGraphable from controllerService");
+			return null;
+		}if (realGraphable.getDataProducer() != null){
 		    System.err.println("Trying to display a background graphable with a data producer");
 		}
 		
