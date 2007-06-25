@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.16 $
- * $Date: 2007-03-14 00:30:34 $
+ * $Revision: 1.17 $
+ * $Date: 2007-06-25 18:59:13 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -53,6 +53,7 @@ import org.concord.framework.data.stream.DataStore;
 import org.concord.framework.data.stream.DataStoreCollection;
 import org.concord.framework.data.stream.DataStoreImporter;
 import org.concord.framework.data.stream.WritableArrayDataStore;
+import org.concord.framework.otrunk.OTControllerService;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTObjectList;
 import org.concord.framework.otrunk.OTObjectService;
@@ -72,7 +73,8 @@ public class OTMultiDataGraphView extends AbstractOTJComponentView
     implements DataStoreCollection
 {
     OTMultiDataGraph multiDataGraph;
-
+    OTControllerService controllerService;
+    
     Vector graphManagers = new Vector();
     
     /* (non-Javadoc)
@@ -81,7 +83,8 @@ public class OTMultiDataGraphView extends AbstractOTJComponentView
     public JComponent getComponent(OTObject otObject, boolean editable)
     {
         multiDataGraph = (OTMultiDataGraph)otObject;
-
+        controllerService = multiDataGraph.getOTObjectService().createControllerService();
+        
         JPanel mainPanel = new JPanel(new BorderLayout());
 
 		GraphWindowToolBar gwToolBar = new DataGraphToolbar(); //GraphWindowToolBar();	
@@ -206,6 +209,7 @@ public class OTMultiDataGraphView extends AbstractOTJComponentView
                 (DataGraphManager)graphManagers.get(i);
             graphManager.viewClosed();
         }
+        controllerService.dispose();       
     }
 
 
@@ -238,6 +242,8 @@ public class OTMultiDataGraphView extends AbstractOTJComponentView
             newColor = graphManager.getNewColor();
         }
         
+        OTDataStore otDataStore = (OTDataStore) controllerService.getOTObject(dStore);
+
         for(int i=0; i<graphManagers.size(); i++) {
             DataGraphManager graphManager =
                 (DataGraphManager)graphManagers.get(i);
@@ -245,8 +251,17 @@ public class OTMultiDataGraphView extends AbstractOTJComponentView
             
             DataGraphable graphable = 
                 (DataGraphable)graphManager.addItem(null, name, newColor);
+
+            // We have a datastore that was created by our controllerService 
+            // from an OTDataStore.
+            // We need a datastore that is created by the controllerService of the target DataGraphManager
+            // otherwise the views and controlers in that DataGraphManager will not beable to find the 
+            // OTObject for the datastore.  
+            // It is pretty annoying that we have to do this but there is no other way right now.            
+            OTControllerService gmControllerService = graphManager.getControllerService();
+            DataStore gmDataStore = (DataStore) gmControllerService.getRealObject(otDataStore);
             
-            graphable.setDataStore(dStore);
+            graphable.setDataStore(gmDataStore);
         }        
     }
 
@@ -255,8 +270,11 @@ public class OTMultiDataGraphView extends AbstractOTJComponentView
     {
         try {
             OTObjectService objService = multiDataGraph.getOTObjectService();
-            OTDataStore dataStore = (OTDataStore)objService.createObject(OTDataStore.class);
-            return dataStore;
+            OTDataStore otDataStore = (OTDataStore)objService.createObject(OTDataStore.class);
+            
+            WritableArrayDataStore waDataStore = 
+            	(WritableArrayDataStore) controllerService.getRealObject(otDataStore);
+            return waDataStore;
         } catch (Exception e) {
             // we can't handle this
             e.printStackTrace();

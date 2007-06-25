@@ -29,6 +29,7 @@ import java.awt.geom.Point2D;
 import javax.swing.ImageIcon;
 
 import org.concord.data.state.OTDataStore;
+import org.concord.framework.data.stream.DataStore;
 import org.concord.framework.otrunk.OTObjectService;
 import org.concord.graph.util.state.OTDrawingEraser;
 import org.concord.graph.util.state.OTGraphableController;
@@ -69,9 +70,9 @@ public class OTEraserGraphableController extends OTGraphableController
         
         eraserObj.setImage(eraserIcon);
         
-		OTDataStore dataStore = resources.getDataStore();
-
-        if(dataStore == null) {
+		OTDataStore otDataStore = resources.getDataStore();
+		
+        if(otDataStore == null) {
         	// If the dataStore is null then we create a new
         	// one to store the data so it can retrieved 
         	// later.  If the data needs to be referenced
@@ -79,15 +80,17 @@ public class OTEraserGraphableController extends OTGraphableController
         	// defined in the content.
             try {
                 OTObjectService objService = resources.getOTObjectService();
-                dataStore = (OTDataStore)objService.createObject(OTDataStore.class);
-                resources.setDataStore(dataStore);
+                otDataStore = (OTDataStore)objService.createObject(OTDataStore.class);
+                resources.setDataStore(otDataStore);
             } catch (Exception e) {
                 // we can't handle this
                 throw new RuntimeException(e);
             }
         }
         
-        int channels = dataStore.getTotalNumChannels();
+		DataStore dataStore = (DataStore) controllerService.getRealObject(otDataStore) ;
+
+		int channels = dataStore.getTotalNumChannels();
         int samples = dataStore.getTotalNumSamples();
         float[] points = new float[channels*samples]; 
         

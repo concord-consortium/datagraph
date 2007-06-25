@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.17 $
- * $Date: 2007-03-12 19:12:10 $
+ * $Revision: 1.18 $
+ * $Date: 2007-06-25 18:59:13 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -50,6 +50,7 @@ import org.concord.data.state.OTDataStore;
 import org.concord.data.ui.DataStoreLabel;
 import org.concord.framework.data.stream.DefaultDataStore;
 import org.concord.framework.data.stream.WritableDataStore;
+import org.concord.framework.otrunk.OTControllerService;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTObjectService;
 import org.concord.framework.otrunk.view.OTJComponentView;
@@ -68,37 +69,58 @@ public class SingleValueDataView
 	JDialog dialog;
 	DataGraphManager dataGraphManager;
 	OTDataCollector dataCollector;
+	OTControllerService controllerService;
 	
     /**
      * 
      */
     public SingleValueDataView(OTDataCollector collector)
     {
-        dataStore = collector.getSingleDataStore();
-	    if(dataStore == null && collector.getSingleValue()) {
+	    dataCollector = collector;
+	    
+    }
+	 
+    protected WritableDataStore getDataStore()
+    {
+    	if(dataStore != null){
+    		return dataStore;
+    	}
+    	
+    	OTDataStore otDataStore = dataCollector.getSingleDataStore();
+        
+	    if(otDataStore == null && dataCollector.getSingleValue()) {
 	        // handle the cases where the dataStore has not been
 	        // set.  In these case the data cannot be referred to
 	        // in other elements of the authoring system
 	        System.err.println(" no \"singleDataStore\" defined for a single value data collector");
 	        try {
-                OTObjectService objService = collector.getOTObjectService();
-                dataStore = (OTDataStore)objService.createObject(OTDataStore.class);
-	            collector.setSingleDataStore((OTDataStore)dataStore);
+                OTObjectService objService = dataCollector.getOTObjectService();
+                otDataStore = (OTDataStore)objService.createObject(OTDataStore.class);
+                dataCollector.setSingleDataStore(otDataStore);
 	        } catch (Exception e) {
 	            e.printStackTrace();
-	            dataStore = new DefaultDataStore();
 	        }
 	    }
 
-	    dataCollector = collector;
+	    if(otDataStore == null){
+	    	dataStore = new DefaultDataStore();
+	    	return dataStore;
+	    } 
 	    
+    	if(controllerService == null){
+    		controllerService = dataCollector.getOTObjectService().createControllerService();
+    	}
+
+    	dataStore = (WritableDataStore) controllerService.getRealObject(otDataStore);
+
+    	return dataStore;
     }
-	 
+    
     public JComponent getComponent(OTObject otObject, boolean editable)
     {
         Box box = new Box(BoxLayout.Y_AXIS);
         
-        DataStoreLabel dataLabel = new DataStoreLabel(dataStore, 0);
+        DataStoreLabel dataLabel = new DataStoreLabel(getDataStore(), 0);
         dataLabel.setColumns(4);
         if (!editable){
             return dataLabel;
@@ -113,8 +135,8 @@ public class SingleValueDataView
             public void actionPerformed(ActionEvent e){
                 dataGraphManager.getSourceDataProducer().stop();
                 float currentValue = dataGraphManager.getLastValue();
-                int lastSample = dataStore.getTotalNumSamples();
-                dataStore.setValueAt(lastSample, 0, new Float(currentValue));
+                int lastSample = getDataStore().getTotalNumSamples();
+                getDataStore().setValueAt(lastSample, 0, new Float(currentValue));
                 dataGraphManager.getDataGraph().reset();
                 dialog.setVisible(false);
             }
@@ -176,6 +198,10 @@ public class SingleValueDataView
     {
     	if(dataGraphManager != null) {
     		dataGraphManager.viewClosed();
+    	}
+    	
+    	if(controllerService != null){
+    		controllerService.dispose();
     	}
     }
 }

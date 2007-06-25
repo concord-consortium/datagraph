@@ -138,6 +138,11 @@ public class DataGraphManager
         initialize();
     }
 
+    public OTControllerService getControllerService()
+    {
+    	return controllerService;
+    }
+    
     public DataProducer getSourceDataProducer()
     {
     	// This will return the potential dataProducer of the 
@@ -275,8 +280,10 @@ public class DataGraphManager
 			}
 	
 			isCausingOTChange = true;
-			xOTAxis.notifyOTChange();
-			yOTAxis.notifyOTChange();
+			
+			// This is a general notification of a change, not one specific to a property
+			xOTAxis.notifyOTChange(null, null, null);
+			yOTAxis.notifyOTChange(null, null, null);
 			isCausingOTChange = false;
 		}
 		

@@ -33,6 +33,7 @@ import java.awt.Color;
 
 import org.concord.data.state.OTDataProducer;
 import org.concord.data.state.OTDataStore;
+import org.concord.data.stream.ProducerDataStore;
 import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.ControllableDataGraphableDrawing;
 import org.concord.datagraph.engine.DataGraphable;
@@ -76,12 +77,15 @@ public class OTDataGraphableController extends OTGraphableController
 
 		public void dataRemoved(DataStoreEvent evt)
 		{
-			OTDataStore dataStore = (OTDataStore)evt.getSource();
+			DataStore dataStore = (DataStore)evt.getSource();
 			OTDataGraphable model = (OTDataGraphable)otObject;
 			DataProducer dataProducer = getDataProducer(model);
 
 			if(dataProducer != null && dataStore.getTotalNumSamples() == 0){
-				dataStore.setDataProducer(dataProducer);
+				if(dataStore instanceof ProducerDataStore){
+					ProducerDataStore pDataStore = (ProducerDataStore) dataStore;
+					pDataStore.setDataProducer(dataProducer);
+				}
 			}
 		}
 	};
@@ -106,11 +110,14 @@ public class OTDataGraphableController extends OTGraphableController
 			// while in the method.  So we have the boolean above instead.
 			OTDataGraphable model = (OTDataGraphable)otObject;
 			DataProducer modelDataProducer = getDataProducer(model);
-			OTDataStore dataStore = model.getDataStore();
+			DataStore dataStore = getDataStore(model);
 			
-			DataProducer oldDataProducer = dataStore.getDataProducer();
-			if(oldDataProducer != modelDataProducer){
-				dataStore.setDataProducer(modelDataProducer);
+			if(dataStore instanceof ProducerDataStore){
+				ProducerDataStore pDataStore = (ProducerDataStore) dataStore;
+				DataProducer oldDataProducer = pDataStore.getDataProducer();
+				if(oldDataProducer != modelDataProducer){
+					pDataStore.setDataProducer(modelDataProducer);
+				}
 			}
         }			
 
@@ -131,7 +138,7 @@ public class OTDataGraphableController extends OTGraphableController
         dg.setLocked(model.getLocked());
         
 		DataProducer producer = getDataProducer(model);
-		OTDataStore dataStore = model.getDataStore();
+		DataStore dataStore = getDataStore(model);
 
 		if (model.getControllable() && producer != null){
 			// This is a schema type error
@@ -148,8 +155,9 @@ public class OTDataGraphableController extends OTGraphableController
             try {
             	
                 OTObjectService objService = model.getOTObjectService();
-                dataStore = (OTDataStore)objService.createObject(OTDataStore.class);
-                model.setDataStore(dataStore);
+                OTDataStore otDataStore = (OTDataStore) objService.createObject(OTDataStore.class);
+                model.setDataStore(otDataStore);
+                dataStore = getDataStore(model);
             } catch (Exception e) {
                 // we can't handle this
                 throw new RuntimeException(e);
@@ -168,7 +176,10 @@ public class OTDataGraphableController extends OTGraphableController
         // cleared, or the start 
 		if (producer != null){
 			if(dataStore.getTotalNumSamples() == 0){
-				dataStore.setDataProducer(producer);
+				if(dataStore instanceof ProducerDataStore){
+					ProducerDataStore pDataStore = (ProducerDataStore) dataStore;
+					pDataStore.setDataProducer(producer);
+				}
 			} 
 			
 			// listen to the dataStore so if the data is cleared at some
@@ -205,9 +216,16 @@ public class OTDataGraphableController extends OTGraphableController
         // This might not be quite right, lets cross our fingers
         // that it doesn't screw anything else up
         DataStore ds = dg.getDataStore();
-        if(ds instanceof OTDataStore){
-        	model.setDataStore((OTDataStore)ds);
-        }
+        OTDataStore otDataStore = (OTDataStore) controllerService.getOTObject(ds);
+        
+        // the otDataStore could be null here, if the dataStore doesn't have an otObject.
+        // lets print a warning for now
+        if(otDataStore == null){
+        	System.err.println("Warning trying to save a datastore which doesn't have an otObject");
+        	System.err.println("  " + ds);
+        } 
+        
+        model.setDataStore(otDataStore);
         
 		// This is needed for some reason by the OTDrawingToolView
         // Apparently it is to set the realObject class.
@@ -246,7 +264,7 @@ public class OTDataGraphableController extends OTGraphableController
     	OTDataGraphable model = (OTDataGraphable)otObject;
         
 		DataProducer producer = getDataProducer(model);
-		OTDataStore dataStore = model.getDataStore();
+		DataStore dataStore = getDataStore(model);
 
 		// listen to the dataStore so if the data is cleared at some
 		// point then we will reset the producer 
@@ -274,6 +292,11 @@ public class OTDataGraphableController extends OTGraphableController
 	{
 		OTDataProducer otDataProducer = model.getDataProducer();
 		return (DataProducer) controllerService.getRealObject(otDataProducer);
+	}
+	
+	DataStore getDataStore(OTDataGraphable model)
+	{
+		return (DataStore) controllerService.getRealObject(model.getDataStore());
 	}
 	
 }

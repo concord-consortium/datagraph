@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.2 $
- * $Date: 2007-05-22 04:01:25 $
+ * $Revision: 1.3 $
+ * $Date: 2007-06-25 18:59:13 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -32,13 +32,6 @@
 */
 package org.concord.datagraph.state;
 
-import org.concord.data.state.OTDataStore;
-import org.concord.datagraph.engine.ControllableDataGraphable;
-import org.concord.datagraph.engine.ControllableDataGraphableDrawing;
-import org.concord.framework.otrunk.OTObject;
-import org.concord.framework.otrunk.OTObjectService;
-import org.concord.graph.util.engine.DrawingObject;
-import org.concord.graph.util.state.OTDrawingToolNonEditableView;
 
 /**
  * OTDataDrawingToolView
@@ -49,44 +42,16 @@ import org.concord.graph.util.state.OTDrawingToolNonEditableView;
  * @author imoncada<p>
  *
  */
-public class OTDataDrawingToolNonEditableView extends OTDrawingToolNonEditableView
-{
+public class OTDataDrawingToolNonEditableView extends OTDataDrawingToolView
+{	
 	/**
      * Not intended to be serialized but this is here so 
      * the compiler warning goes away.
      */
     private static final long serialVersionUID = 1L;
-    OTObject tool;
-	
-    protected void setup(OTObject tool)
-    {
-    	super.setup(tool);
-    	this.tool = tool;
-        //setMaximumSize(new Dimension(550, 220));
-    	
-    }
     
-	/**
-	 * @see org.concord.graph.util.engine.DrawingObjectFactory#createNewDrawingObject(int)
-	 */
-	public DrawingObject createNewDrawingObject(int type)
-	{
-		//PointsDataStore points = new PointsDataStore();
-		OTDataStore otDataStore;
-		try{
-            OTObjectService objService = drawingTool.getOTObjectService();            
-            otDataStore = (OTDataStore)objService.createObject(OTDataStore.class);
-		}
-		catch (Exception ex) {
-			ex.printStackTrace();
-			return null;
-		}
-		
-		ControllableDataGraphable dg = new ControllableDataGraphableDrawing();
-		dg.setDrawAlwaysConnected(false);
-		dg.setDataStore(otDataStore, 0, 1);
-		dg.setLineType(ControllableDataGraphable.LINETYPE_FREE);
-		objList.add(dg);
-		return dg;
-	}	
+    public OTDataDrawingToolNonEditableView()
+    {
+    	setDrawingEditable(false);
+    }    
 }

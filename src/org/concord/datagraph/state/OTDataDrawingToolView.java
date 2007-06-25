@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.20 $
- * $Date: 2007-05-22 04:01:25 $
+ * $Revision: 1.21 $
+ * $Date: 2007-06-25 18:59:13 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -35,6 +35,7 @@ package org.concord.datagraph.state;
 import org.concord.data.state.OTDataStore;
 import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.ControllableDataGraphableDrawing;
+import org.concord.framework.data.stream.WritableDataStore;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTObjectService;
 import org.concord.graph.util.engine.DrawingObject;
@@ -82,9 +83,13 @@ public class OTDataDrawingToolView extends OTDrawingToolView
 			return null;
 		}
 		
+		// The controllable data graphable needs a writable datastore 
+		// it is just using the the setDataStore method from DataGraphable
+		WritableDataStore wDataStore = (WritableDataStore) controllerService.getRealObject(otDataStore);
+		
 		ControllableDataGraphable dg = new ControllableDataGraphableDrawing();
 		dg.setDrawAlwaysConnected(false);
-		dg.setDataStore(otDataStore, 0, 1);
+		dg.setDataStore(wDataStore, 0, 1);
 		dg.setLineType(ControllableDataGraphable.LINETYPE_FREE);
 		objList.add(dg);
 		return dg;
