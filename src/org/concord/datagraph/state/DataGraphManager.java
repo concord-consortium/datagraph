@@ -72,6 +72,8 @@ import org.concord.framework.otrunk.OTControllerService;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTObjectList;
 import org.concord.framework.otrunk.OTObjectService;
+import org.concord.framework.otrunk.view.OTControllerServiceFactory;
+import org.concord.framework.otrunk.view.OTViewServiceProvider;
 import org.concord.framework.util.CheckedColorTreeModel;
 import org.concord.framework.util.Copyable;
 import org.concord.graph.engine.Graphable;
@@ -124,20 +126,28 @@ public class DataGraphManager
             Color.ORANGE, Color.PINK, Color.RED, Color.YELLOW, Color.BLACK};
 
     protected OTControllerService controllerService;
+	private OTViewServiceProvider viewServiceProvider;
     
     /**
+     * @param serviceProvider 
      * 
      */
-    public DataGraphManager(OTDataGraph pfObject, boolean showDataControls)
+    public DataGraphManager(OTDataGraph pfObject, OTViewServiceProvider serviceProvider, boolean showDataControls)
     {
     	this.otDataGraph = pfObject;
         if(pfObject instanceof OTDataCollector)
         	dataCollector = (OTDataCollector)pfObject;
         this.showDataControls = showDataControls;
+        this.viewServiceProvider = serviceProvider;
         
         initialize();
     }
 
+    public Object getViewService(Class serviceClass)
+    {
+    	return viewServiceProvider.getViewService(serviceClass);
+    }
+    
     public OTControllerService getControllerService()
     {
     	return controllerService;
@@ -408,8 +418,12 @@ public class DataGraphManager
 		}		
 	}
 	
-	public void initialize() {
-    	controllerService = otDataGraph.getOTObjectService().createControllerService();
+	public void initialize() 
+	{
+		OTControllerServiceFactory controllerServiceFactory = 
+			(OTControllerServiceFactory) getViewService(OTControllerServiceFactory.class);
+		
+    	controllerService = controllerServiceFactory.createControllerService();
     	
     	// TODO these register calls should be de coupled from
     	// this class so graphables it doesn't know about could be handled

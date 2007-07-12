@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.17 $
- * $Date: 2007-06-25 18:59:13 $
+ * $Revision: 1.18 $
+ * $Date: 2007-07-12 18:07:54 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -83,7 +83,7 @@ public class OTMultiDataGraphView extends AbstractOTJComponentView
     public JComponent getComponent(OTObject otObject, boolean editable)
     {
         multiDataGraph = (OTMultiDataGraph)otObject;
-        controllerService = multiDataGraph.getOTObjectService().createControllerService();
+    	controllerService = createControllerService();
         
         JPanel mainPanel = new JPanel(new BorderLayout());
 

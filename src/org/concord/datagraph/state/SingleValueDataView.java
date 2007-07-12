@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.18 $
- * $Date: 2007-06-25 18:59:13 $
+ * $Revision: 1.19 $
+ * $Date: 2007-07-12 18:07:54 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -53,7 +53,7 @@ import org.concord.framework.data.stream.WritableDataStore;
 import org.concord.framework.otrunk.OTControllerService;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTObjectService;
-import org.concord.framework.otrunk.view.OTJComponentView;
+import org.concord.framework.otrunk.view.AbstractOTJComponentView;
 import org.concord.graph.util.ui.ResourceLoader;
 
 /**
@@ -62,8 +62,7 @@ import org.concord.graph.util.ui.ResourceLoader;
  * @author scott
  *
  */
-public class SingleValueDataView
-	implements OTJComponentView
+public class SingleValueDataView extends AbstractOTJComponentView
 {
 	WritableDataStore dataStore;
 	JDialog dialog;
@@ -108,7 +107,7 @@ public class SingleValueDataView
 	    } 
 	    
     	if(controllerService == null){
-    		controllerService = dataCollector.getOTObjectService().createControllerService();
+        	controllerService = createControllerService();
     	}
 
     	dataStore = (WritableDataStore) controllerService.getRealObject(otDataStore);
@@ -126,7 +125,7 @@ public class SingleValueDataView
             return dataLabel;
         }
         	    
-	    dataGraphManager = new DataGraphManager(dataCollector, true);
+	    dataGraphManager = new DataGraphManager(dataCollector, serviceProvider, true);
 	    
 		JPanel bottomPanel = dataGraphManager.getBottomPanel();
 		

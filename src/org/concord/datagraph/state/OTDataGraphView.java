@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.21 $
- * $Date: 2007-03-12 03:21:59 $
+ * $Revision: 1.22 $
+ * $Date: 2007-07-12 18:07:54 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -38,7 +38,7 @@ import javax.swing.JComponent;
 
 import org.concord.datagraph.ui.DataGraph;
 import org.concord.framework.otrunk.OTObject;
-import org.concord.framework.otrunk.view.OTJComponentView;
+import org.concord.framework.otrunk.view.AbstractOTJComponentView;
 
 
 /**
@@ -50,8 +50,7 @@ import org.concord.framework.otrunk.view.OTJComponentView;
  * @author scott<p>
  *
  */
-public class OTDataGraphView
-	implements OTJComponentView
+public class OTDataGraphView extends AbstractOTJComponentView
 {
 	OTDataGraph pfObject;
 	DataGraph dataGraph;
@@ -68,7 +67,7 @@ public class OTDataGraphView
 		//dataGraph.changeToDataGraphToolbar();
 				
 		//manager = new DataGraphStateManager(pfObject, dataGraph);
-		manager = new DataGraphManager(pfObject, editable);
+		manager = new DataGraphManager(pfObject, serviceProvider, editable);
 
 		dataGraph = manager.getDataGraph();
 				

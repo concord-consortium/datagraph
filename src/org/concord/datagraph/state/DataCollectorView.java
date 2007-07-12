@@ -35,7 +35,7 @@ import org.concord.datagraph.ui.DataGraph;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.WritableDataStore;
 import org.concord.framework.otrunk.OTObject;
-import org.concord.framework.otrunk.view.OTJComponentView;
+import org.concord.framework.otrunk.view.AbstractOTJComponentView;
 import org.concord.graph.engine.SelectableList;
 
 /**
@@ -44,8 +44,7 @@ import org.concord.graph.engine.SelectableList;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public class DataCollectorView
- implements OTJComponentView
+public class DataCollectorView extends AbstractOTJComponentView
 {
     OTDataCollector dataCollector;
 	SelectableList notesLayer;
@@ -89,7 +88,8 @@ public class DataCollectorView
     
     public DataGraph getDataGraph(boolean showToolbar, boolean showDataControls)
     {
-	    dataGraphManager = new DataGraphManager(dataCollector, showDataControls);
+	    dataGraphManager = 
+	    	new DataGraphManager(dataCollector, serviceProvider, showDataControls);
 
 	    dataGraphManager.setToolbarVisible(showToolbar);
 	    
