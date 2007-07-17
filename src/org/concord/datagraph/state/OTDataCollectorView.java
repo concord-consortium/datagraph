@@ -32,7 +32,7 @@ package org.concord.datagraph.state;
 import javax.swing.JComponent;
 
 import org.concord.framework.otrunk.OTObject;
-import org.concord.framework.otrunk.view.OTJComponentView;
+import org.concord.framework.otrunk.view.AbstractOTJComponentView;
 
 /**
  * @author scott
@@ -40,10 +40,9 @@ import org.concord.framework.otrunk.view.OTJComponentView;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public class OTDataCollectorView
-    implements OTJComponentView
+public class OTDataCollectorView extends AbstractOTJComponentView
 {
-    OTJComponentView view;
+    AbstractOTJComponentView view;
     OTDataCollector dataCollector;
     boolean multipleGraphableEnabled = false;
         
@@ -59,6 +58,9 @@ public class OTDataCollectorView
         else {
             view = new DataCollectorView(dataCollector);
         }
+        
+        // We need to intialize the view so it can access it services correctly.
+        view.setViewServiceProvider(serviceProvider);
         return view.getComponent(otObject, editable);
     }
 
