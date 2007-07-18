@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.22 $
- * $Date: 2007-07-12 18:07:54 $
+ * $Revision: 1.23 $
+ * $Date: 2007-07-18 17:04:54 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -67,7 +67,7 @@ public class OTDataGraphView extends AbstractOTJComponentView
 		//dataGraph.changeToDataGraphToolbar();
 				
 		//manager = new DataGraphStateManager(pfObject, dataGraph);
-		manager = new DataGraphManager(pfObject, serviceProvider, editable);
+		manager = new DataGraphManager(pfObject, viewContext, editable);
 
 		dataGraph = manager.getDataGraph();
 				

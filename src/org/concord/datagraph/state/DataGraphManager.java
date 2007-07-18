@@ -73,7 +73,7 @@ import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTObjectList;
 import org.concord.framework.otrunk.OTObjectService;
 import org.concord.framework.otrunk.view.OTControllerServiceFactory;
-import org.concord.framework.otrunk.view.OTViewServiceProvider;
+import org.concord.framework.otrunk.view.OTViewContext;
 import org.concord.framework.util.CheckedColorTreeModel;
 import org.concord.framework.util.Copyable;
 import org.concord.graph.engine.Graphable;
@@ -126,26 +126,26 @@ public class DataGraphManager
             Color.ORANGE, Color.PINK, Color.RED, Color.YELLOW, Color.BLACK};
 
     protected OTControllerService controllerService;
-	private OTViewServiceProvider viewServiceProvider;
+	private OTViewContext viewContext;
     
     /**
      * @param serviceProvider 
      * 
      */
-    public DataGraphManager(OTDataGraph pfObject, OTViewServiceProvider serviceProvider, boolean showDataControls)
+    public DataGraphManager(OTDataGraph pfObject, OTViewContext serviceProvider, boolean showDataControls)
     {
     	this.otDataGraph = pfObject;
         if(pfObject instanceof OTDataCollector)
         	dataCollector = (OTDataCollector)pfObject;
         this.showDataControls = showDataControls;
-        this.viewServiceProvider = serviceProvider;
+        this.viewContext = serviceProvider;
         
         initialize();
     }
 
     public Object getViewService(Class serviceClass)
     {
-    	return viewServiceProvider.getViewService(serviceClass);
+    	return viewContext.getViewService(serviceClass);
     }
     
     public OTControllerService getControllerService()

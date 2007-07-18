@@ -89,7 +89,7 @@ public class DataCollectorView extends AbstractOTJComponentView
     public DataGraph getDataGraph(boolean showToolbar, boolean showDataControls)
     {
 	    dataGraphManager = 
-	    	new DataGraphManager(dataCollector, serviceProvider, showDataControls);
+	    	new DataGraphManager(dataCollector, viewContext, showDataControls);
 
 	    dataGraphManager.setToolbarVisible(showToolbar);
 	    

@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.19 $
- * $Date: 2007-07-12 18:07:54 $
+ * $Revision: 1.20 $
+ * $Date: 2007-07-18 17:04:54 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -125,7 +125,7 @@ public class SingleValueDataView extends AbstractOTJComponentView
             return dataLabel;
         }
         	    
-	    dataGraphManager = new DataGraphManager(dataCollector, serviceProvider, true);
+	    dataGraphManager = new DataGraphManager(dataCollector, viewContext, true);
 	    
 		JPanel bottomPanel = dataGraphManager.getBottomPanel();
 		

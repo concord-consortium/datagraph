@@ -60,7 +60,7 @@ public class OTDataCollectorView extends AbstractOTJComponentView
         }
         
         // We need to intialize the view so it can access it services correctly.
-        view.setViewServiceProvider(serviceProvider);
+        view.setViewContext(viewContext);
         return view.getComponent(otObject, editable);
     }
 
