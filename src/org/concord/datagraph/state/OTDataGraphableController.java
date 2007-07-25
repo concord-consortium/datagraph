@@ -206,7 +206,9 @@ public class OTDataGraphableController extends OTGraphableController
 		DataGraphable dg = (DataGraphable)realObject;
 		
 		Color c = dg.getColor();
-		model.setColor(c.getRGB() & 0x00FFFFFF);
+		if(c != null){
+			model.setColor(c.getRGB() & 0x00FFFFFF);
+		}
 		model.setConnectPoints(dg.isConnectPoints());
 		model.setDrawMarks(dg.isShowCrossPoint());
 		model.setXColumn(dg.getChannelX());
