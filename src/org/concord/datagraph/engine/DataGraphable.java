@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.53 $
- * $Date: 2007-03-27 03:21:58 $
+ * $Revision: 1.54 $
+ * $Date: 2007-08-17 18:32:47 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -323,7 +323,7 @@ public class DataGraphable extends DefaultGraphable
     /**
 	 * 
 	 */
-	private void updateStroke()
+	protected void updateStroke()
 	{
 		stroke = new BasicStroke(lineWidth, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_ROUND);
 	}
