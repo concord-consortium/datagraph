@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.54 $
- * $Date: 2007-08-17 18:32:47 $
- * $Author: imoncada $
+ * $Revision: 1.55 $
+ * $Date: 2007-08-24 22:41:35 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -81,7 +81,6 @@ public class DataGraphable extends DefaultGraphable
 	//By default, it graphs the dt (x axis) and the first channel (y axis) 
 	protected int channelX = -1;
 	protected int channelY = 0;
-	protected float dt = Float.NaN; // this is only used if this has a DeltaDataStore
 	
 	protected Color lineColor = Color.black;
 	protected float lineWidth = 2;
@@ -408,12 +407,8 @@ public class DataGraphable extends DefaultGraphable
 		float px, py;
 		Object objVal;
 
-		if(channelX == -1) {
-		    px = dt * rowIndex;
-		} else {
-		    objVal = dataStore.getValueAt(rowIndex, getDataStoreChannelX());
-		    px = handleValue(objVal);
-		}
+		objVal = dataStore.getValueAt(rowIndex, getDataStoreChannelX());
+		px = handleValue(objVal);
 		
 		objVal = dataStore.getValueAt(rowIndex, getDataStoreChannelY());
 		py = handleValue(objVal);
@@ -488,11 +483,6 @@ public class DataGraphable extends DefaultGraphable
 		Point2D currentPathPoint;
 
 		if (dataStore == null) return;
-
-		if (dataStore instanceof DeltaDataStore && channelX == -1) {
-		    dt = ((DeltaDataStore)dataStore).getDt();
-		}
-
 		
 		Point2D.Double pathPointHolder = new Point2D.Double();
 		Point2D pathPoint = null;
