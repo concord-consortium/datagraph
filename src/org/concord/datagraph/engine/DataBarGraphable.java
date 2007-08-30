@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.2 $
- * $Date: 2007-08-30 18:14:52 $
+ * $Revision: 1.3 $
+ * $Date: 2007-08-30 21:04:55 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -69,7 +69,7 @@ public class DataBarGraphable extends DataGraphable
 	public void setBarWidth(float width)
 	{
 		barWidth = width;
-		setLineWidth(width);
+		super.setLineWidth(width);
 	}
 	
 	/**
@@ -79,6 +79,15 @@ public class DataBarGraphable extends DataGraphable
 	public float getBarWidth()
 	{
 		return barWidth;
+	}
+	
+	/**
+	 * @see org.concord.datagraph.engine.DataGraphable#setLineWidth(float)
+	 */
+	public void setLineWidth(float width)
+	{
+		//This will call super.setLineWidth()
+		setBarWidth(width);
 	}
 	
 	protected void updateStroke()
