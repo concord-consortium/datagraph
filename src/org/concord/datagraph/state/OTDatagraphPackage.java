@@ -30,6 +30,7 @@ public class OTDatagraphPackage
 		registry.registerControllerClass(OTDataPointLabelController.class);
 		registry.registerControllerClass(OTDataPointRulerController.class);
 		registry.registerControllerClass(OTDataGraphableController.class);
+		registry.registerControllerClass(OTDataBarGraphableController.class);
 		registry.registerControllerClass(OTEraserGraphableController.class);
 		registry.registerControllerClass(OTDataFlowingLineController.class);
 		registry.registerControllerClass(OTDataAnnotationController.class);
@@ -45,6 +46,7 @@ public class OTDatagraphPackage
 		list.add(OTDataCollector.class);
 		list.add(OTDataGraph.class);
 		list.add(OTDataGraphable.class);
+		list.add(OTDataBarGraphable.class);
 		list.add(OTDataPointLabel.class);
 		list.add(OTDataPointRuler.class);
 		list.add(OTEraserGraphable.class);
