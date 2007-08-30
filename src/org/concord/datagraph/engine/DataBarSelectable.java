@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.1 $
- * $Date: 2007-08-30 18:14:52 $
+ * $Revision: 1.2 $
+ * $Date: 2007-08-30 19:23:44 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -169,6 +169,11 @@ public class DataBarSelectable extends DefaultSelectable
 		g.draw(barLine);
 		
 		if (isSelected()){
+			g.setColor(new Color(0,0,0,64));
+			g.fill(barRect);
+		}
+		
+		if (isSelected()){
 			g.setStroke(new BasicStroke(3.0f));
 		}
 		else{
@@ -181,11 +186,6 @@ public class DataBarSelectable extends DefaultSelectable
 				getBarWidth(), 
 				Math.abs(displayPoint.getY() - getYOriginDisplay()));
 		g.draw(barRect);
-		
-		if (isSelected()){
-			g.setColor(new Color(0,0,0,64));
-			g.fill(barRect);
-		}
 	}
 
 	/**
@@ -193,14 +193,14 @@ public class DataBarSelectable extends DefaultSelectable
 	 */
 	public void select()
 	{
-		System.out.println("select "+dataIndex);
+		//System.out.println("select "+dataIndex);
 		super.select();
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see org.concord.graph.engine.ToolTipHandler#handleToolTip(java.awt.Point)
 	 */
-	public String handleToolTip(Point pt)
+	public String handleToolTip(Point p)
 	{
 		Point2D loc = getLocationWorld();
 		String strTmp = ""+(int)loc.getX()+". Value: "+loc.getY();
