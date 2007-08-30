@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.56 $
- * $Date: 2007-08-30 17:47:49 $
+ * $Revision: 1.57 $
+ * $Date: 2007-08-30 21:03:55 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -1309,5 +1309,13 @@ public class DataGraphable extends DefaultGraphable
 	}
 	public boolean isLocked() {
 		return locked;
+	}
+	
+	/**
+	 * @return Returns the lineWidth.
+	 */
+	public float getLineWidth()
+	{
+		return lineWidth;
 	}
 }
