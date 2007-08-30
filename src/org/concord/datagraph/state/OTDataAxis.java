@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.6 $
- * $Date: 2007-03-08 22:10:52 $
- * $Author: sfentress $
+ * $Revision: 1.7 $
+ * $Date: 2007-08-30 21:16:06 $
+ * $Author: imoncada $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -59,6 +59,9 @@ public interface OTDataAxis
 	
 	public void setUnits(String units);
 	public String getUnits();
+	
+	public void setIntervalWorld(int units);
+	public int getIntervalWorld();
 	
 	public OTObjectList getGraphables();	
 }
