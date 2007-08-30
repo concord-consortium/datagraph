@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.1 $
- * $Date: 2007-08-17 18:32:47 $
+ * $Revision: 1.2 $
+ * $Date: 2007-08-30 18:14:52 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -12,12 +12,19 @@ package org.concord.datagraph.engine;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Shape;
 import java.awt.Stroke;
-import java.awt.geom.Line2D;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 
+import org.concord.graph.engine.GraphArea;
+import org.concord.graph.engine.MouseControllable;
+import org.concord.graph.engine.MouseDrawManagerHandler;
+import org.concord.graph.engine.Selectable;
+import org.concord.graph.engine.SelectableList;
+import org.concord.graph.engine.ToolTipHandler;
+import org.concord.graph.event.SelectableListener;
 
 /**
  * DataBarGraphable
@@ -30,21 +37,29 @@ import java.awt.geom.Point2D;
  *
  */
 public class DataBarGraphable extends DataGraphable
+	implements Selectable, MouseControllable, ToolTipHandler
 {
 	protected float barWidth;
-	protected Line2D barLine;
 	
 	//Y position of 0 in display coordinates
 	protected double yOriginDisplay = 0;
 	
+	protected SelectableList selectableBars;
+	
+	//This mouse draw manager handles the drawing of the list of bars and also
+	//handles the selection of the bars with the mouse
+	protected MouseDrawManagerHandler mouseDrawManager;
+		
 	/**
 	 * Default constructor
 	 */
 	public DataBarGraphable()
 	{
 		super();
-		
-		barLine = new Line2D.Double();
+				
+		selectableBars = new SelectableList();
+		selectableBars.setSelectionMode(SelectableList.SELECTIONMODE_MULTIPLE);
+		mouseDrawManager = new MouseDrawManagerHandler(selectableBars);
 	}
 	
 	/**
@@ -57,9 +72,23 @@ public class DataBarGraphable extends DataGraphable
 		setLineWidth(width);
 	}
 	
+	/**
+	 * Returns the width of the bar
+	 * @return
+	 */
+	public float getBarWidth()
+	{
+		return barWidth;
+	}
+	
 	protected void updateStroke()
 	{
 		stroke = new BasicStroke(lineWidth, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND);
+	}
+	
+	public Stroke getStroke()
+	{
+		return stroke;
 	}
 	
 	/**
@@ -82,24 +111,7 @@ public class DataBarGraphable extends DataGraphable
 		g.setColor(lineColor);
 		g.setStroke(stroke);
 		
-		//Get an interator on the main point path to get each point already calculated
-		//in display coordinates
-		Point2D point = new Point2D.Double();
-		PathIterator pathIter = path.getPathIterator(null);
-		while (!pathIter.isDone()){
-			
-			//Get the point and draw the bar
-			float[] coords = new float[6];
-			int type = pathIter.currentSegment(coords);
-			
-			if (type == PathIterator.SEG_MOVETO || type == PathIterator.SEG_LINETO){
-				point.setLocation(coords[0], coords[1]);
-				drawBar(g, point);
-			}
-			//
-			
-			pathIter.next();
-		}
+		mouseDrawManager.draw(g);
 		
 		g.setColor(oldColor);
 		g.setStroke(oldStroke);
@@ -110,16 +122,184 @@ public class DataBarGraphable extends DataGraphable
 	{
 		super.update();
 		yOriginDisplay = graphArea.getCoordinateSystem().getOriginOffsetDisplay().getY();
+		
+		generateBarSelectables();
+	}
+	
+	protected void generateBarSelectables()
+	{
+		//Regenerate the bars 
+		selectableBars.removeAllElements();
+		
+		//Get an interator on the main point path to get each point already calculated
+		//in display coordinates
+		//Hopefully these points coincide with the points in the data store
+		Point2D point = new Point2D.Double();
+		PathIterator pathIter = path.getPathIterator(null);
+		int i = 0;
+		while (!pathIter.isDone()){
+			
+			//Get the point and draw the bar
+			float[] coords = new float[6];
+			int type = pathIter.currentSegment(coords);
+			
+			if (type == PathIterator.SEG_MOVETO || type == PathIterator.SEG_LINETO){				
+				point.setLocation(coords[0], coords[1]);
+				//Add a new bar to the list
+				addBar(point, i);
+				//
+				i++;
+			}
+			//
+			
+			pathIter.next();
+		}
+		//		
+	}
+	
+	private boolean addBar(Point2D point, int index)
+	{
+		if (index >= dataStore.getTotalNumSamples()) return false;
+		
+		DataBarSelectable bar = new DataBarSelectable(this, index);
+		bar.setLocationDisplay(point);
+		selectableBars.add(bar);
+		return true;
+	}
+	
+	public double getYOriginDisplay()
+	{
+		return yOriginDisplay;
 	}
 
 	/**
-	 * @param point
+	 * @see org.concord.graph.engine.Selectable#addSelectableListener(org.concord.graph.event.SelectableListener)
 	 */
-	protected void drawBar(Graphics2D g, Point2D point)
+	public void addSelectableListener(SelectableListener l)
 	{
-		//Draw a line going from (x, y) to (x, 0)  0 in world coordinates
-		barLine.setLine(point.getX(), point.getY(), point.getX(), yOriginDisplay);
-		g.draw(barLine);
+		selectableBars.addSelectableListener(l);
 	}
 
+	/**
+	 * @see org.concord.graph.engine.Selectable#deselect()
+	 */
+	public void deselect()
+	{
+		//selectableBars.deselect();
+	}
+
+	/**
+	 * @see org.concord.graph.engine.Selectable#isSelected()
+	 */
+	public boolean isSelected()
+	{
+		return selectableBars.isSelected();
+	}
+
+	/**
+	 * @see org.concord.graph.engine.Selectable#isSelectionEnabled()
+	 */
+	public boolean isSelectionEnabled()
+	{
+		return selectableBars.isSelectionEnabled();
+	}
+
+	/**
+	 * @see org.concord.graph.engine.Selectable#removeSelectableListener(org.concord.graph.event.SelectableListener)
+	 */
+	public void removeSelectableListener(SelectableListener l)
+	{
+		selectableBars.removeSelectableListener(l);
+	}
+
+	/**
+	 * @see org.concord.graph.engine.Selectable#select()
+	 */
+	public void select()
+	{
+		//System.out.println("select");
+		//selectableBars.select();
+	}
+
+	/**
+	 * @see org.concord.graph.engine.Selectable#setSelectionEnabled(boolean)
+	 */
+	public void setSelectionEnabled(boolean b)
+	{
+		selectableBars.setSelectionEnabled(b);
+	}
+
+	/**
+	 * @see org.concord.graph.engine.DefaultGraphable#setGraphArea(org.concord.graph.engine.GraphArea)
+	 */
+	public void setGraphArea(GraphArea area)
+	{
+		super.setGraphArea(area);
+		for (int i=0; i < selectableBars.size(); i++){
+			DataBarSelectable bar = (DataBarSelectable)selectableBars.elementAt(i);
+			bar.setGraphArea(area);
+		}
+	}
+
+	/////////////////////
+	//MouseControllable methods that are just delegated to the mouse manager handler
+	//to handle the selection of the bars
+	
+	/**
+	 * @see org.concord.graph.engine.MouseSensitive#isPointInProximity(java.awt.Point)
+	 */
+	public boolean isPointInProximity(Point p)
+	{
+		return mouseDrawManager.isPointInProximity(p);
+	}
+
+	/**
+	 * @see org.concord.graph.engine.MouseControllable#isMouseControlled()
+	 */
+	public boolean isMouseControlled()
+	{
+		return mouseDrawManager.isMouseControlled();
+	}
+
+	/**
+	 * @see org.concord.graph.engine.MouseControllable#mouseDragged(java.awt.Point)
+	 */
+	public boolean mouseDragged(Point p)
+	{
+		return mouseDrawManager.mouseDragged(p);
+	}
+
+	/**
+	 * @see org.concord.graph.engine.MouseControllable#mousePressed(java.awt.Point)
+	 */
+	public boolean mousePressed(Point p)
+	{
+		return mouseDrawManager.mousePressed(p);
+	}
+
+	/**
+	 * @see org.concord.graph.engine.MouseControllable#mouseReleased(java.awt.Point)
+	 */
+	public boolean mouseReleased(Point p)
+	{
+		return mouseDrawManager.mouseReleased(p);
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setMaxBarsCanBeSelected(int num)
+	{
+		selectableBars.setMaxNumberCanBeSelected(num);
+	}
+
+	/**
+	 * @see org.concord.graph.engine.ToolTipHandler#handleToolTip(java.awt.Point)
+	 */
+	public String handleToolTip(Point p)
+	{
+		return mouseDrawManager.handleToolTip(p);
+	}
+	
+	/////////////////////
 }
