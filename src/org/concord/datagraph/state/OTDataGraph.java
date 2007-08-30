@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.8 $
- * $Date: 2007-03-08 22:10:53 $
- * $Author: sfentress $
+ * $Revision: 1.9 $
+ * $Date: 2007-08-30 21:06:05 $
+ * $Author: imoncada $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -63,5 +63,7 @@ public interface OTDataGraph extends OTObjectInterface
 	public OTDataAxis getYDataAxis();
 
 	public OTDataAxis getXDataAxis();
+	
+	public boolean getShowToolbar();
     
 }

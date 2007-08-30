@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.47 $
- * $Date: 2007-05-21 14:50:39 $
- * $Author: scytacki $
+ * $Revision: 1.48 $
+ * $Date: 2007-08-30 21:03:21 $
+ * $Author: imoncada $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -742,16 +742,18 @@ public class DataGraph extends JPanel
 	    
 	    toolBar = gwToolbar;
 
-		toolBar.setGraphWindow(graph);
-		toolBar.setGrid(grid);
-		
-		for(int i=0; i<axisScaleObjs.size(); i++){
-		    toolBar.addAxisScale((AxisScale)axisScaleObjs.get(i));
-		}
-		
-		if (bAddToPanel){
-			add(toolBar, BorderLayout.EAST);
-		}
+	    if(toolBar != null) {
+			toolBar.setGraphWindow(graph);
+			toolBar.setGrid(grid);
+			
+			for(int i=0; i<axisScaleObjs.size(); i++){
+			    toolBar.addAxisScale((AxisScale)axisScaleObjs.get(i));
+			}
+			
+			if (bAddToPanel){
+				add(toolBar, BorderLayout.EAST);
+			}
+	    }
 	}
 	
 	/**
