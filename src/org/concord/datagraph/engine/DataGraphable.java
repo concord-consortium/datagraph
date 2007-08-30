@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.55 $
- * $Date: 2007-08-24 22:41:35 $
- * $Author: scytacki $
+ * $Revision: 1.56 $
+ * $Date: 2007-08-30 17:47:49 $
+ * $Author: imoncada $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -402,7 +402,7 @@ public class DataGraphable extends DefaultGraphable
     }
     
     public Point2D getRowPoint(int rowIndex, CoordinateSystem coord, 
-            Point2D.Double pathPoint)
+            Point2D pathPoint)
     {
 		float px, py;
 		Object objVal;
