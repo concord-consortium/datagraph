@@ -194,6 +194,10 @@ public class OTDataGraphableController extends OTGraphableController
 
 		dg.setChannelX(model.getXColumn());
 		dg.setChannelY(model.getYColumn());
+		
+		if (model.isResourceSet("lineWidth")){
+			dg.setLineWidth(model.getLineWidth());
+		}
     }
     
 	/**
@@ -214,6 +218,7 @@ public class OTDataGraphableController extends OTGraphableController
 		model.setXColumn(dg.getChannelX());
 		model.setYColumn(dg.getChannelY());
 		model.setName(dg.getLabel());
+		model.setLineWidth(dg.getLineWidth());
         
         // This might not be quite right, lets cross our fingers
         // that it doesn't screw anything else up
