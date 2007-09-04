@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.11 $
- * $Date: 2007-03-08 22:10:53 $
+ * $Revision: 1.12 $
+ * $Date: 2007-09-04 17:33:02 $
  * $Author: sfentress $
  *
  * Licence Information
@@ -266,7 +266,6 @@ public class ControllableDataGraphableDrawing extends ControllableDataGraphable
 		if (super.mouseDragged(p)){
 			return true;
 		}
-		
 		if (dragMode == DrawingObject.DRAWING_DRAG_MODE_MOVE ||true){
 		//	int a = 1/0;
 		//	System.out.println("mouse dragged");
@@ -284,9 +283,53 @@ public class ControllableDataGraphableDrawing extends ControllableDataGraphable
 			move(dx, dy);
 			//lastPointW
 			
+			for (int i = 0; i < allSelectedDrawingObjects.length; i++) {
+				if (!allSelectedDrawingObjects[i].equals(this)){
+					allSelectedDrawingObjects[i].moveInRelation(lastPointW, pW);
+				}
+			}
+			
 		}
 		
 		return false;
+	}
+	
+	public void moveInRelation(Point2D start, Point2D end) {
+		
+		double x = 0;
+		double y = 0;
+		
+		CoordinateSystem cs = graphArea.getCoordinateSystem();
+		
+		//Point2D lastLocationW = cs.transformToWorld(lastLocation);
+		
+		if (lastLocation != null){
+			x = lastLocation.getX();
+		}
+		if (lastLocation != null){
+			y = lastLocation.getY();
+		}
+		
+		
+		Point2D startW = cs.transformToDisplay(cs.transformToDisplay(start));
+		Point2D endW = cs.transformToDisplay(end);
+		double dx = end.getX() - start.getX();
+		double dy = end.getY() - start.getY();
+		
+		Point2D dp = new Point2D.Double(dx, dy);
+		Point2D dpW = cs.transformToWorld(dp);// .transformToWorld(dp);
+		
+		//System.out.println("dp  = "+dp);
+		//System.out.println("dpW = "+dpW);
+		
+		double dxW = dp.getX() - x;
+		double dyW = dp.getY() - y;
+		
+	//	System.out.println("x   = "+x+  ", y   = "+y);
+		
+		move(dx, dy);
+		//lastPointW
+		
 	}
 	
 	/**

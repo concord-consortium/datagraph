@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.23 $
- * $Date: 2007-06-01 14:20:23 $
- * $Author: scytacki $
+ * $Revision: 1.24 $
+ * $Date: 2007-09-04 17:33:02 $
+ * $Author: sfentress $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -84,6 +84,7 @@ public class ControllableDataGraphable extends DataGraphable
 	private boolean mouseClicked = false;
 	private int indexPointClicked = -1;
 	protected Point2D lastPointW; 
+	protected Point2D lastLocation;
 	
 	protected boolean drawAlwaysConnected = true;
 	
@@ -100,6 +101,7 @@ public class ControllableDataGraphable extends DataGraphable
 	protected Vector cursorListeners;
 	
 	protected boolean isMouseInside = false;
+	protected DrawingObject[] allSelectedDrawingObjects;
 	
 	/**
 	 * 
@@ -111,6 +113,7 @@ public class ControllableDataGraphable extends DataGraphable
 		lastPointW = new Point2D.Double();
 		cursorListeners = new Vector();
 		bNewShape = true;
+		allSelectedDrawingObjects = new DrawingObject[0];
 	}
 	
 	/**
@@ -173,6 +176,12 @@ public class ControllableDataGraphable extends DataGraphable
 			removeSampleAt(indexPointClicked);
 		}
 		
+		for (int i = 0; i < allSelectedDrawingObjects.length; i++) {
+			if (!allSelectedDrawingObjects[i].equals(this)){
+				allSelectedDrawingObjects[i].setCurrentLocationAsOriginal();
+			}
+		}
+		System.out.println("this = "+this+", lastPointW = "+lastPointW);
 		return true;
 	}
 	
@@ -181,9 +190,9 @@ public class ControllableDataGraphable extends DataGraphable
 	 */
 	public boolean mouseDragged(Point p)
 	{
+		System.out.println("this = "+this+", lastPointW = "+lastPointW);
 		//System.out.println("dragged "+p);
 		double startDragX = Float.NaN;
-		
 		if (lastPointW != null){
 			startDragX = lastPointW.getX();
 		}
@@ -218,7 +227,7 @@ public class ControllableDataGraphable extends DataGraphable
 		else{
 			return false;
 		}
-		
+		System.out.println("this = "+this+", lastPointW = "+lastPointW);
 		return true;
 	}
 	
@@ -236,6 +245,7 @@ public class ControllableDataGraphable extends DataGraphable
 		
 		indexPointClicked = -1;
 		mouseClicked = false;
+		lastLocation = lastPointW;
 		lastPointW = null;
 		//startDragX = Float.NaN;
 		return false;
@@ -609,13 +619,12 @@ public class ControllableDataGraphable extends DataGraphable
 		
 	}
 
-	public void setAllSelectedDrawingObjects(DefaultControllable[] objects) {
-		// TODO Auto-generated method stub
-		
+	public void setAllSelectedDrawingObjects(DrawingObject[] objects) {
+		allSelectedDrawingObjects = objects;
 	}
 
 	public void setCurrentLocationAsOriginal() {
-		// TODO Auto-generated method stub
-		
+		System.out.println("this = "+this+", setting: lastPointW = "+lastLocation);
+	//	lastPointW = 
 	}		
 }
