@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.4 $
- * $Date: 2007-03-08 22:10:52 $
+ * $Revision: 1.5 $
+ * $Date: 2007-09-05 15:46:13 $
  * $Author: sfentress $
  *
  * Licence Information
@@ -88,6 +88,7 @@ public class DataFlowingLine extends DefaultControllable
     // locations.  
     private ImageStamp image1;
     private ImageStamp image2;
+	private DrawingObject[] allSelectedDrawingObjects;
     
 	/**
 	 * @see org.concord.graph.util.engine.DrawingObject#setColor(java.awt.Color)
@@ -395,6 +396,26 @@ public class DataFlowingLine extends DefaultControllable
 		// TODO Auto-generated method stub
 		return false;
 	}
+	
+	public boolean mousePressed(Point p) {
+		for (int i = 0; i < allSelectedDrawingObjects.length; i++) {
+			if (!allSelectedDrawingObjects[i].equals(this)){
+				allSelectedDrawingObjects[i].setCurrentLocationAsOriginal();
+			}
+		}
+		
+		return super.mousePressed(p);
+	}
+	
+	public boolean mouseDragged(Point p) {
+		for (int i = 0; i < allSelectedDrawingObjects.length; i++) {
+			if (!allSelectedDrawingObjects[i].equals(this)){
+				allSelectedDrawingObjects[i].moveInRelation(originalLocation, location);
+			}
+		}
+		
+		return super.mouseDragged(p);
+	}
 
 	public boolean mouseEntered(Point p) {
 		// TODO Auto-generated method stub
@@ -410,4 +431,29 @@ public class DataFlowingLine extends DefaultControllable
 		// TODO Auto-generated method stub
 		return false;
 	}	
+	
+	public void setAllSelectedDrawingObjects(DrawingObject[] objects) {
+		allSelectedDrawingObjects = objects;
+	}
+	
+	
+	public void moveInRelation(Point2D start2d, Point2D end2d) {
+		Point2D.Double start = (Point2D.Double)start2d;
+		Point2D.Double end = (Point2D.Double)end2d;
+		
+		double deltaX = end.x - start.x;
+		double deltaY = end.y - start.y;
+		
+		Point2D newP = new Point2D.Double(originalLocation.getX() + deltaX, 
+				originalLocation.getY() + deltaY);
+			
+		if (validateNewLocation(newP)){
+			setLocation(newP);
+			//originalLocation = newP;
+		}
+	}
+	
+	public void setCurrentLocationAsOriginal(){
+		originalLocation.setLocation(this.location);
+	}
 }
