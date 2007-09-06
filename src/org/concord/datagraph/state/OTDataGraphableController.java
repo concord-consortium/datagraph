@@ -136,6 +136,7 @@ public class OTDataGraphableController extends OTGraphableController
         dg.setLabel(model.getName());
         dg.setUseVirtualChannels(true);
         dg.setLocked(model.getLocked());
+        dg.setConnectPoints(model.getConnectPoints());
         
 		DataProducer producer = getDataProducer(model);
 		DataStore dataStore = getDataStore(model);
