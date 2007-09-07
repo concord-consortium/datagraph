@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.24 $
- * $Date: 2007-09-04 17:33:02 $
- * $Author: sfentress $
+ * $Revision: 1.25 $
+ * $Date: 2007-09-07 11:02:39 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -47,7 +47,6 @@ import org.concord.framework.data.stream.DataStore;
 import org.concord.framework.data.stream.WritableDataStore;
 import org.concord.graph.engine.CoordinateSystem;
 import org.concord.graph.engine.Cursorable;
-import org.concord.graph.engine.DefaultControllable;
 import org.concord.graph.engine.MouseControllable;
 import org.concord.graph.engine.MouseMotionReceiver;
 import org.concord.graph.event.CursorListener;
@@ -181,7 +180,6 @@ public class ControllableDataGraphable extends DataGraphable
 				allSelectedDrawingObjects[i].setCurrentLocationAsOriginal();
 			}
 		}
-		System.out.println("this = "+this+", lastPointW = "+lastPointW);
 		return true;
 	}
 	
@@ -190,7 +188,6 @@ public class ControllableDataGraphable extends DataGraphable
 	 */
 	public boolean mouseDragged(Point p)
 	{
-		System.out.println("this = "+this+", lastPointW = "+lastPointW);
 		//System.out.println("dragged "+p);
 		double startDragX = Float.NaN;
 		if (lastPointW != null){

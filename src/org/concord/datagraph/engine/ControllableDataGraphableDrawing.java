@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.12 $
- * $Date: 2007-09-04 17:33:02 $
- * $Author: sfentress $
+ * $Revision: 1.13 $
+ * $Date: 2007-09-07 11:02:39 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -73,6 +73,7 @@ public class ControllableDataGraphableDrawing extends ControllableDataGraphable
 
 	private Color boundingBoxColor;
 	
+	// FIXME this variable is never read
 	private boolean clickOnBoundingBox = false;
 	
 	/**
