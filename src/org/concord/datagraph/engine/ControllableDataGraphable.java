@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.25 $
- * $Date: 2007-09-07 11:02:39 $
+ * $Revision: 1.26 $
+ * $Date: 2007-09-07 11:44:31 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -224,7 +224,6 @@ public class ControllableDataGraphable extends DataGraphable
 		else{
 			return false;
 		}
-		System.out.println("this = "+this+", lastPointW = "+lastPointW);
 		return true;
 	}
 	
@@ -621,7 +620,7 @@ public class ControllableDataGraphable extends DataGraphable
 	}
 
 	public void setCurrentLocationAsOriginal() {
-		System.out.println("this = "+this+", setting: lastPointW = "+lastLocation);
+	//	System.out.println("this = "+this+", setting: lastPointW = "+lastLocation);
 	//	lastPointW = 
 	}		
 }
