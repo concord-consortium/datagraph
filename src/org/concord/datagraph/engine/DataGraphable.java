@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.57 $
- * $Date: 2007-08-30 21:03:55 $
+ * $Revision: 1.58 $
+ * $Date: 2007-09-10 17:15:18 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -1065,7 +1065,7 @@ public class DataGraphable extends DefaultGraphable
 		notifyChange();
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see org.concord.framework.data.stream.DataStoreListener#dataChanged(org.concord.framework.data.stream.DataStoreEvent)
 	 */
 	public void dataChanged(DataStoreEvent evt)

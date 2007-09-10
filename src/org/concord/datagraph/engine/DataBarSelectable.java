@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.2 $
- * $Date: 2007-08-30 19:23:44 $
+ * $Revision: 1.3 $
+ * $Date: 2007-09-10 17:15:18 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -203,7 +203,23 @@ public class DataBarSelectable extends DefaultSelectable
 	public String handleToolTip(Point p)
 	{
 		Point2D loc = getLocationWorld();
-		String strTmp = ""+(int)loc.getX()+". Value: "+loc.getY();
+		String xLabel = "";
+		String yLabel = "";
+		String xUnits = "";
+		String yUnits = "";
+		
+		try{
+			xLabel = dataGraphable.getDataChannelDescription(0).getName();
+			xUnits = " " + dataGraphable.getDataChannelDescription(0).getUnit().getDimension();
+		}
+		catch (Exception ex) {}
+		try{
+			yLabel = dataGraphable.getDataChannelDescription(1).getName();
+			yUnits = " " + dataGraphable.getDataChannelDescription(1).getUnit().getDimension();
+		}
+		catch (Exception ex) {}
+		
+		String strTmp = xLabel+": "+(int)loc.getX()+xUnits+", "+yLabel+": "+loc.getY()+yUnits;
 		return strTmp;
 	}
 }

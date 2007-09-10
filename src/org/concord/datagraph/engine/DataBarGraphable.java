@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.3 $
- * $Date: 2007-08-30 21:04:55 $
+ * $Revision: 1.4 $
+ * $Date: 2007-09-10 17:15:18 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -17,6 +17,7 @@ import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
+import java.util.Vector;
 
 import org.concord.graph.engine.GraphArea;
 import org.concord.graph.engine.MouseControllable;
@@ -248,6 +249,11 @@ public class DataBarGraphable extends DataGraphable
 			DataBarSelectable bar = (DataBarSelectable)selectableBars.elementAt(i);
 			bar.setGraphArea(area);
 		}
+	}
+	
+	public Vector getSelectedBars()
+	{
+		return selectableBars.getSelectedObjects();
 	}
 
 	/////////////////////
