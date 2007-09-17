@@ -588,14 +588,22 @@ public class DataGraphManager
         // shown if there is more than one graphable
         // If the enabled is set to false then the multiple graphable control
         // is not shown even if there is more than one.
+		// This whole logic should be re-worked
         boolean multiAllowed = true;
         boolean multiEnabled = false;
         if(dataCollector != null) {
-            boolean multiEnabledSet = dataCollector.isResourceSet("multipleGraphableEnabled");
-            multiEnabled = dataCollector.getMultipleGraphableEnabled();
-            if(multiEnabledSet) {
-                multiAllowed = multiEnabled;
-            }
+        	boolean multiEnabledSet = dataCollector.isResourceSet("multipleGraphableEnabled");
+        	multiEnabled = dataCollector.getMultipleGraphableEnabled();
+        	if(multiEnabledSet) {
+        		multiAllowed = multiEnabled;
+        	}
+        }
+        else{
+        	boolean multiEnabledSet = otDataGraph.isResourceSet("showGraphableList");
+        	multiEnabled = otDataGraph.getShowGraphableList();
+        	if(multiEnabledSet) {
+        		multiAllowed = multiEnabled;
+        	}
         }
 		if(multiEnabled || (multiAllowed && realGraphables.size() > 1 )){
 		    CheckedColorTreeControler dataSetTree = new CheckedColorTreeControler();
