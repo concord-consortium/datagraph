@@ -151,7 +151,7 @@ public class OTDataGraphableController extends OTGraphableController
         	// If the dataStore is null then we create a new
         	// one to store the data so it can retrieved 
         	// later.  If the data needs to be referenced
-        	// within the content then it should be explictly 
+        	// within the content then it should be explicitly 
         	// defined in the content.
             try {
             	
