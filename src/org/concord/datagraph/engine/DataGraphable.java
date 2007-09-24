@@ -23,9 +23,9 @@
 
 /*
  * Last modification information:
- * $Revision: 1.58 $
- * $Date: 2007-09-10 17:15:18 $
- * $Author: imoncada $
+ * $Revision: 1.59 $
+ * $Date: 2007-09-24 18:36:49 $
+ * $Author: scytacki $
  *
  * Licence Information
  * Copyright 2004 The Concord Consortium 
@@ -66,7 +66,7 @@ import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.DataStore;
 import org.concord.framework.data.stream.DataStoreEvent;
 import org.concord.framework.data.stream.DataStoreListener;
-import org.concord.framework.data.stream.DeltaDataStore;
+import org.concord.framework.data.stream.AutoIncrementDataStore;
 import org.concord.framework.data.stream.WritableDataStore;
 import org.concord.graph.engine.CoordinateSystem;
 import org.concord.graph.engine.DefaultGraphable;
@@ -792,18 +792,34 @@ public class DataGraphable extends DefaultGraphable
 		this.channelX = channelX;
 	}
 	
-	protected int getDataStoreChannelX()
+	protected boolean channelsNeedAdjusting()
 	{
+		// If this graphable is not using virtual channels then adjusting is
+		// not needed.  There might still be some virtualChannels being used by the 
+		// dataStore itself.
 	    if(!useVirtualChannels) {
-	        return channelX;
+	        return false;
+	    }
+
+	    // Need to check if the data store is using virtual channels itself
+	    // if it is, then we don't need to adjust them twice.
+	    DataStore dStore = getDataStore();	    
+	    if((dStore instanceof ProducerDataStore) &&
+	    		((ProducerDataStore)dStore).useVirtualChannels()) {
+	    	return false;
 	    }
 	    
-	    if(hasDtChannel()) {
-	        return channelX - 1;
-	    }
-	    else {
-	        return channelX;
-	    }	    
+	    // If we have a dt channel then the channels need to be adjusted.
+	    return hasDtChannel();
+	}
+	
+	protected int getDataStoreChannelX()
+	{
+		if(channelsNeedAdjusting()){
+			return channelX - 1;
+		} 
+		
+		return channelX;
 	}
 	
 	/**
@@ -826,16 +842,11 @@ public class DataGraphable extends DefaultGraphable
 
 	protected int getDataStoreChannelY()
 	{
-	    if(!useVirtualChannels) {
-	        return channelY;
-	    }
-	        
-	    if(hasDtChannel()) {
-	        return channelY - 1;
-	    }
-	    else {
-	        return channelY;
-	    }	     
+		if(channelsNeedAdjusting()){
+			return channelY - 1;
+		} 
+		
+		return channelY;
 	}
 	
 	/**
@@ -1079,11 +1090,11 @@ public class DataGraphable extends DefaultGraphable
 	{
 	    DataStore dStore = getDataStore();
 	    
-	    if((!(dStore instanceof DeltaDataStore))) {
+	    if((!(dStore instanceof AutoIncrementDataStore))) {
 	        return false;
 	    }
 	    
-	    return ((DeltaDataStore)dStore).isUseDtAsChannel();
+	    return ((AutoIncrementDataStore)dStore).isAutoIncrementing();
 	}	
 	
 	/**
