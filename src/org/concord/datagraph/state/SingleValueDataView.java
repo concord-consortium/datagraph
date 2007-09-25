@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.20 $
- * $Date: 2007-07-18 17:04:54 $
+ * $Revision: 1.21 $
+ * $Date: 2007-09-25 12:47:17 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -115,15 +115,19 @@ public class SingleValueDataView extends AbstractOTJComponentView
     	return dataStore;
     }
     
-    public JComponent getComponent(OTObject otObject, boolean editable)
+    public JComponent getComponent(OTObject otObject)
     {
         Box box = new Box(BoxLayout.Y_AXIS);
         
         DataStoreLabel dataLabel = new DataStoreLabel(getDataStore(), 0);
         dataLabel.setColumns(4);
-        if (!editable){
-            return dataLabel;
-        }
+        
+        // just the datalabel could be returned here if the view is not supposed to be modified by
+        // the user, if that is the case then a second view should be made, or 
+        // a custom OTViewEntry should be created with property for turning on and off editability.
+        // if (!editable){
+        //    return dataLabel;
+        // }
         	    
 	    dataGraphManager = new DataGraphManager(dataCollector, viewContext, true);
 	    

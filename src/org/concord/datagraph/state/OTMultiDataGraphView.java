@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.18 $
- * $Date: 2007-07-12 18:07:54 $
+ * $Revision: 1.19 $
+ * $Date: 2007-09-25 12:47:18 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -80,7 +80,7 @@ public class OTMultiDataGraphView extends AbstractOTJComponentView
     /* (non-Javadoc)
      * @see org.concord.framework.otrunk.view.OTJComponentView#getComponent(boolean)
      */
-    public JComponent getComponent(OTObject otObject, boolean editable)
+    public JComponent getComponent(OTObject otObject)
     {
         multiDataGraph = (OTMultiDataGraph)otObject;
     	controllerService = createControllerService();
@@ -116,7 +116,7 @@ public class OTMultiDataGraphView extends AbstractOTJComponentView
             OTPluginView pluginView = (OTPluginView)plugins.get(i);            
             OTObject pluginControl = pluginView.getControl();
             JComponent pluginComponent = 
-            	getChildComponent(pluginControl, null, editable);
+            	getChildComponent(pluginControl, null);
 
             // change the alignment of the component so 
             // when it is put in the box it can fill the whole width

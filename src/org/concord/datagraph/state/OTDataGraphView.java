@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.23 $
- * $Date: 2007-07-18 17:04:54 $
+ * $Revision: 1.24 $
+ * $Date: 2007-09-25 12:47:18 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -59,15 +59,11 @@ public class OTDataGraphView extends AbstractOTJComponentView
 	/* (non-Javadoc)
 	 * @see org.concord.portfolio.views.PortfolioView#getComponent(boolean)
 	 */
-	public JComponent getComponent(OTObject otObject, boolean editable)
+	public JComponent getComponent(OTObject otObject)
 	{
 		this.pfObject = (OTDataGraph)otObject;
 
-		//dataGraph = new DataGraph();
-		//dataGraph.changeToDataGraphToolbar();
-				
-		//manager = new DataGraphStateManager(pfObject, dataGraph);
-		manager = new DataGraphManager(pfObject, viewContext, editable);
+		manager = new DataGraphManager(pfObject, viewContext, true);
 
 		dataGraph = manager.getDataGraph();
 				

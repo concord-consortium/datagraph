@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.5 $
- * $Date: 2007-03-09 17:52:00 $
+ * $Revision: 1.6 $
+ * $Date: 2007-09-25 12:47:17 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -60,7 +60,7 @@ public class OTMultiDataSetControlView extends JPanel
     CheckedColorTreeControler treeControler;
     OTMultiDataSetControl otControl;
     
-    public JComponent getComponent(OTObject otObject, boolean editable)
+    public JComponent getComponent(OTObject otObject)
     {
         otControl = (OTMultiDataSetControl)otObject;
         

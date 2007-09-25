@@ -64,7 +64,7 @@ public class DataCollectorView extends AbstractOTJComponentView
         this.controllable = controllable;
     }
 
-    public JComponent getComponent(OTObject otObject, boolean editable)
+    public JComponent getComponent(OTObject otObject)
     {
     	// For safety verify that the otObject is the same
     	// as the one used in the constructor
@@ -72,10 +72,11 @@ public class DataCollectorView extends AbstractOTJComponentView
     		throw new RuntimeException("otObject != dataCollector");
     	}    	
     	
+    	boolean showToolBar = true;
     	if (!controllable){
-    		editable = false;
+    		showToolBar = false;
     	}
-    	return getDataGraph(editable, controllable);
+    	return getDataGraph(showToolBar, controllable);
     }
 
     /* (non-Javadoc)

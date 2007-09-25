@@ -50,7 +50,7 @@ public class OTDataCollectorNonEditableView
     /* (non-Javadoc)
      * @see org.concord.framework.otrunk.view.OTJComponentView#getComponent(boolean)
      */
-    public JComponent getComponent(OTObject otObject, boolean editable)
+    public JComponent getComponent(OTObject otObject)
     {
         this.dataCollector = (OTDataCollector)otObject;
         if(dataCollector.getSingleValue()) {
@@ -59,7 +59,7 @@ public class OTDataCollectorNonEditableView
         else {
             view = new DataCollectorView(dataCollector, false);
         }
-        return view.getComponent(otObject, editable);
+		return view.getComponent(otObject);
     }
 
     /* (non-Javadoc)

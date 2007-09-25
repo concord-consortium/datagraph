@@ -49,7 +49,7 @@ public class OTDataCollectorView extends AbstractOTJComponentView
     /* (non-Javadoc)
      * @see org.concord.framework.otrunk.view.OTJComponentView#getComponent(boolean)
      */
-    public JComponent getComponent(OTObject otObject, boolean editable)
+    public JComponent getComponent(OTObject otObject)
     {
         this.dataCollector = (OTDataCollector)otObject;
         if(dataCollector.getSingleValue()) {
@@ -61,7 +61,7 @@ public class OTDataCollectorView extends AbstractOTJComponentView
         
         // We need to intialize the view so it can access it services correctly.
         view.setViewContext(viewContext);
-        return view.getComponent(otObject, editable);
+        return view.getComponent(otObject);
     }
 
     /* (non-Javadoc)
