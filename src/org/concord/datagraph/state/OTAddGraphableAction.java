@@ -1,7 +1,7 @@
 /*
  * Last modification information:
- * $Revision: 1.2 $
- * $Date: 2007-03-18 04:07:34 $
+ * $Revision: 1.3 $
+ * $Date: 2007-09-26 18:39:31 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -19,6 +19,7 @@ import org.concord.framework.otrunk.OTObjectList;
 import org.concord.framework.otrunk.OTResourceSchema;
 import org.concord.framework.otrunk.view.OTAction;
 //import org.concord.otrunk.view.OTObjectListViewer;
+import org.concord.framework.otrunk.view.OTActionContext;
 
 /**
  * OTAddGraphableAction
@@ -49,9 +50,9 @@ public class OTAddGraphableAction extends DefaultOTObject
 	}
 	
 	/**
-	 * @see org.concord.framework.otrunk.view.OTAction#doAction()
+	 * @see org.concord.framework.otrunk.view.OTAction#doAction(org.concord.framework.otrunk.view.OTActionContext)
 	 */
-	public void doAction()
+	public void doAction(OTActionContext context)
 	{
 		OTDataGraph dataGraph = resources.getDataGraph();
 		
