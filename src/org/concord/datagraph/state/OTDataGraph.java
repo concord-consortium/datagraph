@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.10 $
- * $Date: 2007-09-17 17:44:01 $
+ * $Revision: 1.11 $
+ * $Date: 2007-09-28 18:35:02 $
  * $Author: imoncada $
  *
  * Licence Information
@@ -67,6 +67,5 @@ public interface OTDataGraph extends OTObjectInterface
 	public boolean getShowToolbar();
     
 	/** This determines whether the list of graphables in shown to the left of the graph */
-	public final static boolean DEFAULT_showGraphableList = true;
 	public boolean getShowGraphableList();
 }

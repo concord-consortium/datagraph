@@ -600,8 +600,8 @@ public class DataGraphManager
         }
         else{
         	boolean multiEnabledSet = otDataGraph.isResourceSet("showGraphableList");
-        	multiEnabled = otDataGraph.getShowGraphableList();
         	if(multiEnabledSet) {
+            	multiEnabled = otDataGraph.getShowGraphableList();
         		multiAllowed = multiEnabled;
         	}
         }
