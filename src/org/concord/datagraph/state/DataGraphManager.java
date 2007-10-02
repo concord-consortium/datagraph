@@ -292,8 +292,8 @@ public class DataGraphManager
 			isCausingOTChange = true;
 			
 			// This is a general notification of a change, not one specific to a property
-			xOTAxis.notifyOTChange(null, null, null);
-			yOTAxis.notifyOTChange(null, null, null);
+			xOTAxis.notifyOTChange(null, null, null, null);
+			yOTAxis.notifyOTChange(null, null, null, null);
 			isCausingOTChange = false;
 		}
 		
