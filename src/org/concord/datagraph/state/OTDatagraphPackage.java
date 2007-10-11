@@ -3,9 +3,7 @@
  */
 package org.concord.datagraph.state;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.concord.data.state.OTDataPackage;
 import org.concord.framework.otrunk.OTControllerRegistry;
 import org.concord.framework.otrunk.OTPackage;
 import org.concord.framework.otrunk.OTrunk;
@@ -36,24 +34,27 @@ public class OTDatagraphPackage
 		registry.registerControllerClass(OTDataAnnotationController.class);
 	}
 
-	public List getOTClasses() 
+	public Class[] getOTClasses() 
 	{
-		ArrayList list = new ArrayList();
-		
-		list.add(OTAddGraphableAction.class);
-		list.add(OTDataAnnotation.class);
-		list.add(OTDataAxis.class);
-		list.add(OTDataCollector.class);
-		list.add(OTDataGraph.class);
-		list.add(OTDataGraphable.class);
-		list.add(OTDataBarGraphable.class);
-		list.add(OTDataPointLabel.class);
-		list.add(OTDataPointRuler.class);
-		list.add(OTEraserGraphable.class);
-		list.add(OTMultiDataGraph.class);
-		list.add(OTMultiDataSetControl.class);
-		
-		return list;
+		return new Class [] {
+				OTAddGraphableAction.class,
+				OTDataAnnotation.class,
+				OTDataAxis.class,
+				OTDataCollector.class,
+				OTDataGraph.class,
+				OTDataGraphable.class,
+				OTDataBarGraphable.class,
+				OTDataPointLabel.class,
+				OTDataPointRuler.class,
+				OTEraserGraphable.class,
+				OTMultiDataGraph.class,
+				OTMultiDataSetControl.class,
+		};
+	}
+
+	public Class[] getPackageDependencies() 
+	{
+		return new Class [] {OTDataPackage.class};
 	}
 
 }

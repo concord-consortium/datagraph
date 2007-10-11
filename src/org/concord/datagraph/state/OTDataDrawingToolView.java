@@ -23,8 +23,8 @@
 
 /*
  * Last modification information:
- * $Revision: 1.21 $
- * $Date: 2007-06-25 18:59:13 $
+ * $Revision: 1.22 $
+ * $Date: 2007-10-11 20:15:06 $
  * $Author: scytacki $
  *
  * Licence Information
@@ -63,6 +63,14 @@ public class OTDataDrawingToolView extends OTDrawingToolView
     {
     	super.setup(tool);
     	this.tool = tool;
+
+    	// We need to make sure this package is registered.  This view can be used to display 
+    	// an OTDrawingTool which is in a different package.  So if no OTObjects are used from 
+    	// the OTDatagraphPackage then the OTrunk system won't know about this package.  
+    	// And then the controllers won't be correctly registered.  When the data store is created
+    	// below.
+    	tool.getOTObjectService().registerPackageClass(OTDatagraphPackage.class);
+    	
         //setMaximumSize(new Dimension(550, 220));
     	
     }
