@@ -43,18 +43,24 @@ public interface OTDataCollector
     extends OTDataGraph
 {
     public String getTitle();
+    public void setTitle(String title);
     
 	public OTDataGraphable getSource();
+	public void setSource(OTDataGraphable source);
 	
 	public OTDataAxis getYDataAxis();
+	public void setYDataAxis(OTDataAxis yDataAxis);
 
 	public OTDataAxis getXDataAxis();
+	public void setXDataAxis(OTDataAxis xDataAxis);
 	
 	public final static boolean DEFAULT_singleValue = false;
 	public boolean getSingleValue();
+	public void setSingleValue(boolean singleValue);
 	
 	public final static boolean DEFAULT_showTare = false;
 	public boolean getShowTare();
+	public void setShowTare(boolean showTare);
 	
 	public OTDataStore getSingleDataStore();
 	public void setSingleDataStore(OTDataStore dataStore);
@@ -73,10 +79,13 @@ public interface OTDataCollector
 	
 	public final static boolean DEFAULT_multipleGraphableEnabled = false;
 	public boolean getMultipleGraphableEnabled();
+	public void setMultipleGraphableEnabled(boolean multipleGraphableEnabled);
 	
 	public final static boolean DEFAULT_rulerEnabled = false;
 	public boolean getRulerEnabled();
+	public void setRulerEnabled(boolean rulerEnabled);
 	
 	public final static boolean DEFAULT_autoScaleEnabled = true;
-	public boolean getAutoScaleEnabled();	
+	public boolean getAutoScaleEnabled();
+	public void setAutoScaleEnabled(boolean autoScaleEnabled);
 }
