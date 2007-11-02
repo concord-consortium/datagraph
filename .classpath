@@ -2,11 +2,11 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.4"/>
-	<classpathentry kind="src" path="/Data"/>
-	<classpathentry kind="src" path="/Graph"/>
-	<classpathentry kind="src" path="/Framework"/>
-	<classpathentry kind="src" path="/GraphUtil"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/FrameworkView"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/Swing"/>
+	<classpathentry kind="src" path="/data"/>
+	<classpathentry kind="src" path="/graph"/>
+	<classpathentry kind="src" path="/framework"/>
+	<classpathentry kind="src" path="/graphutil"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/frameworkview"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/swing"/>
 	<classpathentry kind="output" path="lib"/>
 </classpath>
