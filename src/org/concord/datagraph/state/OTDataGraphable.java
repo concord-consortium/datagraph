@@ -77,6 +77,7 @@ public interface OTDataGraphable extends OTObjectInterface
 	public boolean getLocked();
 	public void setLocked(boolean locked);
 	
+	public static float DEFAULT_lineWidth = 2.0f;
 	public float getLineWidth();
 	public void setLineWidth(float w);
 }
