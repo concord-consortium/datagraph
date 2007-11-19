@@ -223,6 +223,7 @@ public class OTDataDrawingToolEditView extends OTDataDrawingToolView implements 
 
         public AddListener(JButton button) {
             this.button = button;
+            
         }
 
         public void actionPerformed(ActionEvent e) {
