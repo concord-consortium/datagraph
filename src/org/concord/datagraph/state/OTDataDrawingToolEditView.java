@@ -75,7 +75,13 @@ public class OTDataDrawingToolEditView extends OTDataDrawingToolView implements 
 
 			public void actionPerformed(ActionEvent e) {
 				if (bgImageText.getText().length() < 1){
-				    JOptionPane.showMessageDialog(toolBar, "Please specify a URL for the background image");
+					if (otDraw.getBackgroundImage() != null && otDraw.getBackgroundImage().length > 1){
+						byte[] emptyBytes = {};
+						otDraw.setBackgroundImage(emptyBytes);
+						redraw();
+					} else {
+						JOptionPane.showMessageDialog(toolBar, "Please specify a URL for the background image");
+					}
 				} else {
 					try {
 						URL bkImageURL = new URL(bgImageText.getText().trim());
