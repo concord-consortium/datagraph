@@ -822,6 +822,9 @@ public class DataGraph extends JPanel
 	
 	/**
 	 * Resets all the graphables in the data graph
+	 * scytacki: this method is bypassed by the DataGraphManager so that not all
+	 * of the graphables get reset.  See DataGraphManager.createFlowToolBar()
+	 * 
 	 * @see org.concord.framework.data.DataFlow#reset()
 	 */
 	public void reset()

@@ -214,8 +214,31 @@ public class DataGraphManager
 		bClear.setText("Clear");
 		toolbar.add(bClear);
 	 
-		toolbar.addDataFlowObject(dataGraph);
-		
+		// The below wrapper is to fix the problem where the dataGraph was reset all of the graphables
+		// because the datagraph doesn't know which is the selected graphable the DataGraphManager
+		// needs to take care of the reset.  However DataGraphManager already implements DataFlow so 
+	    // so it can be used in the case of multiple graph panels.  
+		// FIXME: this should be cleaned up so that DataGraphManager's implementation of DataFlow can be used
+		// both in the case of the multiple graphs and single graph.
+		toolbar.addDataFlowObject(new DataFlow(){
+
+			public void reset() {
+				// We bypass the normal dataGraph reset method so only the selected graphable is cleared.
+				if(sourceGraphable != null){
+					sourceGraphable.reset();
+				}
+			}
+
+			public void start() {
+				dataGraph.start();
+			}
+
+			public void stop() {
+				dataGraph.stop();
+			}
+			
+		});
+						
 		bStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e){
 				bClear.setEnabled(true);
