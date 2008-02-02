@@ -622,5 +622,23 @@ public class ControllableDataGraphable extends DataGraphable
 	public void setCurrentLocationAsOriginal() {
 	//	System.out.println("this = "+this+", setting: lastPointW = "+lastLocation);
 	//	lastPointW = 
+	}
+
+	/**
+	 * @see org.concord.graph.util.engine.DrawingObject#getStroke()
+	 */
+	public Stroke getStroke()
+	{
+		return this.stroke;
+	}
+
+	/**
+	 * @see org.concord.graph.util.engine.DrawingObject#setStroke(java.awt.Stroke)
+	 */
+	public void setStroke(Stroke stroke)
+	{
+		this.stroke = stroke;
+		needUpdate = true;
+		repaint();
 	}		
 }
