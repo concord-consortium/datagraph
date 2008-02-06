@@ -451,9 +451,7 @@ public class DataGraphManager
 			(OTControllerServiceFactory) getViewService(OTControllerServiceFactory.class);
 		
     	controllerService = controllerServiceFactory.createControllerService();
-    	
-    	// TODO these register calls should be de coupled from
-    	// this class so graphables it doesn't know about could be handled
+    	controllerService.addService(OTViewContext.class, viewContext);
     	
         dataGraph = new DataGraph();
         
