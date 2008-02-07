@@ -39,6 +39,8 @@ import javax.swing.JComponent;
 import org.concord.datagraph.ui.DataGraph;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.view.AbstractOTJComponentView;
+import org.concord.framework.otrunk.view.OTJComponentViewContext;
+import org.concord.framework.otrunk.view.OTJComponentViewContextAware;
 
 
 /**
@@ -50,11 +52,12 @@ import org.concord.framework.otrunk.view.AbstractOTJComponentView;
  * @author scott<p>
  *
  */
-public class OTDataGraphView extends AbstractOTJComponentView
+public class OTDataGraphView extends AbstractOTJComponentView implements OTJComponentViewContextAware
 {
 	OTDataGraph pfObject;
 	DataGraph dataGraph;
 	DataGraphManager manager;
+	private OTJComponentViewContext jComponentViewContext;
 	
 	/* (non-Javadoc)
 	 * @see org.concord.portfolio.views.PortfolioView#getComponent(boolean)
@@ -63,7 +66,7 @@ public class OTDataGraphView extends AbstractOTJComponentView
 	{
 		this.pfObject = (OTDataGraph)otObject;
 
-		manager = new DataGraphManager(pfObject, viewContext, true);
+		manager = new DataGraphManager(pfObject, viewContext, true, jComponentViewContext);
 
 		dataGraph = manager.getDataGraph();
 				
@@ -80,5 +83,10 @@ public class OTDataGraphView extends AbstractOTJComponentView
     public void viewClosed()
     {
     	manager.viewClosed();
+    }
+
+	public void setOTJComponentViewContext(OTJComponentViewContext viewContext)
+    {
+	    jComponentViewContext = viewContext;
     }
 }

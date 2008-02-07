@@ -36,6 +36,8 @@ import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.WritableDataStore;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.view.AbstractOTJComponentView;
+import org.concord.framework.otrunk.view.OTJComponentViewContext;
+import org.concord.framework.otrunk.view.OTJComponentViewContextAware;
 import org.concord.graph.engine.SelectableList;
 
 /**
@@ -44,13 +46,14 @@ import org.concord.graph.engine.SelectableList;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public class DataCollectorView extends AbstractOTJComponentView
+public class DataCollectorView extends AbstractOTJComponentView implements OTJComponentViewContextAware
 {
     OTDataCollector dataCollector;
 	SelectableList notesLayer;
 	WritableDataStore dataStore;	
 	DataGraphManager dataGraphManager;
 	boolean controllable;
+	private OTJComponentViewContext jComponentViewContext;
 	
     public DataCollectorView(OTDataCollector collector)
     {
@@ -90,9 +93,11 @@ public class DataCollectorView extends AbstractOTJComponentView
     public DataGraph getDataGraph(boolean showToolbar, boolean showDataControls)
     {
 	    dataGraphManager = 
-	    	new DataGraphManager(dataCollector, viewContext, showDataControls);
+	    	new DataGraphManager(dataCollector, viewContext, showDataControls, jComponentViewContext);
 
 	    dataGraphManager.setToolbarVisible(showToolbar);
+	    
+	   // dataGraphManager.setOTJComponentViewContext(jComponentViewContext);
 	    
 	    return dataGraphManager.getDataGraph();
     }
@@ -105,5 +110,10 @@ public class DataCollectorView extends AbstractOTJComponentView
     public DataGraphManager getDataGraphManager()
     {
         return dataGraphManager;
+    }
+
+	public void setOTJComponentViewContext(OTJComponentViewContext viewContext)
+    {
+	    jComponentViewContext = viewContext;
     }    
 }

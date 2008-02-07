@@ -54,6 +54,8 @@ import org.concord.framework.otrunk.OTControllerService;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTObjectService;
 import org.concord.framework.otrunk.view.AbstractOTJComponentView;
+import org.concord.framework.otrunk.view.OTJComponentViewContext;
+import org.concord.framework.otrunk.view.OTJComponentViewContextAware;
 import org.concord.graph.util.ui.ResourceLoader;
 
 /**
@@ -62,13 +64,14 @@ import org.concord.graph.util.ui.ResourceLoader;
  * @author scott
  *
  */
-public class SingleValueDataView extends AbstractOTJComponentView
+public class SingleValueDataView extends AbstractOTJComponentView implements OTJComponentViewContextAware
 {
 	WritableDataStore dataStore;
 	JDialog dialog;
 	DataGraphManager dataGraphManager;
 	OTDataCollector dataCollector;
 	OTControllerService controllerService;
+	private OTJComponentViewContext jComponentViewContext;
 	
     /**
      * 
@@ -129,7 +132,7 @@ public class SingleValueDataView extends AbstractOTJComponentView
         //    return dataLabel;
         // }
         	    
-	    dataGraphManager = new DataGraphManager(dataCollector, viewContext, true);
+	    dataGraphManager = new DataGraphManager(dataCollector, viewContext, true, jComponentViewContext);
 	    
 		JPanel bottomPanel = dataGraphManager.getBottomPanel();
 		
@@ -206,5 +209,10 @@ public class SingleValueDataView extends AbstractOTJComponentView
     	if(controllerService != null){
     		controllerService.dispose();
     	}
+    }
+
+	public void setOTJComponentViewContext(OTJComponentViewContext viewContext)
+    {
+	    jComponentViewContext = viewContext;
     }
 }

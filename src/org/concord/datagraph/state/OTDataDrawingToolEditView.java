@@ -192,10 +192,10 @@ public class OTDataDrawingToolEditView extends OTDataDrawingToolView implements 
 			try {
 				URL stampURL = new URL(stampURLStr.trim());
 				OTDrawingStamp stamp = (OTDrawingStamp) otDraw.getOTObjectService().createObject(OTDrawingStamp.class);
-				
 				OTClassProperty property = stamp.otClass().getProperty("src");
 				stamp.otSet(property, stampURL);
 				stamp.setImageURL(stampURLStr.trim());
+				System.out.println(stamp);
 				otDraw.getStamps().add(stamp);
 				redraw();
 				
@@ -204,7 +204,6 @@ public class OTDataDrawingToolEditView extends OTDataDrawingToolView implements 
 				JOptionPane.showMessageDialog(stampSelectorFrame, "That URL is not valid.\nPlease use a URL starting with http://...", 
 						"Invalid URL", JOptionPane.WARNING_MESSAGE);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

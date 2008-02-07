@@ -73,6 +73,7 @@ import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTObjectList;
 import org.concord.framework.otrunk.OTObjectService;
 import org.concord.framework.otrunk.view.OTControllerServiceFactory;
+import org.concord.framework.otrunk.view.OTJComponentViewContext;
 import org.concord.framework.otrunk.view.OTViewContext;
 import org.concord.framework.util.CheckedColorTreeModel;
 import org.concord.framework.util.Copyable;
@@ -127,18 +128,21 @@ public class DataGraphManager
 
     protected OTControllerService controllerService;
 	private OTViewContext viewContext;
+	private OTJComponentViewContext jComponentViewContext;
     
     /**
      * @param serviceProvider 
+     * @param jComponentViewContext TODO
      * 
      */
-    public DataGraphManager(OTDataGraph pfObject, OTViewContext serviceProvider, boolean showDataControls)
+    public DataGraphManager(OTDataGraph pfObject, OTViewContext serviceProvider, boolean showDataControls, OTJComponentViewContext jComponentViewContext)
     {
     	this.otDataGraph = pfObject;
         if(pfObject instanceof OTDataCollector)
         	dataCollector = (OTDataCollector)pfObject;
         this.showDataControls = showDataControls;
         this.viewContext = serviceProvider;
+        this.jComponentViewContext = jComponentViewContext;
         
         initialize();
     }
@@ -452,6 +456,7 @@ public class DataGraphManager
 		
     	controllerService = controllerServiceFactory.createControllerService();
     	controllerService.addService(OTViewContext.class, viewContext);
+    	controllerService.addService(OTJComponentViewContext.class, jComponentViewContext);
     	
         dataGraph = new DataGraph();
         
@@ -1103,5 +1108,9 @@ public class DataGraphManager
 		OTDataProducer otDataProducer = 
 			(OTDataProducer) controllerService.getOTObject(dp);
 		model.setDataProducer(otDataProducer);
+	}
+	
+	public void setOTJComponentViewContext(OTJComponentViewContext viewContext){
+		jComponentViewContext = viewContext;
 	}
 }

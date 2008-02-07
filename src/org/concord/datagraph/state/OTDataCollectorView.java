@@ -33,6 +33,8 @@ import javax.swing.JComponent;
 
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.view.AbstractOTJComponentView;
+import org.concord.framework.otrunk.view.OTJComponentViewContext;
+import org.concord.framework.otrunk.view.OTJComponentViewContextAware;
 
 /**
  * @author scott
@@ -40,11 +42,12 @@ import org.concord.framework.otrunk.view.AbstractOTJComponentView;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public class OTDataCollectorView extends AbstractOTJComponentView
+public class OTDataCollectorView extends AbstractOTJComponentView implements OTJComponentViewContextAware
 {
     AbstractOTJComponentView view;
     OTDataCollector dataCollector;
     boolean multipleGraphableEnabled = false;
+	private OTJComponentViewContext jComponentViewContext;
         
     /* (non-Javadoc)
      * @see org.concord.framework.otrunk.view.OTJComponentView#getComponent(boolean)
@@ -61,6 +64,9 @@ public class OTDataCollectorView extends AbstractOTJComponentView
         
         // We need to intialize the view so it can access it services correctly.
         view.setViewContext(viewContext);
+        if (view instanceof OTJComponentViewContextAware){
+        	((OTJComponentViewContextAware)view).setOTJComponentViewContext(jComponentViewContext);
+        }
         return view.getComponent(otObject);
     }
 
@@ -72,5 +78,10 @@ public class OTDataCollectorView extends AbstractOTJComponentView
         if(view != null) {
             view.viewClosed();
         }
+    }
+
+	public void setOTJComponentViewContext(OTJComponentViewContext viewContext)
+    {
+	    this.jComponentViewContext = viewContext;
     }
 }
