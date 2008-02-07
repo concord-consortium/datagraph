@@ -29,46 +29,18 @@
  */
 package org.concord.datagraph.state;
 
-import javax.swing.JComponent;
-
-import org.concord.framework.otrunk.OTObject;
-import org.concord.framework.otrunk.view.OTJComponentView;
 
 /**
  * @author scott
+ * @deprecated
  *
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public class OTDataCollectorNonEditableView
-    implements OTJComponentView
+public class OTDataCollectorNonEditableView extends OTDataCollectorView
 {
-    OTJComponentView view;
-    OTDataCollector dataCollector;
-    boolean multipleGraphableEnabled = false;
-        
-    /* (non-Javadoc)
-     * @see org.concord.framework.otrunk.view.OTJComponentView#getComponent(boolean)
-     */
-    public JComponent getComponent(OTObject otObject)
-    {
-        this.dataCollector = (OTDataCollector)otObject;
-        if(dataCollector.getSingleValue()) {
-            view = new SingleValueDataView(dataCollector);
-        }
-        else {
-            view = new DataCollectorView(dataCollector, false);
-        }
-		return view.getComponent(otObject);
-    }
-
-    /* (non-Javadoc)
-     * @see org.concord.framework.otrunk.view.OTJComponentView#viewClosed()
-     */
-    public void viewClosed()
-    {
-        if(view != null) {
-            view.viewClosed();
-        }
-    }
+	public boolean getControllable()
+	{
+		return false;
+	}	
 }

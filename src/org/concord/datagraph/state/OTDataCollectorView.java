@@ -59,7 +59,7 @@ public class OTDataCollectorView extends AbstractOTJComponentView implements OTJ
             view = new SingleValueDataView(dataCollector);
         }
         else {
-            view = new DataCollectorView(dataCollector);
+            view = new DataCollectorView(dataCollector, getControllable());
         }
         
         // We need to intialize the view so it can access it services correctly.
@@ -84,4 +84,9 @@ public class OTDataCollectorView extends AbstractOTJComponentView implements OTJ
     {
 	    this.jComponentViewContext = viewContext;
     }
+	
+	public boolean getControllable()
+	{
+		return true;
+	}
 }

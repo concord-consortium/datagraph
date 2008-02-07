@@ -58,6 +58,8 @@ import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTObjectList;
 import org.concord.framework.otrunk.OTObjectService;
 import org.concord.framework.otrunk.view.AbstractOTJComponentView;
+import org.concord.framework.otrunk.view.OTJComponentViewContext;
+import org.concord.framework.otrunk.view.OTJComponentViewContextAware;
 import org.concord.graph.examples.GraphWindowToolBar;
 
 /**
@@ -70,12 +72,13 @@ import org.concord.graph.examples.GraphWindowToolBar;
  *
  */
 public class OTMultiDataGraphView extends AbstractOTJComponentView
-    implements DataStoreCollection
+    implements DataStoreCollection, OTJComponentViewContextAware
 {
     OTMultiDataGraph multiDataGraph;
     OTControllerService controllerService;
     
     Vector graphManagers = new Vector();
+	private OTJComponentViewContext jCompViewContext;
     
     /* (non-Javadoc)
      * @see org.concord.framework.otrunk.view.OTJComponentView#getComponent(boolean)
@@ -139,6 +142,7 @@ public class OTMultiDataGraphView extends AbstractOTJComponentView
 		for(int i=0; i<graphs.size(); i++) {
 		   OTDataCollector graph = (OTDataCollector)graphs.get(i);
 		   DataCollectorView view = new DataCollectorView(graph);
+		   view.setOTJComponentViewContext(jCompViewContext);		  
 		   DataGraph dataGraph = view.getDataGraph(false, false);
 		   dataGraph.setToolBar(gwToolBar, false);
 		   dataFlowObjects.add(dataGraph);
@@ -283,4 +287,9 @@ public class OTMultiDataGraphView extends AbstractOTJComponentView
         // TODO Auto-generated method stub
         return null;
     }
+
+	public void setOTJComponentViewContext(OTJComponentViewContext viewContext) {
+		this.jCompViewContext = viewContext;
+		
+	}
 }
