@@ -577,6 +577,39 @@ public class DataGraph extends JPanel
 	}
 	
 	/**
+	 * Returns the first Data Graphable in the graph that is associated with the specified
+	 * data producer. 
+	 * @param dataProducer
+	 * @return
+	 */
+	public Vector getAllGraphables(DataProducer dataProducer)
+	{
+		Vector dataGraphables = new Vector();
+		DataGraphable dGraphable = (DataGraphable)producers.get(dataProducer);
+		if (dGraphable != null){
+			dataGraphables.add(dGraphable);
+		}
+		if (dGraphable == null){
+			//Look for the first data graphable that has a data producer == dataProducer
+			//TODO: it should actually return a list of graphables that have that data producer
+			//specially for removeDataProducer
+			//I think the vector thing should be returned in a new method: getGraphables()
+			for (int i=0; i < objList.size(); i++){
+				Object obj = objList.elementAt(i);
+				if (obj instanceof DataGraphable){
+					dGraphable = (DataGraphable)obj;
+                    DataProducer gDataProducer = dGraphable.findDataProducer();
+                    if(gDataProducer != null &&
+                            gDataProducer == dataProducer) {
+                    	dataGraphables.add(dGraphable);
+                    }                    
+				}
+			}
+		}
+		return dataGraphables;
+	}
+	
+	/**
 	 * Creates a data graphable that will graph the data coming from the specified
 	 * data producer, using channelXAxis as the index for the channel that will be in the x axis
 	 * of the graph, and channelYAxis as the index for the channel that will be in the y axis.
@@ -597,7 +630,9 @@ public class DataGraph extends JPanel
 		dGraphable.setChannelX(channelXAxis);
 		dGraphable.setChannelY(channelYAxis);
 		
-		producers.put(dataProducer, dGraphable);
+		if (dataProducer != null && dGraphable != null){
+			producers.put(dataProducer, dGraphable);
+		}
 		
 		return dGraphable;
 	}
