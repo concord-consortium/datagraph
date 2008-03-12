@@ -47,7 +47,7 @@ public class OTDataCollectorView extends AbstractOTJComponentView implements OTJ
     AbstractOTJComponentView view;
     OTDataCollector dataCollector;
     boolean multipleGraphableEnabled = false;
-	private OTJComponentViewContext jComponentViewContext;
+	protected OTJComponentViewContext jComponentViewContext;
         
     /* (non-Javadoc)
      * @see org.concord.framework.otrunk.view.OTJComponentView#getComponent(boolean)
@@ -88,5 +88,13 @@ public class OTDataCollectorView extends AbstractOTJComponentView implements OTJ
 	public boolean getControllable()
 	{
 		return true;
+	}
+	
+	public DataCollectorView getDataCollectorView(){
+		if (view instanceof DataCollectorView){
+			return (DataCollectorView)view;
+		} else {
+			return null;
+		}
 	}
 }
