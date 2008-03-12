@@ -102,6 +102,10 @@ public class DataCollectorView extends AbstractOTJComponentView implements OTJCo
 	    return dataGraphManager.getDataGraph();
     }
     
+    public DataGraph getDataGraph(){
+    	return dataGraphManager.getDataGraph();
+    }
+    
     public DataProducer getSourceDataProducer()
     {
     	return dataGraphManager.getSourceDataProducer();
@@ -116,4 +120,8 @@ public class DataCollectorView extends AbstractOTJComponentView implements OTJCo
     {
 	    jComponentViewContext = viewContext;
     }    
+	
+	public void setInstantRestart(boolean instantRestart){
+		dataGraphManager.setInstantRestart(instantRestart);
+	}
 }

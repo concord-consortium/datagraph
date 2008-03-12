@@ -116,6 +116,8 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 
 	boolean isCausingOTChange = false;
 	boolean isCausingRealObjChange = false;
+	
+	boolean instantRestart = false;				//sets whether start button is enabled after stop
 
 	boolean showDataControls;
 
@@ -269,7 +271,11 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		bStop.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				bClear.setEnabled(true);
-				bStart.setEnabled(false);
+				if (!instantRestart){
+					bStart.setEnabled(false);
+				} else {
+					bStart.setEnabled(true);
+				}
 				bStop.setEnabled(false);
 			}
 		});
@@ -1138,5 +1144,13 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 
 	public void setOTJComponentViewContext(OTJComponentViewContext viewContext) {
 		jComponentViewContext = viewContext;
+	}
+	
+	public void setInstantRestart(boolean instantRestart){
+		this.instantRestart = instantRestart;
+	}
+	
+	public boolean getInstantRestart(){
+		return instantRestart;
 	}
 }
