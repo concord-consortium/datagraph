@@ -391,6 +391,16 @@ public class DataGraphable extends DefaultGraphable
 			// will get taken care of automatically later.
 			return xFloat.floatValue();
 		}
+		
+		// Try to parse string. If unsuccessful, don't do anything and
+		// it will return NaN below.
+		if (objVal instanceof String){
+			try {
+				float xFloat = Float.parseFloat((String) objVal);
+				return xFloat;
+			} catch (java.lang.NumberFormatException e){
+			}
+		}
 
 		//Handling non null objects different than Floats
 		if (objVal != null && !(objVal instanceof Float)){
