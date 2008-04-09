@@ -48,6 +48,9 @@ import org.concord.graph.util.state.OTPointTextLabelController;
  */
 public class OTDataAnnotationController extends OTPointTextLabelController
 {
+	public final static Class [] realObjectClasses = { DataAnnotation.class };
+	public final static Class otObjectClass = OTDataAnnotation.class;
+	
 	/**
 	 * Need to switch this back to the default behavior because the
 	 * OTPointTextLabel modified that behavior
