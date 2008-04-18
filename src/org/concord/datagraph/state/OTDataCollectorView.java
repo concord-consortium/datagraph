@@ -29,10 +29,13 @@
  */
 package org.concord.datagraph.state;
 
+import java.awt.Component;
+
 import javax.swing.JComponent;
 
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.view.AbstractOTJComponentView;
+import org.concord.framework.otrunk.view.OTDefaultComponentProvider;
 import org.concord.framework.otrunk.view.OTJComponentViewContext;
 import org.concord.framework.otrunk.view.OTJComponentViewContextAware;
 
@@ -42,7 +45,7 @@ import org.concord.framework.otrunk.view.OTJComponentViewContextAware;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public class OTDataCollectorView extends AbstractOTJComponentView implements OTJComponentViewContextAware
+public class OTDataCollectorView extends AbstractOTJComponentView implements OTJComponentViewContextAware, OTDefaultComponentProvider
 {
     AbstractOTJComponentView view;
     OTDataCollector dataCollector;
@@ -97,4 +100,12 @@ public class OTDataCollectorView extends AbstractOTJComponentView implements OTJ
 			return null;
 		}
 	}
+
+	public Component getDefaultComponent()
+    {
+		if (view instanceof DataCollectorView)
+			return ((DataCollectorView)view).getDataGraph().getGraph();
+		else
+			return view.getComponent(dataCollector);
+    }
 }
