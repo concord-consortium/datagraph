@@ -30,14 +30,21 @@
 package org.concord.datagraph.state;
 
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.Insets;
 
 import javax.swing.JComponent;
 
+import org.concord.datagraph.engine.DataGraphAutoScaler;
+import org.concord.datagraph.ui.DataGraph;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.view.AbstractOTJComponentView;
 import org.concord.framework.otrunk.view.OTDefaultComponentProvider;
 import org.concord.framework.otrunk.view.OTJComponentViewContext;
 import org.concord.framework.otrunk.view.OTJComponentViewContextAware;
+import org.concord.framework.otrunk.view.OTLabbookViewProvider;
+import org.concord.graph.ui.GraphWindow;
 
 /**
  * @author scott
@@ -45,7 +52,8 @@ import org.concord.framework.otrunk.view.OTJComponentViewContextAware;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public class OTDataCollectorView extends AbstractOTJComponentView implements OTJComponentViewContextAware, OTDefaultComponentProvider
+public class OTDataCollectorView extends AbstractOTJComponentView 
+	implements OTJComponentViewContextAware, OTDefaultComponentProvider, OTLabbookViewProvider
 {
     AbstractOTJComponentView view;
     OTDataCollector dataCollector;
@@ -107,5 +115,84 @@ public class OTDataCollectorView extends AbstractOTJComponentView implements OTJ
 			return ((DataCollectorView)view).getDataGraph().getGraph();
 		else
 			return view.getComponent(dataCollector);
+    }
+	
+	/**
+	 * For OTLabbookViewProvider. Here we just clone the object
+	 */
+	public OTObject copyObjectForSnapshot(OTObject otObject)
+    {
+	    try {
+	        return otObject.getOTObjectService().copyObject(otObject, -1);
+        } catch (Exception e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+        }
+        return otObject;
+    }
+
+	/**
+	 * For OTLabbookViewProvider.
+	 */
+	public boolean drawtoolNeededForAlbum()
+    {
+	    // TODO Auto-generated method stub
+	    return false;
+    }
+
+	/**
+	 * For OTLabbookViewProvider. This returns the regular view with the graph set to not
+	 * be controllable
+	 */
+	public JComponent getLabbookView(OTObject otObject)
+    {
+		((OTDataCollector)otObject).getSource().setControllable(false);
+		
+		// we have to call getComponent to make sure the dataGraph gets created
+		getComponent(otObject);
+		
+	     //   view.getComponent(otObject);
+			if (view instanceof DataCollectorView){
+				DataGraph graph = ((DataCollectorView)view).getDataGraph(true, false);
+				return graph;
+			} else
+				return view.getComponent(dataCollector);
+    }
+	
+	/**
+	 * For OTLabbookViewProvider. This returns a scaled-down graph without the toolbars and
+	 * with a smaller title.
+	 */
+	public JComponent getThumbnailView(OTObject otObject)
+    {
+		getComponent(otObject);
+		
+     //   view.getComponent(otObject);
+		if (view instanceof DataCollectorView){
+			DataGraph graph = ((DataCollectorView)view).getDataGraph(false, false);
+			graph.setScale(2, 2);
+			graph.setAutoFitMode(DataGraph.AUTO_SCALE_MODE);
+			graph.setInsets(new Insets(0,8,8,0));
+			graph.setTitle(graph.getTitle(), 9);
+			final DataGraphAutoScaler autoscaler = graph.getAutoScaler();
+			autoscaler.setAutoScaleX(true);
+			autoscaler.setAutoScaleY(true);
+			EventQueue.invokeLater(new Runnable(){
+
+				public void run()
+                {
+					EventQueue.invokeLater(new Runnable(){
+
+						public void run()
+		                {
+							autoscaler.handleUpdate();
+		                }});
+                }});
+			
+			//graph.getGr
+			return graph;
+		} else
+			return view.getComponent(dataCollector);
+			
     }
 }
