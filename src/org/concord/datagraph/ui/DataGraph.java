@@ -200,16 +200,34 @@ public class DataGraph extends JPanel
 		initScaleObject();
 	}
 	
+	public void setInsets(Insets insets){
+		graph.getDefaultGraphArea().setInsets(insets);
+	}
+	
+	public String getTitle(){
+		if(titleLabel != null){
+			return titleLabel.getText();
+		} else {
+			return "";
+		}
+	}
+	
 	public void setTitle(String title)
+	{
+		setTitle(title, 16);
+	}
+	
+	public void setTitle(String title, int size)
 	{
 	    if(titleLabel == null){
 	        titleLabel = new JLabel(title);
 	        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
 	        titleLabel.setBackground(Color.WHITE);
 	        titleLabel.setOpaque(true);
-	        titleLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
+	        titleLabel.setFont(new Font("SansSerif", Font.PLAIN, size));
 	        add(titleLabel, BorderLayout.NORTH);
 	    } else {
+	    	titleLabel.setFont(new Font("SansSerif", Font.PLAIN, size));
 	        titleLabel.setText(title);
 	    }
 	}
