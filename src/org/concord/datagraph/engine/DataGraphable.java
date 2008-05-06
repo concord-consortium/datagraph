@@ -310,6 +310,18 @@ public class DataGraphable extends DefaultGraphable
 		return lineColor;
 	}
 	
+	public void setStroke(Stroke stroke){
+		this.stroke = stroke;
+		if (stroke instanceof BasicStroke){
+			lineWidth = ((BasicStroke)stroke).getLineWidth();
+		}
+		notifyChange();
+	}
+	
+	public Stroke getStroke(){
+		return stroke;
+	}
+	
 	/*
 	 * Sets the line width of the path drawn on the graph
 	 */
