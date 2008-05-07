@@ -136,10 +136,10 @@ public class OTDataDrawingToolEditView extends OTDataDrawingToolView implements 
         JScrollPane listScrollPane = new JScrollPane(stampsList);
 
         addButton = new JButton("Add");
-        AddListener hireListener = new AddListener(addButton);
+        AddListener listListener = new AddListener(addButton);
         addButton.setActionCommand("Remove");
-        addButton.addActionListener(hireListener);
-        addButton.setEnabled(false);
+        addButton.addActionListener(listListener);
+        addButton.setEnabled(true);
 
         removeButton = new JButton("Remove");
         removeButton.setActionCommand("Remove");
@@ -147,8 +147,8 @@ public class OTDataDrawingToolEditView extends OTDataDrawingToolView implements 
         removeButton.setEnabled(false);
 
         stampOptionText = new JTextField(10);
-        stampOptionText.addActionListener(hireListener);
-        stampOptionText.getDocument().addDocumentListener(hireListener);
+        stampOptionText.addActionListener(listListener);
+        stampOptionText.getDocument().addDocumentListener(listListener);
 
         JPanel buttonPane = new JPanel();
         buttonPane.setLayout(new BoxLayout(buttonPane,
@@ -267,34 +267,24 @@ public class OTDataDrawingToolEditView extends OTDataDrawingToolView implements 
             return listModel.contains(name);
         }
 
-        public void insertUpdate(DocumentEvent e) {
-            enableButton();
+		public void changedUpdate(DocumentEvent e)
+        {
+	        // TODO Auto-generated method stub
+	        
         }
 
-        public void removeUpdate(DocumentEvent e) {
-            handleEmptyTextField(e);
+		public void insertUpdate(DocumentEvent e)
+        {
+	        // TODO Auto-generated method stub
+	        
         }
 
-        public void changedUpdate(DocumentEvent e) {
-            if (!handleEmptyTextField(e)) {
-                enableButton();
-            }
+		public void removeUpdate(DocumentEvent e)
+        {
+	        // TODO Auto-generated method stub
+	        
         }
 
-        private void enableButton() {
-            if (!alreadyEnabled) {
-                button.setEnabled(true);
-            }
-        }
-
-        private boolean handleEmptyTextField(DocumentEvent e) {
-            if (e.getDocument().getLength() <= 0) {
-                button.setEnabled(false);
-                alreadyEnabled = false;
-                return true;
-            }
-            return false;
-        }
     }
 
 	class RemoveListener implements ActionListener {
