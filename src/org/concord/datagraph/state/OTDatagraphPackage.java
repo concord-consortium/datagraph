@@ -32,6 +32,7 @@ public class OTDatagraphPackage
 		registry.registerControllerClass(OTEraserGraphableController.class);
 		registry.registerControllerClass(OTDataFlowingLineController.class);
 		registry.registerControllerClass(OTDataAnnotationController.class);
+		registry.registerControllerClass(OTDataCollectorDataStoreController.class);
 	}
 
 	public Class[] getOTClasses() 
@@ -49,6 +50,7 @@ public class OTDatagraphPackage
 				OTEraserGraphable.class,
 				OTMultiDataGraph.class,
 				OTMultiDataSetControl.class,
+				OTDataCollectorDataStore.class,
 		};
 	}
 
