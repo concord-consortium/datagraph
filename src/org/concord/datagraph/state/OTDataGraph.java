@@ -65,6 +65,11 @@ public interface OTDataGraph extends OTObjectInterface
 	public OTDataAxis getXDataAxis();
 	
 	public boolean getShowToolbar();
+	
+	/** This sets the desired aspect ratio (X/Y) for the graph component */
+	public static float DEFAULT_aspectRatio = 1.5f;
+	float getAspectRatio();
+
     
 	/** This determines whether the list of graphables in shown to the left of the graph */
 	public boolean getShowGraphableList();

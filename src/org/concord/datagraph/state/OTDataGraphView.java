@@ -69,9 +69,15 @@ public class OTDataGraphView extends AbstractOTJComponentView implements OTJComp
 		manager = new DataGraphManager(pfObject, viewContext, true, jComponentViewContext);
 
 		dataGraph = manager.getDataGraph();
-				
+		
 		dataGraph.setAutoFitMode(DataGraph.AUTO_SCROLL_RUNNING_MODE);
-				
+
+		int preferredY = (int)(dataGraph.getWidth() / this.pfObject.getAspectRatio());
+		
+		System.out.println("this.pfObject.getAspectRatio(): " + String.valueOf(this.pfObject.getAspectRatio()));
+		System.out.println("dataGraph.getWidth(): " + String.valueOf(dataGraph.getWidth()));
+		System.out.println("preferredY: " + String.valueOf(preferredY));
+		
 		dataGraph.setPreferredSize(new Dimension(400,320));
 		
 		return dataGraph;				    
