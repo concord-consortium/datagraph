@@ -43,6 +43,7 @@ import org.concord.framework.otrunk.view.AbstractOTJComponentView;
 import org.concord.framework.otrunk.view.OTDefaultComponentProvider;
 import org.concord.framework.otrunk.view.OTJComponentViewContext;
 import org.concord.framework.otrunk.view.OTJComponentViewContextAware;
+import org.concord.framework.otrunk.view.OTLabbookManager;
 import org.concord.framework.otrunk.view.OTLabbookViewProvider;
 import org.concord.graph.ui.GraphWindow;
 
@@ -78,6 +79,10 @@ public class OTDataCollectorView extends AbstractOTJComponentView
         if (view instanceof OTJComponentViewContextAware){
         	((OTJComponentViewContextAware)view).setOTJComponentViewContext(jComponentViewContext);
         }
+        
+        JComponent graphView = view.getComponent(otObject);
+        
+        OTLabbookManager labbookManager = (OTLabbookManager) viewContext.getViewService(OTLabbookManager.class);
         return view.getComponent(otObject);
     }
 
@@ -163,7 +168,7 @@ public class OTDataCollectorView extends AbstractOTJComponentView
 	 * For OTLabbookViewProvider. This returns a scaled-down graph without the toolbars and
 	 * with a smaller title.
 	 */
-	public JComponent getThumbnailView(OTObject otObject)
+	public JComponent getThumbnailView(OTObject otObject, int height)
     {
 		getComponent(otObject);
 		
@@ -189,7 +194,7 @@ public class OTDataCollectorView extends AbstractOTJComponentView
 		                }});
                 }});
 			
-			//graph.getGr
+			graph.setPreferredSize(new Dimension((int) (height*1.3), height));
 			return graph;
 		} else
 			return view.getComponent(dataCollector);
