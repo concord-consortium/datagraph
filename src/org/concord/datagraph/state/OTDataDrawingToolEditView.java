@@ -34,6 +34,11 @@ import org.concord.framework.otrunk.otcore.OTClassProperty;
 import org.concord.graph.util.state.OTDrawingStamp;
 import org.concord.graph.util.state.OTDrawingTool;
 
+/**
+ * 
+ * @deprecated org.concord.otrunk.graph.OTDataDrawingToolEditView should be used instead
+ *
+ */
 public class OTDataDrawingToolEditView extends OTDataDrawingToolView implements ListSelectionListener {
 
 	private OTDrawingTool otDraw;
