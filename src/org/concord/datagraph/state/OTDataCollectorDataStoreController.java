@@ -52,7 +52,8 @@ public class OTDataCollectorDataStoreController extends DefaultOTController impl
 		// There is some hacking going on here to remove extraneous labels (0,0) and duplicates.
 		// This should be fixed in the dataCollector.
 		Vector labels = dataCollector.getLabels().getVector();
-		int subtract = 0;
+		int index = 0;
+		Vector allLabels = new Vector();
 		for (int i = 0; i < labels.size(); i++) {
 			OTDataPointLabel label = (OTDataPointLabel) labels.get(i);
 			OTClassProperty property = label.otClass().getProperty("xData");
@@ -60,16 +61,15 @@ public class OTDataCollectorDataStoreController extends DefaultOTController impl
 				continue;
 			}
 			
-			Float xValue = (Float) dataStore.getValueAt((i-subtract)-1, 1);
-			if (((i-subtract) > 0) && xValue != null && (xValue.equals(new Float(label.getXData()))) &&
-					(dataStore.getValueAt((i-subtract)-1, 2).equals(new Float(label.getYData())))){
-				subtract++;
+			if (allLabels.contains(label)){
 				continue;
 			}
 			
-	        dataStore.setValueAt(i-subtract, 0, label.getText());
-	        dataStore.setValueAt(i-subtract, 1, new Float(label.getXData()));
-	        dataStore.setValueAt(i-subtract, 2, new Float(label.getYData()));
+	        dataStore.setValueAt(index, 0, label.getText());
+	        dataStore.setValueAt(index, 1, new Float(label.getXData()));
+	        dataStore.setValueAt(index, 2, new Float(label.getYData()));
+	        allLabels.add(label);
+	        index++;
         }
 	}
 
