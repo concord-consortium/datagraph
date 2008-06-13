@@ -13,6 +13,7 @@ import org.concord.framework.data.stream.DefaultDataStore;
 import org.concord.framework.otrunk.DefaultOTController;
 import org.concord.framework.otrunk.OTChangeEvent;
 import org.concord.framework.otrunk.OTChangeListener;
+import org.concord.framework.otrunk.otcore.OTClassProperty;
 
 public class OTDataCollectorDataStoreController extends DefaultOTController implements OTChangeListener
 {
@@ -36,7 +37,6 @@ public class OTDataCollectorDataStoreController extends DefaultOTController impl
 		}
 		
 		dataCollector.addOTChangeListener(this);
-		System.out.println("listener added");
 		
 	}
 	
@@ -55,19 +55,21 @@ public class OTDataCollectorDataStoreController extends DefaultOTController impl
 		int subtract = 0;
 		for (int i = 0; i < labels.size(); i++) {
 			OTDataPointLabel label = (OTDataPointLabel) labels.get(i);
-			if ((label.getX() == 0 && label.getY() == 0))
+			OTClassProperty property = label.otClass().getProperty("xData");
+			if (!label.otIsSet(property)){
 				continue;
+			}
 			
 			Float xValue = (Float) dataStore.getValueAt((i-subtract)-1, 1);
-			if (((i-subtract) > 0) && xValue != null && (xValue.equals(new Float(label.getX()))) &&
-					(dataStore.getValueAt((i-subtract)-1, 2).equals(new Float(label.getY())))){
+			if (((i-subtract) > 0) && xValue != null && (xValue.equals(new Float(label.getXData()))) &&
+					(dataStore.getValueAt((i-subtract)-1, 2).equals(new Float(label.getYData())))){
 				subtract++;
 				continue;
 			}
 			
 	        dataStore.setValueAt(i-subtract, 0, label.getText());
-	        dataStore.setValueAt(i-subtract, 1, new Float(label.getX()));
-	        dataStore.setValueAt(i-subtract, 2, new Float(label.getY()));
+	        dataStore.setValueAt(i-subtract, 1, new Float(label.getXData()));
+	        dataStore.setValueAt(i-subtract, 2, new Float(label.getYData()));
         }
 	}
 
