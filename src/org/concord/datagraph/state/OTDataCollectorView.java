@@ -159,6 +159,11 @@ public class OTDataCollectorView extends AbstractOTJComponentView
 	     //   view.getComponent(otObject);
 			if (view instanceof DataCollectorView){
 				DataGraph graph = ((DataCollectorView)view).getDataGraph(true, false);
+				graph.setAutoFitMode(DataGraph.AUTO_SCALE_MODE);
+				final DataGraphAutoScaler autoscaler = graph.getAutoScaler();
+				autoscaler.setAutoScaleX(true);
+				autoscaler.setAutoScaleY(true);
+				
 				return graph;
 			} else
 				return view.getComponent(dataCollector);
@@ -170,6 +175,8 @@ public class OTDataCollectorView extends AbstractOTJComponentView
 	 */
 	public JComponent getThumbnailView(OTObject otObject, int height)
     {
+		((OTDataCollector)otObject).getSource().setControllable(false);
+		
 		getComponent(otObject);
 		
      //   view.getComponent(otObject);
