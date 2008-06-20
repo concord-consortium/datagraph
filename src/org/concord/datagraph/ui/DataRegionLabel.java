@@ -36,7 +36,6 @@ public class DataRegionLabel extends DataPointLabel
 		if (dsNeedsUpdate){
 			processDataStore(dataGraphable.getDataStore());
 			updateDataPointLabels();
-			System.out.println(xMiddle);
 			setDataPoint(new Point2D.Float(xMiddle, yMiddle));
 			setAdjustDisplayDataPointY(-5);
 			dsNeedsUpdate = false;
@@ -69,7 +68,7 @@ public class DataRegionLabel extends DataPointLabel
 		
 		for (int i = 0; i < dataStore.getTotalNumSamples(); i++) {
 			Float xValue = (Float) dataStore.getValueAt(i, 0);
-	        if (xValue.floatValue() > xUpperBounds && xValue.floatValue() < xLowerBounds){
+	        if (xValue.floatValue() >= xUpperBounds && xValue.floatValue() <= xLowerBounds){
 	        	highliterDataStore.setValueAt(i, 0, dataStore.getValueAt(i, 0));
 	        	highliterDataStore.setValueAt(i, 1, dataStore.getValueAt(i, 1));
 	        	
@@ -81,15 +80,10 @@ public class DataRegionLabel extends DataPointLabel
 	        		y2 = ((Float)dataStore.getValueAt(i, 1)).floatValue();
 	        	}
 	        	
-	        	System.out.println("xValue.floatValue() - middle : "+ (xValue.floatValue() - middle));
-	        	System.out.println("middleDifference : "+ middleDifference);
 	        	if (Math.abs(xValue.floatValue() - middle) < Math.abs(middleDifference)){
-	        		System.out.println("setting: "+xValue.floatValue());
 	        		xMiddle = xValue.floatValue();
 	        		yMiddle = ((Float)dataStore.getValueAt(i, 1)).floatValue();
 	        		middleDifference = xMiddle - middle;
-	        	} else {
-	        		System.out.println("no");
 	        	}
 	        }
         }
