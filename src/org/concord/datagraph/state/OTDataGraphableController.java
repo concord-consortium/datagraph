@@ -37,6 +37,7 @@ import org.concord.data.stream.ProducerDataStore;
 import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.ControllableDataGraphableDrawing;
 import org.concord.datagraph.engine.DataGraphable;
+import org.concord.datagraph.engine.DataGraphableEx;
 import org.concord.framework.data.stream.DataListener;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.DataStore;
@@ -55,7 +56,7 @@ import org.concord.graph.util.state.OTGraphableController;
 public class OTDataGraphableController extends OTGraphableController
 {
 	public static Class [] realObjectClasses =  {
-		DataGraphable.class, ControllableDataGraphable.class, 
+		DataGraphable.class, DataGraphableEx.class, ControllableDataGraphable.class, 
 		ControllableDataGraphableDrawing.class
 	};
 	
