@@ -26,6 +26,7 @@ public class OTDatagraphPackage
 			(OTControllerRegistry)otrunk.getService(OTControllerRegistry.class);
 
 		registry.registerControllerClass(OTDataPointLabelController.class);
+		registry.registerControllerClass(OTDataRegionLabelController.class);
 		registry.registerControllerClass(OTDataPointRulerController.class);
 		registry.registerControllerClass(OTDataGraphableController.class);
 		registry.registerControllerClass(OTDataBarGraphableController.class);
@@ -51,6 +52,7 @@ public class OTDatagraphPackage
 				OTMultiDataGraph.class,
 				OTMultiDataSetControl.class,
 				OTDataCollectorDataStore.class,
+				OTDataRegionLabel.class,
 		};
 	}
 
