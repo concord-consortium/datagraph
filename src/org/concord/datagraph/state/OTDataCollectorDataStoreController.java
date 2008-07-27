@@ -2,13 +2,7 @@ package org.concord.datagraph.state;
 
 import java.util.Vector;
 
-import org.concord.data.state.OTDataStoreRealObject;
-import org.concord.datagraph.engine.ControllableDataGraphable;
-import org.concord.datagraph.engine.ControllableDataGraphableDrawing;
-import org.concord.datagraph.engine.DataGraphable;
-import org.concord.datagraph.ui.DataPointLabel;
 import org.concord.framework.data.stream.DataChannelDescription;
-import org.concord.framework.data.stream.DataStore;
 import org.concord.framework.data.stream.DefaultDataStore;
 import org.concord.framework.otrunk.DefaultOTController;
 import org.concord.framework.otrunk.OTChangeEvent;
@@ -56,6 +50,10 @@ public class OTDataCollectorDataStoreController extends DefaultOTController impl
 		Vector allLabels = new Vector();
 		for (int i = 0; i < labels.size(); i++) {
 			OTDataPointLabel label = (OTDataPointLabel) labels.get(i);
+			if(label == null){
+				continue;
+			}
+			
 			OTClassProperty property = label.otClass().getProperty("xData");
 			if (!label.otIsSet(property)){
 				continue;

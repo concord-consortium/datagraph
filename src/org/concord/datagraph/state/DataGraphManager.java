@@ -33,18 +33,18 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.util.EventObject;
 import java.util.Vector;
 
-import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-import javax.swing.KeyStroke;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -132,6 +132,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 	protected OTControllerService controllerService;
 	private OTViewContext viewContext;
 	private OTJComponentViewContext jComponentViewContext;
+	private KeyEventDispatcher treeDispatcher;
 
 	/**
 	 * @param serviceProvider
@@ -528,25 +529,27 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 						"Autoscale Y axis");
 			}
 
-			KeyStroke keyStroke = KeyStroke.getKeyStroke(new Character('T'),
-					InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK);
-			dataGraph.getToolBar().getInputMap(
-					JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStroke,
-					"ShowTree");
-			dataGraph.getToolBar().getActionMap().put("ShowTree",
-					new AbstractAction() {
-						/**
-						 * First version of action
-						 */
-						private static final long serialVersionUID = 1L;
+			KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+			
+			treeDispatcher = new KeyEventDispatcher(){					
+				public boolean dispatchKeyEvent(KeyEvent e) {
+					if(dataGraph.isAncestorOf(e.getComponent()) &&
+							((e.getModifiers() | KeyEvent.KEY_RELEASED) != 0) &&
+					        ((e.getModifiersEx() & java.awt.event.InputEvent.CTRL_DOWN_MASK) != 0) &&
+					        (e.getKeyCode() == java.awt.event.KeyEvent.VK_T)) {
+						GraphTreeView gtv = new GraphTreeView();
+						gtv.setGraph(dataGraph.getGraph());
+						GraphTreeView.showAsDialog(gtv, "graph tree");
+						return true;
+					}
+					
+					return false;
+				}
+				
+			};
 
-						public void actionPerformed(ActionEvent e) {
-							System.out.println("Got event: " + e);
-							GraphTreeView gtv = new GraphTreeView();
-							gtv.setGraph(dataGraph.getGraph());
-							GraphTreeView.showAsDialog(gtv, "graph tree");
-						}
-					});
+			focusManager.addKeyEventDispatcher(treeDispatcher);
+			
 		}
 
 		xOTAxis = otDataGraph.getXDataAxis();
@@ -1050,6 +1053,9 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		// the real objects with the ot objects.
 		controllerService.dispose();
 
+		KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+		focusManager.removeKeyEventDispatcher(treeDispatcher);
+		
 		// Not anymore!
 		// OTObjectList pfGraphables = otDataGraph.getGraphables();
 		// for(int i=0; i<pfGraphables.size(); i++) {

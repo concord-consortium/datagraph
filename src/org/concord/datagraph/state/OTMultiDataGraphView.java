@@ -142,7 +142,8 @@ public class OTMultiDataGraphView extends AbstractOTJComponentView
 		for(int i=0; i<graphs.size(); i++) {
 		   OTDataCollector graph = (OTDataCollector)graphs.get(i);
 		   DataCollectorView view = new DataCollectorView(graph);
-		   view.setOTJComponentViewContext(jCompViewContext);		  
+		   view.setOTJComponentViewContext(jCompViewContext);
+		   view.setViewContext(viewContext);
 		   DataGraph dataGraph = view.getDataGraph(false, false);
 		   dataGraph.setToolBar(gwToolBar, false);
 		   dataFlowObjects.add(dataGraph);
