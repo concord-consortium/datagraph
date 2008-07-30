@@ -78,7 +78,7 @@ public class OTMultiDataSetControlView extends JPanel
     {
         treeControler = new CheckedColorTreeControler();
         JComponent treeComponent = treeControler.setup(multiTreeModel,
-        		otControl.getShowNew());
+        		otControl.getShowNew(), otControl.getEditable());
         this.setLayout(new BorderLayout());
         add(treeComponent, BorderLayout.CENTER);        
     }

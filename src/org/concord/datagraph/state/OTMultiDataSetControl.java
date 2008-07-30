@@ -39,4 +39,6 @@ public interface OTMultiDataSetControl extends
 {
 	public final static boolean DEFAULT_showNew = true;
 	public boolean getShowNew();
+	public final static boolean DEFAULT_editable = true;
+	public boolean getEditable();
 }

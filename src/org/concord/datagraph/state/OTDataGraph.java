@@ -47,6 +47,9 @@ import org.concord.framework.otrunk.OTObjectList;
  */
 public interface OTDataGraph extends OTObjectInterface
 {
+    public String getTitle();
+    public void setTitle(String title);
+    
     /**
      * The graphables are cloned when a new data store is 
      * added to the graph.  This could happen when the new button
@@ -61,10 +64,13 @@ public interface OTDataGraph extends OTObjectInterface
 	public OTObjectList getLabels();
 	
 	public OTDataAxis getYDataAxis();
+	public void setYDataAxis(OTDataAxis yDataAxis);
 
 	public OTDataAxis getXDataAxis();
+	public void setXDataAxis(OTDataAxis xDataAxis);
 	
 	public boolean getShowToolbar();
+	public void setShowToolbar(boolean flag);
 	
 	/** This sets the desired aspect ratio (X/Y) for the graph component */
 	public static float DEFAULT_aspectRatio = 1.5f;
@@ -73,4 +79,9 @@ public interface OTDataGraph extends OTObjectInterface
     
 	/** This determines whether the list of graphables in shown to the left of the graph */
 	public boolean getShowGraphableList();
+	public void setShowGraphableList(boolean flag);
+	
+	public static boolean DEFAULT_graphableListEditable=true;
+	public boolean getGraphableListEditable();
+	public void setGraphableListEditable(boolean flag);
 }

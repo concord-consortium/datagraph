@@ -98,7 +98,7 @@ import org.concord.view.CheckedColorTreeControler;
  */
 public class DataGraphManager implements OTChangeListener, ChangeListener,
 		CheckedColorTreeModel, DataFlow {
-	OTDataCollector dataCollector;
+	OTDataCollector otDataCollector;
 	OTDataGraph otDataGraph;
 	DataGraph dataGraph;
 
@@ -145,7 +145,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 			OTJComponentViewContext jComponentViewContext) {
 		this.otDataGraph = pfObject;
 		if (pfObject instanceof OTDataCollector)
-			dataCollector = (OTDataCollector) pfObject;
+			otDataCollector = (OTDataCollector) pfObject;
 		this.showDataControls = showDataControls;
 		this.viewContext = serviceProvider;
 		this.jComponentViewContext = jComponentViewContext;
@@ -503,7 +503,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 			// DataPointRuler need to be explicitly enabled to show per Brad's
 			// request.
 
-			if (dataCollector != null && dataCollector.getRulerEnabled()) {
+			if (otDataCollector != null && otDataCollector.getRulerEnabled()) {
 				SelectableToggleButton addNoteButton2 = new SelectableToggleButton(
 						new AddDataPointLabelActionExt(notesLayer, dataGraph
 								.getObjList(), dataGraph.getToolBar()));
@@ -513,7 +513,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 
 			// AutoScale need to be explicitly enabled to show per Brad's
 			// request.
-			if (dataCollector != null && dataCollector.getAutoScaleEnabled()) {
+			if (otDataCollector != null && otDataCollector.getAutoScaleEnabled()) {
 				JButton autoScaleButton = new JButton(new AutoScaleAction(
 						dataGraph));
 				JButton autoScaleXButton = new JButton(new AutoScaleAction(
@@ -594,18 +594,15 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		}
 
 		OTDataGraphable source = null;
-		if (dataCollector != null) {
-			source = dataCollector.getSource();
+		if (otDataCollector != null) {
+			source = otDataCollector.getSource();
 		}
 
+		String title = otDataGraph.getTitle();		
+		
 		if (source != null) {
-			String title = dataCollector.getTitle();
 			if (title == null) {
 				title = source.getName();
-			}
-
-			if (title != null) {
-				dataGraph.setTitle(title);
 			}
 
 			sourceGraphable = (DataGraphable) controllerService
@@ -649,6 +646,10 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 			}
 		}
 
+		if (title != null) {
+			dataGraph.setTitle(title);
+		}
+
 		// If the enabled is not set then the multiple graphable control is
 		// shown if there is more than one graphable
 		// If the enabled is set to false then the multiple graphable control
@@ -656,10 +657,10 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		// This whole logic should be re-worked
 		boolean multiAllowed = true;
 		boolean multiEnabled = false;
-		if (dataCollector != null) {
-			boolean multiEnabledSet = dataCollector
+		if (otDataCollector != null) {
+			boolean multiEnabledSet = otDataCollector
 					.isResourceSet("multipleGraphableEnabled");
-			multiEnabled = dataCollector.getMultipleGraphableEnabled();
+			multiEnabled = otDataCollector.getMultipleGraphableEnabled();
 			if (multiEnabledSet) {
 				multiAllowed = multiEnabled;
 			}
@@ -673,7 +674,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		}
 		if (multiEnabled || (multiAllowed && realGraphables.size() > 1)) {
 			CheckedColorTreeControler dataSetTree = new CheckedColorTreeControler();
-			JComponent treeComponent = dataSetTree.setup(this, true);
+			JComponent treeComponent = dataSetTree.setup(this, true, otDataGraph.getGraphableListEditable());
 
 			// The source should be the last item because it was setup that
 			// way above. We want it selected
