@@ -8,6 +8,7 @@ import java.awt.color.ColorSpace;
 import java.awt.geom.Point2D;
 import java.text.NumberFormat;
 
+import org.concord.data.stream.ProducerDataStore;
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.framework.data.stream.DataStore;
 import org.concord.framework.data.stream.DataStoreEvent;
@@ -66,23 +67,35 @@ public class DataRegionLabel extends DataPointLabel
 		float middleDifference = Float.POSITIVE_INFINITY;
 		float middle = xLowerBounds + ((xUpperBounds - xLowerBounds) / 2);
 		
+		Float xValue = null;
 		for (int i = 0; i < dataStore.getTotalNumSamples(); i++) {
-			Float xValue = (Float) dataStore.getValueAt(i, 0);
-	        if (xValue.floatValue() >= xUpperBounds && xValue.floatValue() <= xLowerBounds){
-	        	highliterDataStore.setValueAt(i, 0, dataStore.getValueAt(i, 0));
-	        	highliterDataStore.setValueAt(i, 1, dataStore.getValueAt(i, 1));
+			if (!(dataStore instanceof ProducerDataStore)){
+				xValue = (Float) dataStore.getValueAt(i, 0);
+			} else {
+				xValue = new Float (i * ((ProducerDataStore)dataStore).getDt());
+			}
+	        if (xValue.floatValue() <= xUpperBounds && xValue.floatValue() >= xLowerBounds){
+	        	Float yValue = null;
+	        	if (!(dataStore instanceof ProducerDataStore)){
+	        		yValue = (Float) dataStore.getValueAt(i, 1);
+				} else {
+					yValue = (Float) dataStore.getValueAt(i, 0);
+				}
+	        	
+	        	highliterDataStore.setValueAt(i, 0, xValue);
+	        	highliterDataStore.setValueAt(i, 1, yValue);
 	        	
 	        	if (xValue.floatValue() < x1){
 	        		x1 = xValue.floatValue();
-	        		y1 = ((Float)dataStore.getValueAt(i, 1)).floatValue();
+	        		y1 = yValue.floatValue();
 	        	} else if (xValue.floatValue() > x2){
 	        		x2 = xValue.floatValue();
-	        		y2 = ((Float)dataStore.getValueAt(i, 1)).floatValue();
+	        		y2 = yValue.floatValue();
 	        	}
 	        	
 	        	if (Math.abs(xValue.floatValue() - middle) < Math.abs(middleDifference)){
 	        		xMiddle = xValue.floatValue();
-	        		yMiddle = ((Float)dataStore.getValueAt(i, 1)).floatValue();
+	        		yMiddle = yValue.floatValue();
 	        		middleDifference = xMiddle - middle;
 	        	}
 	        }
@@ -120,8 +133,8 @@ public class DataRegionLabel extends DataPointLabel
 	}
 	
 	public void setRegion(float x1, float x2){
-		setXUpperBounds(x1 < x2 ? x1 : x2);
-		setXLowerBounds(x1 < x2 ? x2 : x1);
+		setXUpperBounds(x1 > x2 ? x1 : x2);
+		setXLowerBounds(x1 > x2 ? x2 : x1);
 		dataGraphable.getDataStore().addDataStoreListener(this);
 	}
 	
