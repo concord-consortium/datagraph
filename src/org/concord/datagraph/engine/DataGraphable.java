@@ -1351,4 +1351,9 @@ public class DataGraphable extends DefaultGraphable
 	{
 		return lineWidth;
 	}
+
+	public boolean isInternalProducerDataStore()
+    {
+	    return internalProducerDataStore;
+    }
 }
