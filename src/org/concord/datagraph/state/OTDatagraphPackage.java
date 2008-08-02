@@ -7,6 +7,7 @@ import org.concord.data.state.OTDataPackage;
 import org.concord.framework.otrunk.OTControllerRegistry;
 import org.concord.framework.otrunk.OTPackage;
 import org.concord.framework.otrunk.OTrunk;
+import org.concord.graph.util.state.OTGraphUtilPackage;
 
 /**
  * @author scott
@@ -58,7 +59,10 @@ public class OTDatagraphPackage
 
 	public Class[] getPackageDependencies() 
 	{
-		return new Class [] {OTDataPackage.class};
+		return new Class [] {
+				OTDataPackage.class,
+				OTGraphUtilPackage.class,
+				};
 	}
 
 }
