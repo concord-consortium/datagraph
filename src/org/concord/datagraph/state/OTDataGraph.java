@@ -63,6 +63,12 @@ public interface OTDataGraph extends OTObjectInterface
 	
 	public OTObjectList getLabels();
 	
+	/**
+	 * List of extra graphables that are to be shown in the graph (not data)
+	 * @return
+	 */
+	public OTObjectList getExtraGraphables();
+	
 	public OTDataAxis getYDataAxis();
 	public void setYDataAxis(OTDataAxis yDataAxis);
 

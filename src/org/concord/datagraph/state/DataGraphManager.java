@@ -78,6 +78,7 @@ import org.concord.framework.otrunk.view.OTJComponentViewContext;
 import org.concord.framework.otrunk.view.OTViewContext;
 import org.concord.framework.util.CheckedColorTreeModel;
 import org.concord.framework.util.Copyable;
+import org.concord.graph.engine.Drawable;
 import org.concord.graph.engine.Graphable;
 import org.concord.graph.engine.GraphableList;
 import org.concord.graph.engine.SelectableList;
@@ -692,6 +693,33 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		GraphableList graphableList = dataGraph.getObjList();
 		graphableList
 				.addGraphableListListener(new MainLayerGraphableListener());
+		
+		//Take care of the extra graphables
+		OTObjectList otExtraGraphables = otDataGraph.getExtraGraphables();
+		for (int i = 0; i < otExtraGraphables.size(); i++) {
+			OTObject extraGraphable = (OTObject)otExtraGraphables.get(i);
+
+			if (extraGraphable == null) continue;
+			
+			Object realGraphable = controllerService.getRealObject(extraGraphable);
+			
+			if (realGraphable == null){
+				System.err.println("Real object for extra graphable not found: "+extraGraphable);
+				continue;
+			}
+			
+			if (realGraphable instanceof Drawable){
+				dataGraph.getGraph().add((Drawable)realGraphable);
+			}
+			else if (realGraphable instanceof GraphableList){
+				dataGraph.getGraph().add((GraphableList)realGraphable);
+			}
+			else{
+				System.err.println("Extra graphable cannot be added. Class not supported on a graph: "+realGraphable.getClass().getName());
+			}
+		}
+		//		
+		
 	}
 
 	protected void updateBottomPanel(DataGraphable oldSourceGraphable,
