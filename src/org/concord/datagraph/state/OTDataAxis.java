@@ -63,5 +63,11 @@ public interface OTDataAxis
 	public void setIntervalWorld(int units);
 	public int getIntervalWorld();
 	
-	public OTObjectList getGraphables();	
+	public OTObjectList getGraphables();
+	
+	public String getLabelFormat();
+	public void setLabelFormat(String labelFormat);
+	public static String FORMAT_ENGINEERING = "Engineering";	// engineering notation, exponents are multiples of 3
+	public static String FORMAT_NONE = "None";					// no formatting
+	public static String DEFAULT_labelFormat = FORMAT_ENGINEERING;
 }
