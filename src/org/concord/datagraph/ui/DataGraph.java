@@ -115,7 +115,11 @@ public class DataGraph extends JPanel
 	protected DataGraphAutoScroller scroller = null;
     private int autoFitMode;
     private JLabel titleLabel;		
-    private boolean useDataGraphableWithShapes = false; 
+    private boolean useDataGraphableWithShapes = false;
+
+	private boolean autoformatXAxis = true;
+
+	private boolean autoformatYAxis = true; 
 	
 	/**
 	 * Creates a default data graph with or without a tool bar
@@ -162,8 +166,8 @@ public class DataGraph extends JPanel
 		////////
 		// Grid
 		grid = createGrid();
-		grid.getXGrid().setAutoFormatLabels(true);
-		grid.getYGrid().setAutoFormatLabels(true);
+		grid.getXGrid().setAutoFormatLabels(autoformatXAxis);
+		grid.getYGrid().setAutoFormatLabels(autoformatYAxis);
 		
 		//Add the grid to the graph
 		graph.addDecoration(grid);
@@ -1018,6 +1022,13 @@ public class DataGraph extends JPanel
         DataProducer dataProducer = dGraphable.getDataProducer();
         if(dataProducer == null) return;
 		producers.put(dataProducer, dGraphable);
+    }
+    
+    public void setAutoformatAxes(boolean autoformatXAxis, boolean autoformatYAxis){
+    	this.autoformatXAxis = autoformatXAxis;
+    	this.autoformatYAxis = autoformatYAxis;
+    	grid.getXGrid().setAutoFormatLabels(autoformatXAxis);
+		grid.getYGrid().setAutoFormatLabels(autoformatYAxis);
     }
 
 }
