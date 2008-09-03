@@ -14,4 +14,8 @@ public interface OTDataRegionLabel
 	public static float DEFAULT_x2 = Float.NaN;
 	public float getX2();
 	public void setX2(float x2);
+	
+	public static boolean DEFAULT_showLabel = true;
+	public boolean getShowLabel();
+	public void setShowLabel(boolean showLabel);
 }

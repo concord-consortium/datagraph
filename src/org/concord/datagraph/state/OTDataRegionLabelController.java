@@ -19,6 +19,7 @@ public class OTDataRegionLabelController extends OTDataPointLabelController
     	DataRegionLabel l = (DataRegionLabel)realObject;
     	
     	l.setRegion(resources.getX1(), resources.getX2());
+    	l.setShowLabel(resources.getShowLabel());
     }
     
     public void saveRealObject(Object realObject)
@@ -30,5 +31,6 @@ public class OTDataRegionLabelController extends OTDataPointLabelController
     	
 		resources.setX1(l.getXLowerBounds());
 		resources.setX2(l.getXUpperBounds());
+		resources.setShowLabel(l.getShowLabel());
 	}
 }
