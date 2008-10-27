@@ -88,6 +88,7 @@ public class DataCollectorView extends AbstractOTJComponentView implements OTJCo
     public void viewClosed()
     {
     	dataGraphManager.viewClosed();
+    	dataGraphManager= null;
     }
     
     public DataGraph getDataGraph(boolean showToolbar, boolean showDataControls)
