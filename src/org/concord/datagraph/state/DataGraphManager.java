@@ -322,8 +322,9 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 				|| obj == dataGraph.getGraphArea().getCoordinateSystem()) {
 
 			Grid2D grid = dataGraph.getGrid();
-			
-			isCausingOTChange = true;
+
+			xOTAxis.setDoNotifyChangeListeners(false);
+			yOTAxis.setDoNotifyChangeListeners(false);
 
 			xOTAxis.setMin((float) dataGraph.getMinXAxisWorld());
 			xOTAxis.setMax((float) dataGraph.getMaxXAxisWorld());
@@ -339,7 +340,9 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 			if (sYAxis.getAxisLabel() != null) {
 				yOTAxis.setLabel(sYAxis.getAxisLabel());
 			}
-			
+
+			isCausingOTChange = true;
+
 			// This is a general notification of a change, not one specific to a
 			// property
 			xOTAxis.notifyOTChange(null, null, null, null);
@@ -359,6 +362,10 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 	 * @see org.concord.framework.otrunk.OTChangeListener#stateChanged(org.concord.framework.otrunk.OTChangeEvent)
 	 */
 	public void stateChanged(OTChangeEvent e) {
+		System.err.println("---- OT state changed " + e.getSource() + " - "
+				+ isCausingOTChange + " " + this);
+		// System.out.println(e.getOperation() +" "+e.getValue());
+
 		if (isCausingOTChange) {
 			// we are the cause of this change
 			return;
