@@ -80,9 +80,6 @@ public class OTDataCollectorView extends AbstractOTJComponentView
         	((OTJComponentViewContextAware)view).setOTJComponentViewContext(jComponentViewContext);
         }
         
-        JComponent graphView = view.getComponent(otObject);
-        
-        OTLabbookManager labbookManager = (OTLabbookManager) viewContext.getViewService(OTLabbookManager.class);
         return view.getComponent(otObject);
     }
 
