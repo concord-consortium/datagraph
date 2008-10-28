@@ -36,7 +36,7 @@ public class DataRegionLabel extends DataPointLabel
 	public void draw(Graphics2D g)
 	{
 		if (dsNeedsUpdate){
-			processDataStore(dataGraphable.getDataStore());
+			processDataStore(dataGraphable);
 			updateDataPointLabels();
 			setDataPoint(new Point2D.Float(xMiddle, yMiddle));
 			setAdjustDisplayDataPointY(-5);
@@ -70,22 +70,12 @@ public class DataRegionLabel extends DataPointLabel
 		x2 = Float.NEGATIVE_INFINITY;
 		float middleDifference = Float.POSITIVE_INFINITY;
 		float middle = xLowerBounds + ((xUpperBounds - xLowerBounds) / 2);
-		
 		Float xValue = null;
 		for (int i = 0; i < dataStore.getTotalNumSamples(); i++) {
-			if (!(dataStore instanceof ProducerDataStore)){
-				xValue = (Float) dataStore.getValueAt(i, 0);
-			} else {
-				xValue = new Float (i * ((ProducerDataStore)dataStore).getDt());
-			}
-	        if (xValue.floatValue() <= xUpperBounds && xValue.floatValue() >= xLowerBounds){
-	        	Float yValue = null;
-	        	if (!(dataStore instanceof ProducerDataStore)){
-	        		yValue = (Float) dataStore.getValueAt(i, 1);
-				} else {
-					yValue = (Float) dataStore.getValueAt(i, 0);
-				}
-	        	
+			xValue = (Float) dataStore.getValueAt(i, 0);
+			if (xValue.floatValue() <= xUpperBounds && xValue.floatValue() >= xLowerBounds){
+	        	Float yValue = yValue = (Float) dataStore.getValueAt(i, 1);
+
 	        	highliterDataStore.setValueAt(i, 0, xValue);
 	        	highliterDataStore.setValueAt(i, 1, yValue);
 	        	
