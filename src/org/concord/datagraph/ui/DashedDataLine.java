@@ -42,6 +42,7 @@ public class DashedDataLine {
 	protected Stroke stroke = null;
 	protected int precision = -1;
 	protected static GraphArea graphArea;
+	protected String label = null;
 	
 	public DashedDataLine() {
 		precision = 2;
@@ -62,6 +63,11 @@ public class DashedDataLine {
 		this();
 		setType(type);
 		setPoints(xvalue, yvalue);
+	}
+	
+	public DashedDataLine(Point2D xvalue, Point2D yvalue, int type, String label) {
+		this(xvalue, yvalue, type);
+		this.label = label;
 	}
 	
 	public void setStroke(Stroke stroke) {
@@ -102,6 +108,14 @@ public class DashedDataLine {
 		return precision;
 	}
 	
+	public String getLabel() {
+		return this.label;
+	}
+	
+	public void setLabel(String label) {
+		this.label = label;
+	}
+	
 	public static void setGraphArea(GraphArea graphArea) {
 		DashedDataLine.graphArea = graphArea;
 	}
@@ -134,11 +148,17 @@ public class DashedDataLine {
 		if(type == VERTICAL_LINE) {
 			double value = startPoint.getX();
 			String svalue = nf.format(value);
+			if (label != null) {
+				svalue += " - " + label;
+			}
 			g.drawString(svalue, (int)pStart.getX(), (int)pStart.getY() - 10);
 			g.fillOval((int)pStart.getX()-3, (int)pStart.getY()-3, 6, 6);
 		} else {
 			double value = startPoint.getY();
 			String svalue = nf.format(value);
+			if (label != null) {
+				svalue += " - " + label;
+			}
 			g.drawString(svalue, (int)pStart.getX() + 10, (int)pStart.getY());			
 			g.fillOval((int)pStart.getX(), (int)pStart.getY()-3, 6, 6);
 		}

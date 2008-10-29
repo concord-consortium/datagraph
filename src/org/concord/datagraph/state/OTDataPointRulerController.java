@@ -35,4 +35,41 @@ public class OTDataPointRulerController  extends OTDataAnnotationController
 {
 	public final static Class [] realObjectClasses = {DataPointRuler.class};
 	public final static Class otObjectClass = OTDataPointRuler.class;	
+	
+	/**
+	 * Need to switch this back to the default behavior because the
+	 * OTPointTextLabel modified that behavior
+	 */
+	public Class getRealObjectClass()
+	{
+		return getRealObjectClassInternal();
+	}
+	
+    public void loadRealObject(Object realObject) {
+    	super.loadRealObject(realObject);
+
+    	OTDataPointRuler resources = (OTDataPointRuler) otObject;
+    	DataPointRuler a = (DataPointRuler) realObject;
+    	
+    	a.setLabelVisible(resources.getLabelVisible());
+    	a.setHorizontalVisible(resources.getHorizontalVisible());
+    	a.setVerticalVisible(resources.getVerticalVisible());
+    	a.setIntersectionVisible(resources.getIntersectionVisible());
+    }
+
+	/**
+	 * @see org.concord.framework.otrunk.OTController#saveObject(java.lang.Object)
+	 */
+	public void saveRealObject(Object realObject)
+	{
+		OTDataPointRuler resources = (OTDataPointRuler) otObject;
+		DataPointRuler a = (DataPointRuler)realObject;
+		
+		resources.setLabelVisible(a.isLabelVisible());
+		resources.setVerticalVisible(a.isVerticalVisible());
+		resources.setHorizontalVisible(a.isHorizontalVisible());
+		resources.setIntersectionVisible(a.isIntersectionVisible());
+		
+		super.saveRealObject(realObject);
+	}
 }

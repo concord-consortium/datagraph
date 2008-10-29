@@ -55,6 +55,11 @@ public class DataPointRuler extends PointTextLabel
 	private DashedDataLine verticalDDL = new DashedDataLine(DashedDataLine.VERTICAL_LINE);
 	private DashedDataLine horizontalDDL = new DashedDataLine(DashedDataLine.HORIZONTAL_LINE);
 	
+	private boolean labelVisible = false;
+	private boolean horizontalVisible = true;
+	private boolean verticalVisible = true;
+	private boolean intersectionVisible = true;
+	
 // FIXME: precision is not implemented correctly
 // it should take the precision from the channel configurations
 //	private int xPrecision = 0;
@@ -244,8 +249,13 @@ public class DataPointRuler extends PointTextLabel
 	
 	private void drawDashedLines(Graphics2D g, float d1, float d2) {
 		setDashedLines(d1, d2);
-		verticalDDL.draw(g);
-		horizontalDDL.draw(g);		
+		if (isVerticalVisible()) {
+			verticalDDL.draw(g);
+		}
+		
+		if (isHorizontalVisible()) {
+			horizontalDDL.draw(g);		
+		}
 	}
 
 	private void setDashedLines(float d1, float d2) {
@@ -260,8 +270,14 @@ public class DataPointRuler extends PointTextLabel
 
 		pD = new Point2D.Double(d1, graphArea.getUpperRightCornerWorld().getY());
 		verticalDDL.setPoints(pVO, pD);
+		
 		pD = new Point2D.Double(graphArea.getUpperRightCornerWorld().getX(), d2);
-		horizontalDDL.setPoints(pHO, pD);			
+		horizontalDDL.setPoints(pHO, pD);	
+		if (isLabelVisible()) {
+			horizontalDDL.setLabel(this.getMessage());
+		} else {
+			horizontalDDL.setLabel(null);
+		}
 
 		DashedDataLine.setGraphArea(graphArea);	
 	}
@@ -291,10 +307,12 @@ public class DataPointRuler extends PointTextLabel
 
 		CoordinateSystem cs = graphArea.getCoordinateSystem();
 		Point2D p = cs.transformToDisplay(new Point2D.Double(fx, fy));
-		Color oldColor = g.getColor();
-		g.setColor(Color.BLUE);
-		g.fillOval((int)p.getX()-4,(int)p.getY()-4,8,8);
-		g.setColor(oldColor);
+		if (isIntersectionVisible()) {
+			Color oldColor = g.getColor();
+			g.setColor(Color.BLUE);
+			g.fillOval((int)p.getX()-4,(int)p.getY()-4,8,8);
+			g.setColor(oldColor);
+		}
 	}
 	
 	private void convertMouseLocationToWorld(Point p) {
@@ -361,5 +379,61 @@ public class DataPointRuler extends PointTextLabel
 			mouseInsideDataPoint = false;
 		}
 		return super.isPointInProximity(location);
+	}
+	
+	/**
+	 * @param labelVisible the labelVisible to set
+	 */
+	public void setLabelVisible(boolean visible) {
+		this.labelVisible = visible;
+	}
+
+	/**
+	 * @return the labelVisible
+	 */
+	public boolean isLabelVisible() {
+		return labelVisible;
+	}
+
+	/**
+	 * @param horizontalVisible the horizontalVisible to set
+	 */
+	public void setHorizontalVisible(boolean horizontalVisible) {
+		this.horizontalVisible = horizontalVisible;
+	}
+
+	/**
+	 * @return the horizontalVisible
+	 */
+	public boolean isHorizontalVisible() {
+		return horizontalVisible;
+	}
+
+	/**
+	 * @param verticalVisible the verticalVisible to set
+	 */
+	public void setVerticalVisible(boolean verticalVisible) {
+		this.verticalVisible = verticalVisible;
+	}
+
+	/**
+	 * @return the verticalVisible
+	 */
+	public boolean isVerticalVisible() {
+		return verticalVisible;
+	}
+
+	/**
+	 * @param intersectionVisible the intersectionVisible to set
+	 */
+	public void setIntersectionVisible(boolean intersectionVisible) {
+		this.intersectionVisible = intersectionVisible;
+	}
+
+	/**
+	 * @return the intersectionVisible
+	 */
+	public boolean isIntersectionVisible() {
+		return intersectionVisible;
 	}
 }
