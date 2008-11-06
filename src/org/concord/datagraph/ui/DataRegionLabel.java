@@ -31,7 +31,8 @@ public class DataRegionLabel extends DataPointLabel
 	private float y2;
 	private float xMiddle;
 	private float yMiddle;
-	private boolean showLabel;
+	private boolean showLabel = true;
+	private boolean showHighlight = true;
 	
 	public void draw(Graphics2D g)
 	{
@@ -49,7 +50,7 @@ public class DataRegionLabel extends DataPointLabel
 			super.draw(g);
 		}
 		
-		if(dataGraphable != null && dataGraphable.isVisible()) {
+		if(showHighlight && dataGraphable != null && dataGraphable.isVisible()) {
 			DataGraphable highlighter = new DataGraphable();
 			highlighter.setGraphArea(dataGraphable.getGraphArea());
 			highlighter.setDataStore(highliterDataStore);
@@ -138,6 +139,14 @@ public class DataRegionLabel extends DataPointLabel
 	
 	public boolean getShowLabel(){
 		return showLabel;
+	}
+	
+	public void setShowHighlight(boolean showHighlight){
+		this.showHighlight = showHighlight;
+	}
+	
+	public boolean getShowHighlight(){
+		return showHighlight;
 	}
 	
 	/**

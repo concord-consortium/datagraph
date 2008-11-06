@@ -18,4 +18,8 @@ public interface OTDataRegionLabel
 	public static boolean DEFAULT_showLabel = true;
 	public boolean getShowLabel();
 	public void setShowLabel(boolean showLabel);
+	
+	public static boolean DEFAULT_showHighlight = true;
+	public boolean getShowHighlight();
+	public void setShowHighlight(boolean flag);
 }
