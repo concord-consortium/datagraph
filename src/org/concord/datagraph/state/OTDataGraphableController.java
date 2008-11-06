@@ -138,6 +138,7 @@ public class OTDataGraphableController extends OTGraphableController
         dg.setUseVirtualChannels(true);
         dg.setLocked(model.getLocked());
         dg.setConnectPoints(model.getConnectPoints());
+        dg.setVisible(model.getVisible());
         
 		DataProducer producer = getDataProducer(model);
 		DataStore dataStore = getDataStore(model);
@@ -235,6 +236,8 @@ public class OTDataGraphableController extends OTGraphableController
         } 
         
         model.setDataStore(otDataStore);
+        
+        model.setVisible(dg.isVisible());
         
 		// This is needed for some reason by the OTDrawingToolView
         // Apparently it is to set the realObject class.

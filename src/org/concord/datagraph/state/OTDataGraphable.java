@@ -58,6 +58,10 @@ public interface OTDataGraphable extends OTObjectInterface
 	public static boolean DEFAULT_allowHide = true;
 	public boolean getAllowHide();
 	public void setAllowHide(boolean flag);
+	
+	public static boolean DEFAULT_visible = true;
+	public boolean getVisible();
+	public void setVisible(boolean flag);
 		
 	public OTDataStore getDataStore();
 	public void setDataStore(OTDataStore store);
