@@ -121,6 +121,15 @@ public class DataGraph extends JPanel
 
 	private boolean autoformatYAxis = true; 
 	
+
+	private boolean isAutoTick;
+
+	private double xTickInterval;
+
+	private double yTickInterval;
+
+	private MultiRegionAxisScale axisScale;
+	
 	/**
 	 * Creates a default data graph with or without a tool bar
 	 * @param showToolbar	indicates if the toolbar should be visible or not
@@ -249,9 +258,12 @@ public class DataGraph extends JPanel
 	}
 		
 	protected Grid2D createGrid()
-	{		
-		Grid2D gr = new Grid2D(new SingleDataAxisGrid(1), 
-				new SingleDataAxisGrid(2));
+	{	
+		SingleDataAxisGrid xAxis = new SingleDataAxisGrid(1);
+		SingleDataAxisGrid yAxis = new SingleDataAxisGrid(2);
+		
+		yAxis.setIntervalFixedDisplay(0);
+		Grid2D gr = new Grid2D(xAxis,yAxis);
 		//gr.setInterval(1.0,1.0);
 		//gr.setLabelFormat(new DecimalFormat("#"));
 		gr.getXGrid().setAxisLabelSize(12);
@@ -263,7 +275,14 @@ public class DataGraph extends JPanel
 		gr.getXGrid().setDrawGridOnAxis(true);
 		gr.getYGrid().setDrawGridOnAxis(true);
 		
-		gr.useAutoTickScaling();
+		if (isAutoTick()){
+			System.out.println("is autotick");
+			gr.useAutoTickScaling();
+		} else {
+			System.out.println("is not");
+			xAxis.setIntervalFixedDisplay(getXTickInterval());
+			yAxis.setIntervalFixedDisplay(getYTickInterval());
+		}
 		
 		return gr;
 	}
@@ -276,7 +295,7 @@ public class DataGraph extends JPanel
 	protected void addScaleAxis(GraphArea ga)
 	{
 		//Adding the scaling object for the graph area
-		AxisScale axisScale = new MultiRegionAxisScale(getGrid());
+		axisScale = new MultiRegionAxisScale(getGrid());
 		axisScale.setGraphArea(ga);
 		axisScale.setDragMode(AxisScale.DRAGMODE_NONE);
 		axisScale.setShowMessage(false);
@@ -1030,5 +1049,51 @@ public class DataGraph extends JPanel
     	grid.getXGrid().setAutoFormatLabels(autoformatXAxis);
 		grid.getYGrid().setAutoFormatLabels(autoformatYAxis);
     }
+    
+	public boolean isAutoTick()
+    {
+	    return isAutoTick;
+    }
+	
+	public void setAutoTick(boolean autoTick)
+    {
+	    isAutoTick = autoTick;
+	    updateGrid();
+    }
+
+	public double getXTickInterval()
+    {
+	    return xTickInterval;
+    }
+	
+	public void setXTickInterval(int xTickInterval)
+    {
+	    this.xTickInterval = xTickInterval;
+	    updateGrid();
+    }
+
+	public double getYTickInterval()
+    {
+	    return yTickInterval;
+    }
+	
+	public void setYTickInterval(int yTickInterval)
+    {
+	    this.yTickInterval = yTickInterval;
+	    updateGrid();
+    }
+	
+	private void updateGrid(){
+		graph.removeDecoration(grid);
+	//    GraphArea graphArea = grid.getGraphArea();
+	    grid = createGrid();
+	 //   grid.setGraphArea(graphArea);
+	    graph.addDecoration(grid);
+	    System.out.println("new grid "+grid);
+	    System.out.println("grid graph area = "+grid.getGraphArea());
+	    if (axisScale != null){
+	    	axisScale.setGrid(grid);
+	    }
+	}
 
 }
