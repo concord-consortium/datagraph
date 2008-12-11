@@ -278,8 +278,8 @@ public class DataGraph extends JPanel
 		if (isAutoTick()){
 			gr.useAutoTickScaling();
 		} else {
-			xAxis.setIntervalFixedDisplay(getXTickInterval());
-			yAxis.setIntervalFixedDisplay(getYTickInterval());
+			xAxis.setIntervalCompletelyFixedDisplay(getXTickInterval());
+			yAxis.setIntervalCompletelyFixedDisplay(getYTickInterval());
 		}
 		
 		return gr;
