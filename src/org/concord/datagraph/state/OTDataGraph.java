@@ -81,7 +81,21 @@ public interface OTDataGraph extends OTObjectInterface
 	/** This sets the desired aspect ratio (X/Y) for the graph component */
 	public static float DEFAULT_aspectRatio = 1.5f;
 	float getAspectRatio();
-
+	
+	public boolean getAutoTick();
+	public void setAutoTick(boolean autoTick);
+	public static boolean DEFAULT_autoTick = true;
+	
+	/**
+	 * This set the tick interval. This is read ONLY if autoTick is false.
+	 */
+	public int getXTickInterval();
+	public void setXTickInterval(int xTickInterval);
+	public static int DEFAULT_xTickInterval = 2;
+	
+	public int getYTickInterval();
+	public void setYTickInterval(int yTickInterval);
+	public static int DEFAULT_yTickInterval = 2;
     
 	/** This determines whether the list of graphables in shown to the left of the graph */
 	public boolean getShowGraphableList();
