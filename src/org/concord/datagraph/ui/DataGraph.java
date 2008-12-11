@@ -276,10 +276,8 @@ public class DataGraph extends JPanel
 		gr.getYGrid().setDrawGridOnAxis(true);
 		
 		if (isAutoTick()){
-			System.out.println("is autotick");
 			gr.useAutoTickScaling();
 		} else {
-			System.out.println("is not");
 			xAxis.setIntervalFixedDisplay(getXTickInterval());
 			yAxis.setIntervalFixedDisplay(getYTickInterval());
 		}
@@ -1089,8 +1087,6 @@ public class DataGraph extends JPanel
 	    grid = createGrid();
 	 //   grid.setGraphArea(graphArea);
 	    graph.addDecoration(grid);
-	    System.out.println("new grid "+grid);
-	    System.out.println("grid graph area = "+grid.getGraphArea());
 	    if (axisScale != null){
 	    	axisScale.setGrid(grid);
 	    }
