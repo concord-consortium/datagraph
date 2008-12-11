@@ -475,14 +475,18 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 				jComponentViewContext);
 
 		dataGraph = new DataGraph();
-
+		
 		if (otDataGraph.isResourceSet("showToolbar")
 				&& !otDataGraph.getShowToolbar()) {
 			dataGraph.setToolBar(null);
 		} else {
 			dataGraph.changeToDataGraphToolbar();
 		}
-
+		
+		dataGraph.setAutoTick(otDataCollector.getAutoTick());
+		dataGraph.setXTickInterval(otDataCollector.getXTickInterval());
+		dataGraph.setYTickInterval(otDataCollector.getYTickInterval());
+		
 		initGraphables();
 		dataGraph.setAutoFitMode(DataGraph.AUTO_SCROLL_RUNNING_MODE);
 
