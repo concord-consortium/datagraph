@@ -71,7 +71,7 @@ public class OTDataCollectorView extends AbstractOTJComponentView
             view = new SingleValueDataView(dataCollector);
         }
         else {
-            view = new DataCollectorView(dataCollector, getControllable());
+            view = new DataCollectorView(dataCollector, getControllable(), true);
         }
         
         // We need to intialize the view so it can access it services correctly.
@@ -100,7 +100,7 @@ public class OTDataCollectorView extends AbstractOTJComponentView
 	
 	public boolean getControllable()
 	{
-		return dataCollector.getShowControlBar();
+		return true;//dataCollector.getShowControlBar();
 	}
 	
 	public DataCollectorView getDataCollectorView(){

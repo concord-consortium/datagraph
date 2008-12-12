@@ -54,17 +54,27 @@ public class DataCollectorView extends AbstractOTJComponentView implements OTJCo
 	DataGraphManager dataGraphManager;
 	boolean controllable;
 	private OTJComponentViewContext jComponentViewContext;
+	private boolean showToolBar;
 	
     public DataCollectorView(OTDataCollector collector)
     {
         dataCollector = collector;
         controllable = true;
+        showToolBar = true;
     }
     
     public DataCollectorView(OTDataCollector collector, boolean controllable)
     {
+    	// Keeping this backwards compatible, the original code had both controllable
+    	// and showToolBar linked
+        this(collector, controllable, controllable);
+    }
+    
+    public DataCollectorView(OTDataCollector collector, boolean controllable, boolean showToolBar)
+    {
         dataCollector = collector;
         this.controllable = controllable;
+        this.showToolBar = showToolBar;
     }
 
     public JComponent getComponent(OTObject otObject)
@@ -75,10 +85,6 @@ public class DataCollectorView extends AbstractOTJComponentView implements OTJCo
     		throw new RuntimeException("otObject != dataCollector");
     	}    	
     	
-    	boolean showToolBar = true;
-    	if (!controllable){
-    		showToolBar = false;
-    	}
     	return getDataGraph(showToolBar, controllable);
     }
 
