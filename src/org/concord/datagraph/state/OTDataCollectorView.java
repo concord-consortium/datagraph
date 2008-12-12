@@ -100,7 +100,7 @@ public class OTDataCollectorView extends AbstractOTJComponentView
 	
 	public boolean getControllable()
 	{
-		return true;//dataCollector.getShowControlBar();
+		return dataCollector.getShowControlBar();
 	}
 	
 	public DataCollectorView getDataCollectorView(){
