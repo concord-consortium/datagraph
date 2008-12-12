@@ -76,6 +76,10 @@ public interface OTDataCollector
 	
 	//public void addGraphable(OTDataGraphable graphable);
 	
+	public boolean getShowControlBar();
+	public void setShowControlBar(boolean controlBar);
+	public static boolean DEFAULT_showControlBar = true;
+	
 	
 	public final static boolean DEFAULT_multipleGraphableEnabled = false;
 	public boolean getMultipleGraphableEnabled();
