@@ -154,7 +154,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		initialize();
 	}
 
-	public Object getViewService(Class serviceClass) {
+	public Object getViewService(Class<?> serviceClass) {
 		return viewContext.getViewService(serviceClass);
 	}
 
@@ -173,6 +173,10 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 			return null;
 		}
 		return getDataProducer(otSourceGraphable);
+	}
+	
+	public DataGraphable getSourceDataGraphable() {
+		return sourceGraphable;
 	}
 
 	public float getLastValue() {
@@ -244,9 +248,9 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 				DataProducer dp = getSourceDataProducer();
 				if (dp instanceof DefaultMultipleDataProducer) {
 					if (((DefaultMultipleDataProducer) dp).getClearAll()){
-						Vector graphablesToReset = getDataGraph().getAllGraphables(dp);
+						Vector<DataGraphable> graphablesToReset = getDataGraph().getAllGraphables(dp);
 						for (int i = 0; i < graphablesToReset.size(); i++) {
-	                       ((DataGraphable)graphablesToReset.get(i)).reset();
+	                       graphablesToReset.get(i).reset();
                         }
 					}
 				}
@@ -590,12 +594,12 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 
 	protected void initGraphables() {
 		OTObjectList pfGraphables = otDataGraph.getGraphables();
-		Vector realGraphables = new Vector();
+		Vector<DataGraphable> realGraphables = new Vector<DataGraphable>();
 
 		// for each list item get the data producer object
 		// add it to the data graph
 		for (int i = 0; i < pfGraphables.size(); i++) {
-			DataGraphable realGraphable = initNewGraphable((OTObject) pfGraphables
+			DataGraphable realGraphable = initNewGraphable(pfGraphables
 					.get(i));
 
 			realGraphables.add(realGraphable);
@@ -704,7 +708,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		//Take care of the extra graphables
 		OTObjectList otExtraGraphables = otDataGraph.getExtraGraphables();
 		for (int i = 0; i < otExtraGraphables.size(); i++) {
-			OTObject extraGraphable = (OTObject)otExtraGraphables.get(i);
+			OTObject extraGraphable = otExtraGraphables.get(i);
 
 			if (extraGraphable == null) continue;
 			
@@ -905,7 +909,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 
 		if (prototype == null) {
 
-			otGraphable = (OTDataGraphable) service
+			otGraphable = service
 					.createObject(OTDataGraphable.class);
 			DataProducer sourceDataProducer = getSourceDataProducer();
 			if (sourceDataProducer != null) {
@@ -1021,8 +1025,8 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		return "Data Set";
 	}
 
-	public Vector getItems(Object parent) {
-		return (Vector) (dataGraph.getObjList().clone());
+	public Vector<Object> getItems(Object parent) {
+		return (Vector<Object>) (dataGraph.getObjList().clone());
 	}
 
 	/**
@@ -1030,6 +1034,13 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 	 * multiple datagraphs.
 	 */
 	public void reset() {
+		// reset the datagraphable as well, so that it clears the drawn points
+		DataGraphable sourceDataGraphable = getSourceDataGraphable();
+		
+		if (sourceDataGraphable != null) {
+			sourceDataGraphable.reset();
+		}
+		
 		DataProducer sourceDataProducer = getSourceDataProducer();
 		if (sourceDataProducer == null) {
 			return;
@@ -1056,7 +1067,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 	public Color getNewColor() {
 		Color color = null;
 
-		Vector graphables = dataGraph.getObjList();
+		Vector<Object> graphables = dataGraph.getObjList();
 		for (int i = 0; i < colors.length; i++) {
 			color = colors[i];
 			boolean uniqueColor = true;
