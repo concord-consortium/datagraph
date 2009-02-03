@@ -1026,7 +1026,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 	}
 
 	public Vector<Object> getItems(Object parent) {
-		return (Vector<Object>) (dataGraph.getObjList().clone());
+		return (Vector<Object>) (dataGraph.getObjList().clone()); 
 	}
 
 	/**
@@ -1067,7 +1067,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 	public Color getNewColor() {
 		Color color = null;
 
-		Vector<Object> graphables = dataGraph.getObjList();
+		Vector<Graphable> graphables = dataGraph.getObjList();
 		for (int i = 0; i < colors.length; i++) {
 			color = colors[i];
 			boolean uniqueColor = true;

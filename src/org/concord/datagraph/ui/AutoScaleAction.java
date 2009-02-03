@@ -98,7 +98,7 @@ public class AutoScaleAction extends AbstractAction{
 		autoScaler.setAutoScaleY(autoScaleMode == AUTOSCALE_Y
 				|| autoScaleMode == AUTOSCALE_XY);
 
-		autoScaler.handleUpdate();
+		autoScaler.handleUpdate(null);
 	}
 	
 	private void setDefaultIcon() {

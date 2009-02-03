@@ -37,6 +37,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -99,10 +100,10 @@ public class DataGraph extends JPanel
 	protected GraphWindow graph;
 	protected Grid2D grid;
 	protected GraphWindowToolBar toolBar;
-	protected Vector axisScaleObjs = new Vector();
+	protected Vector<AxisScale> axisScaleObjs = new Vector<AxisScale>();
 	
 	
-	protected Hashtable producers = new Hashtable();
+	protected Hashtable<DataProducer, DataGraphable> producers = new Hashtable<DataProducer, DataGraphable>();
 
 	protected GraphableList objList;
 	protected GraphableList backgroundList;
@@ -161,7 +162,7 @@ public class DataGraph extends JPanel
 			graph.setDefaultGraphArea(new GraphArea(new DefaultCoordinateSystem2D()));
 		}
 		defaultGA = graph.getDefaultGraphArea();
-		defaultCS = (DefaultCoordinateSystem2D)defaultGA.getCoordinateSystem();
+		defaultCS = defaultGA.getCoordinateSystem();
 
 		defaultGA.setInsets(new Insets(10,50,40,10));
 		
@@ -220,9 +221,8 @@ public class DataGraph extends JPanel
 	public String getTitle(){
 		if(titleLabel != null){
 			return titleLabel.getText();
-		} else {
-			return "";
 		}
+		return "";
 	}
 	
 	public void setTitle(String title)
@@ -346,7 +346,7 @@ public class DataGraph extends JPanel
 		
 		//Correct the axis scale objects
 		for (int i=0; i<axisScaleObjs.size(); i++){
-			AxisScale ax = (AxisScale)axisScaleObjs.elementAt(i);
+			AxisScale ax = axisScaleObjs.elementAt(i);
 			ax.setGraphArea(ga);
 		}
 	}
@@ -594,7 +594,7 @@ public class DataGraph extends JPanel
 	 */
 	public DataGraphable getGraphable(DataProducer dataProducer)
 	{
-		DataGraphable dGraphable = (DataGraphable)producers.get(dataProducer);
+		DataGraphable dGraphable = producers.get(dataProducer);
 		if (dGraphable == null){
 			//Look for the first data graphable that has a data producer == dataProducer
 			//TODO: it should actually return a list of graphables that have that data producer
@@ -621,10 +621,10 @@ public class DataGraph extends JPanel
 	 * @param dataProducer
 	 * @return
 	 */
-	public Vector getAllGraphables(DataProducer dataProducer)
+	public Vector<DataGraphable> getAllGraphables(DataProducer dataProducer)
 	{
-		Vector dataGraphables = new Vector();
-		DataGraphable dGraphable = (DataGraphable)producers.get(dataProducer);
+		Vector<DataGraphable> dataGraphables = new Vector<DataGraphable>();
+		DataGraphable dGraphable = producers.get(dataProducer);
 		if (dGraphable != null){
 			dataGraphables.add(dGraphable);
 		}
@@ -633,8 +633,7 @@ public class DataGraph extends JPanel
 			//TODO: it should actually return a list of graphables that have that data producer
 			//specially for removeDataProducer
 			//I think the vector thing should be returned in a new method: getGraphables()
-			for (int i=0; i < objList.size(); i++){
-				Object obj = objList.elementAt(i);
+			for (Object obj : objList) {
 				if (obj instanceof DataGraphable){
 					dGraphable = (DataGraphable)obj;
                     DataProducer gDataProducer = dGraphable.findDataProducer();
@@ -664,12 +663,12 @@ public class DataGraph extends JPanel
 	{
 		// Create a graphable for this dataProducer
 		// add it to the graph
-		DataGraphable dGraphable = (!useDataGraphableWithShapes)?new DataGraphable():new DataGraphableEx();
+		DataGraphable dGraphable = (!useDataGraphableWithShapes) ? new DataGraphable() : new DataGraphableEx();
 		dGraphable.setDataProducer(dataProducer);
 		dGraphable.setChannelX(channelXAxis);
 		dGraphable.setChannelY(channelYAxis);
 		
-		if (dataProducer != null && dGraphable != null){
+		if (dataProducer != null){
 			producers.put(dataProducer, dGraphable);
 		}
 		
@@ -821,7 +820,7 @@ public class DataGraph extends JPanel
 			toolBar.setGrid(grid);
 			
 			for(int i=0; i<axisScaleObjs.size(); i++){
-			    toolBar.addAxisScale((AxisScale)axisScaleObjs.get(i));
+			    toolBar.addAxisScale(axisScaleObjs.get(i));
 			}
 			
 			if (bAddToPanel){
@@ -879,7 +878,9 @@ public class DataGraph extends JPanel
 	 */
 	public void stop()
 	{
-	    if(autoFitMode == AUTO_SCROLL_RUNNING_MODE){
+		// don't stop the autoscroller unless there's 1 or less running data producers
+		// (the 1 is the one which will be stopped via this stop call)
+		if(autoFitMode == AUTO_SCROLL_RUNNING_MODE && getRunningDataProducers().size() <= 1){
 	        scroller.setEnabled(false);
 	    }
 	}
@@ -1090,6 +1091,18 @@ public class DataGraph extends JPanel
 	    if (axisScale != null){
 	    	axisScale.setGrid(grid);
 	    }
+	}
+	
+	private ArrayList<DataProducer> getRunningDataProducers() {
+		ArrayList<DataProducer> list = new ArrayList<DataProducer>();
+		for (Object obj : objList) {
+			DataGraphable dGraphable = (DataGraphable) obj;
+			DataProducer producer = dGraphable.findDataProducer();
+			if (producer != null && producer.isRunning()) {
+				list.add(producer);
+			}
+		}
+		return list;
 	}
 
 }

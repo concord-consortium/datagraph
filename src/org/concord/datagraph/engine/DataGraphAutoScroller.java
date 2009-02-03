@@ -32,6 +32,8 @@
 */
 package org.concord.datagraph.engine;
 
+import java.util.EventObject;
+
 
 
 /**
@@ -71,7 +73,7 @@ public class DataGraphAutoScroller extends DataGraphDaemon
 	/**
 	 * 
 	 */
-	public void handleUpdate()
+	public void handleUpdate(EventObject e)
 	{
 		DataGraphable dg;
 		float minX=0, maxX=0, minY=0, maxY=0;
@@ -79,9 +81,20 @@ public class DataGraphAutoScroller extends DataGraphDaemon
 		
 		if (!autoScrollX && !autoScrollY) return;
 		
-		for (int i=0; i<graphables.size(); i++){
-			Object obj = graphables.elementAt(i);
-			if (obj instanceof DataGraphable){
+		if (e == null) {
+			for (Object obj : graphables){
+				if (obj instanceof DataGraphable){
+					dg = (DataGraphable)obj;
+					
+					if(!dg.isLocked()) {
+						maxX = Math.max(dg.getMaxXValue(), maxX);
+						maxY = Math.max(dg.getMaxYValue(), maxY);
+					}
+				}
+			}
+		} else {
+			Object obj = e.getSource();
+			if (obj instanceof DataGraphable) {
 				dg = (DataGraphable)obj;
 				
 				if(!dg.isLocked()) {
@@ -90,6 +103,7 @@ public class DataGraphAutoScroller extends DataGraphDaemon
 				}
 			}
 		}
+		
 		if (!Float.isNaN(maxX) && !Float.isNaN(maxY)){
 			
 			//System.out.println(minX + " " + maxX +  " " + minY +  " " + maxY);
@@ -121,8 +135,8 @@ public class DataGraphAutoScroller extends DataGraphDaemon
 			
 			maxX = maxX + xPaddingMaxLocal;
 			maxY = maxY + yPaddingMaxLocal;
-			minX = maxX - (float)worldWidth;
-			minY = maxY - (float)worldHeight;
+			minX = maxX - worldWidth;
+			minY = maxY - worldHeight;
 			if (!((!Float.isNaN(minXValue) && minX < minXValue) || (!Float.isNaN(minYValue) && minY < minYValue))){
 				if (autoScrollX && autoScrollY){			
 					graph.setLimitsAxisWorld(minX, maxX, minY, maxY);

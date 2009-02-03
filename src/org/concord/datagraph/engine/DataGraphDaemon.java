@@ -55,7 +55,7 @@ public abstract class DataGraphDaemon
 	protected DataGraph graph;
 	protected boolean enabled = true;
 	
-	public abstract void handleUpdate();
+	public abstract void handleUpdate(EventObject e);
 	
 	/**
 	 * @param graphables The graphables to set.
@@ -116,7 +116,7 @@ public abstract class DataGraphDaemon
 		//this will only work all events are thown synchronisly
 		graphables.removeGraphableListListener(this);
 		
-		handleUpdate();
+		handleUpdate(e);
 
 		//add ourselves back
 		graphables.addGraphableListListener(this);

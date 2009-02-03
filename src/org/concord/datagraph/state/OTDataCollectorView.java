@@ -43,9 +43,7 @@ import org.concord.framework.otrunk.view.AbstractOTJComponentView;
 import org.concord.framework.otrunk.view.OTDefaultComponentProvider;
 import org.concord.framework.otrunk.view.OTJComponentViewContext;
 import org.concord.framework.otrunk.view.OTJComponentViewContextAware;
-import org.concord.framework.otrunk.view.OTLabbookManager;
 import org.concord.framework.otrunk.view.OTLabbookViewProvider;
-import org.concord.graph.ui.GraphWindow;
 
 /**
  * @author scott
@@ -194,7 +192,7 @@ public class OTDataCollectorView extends AbstractOTJComponentView
 
 						public void run()
 		                {
-							autoscaler.handleUpdate();
+							autoscaler.handleUpdate(null);
 		                }});
                 }});
 			

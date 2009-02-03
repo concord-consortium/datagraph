@@ -33,6 +33,7 @@
 package org.concord.datagraph.engine;
 
 import java.awt.geom.Point2D;
+import java.util.EventObject;
 
 
 
@@ -57,7 +58,7 @@ public class DataGraphAutoScaler extends DataGraphDaemon
 	/**
 	 * 
 	 */
-	public void handleUpdate()
+	public void handleUpdate(EventObject e)
 	{
 		DataGraphable dg;
 		float minX=Float.MAX_VALUE, maxX=0, minY=Float.MAX_VALUE, maxY=0;
