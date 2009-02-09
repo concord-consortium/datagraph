@@ -61,6 +61,7 @@ import org.concord.datagraph.ui.AddDataPointLabelActionExt;
 import org.concord.datagraph.ui.AutoScaleAction;
 import org.concord.datagraph.ui.DataAnnotation;
 import org.concord.datagraph.ui.DataGraph;
+import org.concord.datagraph.ui.DataGraphToolbar;
 import org.concord.datagraph.ui.SingleDataAxisGrid;
 import org.concord.framework.data.DataDimension;
 import org.concord.framework.data.DataFlow;
@@ -499,65 +500,48 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		notesLayer = new SelectableList();
 		dataGraph.getGraph().add(notesLayer);
 
-		if (dataGraph.getToolBar() != null) {
-
-			SelectableToggleButton addNoteButton = new SelectableToggleButton(
-					new AddDataPointLabelAction(notesLayer, dataGraph
-							.getObjList(), dataGraph.getToolBar()));
-			dataGraph.getToolBar().addButton(addNoteButton,
-					"Add a note to a point in the graph");
-
-			// DataPointRuler need to be explicitly enabled to show per Brad's
-			// request.
-
-			if (otDataCollector != null && otDataCollector.getRulerEnabled()) {
-				SelectableToggleButton addNoteButton2 = new SelectableToggleButton(
-						new AddDataPointLabelActionExt(notesLayer, dataGraph
-								.getObjList(), dataGraph.getToolBar()));
-				dataGraph.getToolBar().addButton(addNoteButton2,
-						"Add a ruler to a point in the graph");
-			}
-
-			// AutoScale need to be explicitly enabled to show per Brad's
-			// request.
-			if (otDataCollector != null && otDataCollector.getAutoScaleEnabled()) {
-				JButton autoScaleButton = new JButton(new AutoScaleAction(
-						dataGraph));
-				JButton autoScaleXButton = new JButton(new AutoScaleAction(
-						AutoScaleAction.AUTOSCALE_X, dataGraph));
-				JButton autoScaleYButton = new JButton(new AutoScaleAction(
-						AutoScaleAction.AUTOSCALE_Y, dataGraph));
-
-				dataGraph.getToolBar().addButton(autoScaleButton,
-						"Autoscale the graph");
-				dataGraph.getToolBar().addButton(autoScaleXButton,
-						"Autoscale X axis");
-				dataGraph.getToolBar().addButton(autoScaleYButton,
-						"Autoscale Y axis");
-			}
-
-			KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+		if (dataGraph.getToolBar() != null && dataGraph.getToolBar() instanceof DataGraphToolbar) {
+			DataGraphToolbar toolbar = (DataGraphToolbar) dataGraph.getToolBar();
+			toolbar.setDataGraph(dataGraph);
+			toolbar.setNotesLayer(notesLayer);
 			
-			treeDispatcher = new KeyEventDispatcher(){					
-				public boolean dispatchKeyEvent(KeyEvent e) {
-					if(dataGraph.isAncestorOf(e.getComponent()) &&
-							((e.getModifiers() | KeyEvent.KEY_RELEASED) != 0) &&
-					        ((e.getModifiersEx() & java.awt.event.InputEvent.CTRL_DOWN_MASK) != 0) &&
-					        (e.getKeyCode() == java.awt.event.KeyEvent.VK_T)) {
-						GraphTreeView gtv = new GraphTreeView();
-						gtv.setGraph(dataGraph.getGraph());
-						GraphTreeView.showAsDialog(gtv, "graph tree");
-						return true;
-					}
-					
-					return false;
+		//	toolbar.removeAll();
+			
+			toolbar.addButton(DataGraphToolbar.SELECT_BTN, true);
+			toolbar.addButton(DataGraphToolbar.ZOOM_IN_BTN);
+			toolbar.addButton(DataGraphToolbar.ZOOM_OUT_BTN);
+			toolbar.addButton(DataGraphToolbar.RESTORE_SCALE_BTN);
+			toolbar.addButton(DataGraphToolbar.ADD_NOTE_BTN);
+			if (otDataCollector != null && otDataCollector.getRulerEnabled()) {
+				toolbar.addButton(DataGraphToolbar.RULER_BTN);
+			}
+			if (otDataCollector != null && otDataCollector.getAutoScaleEnabled()) {
+				toolbar.addButton(DataGraphToolbar.AUTOSCALE_GRAPH_BTN);
+				toolbar.addButton(DataGraphToolbar.AUTOSCALE_X_BTN);
+				toolbar.addButton(DataGraphToolbar.AUTOSCALE_Y_BTN);
+			}
+		}
+
+		KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+		
+		treeDispatcher = new KeyEventDispatcher(){					
+			public boolean dispatchKeyEvent(KeyEvent e) {
+				if(dataGraph.isAncestorOf(e.getComponent()) &&
+						((e.getModifiers() | KeyEvent.KEY_RELEASED) != 0) &&
+				        ((e.getModifiersEx() & java.awt.event.InputEvent.CTRL_DOWN_MASK) != 0) &&
+				        (e.getKeyCode() == java.awt.event.KeyEvent.VK_T)) {
+					GraphTreeView gtv = new GraphTreeView();
+					gtv.setGraph(dataGraph.getGraph());
+					GraphTreeView.showAsDialog(gtv, "graph tree");
+					return true;
 				}
 				
-			};
-
-			focusManager.addKeyEventDispatcher(treeDispatcher);
+				return false;
+			}
 			
-		}
+		};
+
+		focusManager.addKeyEventDispatcher(treeDispatcher);
 
 		xOTAxis = otDataGraph.getXDataAxis();
 		xOTAxis.addOTChangeListener(this);

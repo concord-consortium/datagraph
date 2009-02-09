@@ -33,6 +33,7 @@
 package org.concord.datagraph.ui;
 
 import javax.swing.AbstractButton;
+import javax.swing.JButton;
 
 import org.concord.graph.engine.AxisScale;
 import org.concord.graph.engine.MultiRegionAxisScale;
@@ -61,6 +62,10 @@ public class DataGraphToolbar extends GraphWindowToolBar
 	public final static int ZOOM_OUT_BTN = 2;
 	public final static int RESTORE_SCALE_BTN = 3;
 	public final static int ADD_NOTE_BTN = 4;
+	public final static int RULER_BTN = 5;
+	public final static int AUTOSCALE_GRAPH_BTN = 6;
+	public final static int AUTOSCALE_X_BTN = 7;
+	public final static int AUTOSCALE_Y_BTN = 8;
 	
     public DataGraphToolbar()
     {
@@ -134,11 +139,46 @@ public class DataGraphToolbar extends GraphWindowToolBar
     					"restorescale", "Restore initial scale", false);
     			break;
     		case ADD_NOTE_BTN:
-    			button = new SelectableToggleButton(
-    					new AddDataPointLabelAction(notesLayer, dataGraph
-    							.getObjList(), dataGraph.getToolBar()));
-    			dataGraph.getToolBar().addButton(button,
-    					"Add a note to a point in the graph");
+    			if (dataGraph != null && notesLayer != null){
+        			button = new SelectableToggleButton(
+        					new AddDataPointLabelAction(notesLayer, dataGraph
+        							.getObjList(), dataGraph.getToolBar()));
+        			addButton(button, "Add a note to a point in the graph");
+    			} else {
+    				System.err.println("DataGraph and NotesLayer must be added before add notes button may be added");
+    			}
+    			break;
+    		case RULER_BTN:
+    			if (dataGraph != null && notesLayer != null){
+        			button = new SelectableToggleButton(
+    						new AddDataPointLabelActionExt(notesLayer, dataGraph
+    								.getObjList(), dataGraph.getToolBar()));
+    				addButton(button, "Add a ruler to a point in the graph");
+    			} else {
+    				System.err.println("DataGraph and NotesLayer must be added before ruler button may be added");
+    			}
+				break;
+    		case AUTOSCALE_GRAPH_BTN:
+    			if (dataGraph != null){
+    				addButton(new JButton(new AutoScaleAction(dataGraph)), "Autoscale the graph");
+    			} else {
+    				System.err.println("DataGraph must be added before autoscale button may be added");
+    			}
+    			break;
+    		case AUTOSCALE_X_BTN:
+    			if (dataGraph != null){
+    				addButton(new JButton(new AutoScaleAction(AutoScaleAction.AUTOSCALE_X, dataGraph)), "Autoscale the graph");
+    			} else {
+    				System.err.println("DataGraph must be added before autoscale button may be added");
+    			}
+    			break;
+    		case AUTOSCALE_Y_BTN:
+    			if (dataGraph != null){
+    				addButton(new JButton(new AutoScaleAction(AutoScaleAction.AUTOSCALE_Y, dataGraph)), "Autoscale the graph");
+    			} else {
+    				System.err.println("DataGraph must be added before autoscale button may be added");
+    			}
+    			break;
     		default:
     			System.err.println("No button of that type is defined");
     	}
