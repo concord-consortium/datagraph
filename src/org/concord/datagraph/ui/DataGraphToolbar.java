@@ -36,7 +36,9 @@ import javax.swing.AbstractButton;
 
 import org.concord.graph.engine.AxisScale;
 import org.concord.graph.engine.MultiRegionAxisScale;
+import org.concord.graph.engine.SelectableList;
 import org.concord.graph.examples.GraphWindowToolBar;
+import org.concord.swing.SelectableToggleButton;
 
 /**
  * DataGraphToolbar
@@ -51,23 +53,18 @@ public class DataGraphToolbar extends GraphWindowToolBar
 {
 	private static final long serialVersionUID = 1L;
 	protected AbstractButton selButton;
+	private SelectableList notesLayer;
+	private DataGraph dataGraph;
 
 	public final static int SELECT_BTN = 0;
 	public final static int ZOOM_IN_BTN = 1;
 	public final static int ZOOM_OUT_BTN = 2;
 	public final static int RESTORE_SCALE_BTN = 3;
+	public final static int ADD_NOTE_BTN = 4;
 	
     public DataGraphToolbar()
     {
-        super(false);
-        
-		selButton = addButton(SELECT_BTN);
-		addButton(ZOOM_IN_BTN);
-		addButton(ZOOM_OUT_BTN);
-		addButton(RESTORE_SCALE_BTN);
-
-		setDefaultButton(selButton);
-		
+        this(new int[] {SELECT_BTN, ZOOM_IN_BTN, ZOOM_OUT_BTN, RESTORE_SCALE_BTN});
     }
     
     /**
@@ -81,12 +78,17 @@ public class DataGraphToolbar extends GraphWindowToolBar
     	super(false);
     	
     	for (int i = 0; i < buttons.length; i++) {
-	        AbstractButton button = addButton(buttons[i]);
-	        if (i == 0 && button != null){
-	        	setDefaultButton(button);
-	        }
+	        addButton(buttons[i], i==0);
         }
     	
+    }
+    
+    public void setNotesLayer(SelectableList notesLayer){
+    	this.notesLayer = notesLayer;
+    }
+    
+    public void setDataGraph(DataGraph dataGraph){
+    	this.dataGraph = dataGraph;
     }
     
     /**
@@ -97,6 +99,18 @@ public class DataGraphToolbar extends GraphWindowToolBar
      * @return
      */
     public AbstractButton addButton(int buttonType){
+    	return addButton(buttonType, false);
+    }
+    
+    /**
+     * Adds button of the specified type and returns the newly
+     * created button. If setDefault, button is set as the default
+     * button, and is selected when graph is first shown.
+     * 
+     * @param buttonType
+     * @return
+     */
+    public AbstractButton addButton(int buttonType, boolean setDefault){
     	AbstractButton button = null;
     	switch (buttonType){
     		case SELECT_BTN:
@@ -119,8 +133,17 @@ public class DataGraphToolbar extends GraphWindowToolBar
     			button = addButton("restorescale.gif", 
     					"restorescale", "Restore initial scale", false);
     			break;
+    		case ADD_NOTE_BTN:
+    			button = new SelectableToggleButton(
+    					new AddDataPointLabelAction(notesLayer, dataGraph
+    							.getObjList(), dataGraph.getToolBar()));
+    			dataGraph.getToolBar().addButton(button,
+    					"Add a note to a point in the graph");
     		default:
-    			System.err.println("No button of that tye is defined");
+    			System.err.println("No button of that type is defined");
+    	}
+    	if (setDefault){
+    		setDefaultButton(button);
     	}
     	return button;
     }
