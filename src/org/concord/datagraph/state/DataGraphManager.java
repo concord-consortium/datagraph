@@ -507,18 +507,27 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 			
 			toolbar.removeAll();
 			
-			toolbar.addButton(DataGraphToolbar.SELECT_BTN, true);
-			toolbar.addButton(DataGraphToolbar.ZOOM_IN_BTN);
-			toolbar.addButton(DataGraphToolbar.ZOOM_OUT_BTN);
-			toolbar.addButton(DataGraphToolbar.RESTORE_SCALE_BTN);
-			toolbar.addButton(DataGraphToolbar.ADD_NOTE_BTN);
-			if (otDataCollector != null && otDataCollector.getRulerEnabled()) {
-				toolbar.addButton(DataGraphToolbar.RULER_BTN);
-			}
-			if (otDataCollector != null && otDataCollector.getAutoScaleEnabled()) {
-				toolbar.addButton(DataGraphToolbar.AUTOSCALE_GRAPH_BTN);
-				toolbar.addButton(DataGraphToolbar.AUTOSCALE_X_BTN);
-				toolbar.addButton(DataGraphToolbar.AUTOSCALE_Y_BTN);
+			if (otDataCollector == null || otDataCollector.getUseDefaultToolBar()){
+    			toolbar.addButton(DataGraphToolbar.SELECT_BTN, true);
+    			toolbar.addButton(DataGraphToolbar.ZOOM_IN_BTN);
+    			toolbar.addButton(DataGraphToolbar.ZOOM_OUT_BTN);
+    			toolbar.addButton(DataGraphToolbar.RESTORE_SCALE_BTN);
+    			toolbar.addButton(DataGraphToolbar.ADD_NOTE_BTN);
+    			if (otDataCollector != null && otDataCollector.getRulerEnabled()) {
+    				toolbar.addButton(DataGraphToolbar.RULER_BTN);
+    			}
+    			if (otDataCollector != null && otDataCollector.getAutoScaleEnabled()) {
+    				toolbar.addButton(DataGraphToolbar.AUTOSCALE_GRAPH_BTN);
+    				toolbar.addButton(DataGraphToolbar.AUTOSCALE_X_BTN);
+    				toolbar.addButton(DataGraphToolbar.AUTOSCALE_Y_BTN);
+    			}
+			} else {
+				if (!otDataCollector.getDisplayButtons().equals("")){
+    				String[] buttons = otDataCollector.getDisplayButtons().split(",");
+    				for (int i = 0; i < buttons.length; i++) {
+    					toolbar.addButton(Integer.parseInt(buttons[i]), i==0);
+                    }
+				}
 			}
 		}
 

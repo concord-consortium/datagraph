@@ -92,4 +92,15 @@ public interface OTDataCollector
 	public final static boolean DEFAULT_autoScaleEnabled = true;
 	public boolean getAutoScaleEnabled();
 	public void setAutoScaleEnabled(boolean autoScaleEnabled);
+	
+	// Settings for the buttons displayed in the tool bar
+	public final static boolean DEFAULT_useDefaultToolBar = true;
+	public boolean getUseDefaultToolBar();
+	public void setUseDefaultToolBar(boolean useDefaultToolBar);
+	
+	// Settings for the buttons displayed in the tool bar, and a comma-separated
+	// list of ints. This is used only if useDefaultToolBar is not true. For the 
+	// meaning of the numbers, see the static ints defined in DataGraphToolbar
+	public String getDisplayButtons();
+	public void setDisplayButtons(String displayButtons);
 }
