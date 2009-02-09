@@ -156,8 +156,8 @@ public class OTDataCollectorView extends AbstractOTJComponentView
 				DataGraph graph = ((DataCollectorView)view).getDataGraph(true, false);
 				graph.setAutoFitMode(DataGraph.AUTO_SCALE_MODE);
 				final DataGraphAutoScaler autoscaler = graph.getAutoScaler();
-				autoscaler.setAutoScaleX(true);
-				autoscaler.setAutoScaleY(true);
+		//		autoscaler.setAutoScaleX(true);
+		//		autoscaler.setAutoScaleY(true);
 				
 				return graph;
 			} else
@@ -181,20 +181,6 @@ public class OTDataCollectorView extends AbstractOTJComponentView
 			graph.setAutoFitMode(DataGraph.AUTO_SCALE_MODE);
 			graph.setInsets(new Insets(0,8,8,0));
 			graph.setTitle(graph.getTitle(), 9);
-			final DataGraphAutoScaler autoscaler = graph.getAutoScaler();
-			autoscaler.setAutoScaleX(true);
-			autoscaler.setAutoScaleY(true);
-			EventQueue.invokeLater(new Runnable(){
-
-				public void run()
-                {
-					EventQueue.invokeLater(new Runnable(){
-
-						public void run()
-		                {
-							autoscaler.handleUpdate(null);
-		                }});
-                }});
 			
 			graph.setPreferredSize(new Dimension((int) (height*1.3), height));
 			return graph;
