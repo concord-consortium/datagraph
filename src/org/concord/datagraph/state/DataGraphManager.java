@@ -505,7 +505,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 			toolbar.setDataGraph(dataGraph);
 			toolbar.setNotesLayer(notesLayer);
 			
-		//	toolbar.removeAll();
+			toolbar.removeAll();
 			
 			toolbar.addButton(DataGraphToolbar.SELECT_BTN, true);
 			toolbar.addButton(DataGraphToolbar.ZOOM_IN_BTN);
