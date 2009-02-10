@@ -201,4 +201,46 @@ public class DataGraphToolbar extends GraphWindowToolBar
 			getDefaultButton().doClick();
 		}
 	}
+	
+	// For editing window
+	public static int[] getAllButtons(){
+		return new int[] {
+				SELECT_BTN,
+				ZOOM_IN_BTN,
+				ZOOM_OUT_BTN,
+				RESTORE_SCALE_BTN,
+				ADD_NOTE_BTN,
+				RULER_BTN,
+				AUTOSCALE_GRAPH_BTN,
+				AUTOSCALE_X_BTN,
+				AUTOSCALE_Y_BTN,
+		};
+	}
+	
+	// For editing window
+	public static String buttonName(int buttonType){
+		switch (buttonType){
+			case SELECT_BTN:
+				return "Selection";
+			case ZOOM_IN_BTN:
+				return "Zoom in";
+			case ZOOM_OUT_BTN:
+				return "Zoom out";
+			case RESTORE_SCALE_BTN:
+				return "Restore scale";
+			case ADD_NOTE_BTN:
+				return "Add label";
+			case RULER_BTN:
+				return "Ruler";
+			case AUTOSCALE_GRAPH_BTN:
+				return "Autoscale";
+			case AUTOSCALE_X_BTN:
+				return "Autoscale X";
+			case AUTOSCALE_Y_BTN:
+				return "Autoscale Y";
+			default:
+				System.err.println("Unknown button type: "+buttonType);
+				return "";
+		}
+	}
 }
