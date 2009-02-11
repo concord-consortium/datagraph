@@ -508,7 +508,16 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 			toolbar.removeAll();
 			
 			if (otDataCollector == null || otDataCollector.getUseDefaultToolBar()){
-    			toolbar.addButton(DataGraphToolbar.SELECT_BTN, true);
+				boolean selectableIsDefault = true;
+				if (otDataCollector.getSource() != null){
+					DataGraphable sg = (DataGraphable) controllerService.getRealObject(otDataCollector.getSource());
+					if (sg instanceof ControllableDataGraphable){
+						toolbar.setSourceGraphable(sg);
+						toolbar.addButton(DataGraphToolbar.DRAWING_BTN, true);
+						selectableIsDefault = false;
+					}
+				}
+    			toolbar.addButton(DataGraphToolbar.SELECT_BTN, selectableIsDefault);
     			toolbar.addButton(DataGraphToolbar.ZOOM_IN_BTN);
     			toolbar.addButton(DataGraphToolbar.ZOOM_OUT_BTN);
     			toolbar.addButton(DataGraphToolbar.RESTORE_SCALE_BTN);
@@ -622,14 +631,6 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 						dataGraph.reset();
 					}
 				});
-
-				DrawingAction a = new DrawingAction();
-				a.setDrawingObject((ControllableDataGraphable) sourceGraphable);
-				GraphWindowToolBar gwToolbar = dataGraph.getToolBar();
-				if (gwToolbar != null) {
-					gwToolbar.addButton(new SelectableToggleButton(a),
-							"Draw a function", 0, false, true);
-				}
 
 				bottomPanel.add(clearButton);
 				// bottomPanel.add(about);

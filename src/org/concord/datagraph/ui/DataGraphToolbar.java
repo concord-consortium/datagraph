@@ -35,10 +35,13 @@ package org.concord.datagraph.ui;
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
 
+import org.concord.datagraph.engine.ControllableDataGraphable;
+import org.concord.datagraph.engine.DataGraphable;
 import org.concord.graph.engine.AxisScale;
 import org.concord.graph.engine.MultiRegionAxisScale;
 import org.concord.graph.engine.SelectableList;
 import org.concord.graph.examples.GraphWindowToolBar;
+import org.concord.graph.util.control.DrawingAction;
 import org.concord.swing.SelectableToggleButton;
 
 /**
@@ -56,6 +59,7 @@ public class DataGraphToolbar extends GraphWindowToolBar
 	protected AbstractButton selButton;
 	private SelectableList notesLayer;
 	private DataGraph dataGraph;
+	private DataGraphable sourceGraphable;
 
 	public final static int SELECT_BTN = 0;
 	public final static int ZOOM_IN_BTN = 1;
@@ -66,6 +70,7 @@ public class DataGraphToolbar extends GraphWindowToolBar
 	public final static int AUTOSCALE_GRAPH_BTN = 6;
 	public final static int AUTOSCALE_X_BTN = 7;
 	public final static int AUTOSCALE_Y_BTN = 8;
+	public final static int DRAWING_BTN = 9;				// not to be added to customization views
 	
     public DataGraphToolbar()
     {
@@ -94,6 +99,10 @@ public class DataGraphToolbar extends GraphWindowToolBar
     
     public void setDataGraph(DataGraph dataGraph){
     	this.dataGraph = dataGraph;
+    }
+    
+    public void setSourceGraphable(DataGraphable sg){
+    	this.sourceGraphable = sg;
     }
     
     /**
@@ -177,6 +186,16 @@ public class DataGraphToolbar extends GraphWindowToolBar
     				addButton(new JButton(new AutoScaleAction(AutoScaleAction.AUTOSCALE_Y, dataGraph)), "Autoscale the graph");
     			} else {
     				System.err.println("DataGraph must be added before autoscale button may be added");
+    			}
+    			break;
+    		case DRAWING_BTN:
+    			if (sourceGraphable != null){
+    				DrawingAction a = new DrawingAction();
+    				a.setDrawingObject((ControllableDataGraphable) sourceGraphable);
+    				button = new SelectableToggleButton(a);
+    				addButton(button, "Draw a function");
+    			} else {
+    				System.err.println("sourceGraphable must be added before drawing button may be added");
     			}
     			break;
     		default:
