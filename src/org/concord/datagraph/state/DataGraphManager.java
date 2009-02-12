@@ -56,9 +56,6 @@ import org.concord.data.ui.DataFlowControlToolBar;
 import org.concord.data.ui.DataStoreLabel;
 import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.DataGraphable;
-import org.concord.datagraph.ui.AddDataPointLabelAction;
-import org.concord.datagraph.ui.AddDataPointLabelActionExt;
-import org.concord.datagraph.ui.AutoScaleAction;
 import org.concord.datagraph.ui.DataAnnotation;
 import org.concord.datagraph.ui.DataGraph;
 import org.concord.datagraph.ui.DataGraphToolbar;
@@ -88,8 +85,6 @@ import org.concord.graph.examples.GraphWindowToolBar;
 import org.concord.graph.ui.GraphTreeView;
 import org.concord.graph.ui.Grid2D;
 import org.concord.graph.ui.SingleAxisGrid;
-import org.concord.graph.util.control.DrawingAction;
-import org.concord.swing.SelectableToggleButton;
 import org.concord.view.CheckedColorTreeControler;
 
 /**
@@ -155,7 +150,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		initialize();
 	}
 
-	public Object getViewService(Class<?> serviceClass) {
+	public <T> T getViewService(Class<T> serviceClass) {
 		return viewContext.getViewService(serviceClass);
 	}
 
@@ -472,7 +467,8 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 	}
 
 	public void initialize() {
-		OTControllerServiceFactory controllerServiceFactory = (OTControllerServiceFactory) getViewService(OTControllerServiceFactory.class);
+		OTControllerServiceFactory controllerServiceFactory = 
+			getViewService(OTControllerServiceFactory.class);
 
 		controllerService = controllerServiceFactory.createControllerService();
 		controllerService.addService(OTViewContext.class, viewContext);
