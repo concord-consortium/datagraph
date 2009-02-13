@@ -110,7 +110,7 @@ public class SingleValueDataView extends AbstractOTJComponentView implements OTJ
 	    } 
 	    
     	if(controllerService == null){
-        	controllerService = createControllerService();
+        	controllerService = createControllerService(dataCollector);
     	}
 
     	dataStore = (WritableDataStore) controllerService.getRealObject(otDataStore);
