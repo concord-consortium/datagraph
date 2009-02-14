@@ -470,7 +470,8 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		OTControllerServiceFactory controllerServiceFactory = 
 			getViewService(OTControllerServiceFactory.class);
 
-		controllerService = controllerServiceFactory.createControllerService();
+		controllerService = 
+			controllerServiceFactory.createControllerService(otDataGraph.getOTObjectService());
 		controllerService.addService(OTViewContext.class, viewContext);
 		controllerService.addService(OTJComponentViewContext.class,
 				jComponentViewContext);
