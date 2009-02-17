@@ -506,7 +506,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 			
 			if (otDataCollector == null || otDataCollector.getUseDefaultToolBar()){
 				boolean selectableIsDefault = true;
-				if (otDataCollector.getSource() != null){
+				if (otDataCollector!= null && otDataCollector.getSource() != null){
 					DataGraphable sg = (DataGraphable) controllerService.getRealObject(otDataCollector.getSource());
 					if (sg instanceof ControllableDataGraphable){
 						toolbar.setSourceGraphable(sg);
