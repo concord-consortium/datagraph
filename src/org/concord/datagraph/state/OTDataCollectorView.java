@@ -64,7 +64,18 @@ public class OTDataCollectorView extends AbstractOTJComponentView
      */
     public JComponent getComponent(OTObject otObject)
     {
-        this.dataCollector = (OTDataCollector)otObject;
+        setup(otObject);
+        
+        return view.getComponent(otObject);
+    }
+    
+    /**
+     * Initializes the basic variables. Refactored from getComponent method
+     * so that labbook methods can use it as well.
+     * @param otObject
+     */
+    private void setup(OTObject otObject){
+    	this.dataCollector = (OTDataCollector)otObject;
         if(dataCollector.getSingleValue()) {
             view = new SingleValueDataView(dataCollector);
         }
@@ -72,13 +83,10 @@ public class OTDataCollectorView extends AbstractOTJComponentView
             view = new DataCollectorView(dataCollector, getControllable(), true);
         }
         
-        // We need to intialize the view so it can access it services correctly.
         view.setViewContext(viewContext);
         if (view instanceof OTJComponentViewContextAware){
         	((OTJComponentViewContextAware)view).setOTJComponentViewContext(jComponentViewContext);
         }
-        
-        return view.getComponent(otObject);
     }
 
     /* (non-Javadoc)
@@ -152,8 +160,7 @@ public class OTDataCollectorView extends AbstractOTJComponentView
     {
 		((OTDataCollector)otObject).getSource().setControllable(false);
 		
-		// we have to call getComponent to make sure the dataGraph gets created
-		getComponent(otObject);
+		setup(otObject);
 		
 	     //   view.getComponent(otObject);
 			if (view instanceof DataCollectorView){
@@ -176,7 +183,7 @@ public class OTDataCollectorView extends AbstractOTJComponentView
     {
 		((OTDataCollector)otObject).getSource().setControllable(false);
 		
-		getComponent(otObject);
+		setup(otObject);
 		
      //   view.getComponent(otObject);
 		if (view instanceof DataCollectorView){
