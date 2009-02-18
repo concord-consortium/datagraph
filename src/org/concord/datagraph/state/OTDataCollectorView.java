@@ -123,7 +123,11 @@ public class OTDataCollectorView extends AbstractOTJComponentView
 	public OTObject copyObjectForSnapshot(OTObject otObject)
     {
 	    try {
-	        return otObject.getOTObjectService().copyObject(otObject, -1);
+	        OTObject copy =  otObject.getOTObjectService().copyObject(otObject, -1);
+	        if (copy instanceof OTDataCollector){
+	        	((OTDataCollector)copy).setMultipleGraphableEnabled(false);
+	        }
+	        return copy;
         } catch (Exception e) {
 	        // TODO Auto-generated catch block
 	        e.printStackTrace();
