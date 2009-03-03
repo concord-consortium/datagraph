@@ -71,6 +71,7 @@ import org.concord.framework.otrunk.OTControllerService;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTObjectList;
 import org.concord.framework.otrunk.OTObjectService;
+import org.concord.framework.otrunk.OTResourceMap;
 import org.concord.framework.otrunk.view.OTControllerServiceFactory;
 import org.concord.framework.otrunk.view.OTJComponentViewContext;
 import org.concord.framework.otrunk.view.OTViewContext;
@@ -463,6 +464,19 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 
 		if (axis.isResourceSet("intervalWorld")) {
 			sAxis.setIntervalFixedWorld(axis.getIntervalWorld());
+		}
+		
+		OTResourceMap labelMap = axis.getCustomGridLabels();
+		String[] labelMapKeys = labelMap.getKeys();
+		for (String strValue : labelMapKeys) {
+			try {
+				double value = Double.parseDouble(strValue);
+				String label = (String) labelMap.get(strValue);
+				sAxis.addGridLabelOverride(value, label);
+			} catch (NumberFormatException e) {
+				System.err.println("Grid label key -- expected a double, got: " + strValue);
+				e.printStackTrace();
+			}
 		}
 	}
 

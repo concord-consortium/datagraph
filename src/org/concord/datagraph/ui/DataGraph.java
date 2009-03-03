@@ -164,8 +164,6 @@ public class DataGraph extends JPanel
 		defaultGA = graph.getDefaultGraphArea();
 		defaultCS = defaultGA.getCoordinateSystem();
 
-		defaultGA.setInsets(new Insets(10,50,40,10));
-		
 		//By default, the origin is the lower left corner of the graph area
 		setOriginOffsetPercentage(0,0);
 		
@@ -178,6 +176,9 @@ public class DataGraph extends JPanel
 		grid = createGrid();
 		grid.getXGrid().setAutoFormatLabels(autoformatXAxis);
 		grid.getYGrid().setAutoFormatLabels(autoformatYAxis);
+		
+		Insets insets = calcInsets();
+		setInsets(insets);
 		
 		//Add the grid to the graph
 		graph.addDecoration(grid);
@@ -212,6 +213,23 @@ public class DataGraph extends JPanel
 		////////
 
 		initScaleObject();
+	}
+
+	private Insets calcInsets() {
+		double xLabelSpace = grid.getXGrid().getHeight(); 
+		// double yLabelSpace = grid.getYGrid().getWidth();
+		double yLabelSpace = 0.0;
+		
+		if (xLabelSpace < 40) {
+			xLabelSpace = 40;
+		}
+		
+		if (yLabelSpace < 50) {
+			yLabelSpace = 50;
+		}
+		System.err.println("INSETS: 10," + yLabelSpace + "," + xLabelSpace + ",10");
+		Insets insets = new Insets(10,(int) yLabelSpace,(int) xLabelSpace,10);
+		return insets;
 	}
 	
 	public void setInsets(Insets insets){

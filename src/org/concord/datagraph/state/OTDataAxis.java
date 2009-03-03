@@ -34,6 +34,7 @@ package org.concord.datagraph.state;
 
 import org.concord.framework.otrunk.OTObjectInterface;
 import org.concord.framework.otrunk.OTObjectList;
+import org.concord.framework.otrunk.OTResourceMap;
 
 
 /**
@@ -70,4 +71,11 @@ public interface OTDataAxis
 	public static String FORMAT_ENGINEERING = "Engineering";	// engineering notation, exponents are multiples of 3
 	public static String FORMAT_NONE = "None";					// no formatting
 	public static String DEFAULT_labelFormat = FORMAT_ENGINEERING;
+	
+	/**
+	 * A resource map, keys are doubles, values are strings.
+	 * The string will replace the default numeric label at that value.
+	 * @return
+	 */
+	public OTResourceMap getCustomGridLabels();
 }
