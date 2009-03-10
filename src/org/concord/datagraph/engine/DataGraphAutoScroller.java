@@ -75,6 +75,9 @@ public class DataGraphAutoScroller extends DataGraphDaemon
 	 */
 	public void handleUpdate(EventObject e)
 	{
+		if (! enabled) {
+			return;
+		}
 		DataGraphable dg;
 		float minX=0, maxX=0, minY=0, maxY=0;
 		//float val;

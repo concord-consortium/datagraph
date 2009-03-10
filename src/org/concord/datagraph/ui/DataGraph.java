@@ -1117,7 +1117,9 @@ public class DataGraph extends JPanel
 			DataGraphable dGraphable = (DataGraphable) obj;
 			DataProducer producer = dGraphable.findDataProducer();
 			if (producer != null && producer.isRunning()) {
-				list.add(producer);
+				if (! list.contains(producer)) {
+					list.add(producer);
+				}
 			}
 		}
 		return list;
