@@ -542,6 +542,13 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
     				toolbar.addButton(DataGraphToolbar.AUTOSCALE_Y_BTN);
     			}
 			} else {
+				if (otDataCollector!= null && otDataCollector.getSource() != null){
+					DataGraphable sg = (DataGraphable) controllerService.getRealObject(otDataCollector.getSource());
+					if (sg instanceof ControllableDataGraphable){
+						toolbar.setSourceGraphable(sg);
+						toolbar.addButton(DataGraphToolbar.DRAWING_BTN, true);
+					}
+				}
 				if (!otDataCollector.getDisplayButtons().equals("")){
     				String[] buttons = otDataCollector.getDisplayButtons().split(",");
     				for (int i = 0; i < buttons.length; i++) {
