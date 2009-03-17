@@ -193,7 +193,7 @@ public class DataGraphToolbar extends GraphWindowToolBar
     				DrawingAction a = new DrawingAction();
     				a.setDrawingObject((ControllableDataGraphable) sourceGraphable);
     				button = new SelectableToggleButton(a);
-    				addButton(button, "Draw a function");
+    				addButton(button, "Draw a function", 0, false, true);
     			} else {
     				System.err.println("sourceGraphable must be added before drawing button may be added");
     			}

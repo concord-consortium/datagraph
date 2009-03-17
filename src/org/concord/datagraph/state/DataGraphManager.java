@@ -524,7 +524,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 					DataGraphable sg = (DataGraphable) controllerService.getRealObject(otDataCollector.getSource());
 					if (sg instanceof ControllableDataGraphable){
 						toolbar.setSourceGraphable(sg);
-						toolbar.addButton(DataGraphToolbar.DRAWING_BTN, true);
+						toolbar.addButton(DataGraphToolbar.DRAWING_BTN, false);
 						selectableIsDefault = false;
 					}
 				}
