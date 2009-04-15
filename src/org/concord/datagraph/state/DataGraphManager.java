@@ -641,7 +641,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 					.getRealObject(source);
 
 			// dProducer.getDataDescription().setDt(0.1f);
-			if (sourceGraphable instanceof ControllableDataGraphable) {
+			if (sourceGraphable instanceof ControllableDataGraphable && showDataControls) {
 				bottomPanel = new JPanel(new FlowLayout());
 				JButton clearButton = new JButton("Clear");
 				clearButton.addActionListener(new ActionListener() {

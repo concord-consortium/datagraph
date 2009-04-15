@@ -33,6 +33,7 @@
 package org.concord.datagraph.state;
 
 import java.awt.Dimension;
+import java.util.logging.Logger;
 
 import javax.swing.JComponent;
 
@@ -54,6 +55,7 @@ import org.concord.framework.otrunk.view.OTJComponentViewContextAware;
  */
 public class OTDataGraphView extends AbstractOTJComponentView implements OTJComponentViewContextAware
 {
+	private static final Logger logger = Logger.getLogger(OTDataGraphView.class.getCanonicalName());
 	OTDataGraph pfObject;
 	DataGraph dataGraph;
 	DataGraphManager manager;
@@ -66,7 +68,7 @@ public class OTDataGraphView extends AbstractOTJComponentView implements OTJComp
 	{
 		this.pfObject = (OTDataGraph)otObject;
 
-		manager = new DataGraphManager(pfObject, viewContext, true, jComponentViewContext);
+		manager = new DataGraphManager(pfObject, viewContext, pfObject.getShowToolbar(), jComponentViewContext);
 
 		dataGraph = manager.getDataGraph();
 		
@@ -74,9 +76,9 @@ public class OTDataGraphView extends AbstractOTJComponentView implements OTJComp
 
 		int preferredY = (int)(dataGraph.getWidth() / this.pfObject.getAspectRatio());
 		
-		System.out.println("this.pfObject.getAspectRatio(): " + String.valueOf(this.pfObject.getAspectRatio()));
-		System.out.println("dataGraph.getWidth(): " + String.valueOf(dataGraph.getWidth()));
-		System.out.println("preferredY: " + String.valueOf(preferredY));
+		logger.finer("this.pfObject.getAspectRatio(): " + String.valueOf(this.pfObject.getAspectRatio()));
+		logger.finer("dataGraph.getWidth(): " + String.valueOf(dataGraph.getWidth()));
+		logger.finer("preferredY: " + String.valueOf(preferredY));
 		
 		dataGraph.setPreferredSize(new Dimension(400,320));
 		
