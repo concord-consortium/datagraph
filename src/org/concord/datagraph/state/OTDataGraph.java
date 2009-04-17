@@ -75,6 +75,7 @@ public interface OTDataGraph extends OTObjectInterface
 	public OTDataAxis getXDataAxis();
 	public void setXDataAxis(OTDataAxis xDataAxis);
 	
+	public static boolean DEFAULT_showToolbar = true;
 	public boolean getShowToolbar();
 	public void setShowToolbar(boolean flag);
 	
