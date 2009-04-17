@@ -105,4 +105,15 @@ public interface OTDataGraph extends OTObjectInterface
 	public static boolean DEFAULT_graphableListEditable=true;
 	public boolean getGraphableListEditable();
 	public void setGraphableListEditable(boolean flag);
+	
+	/**
+	 * These correspond to the static fields in DataGraph. Current values are:
+	 *     AUTO_FIT_NONE = 0;
+	 *     AUTO_SCALE_MODE = 1;
+	 *     AUTO_SCROLL_MODE = 2;
+	 *     AUTO_SCROLL_RUNNING_MODE = 3;
+	 */
+	public static int DEFAULT_autoFitMode = 3;
+	public int getAutoFitMode();
+	public void setAutoFitMode(int mode);
 }

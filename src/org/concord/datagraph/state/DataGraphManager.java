@@ -504,7 +504,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		dataGraph.setYTickInterval(otDataGraph.getYTickInterval());
 		
 		initGraphables();
-		dataGraph.setAutoFitMode(DataGraph.AUTO_SCROLL_RUNNING_MODE);
+		dataGraph.setAutoFitMode(otDataGraph.getAutoFitMode());
 
 		dataGraph.setFocusable(true);
 
