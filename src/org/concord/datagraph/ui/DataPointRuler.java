@@ -436,4 +436,12 @@ public class DataPointRuler extends PointTextLabel
 	public boolean isIntersectionVisible() {
 		return intersectionVisible;
 	}
+	
+	public void setVerticalValueVisible(boolean visible) {
+		verticalDDL.setValueVisible(visible);
+	}
+	
+	public void setHorizontalValueVisible(boolean visible) {
+		horizontalDDL.setValueVisible(visible);
+	}
 }

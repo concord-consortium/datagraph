@@ -44,6 +44,9 @@ public class DashedDataLine {
 	protected static GraphArea graphArea;
 	protected String label = null;
 	
+	private boolean valueVisible = true;
+	private NumberFormat nf = NumberFormat.getInstance();
+	
 	public DashedDataLine() {
 		precision = 2;
 		stroke = new BasicStroke(1.0f,		// Width
@@ -52,6 +55,7 @@ public class DashedDataLine {
                 1.0f,						// Miter limit
                 new float[] {10.0f,5.0f},	// Dash pattern
                 0.0f);
+		nf.setMaximumFractionDigits(precision);
 	}
 	
 	public DashedDataLine(int type) {
@@ -76,6 +80,7 @@ public class DashedDataLine {
 	
 	public void setDataPrecision(int precision) {
 		this.precision = precision;
+		nf.setMaximumFractionDigits(precision);
 	}
 	
 	public void setType(int type) {
@@ -142,25 +147,46 @@ public class DashedDataLine {
 		g.drawLine((int)pStart.getX(), (int)pStart.getY(), (int)pEnd.getX(), (int)pEnd.getY());
 		g.setStroke(oldStroke);
 		
-		NumberFormat nf = NumberFormat.getInstance();
-		nf.setMaximumFractionDigits(precision);
-		
 		if(type == VERTICAL_LINE) {
 			double value = startPoint.getX();
-			String svalue = nf.format(value);
-			if (label != null) {
-				svalue += " - " + label;
-			}
+			String svalue = getLabelString(value);
 			g.drawString(svalue, (int)pStart.getX(), (int)pStart.getY() - 10);
 			g.fillOval((int)pStart.getX()-3, (int)pStart.getY()-3, 6, 6);
 		} else {
 			double value = startPoint.getY();
-			String svalue = nf.format(value);
-			if (label != null) {
-				svalue += " - " + label;
-			}
+			String svalue = getLabelString(value);
 			g.drawString(svalue, (int)pStart.getX() + 10, (int)pStart.getY());			
 			g.fillOval((int)pStart.getX(), (int)pStart.getY()-3, 6, 6);
 		}
+	}
+	
+	private String getLabelString(double value) {
+		
+		String svalue = "";
+		if (isValueVisible()) {
+			svalue = nf.format(value);
+		}
+		if (label != null) {
+			if (isValueVisible()) {
+				svalue += " - " + label;
+			} else {
+				svalue = label;
+			}
+		}
+		return svalue;
+	}
+
+	/**
+	 * @param drawValue the drawValue to set
+	 */
+	public void setValueVisible(boolean visible) {
+		this.valueVisible = visible;
+	}
+
+	/**
+	 * @return the drawValue
+	 */
+	public boolean isValueVisible() {
+		return valueVisible;
 	}
 }

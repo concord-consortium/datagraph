@@ -55,6 +55,9 @@ public class OTDataPointRulerController  extends OTDataAnnotationController
     	a.setHorizontalVisible(resources.getHorizontalVisible());
     	a.setVerticalVisible(resources.getVerticalVisible());
     	a.setIntersectionVisible(resources.getIntersectionVisible());
+
+    	a.setVerticalValueVisible(resources.getVerticalValueVisible());
+    	a.setHorizontalValueVisible(resources.getHorizontalValueVisible());
     }
 
 	/**

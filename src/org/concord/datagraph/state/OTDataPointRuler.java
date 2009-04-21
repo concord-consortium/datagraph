@@ -18,4 +18,12 @@ public interface OTDataPointRuler extends OTDataAnnotation {
 	public static boolean DEFAULT_intersectionVisible = true;
 	public void setIntersectionVisible(boolean b);
 	public boolean getIntersectionVisible();
+	
+	public static boolean DEFAULT_verticalValueVisible = true;
+	public void setVerticalValueVisible(boolean visible);
+	public boolean getVerticalValueVisible();
+	
+	public static boolean DEFAULT_horizontalValueVisible = true;
+	public void setHorizontalValueVisible(boolean visible);
+	public boolean getHorizontalValueVisible();
 }
