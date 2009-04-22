@@ -261,6 +261,11 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 				dataGraph.stop();
 			}
 
+			public boolean isRunning() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
 		});
 
 		bStart.addActionListener(new ActionListener() {
@@ -1217,5 +1222,10 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 	
 	public boolean getInstantRestart(){
 		return instantRestart;
+	}
+
+	public boolean isRunning() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

@@ -1130,4 +1130,11 @@ public class DataGraph extends JPanel
 		return list;
 	}
 
+	public boolean isRunning() {
+		if(getRunningDataProducers().size() > 0){
+			return true;
+		}
+		return false;
+	}
+
 }
