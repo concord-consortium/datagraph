@@ -61,12 +61,12 @@ import java.util.Vector;
 import javax.swing.event.ChangeEvent;
 
 import org.concord.data.stream.ProducerDataStore;
+import org.concord.framework.data.stream.AutoIncrementDataStore;
 import org.concord.framework.data.stream.DataChannelDescription;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.DataStore;
 import org.concord.framework.data.stream.DataStoreEvent;
 import org.concord.framework.data.stream.DataStoreListener;
-import org.concord.framework.data.stream.AutoIncrementDataStore;
 import org.concord.framework.data.stream.WritableDataStore;
 import org.concord.graph.engine.CoordinateSystem;
 import org.concord.graph.engine.DefaultGraphable;
@@ -1002,7 +1002,9 @@ public class DataGraphable extends DefaultGraphable
 	}
 	
 	/**
-	 * This returns the data producer of this graphable. 
+	 * This returns the data producer of this graphable only if the data producer was
+	 * added with setDataProducer.  If a dataproducer is linked to this graphable through
+	 * a custom data store then null will be returned. 
 	 * 
 	 * @return Returns the data producer.
 	 */
