@@ -197,7 +197,7 @@ public class MultipleDataGraph extends DataGraph
 		((MultipleGrid2D)grid).addGrid(ga, (type == TYPE_HORIZONTAL), (type == TYPE_VERTICAL));
 	}
 	
-	protected void resetGraphArea()
+	public void resetGraphArea()
 	{
 	//Reset graph areas
 		if (adjustOriginOnReset){

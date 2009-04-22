@@ -123,7 +123,7 @@ public class DataGraph extends JPanel
 	private boolean autoformatYAxis = true; 
 	
 
-	private boolean isAutoTick;
+	private boolean isAutoTick = true;
 
 	private double xTickInterval;
 
@@ -492,7 +492,12 @@ public class DataGraph extends JPanel
 		
 		return yPos;		
 	}
-		
+
+	public void resetGraphArea()
+	{
+		resetGraphArea(getGraphArea());
+	}
+	
 	/**
 	 * Scroll the graph area back so the x value starts at 0,
 	 * keep the scale the same.
@@ -501,7 +506,7 @@ public class DataGraph extends JPanel
 	 */
 	protected void resetGraphArea(GraphArea graphArea)
 	{
-	    graphArea.setOriginPositionPercentage(0,-1);	    
+	    graphArea.setOriginPositionPercentage(0, graphArea.getCurrentOriginPercentageY());	    
 	}
 	
 	/**
@@ -933,7 +938,7 @@ public class DataGraph extends JPanel
 		}
 		
 		if (adjustOriginOnReset){
-		    resetGraphArea(getGraphArea());
+		    resetGraphArea();
 		}
 	}
 
