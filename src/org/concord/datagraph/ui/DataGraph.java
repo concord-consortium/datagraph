@@ -38,8 +38,8 @@ import java.awt.Font;
 import java.awt.Insets;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -85,6 +85,9 @@ import org.concord.graph.ui.SingleAxisGrid;
 public class DataGraph extends JPanel
 	implements DataFlow, DataConsumer, DataFlowCapabilities
 {
+	private static final Logger logger = Logger.getLogger(DataGraph.class
+			.getCanonicalName());
+
 	/**
      * This class isn't intended to be serialized but 
      * this removed some compiler warnings.
@@ -102,9 +105,6 @@ public class DataGraph extends JPanel
 	protected GraphWindowToolBar toolBar;
 	protected Vector<AxisScale> axisScaleObjs = new Vector<AxisScale>();
 	
-	
-	protected Hashtable<DataProducer, DataGraphable> producers = new Hashtable<DataProducer, DataGraphable>();
-
 	protected GraphableList objList;
 	protected GraphableList backgroundList;
 	
@@ -227,7 +227,7 @@ public class DataGraph extends JPanel
 		if (yLabelSpace < 50) {
 			yLabelSpace = 50;
 		}
-		System.err.println("INSETS: 10," + yLabelSpace + "," + xLabelSpace + ",10");
+		logger.finer("INSETS: 10," + yLabelSpace + "," + xLabelSpace + ",10");
 		Insets insets = new Insets(10,(int) yLabelSpace,(int) xLabelSpace,10);
 		return insets;
 	}
@@ -612,62 +612,73 @@ public class DataGraph extends JPanel
 	/**
 	 * Returns the first Data Graphable in the graph that is associated with the specified
 	 * data producer. 
+	 * to get all of the graphables see {@link DataGraph.getAllGraphables}
+	 * this does not check any changed data producers
+	 * 
 	 * @param dataProducer
 	 * @return
 	 */
 	public DataGraphable getGraphable(DataProducer dataProducer)
 	{
-		DataGraphable dGraphable = producers.get(dataProducer);
-		if (dGraphable == null){
-			//Look for the first data graphable that has a data producer == dataProducer
-			//TODO: it should actually return a list of graphables that have that data producer
-			//specially for removeDataProducer
-			//I think the vector thing should be returned in a new method: getGraphables()
-			for (int i=0; i < objList.size(); i++){
-				Object obj = objList.elementAt(i);
-				if (obj instanceof DataGraphable){
-					dGraphable = (DataGraphable)obj;
-                    DataProducer gDataProducer = dGraphable.findDataProducer();
-                    if(gDataProducer != null &&
-                            gDataProducer == dataProducer) {
-                        return dGraphable;
-                    }                    
-				}
+		//Look for the first data graphable that has a data producer == dataProducer
+		DataGraphable dGraphable = null;
+		for (int i=0; i < objList.size(); i++){
+			Object obj = objList.elementAt(i);			
+			if (!(obj instanceof DataGraphable)){
+				continue;
 			}
+			dGraphable = (DataGraphable)obj;
+			DataProducer gDataProducer = dGraphable.findDataProducer();
+			if(gDataProducer != null &&
+					gDataProducer == dataProducer) {
+				return dGraphable;
+			}                    
 		}
 		return dGraphable;
 	}
 	
 	/**
-	 * Returns the first Data Graphable in the graph that is associated with the specified
+	 * Returns all Data Graphable in the graph that is associated with the specified
 	 * data producer. 
 	 * @param dataProducer
 	 * @return
 	 */
-	public Vector<DataGraphable> getAllGraphables(DataProducer dataProducer)
+	public ArrayList<DataGraphable> getAllGraphables(DataProducer dataProducer)
 	{
-		Vector<DataGraphable> dataGraphables = new Vector<DataGraphable>();
-		DataGraphable dGraphable = producers.get(dataProducer);
-		if (dGraphable != null){
-			dataGraphables.add(dGraphable);
-		}
-		if (dGraphable == null){
-			//Look for the first data graphable that has a data producer == dataProducer
-			//TODO: it should actually return a list of graphables that have that data producer
-			//specially for removeDataProducer
-			//I think the vector thing should be returned in a new method: getGraphables()
-			for (Object obj : objList) {
-				if (obj instanceof DataGraphable){
-					dGraphable = (DataGraphable)obj;
-                    DataProducer gDataProducer = dGraphable.findDataProducer();
-                    if(gDataProducer != null &&
-                            gDataProducer == dataProducer) {
-                    	dataGraphables.add(dGraphable);
-                    }                    
-				}
+		ArrayList<DataGraphable> dataGraphables = new ArrayList<DataGraphable>();
+
+		//Look for the first data graphable that has a data producer == dataProducer
+		for (Object obj : objList) {
+			if (!(obj instanceof DataGraphable)){
+				continue;
 			}
+			DataGraphable dGraphable = (DataGraphable)obj;
+			DataProducer gDataProducer = dGraphable.findDataProducer();
+			if(gDataProducer != null &&
+					gDataProducer == dataProducer) {
+				dataGraphables.add(dGraphable);
+			}                    
 		}
 		return dataGraphables;
+	}
+
+	public ArrayList<DataProducer> getDataProducers()
+	{
+		ArrayList<DataProducer> dataProducers = new ArrayList<DataProducer>();
+
+		//Look for the first data graphable that has a data producer == dataProducer
+		for (Object obj : objList) {
+			if (!(obj instanceof DataGraphable)){
+				continue;
+			}
+			DataGraphable dGraphable = (DataGraphable)obj;
+			DataProducer gDataProducer = dGraphable.findDataProducer();
+			if(gDataProducer != null){
+				dataProducers.add(gDataProducer);
+			}
+		}
+		return dataProducers;
+		
 	}
 	
 	/**
@@ -690,10 +701,6 @@ public class DataGraph extends JPanel
 		dGraphable.setDataProducer(dataProducer);
 		dGraphable.setChannelX(channelXAxis);
 		dGraphable.setChannelY(channelYAxis);
-		
-		if (dataProducer != null){
-			producers.put(dataProducer, dGraphable);
-		}
 		
 		return dGraphable;
 	}
@@ -1058,13 +1065,6 @@ public class DataGraph extends JPanel
         return useDataGraphableWithShapes;
     }
 
-    public void registerDataProducerForDataGraphable(DataGraphable dGraphable){
-        if(producers == null || dGraphable == null) return;
-        DataProducer dataProducer = dGraphable.getDataProducer();
-        if(dataProducer == null) return;
-		producers.put(dataProducer, dGraphable);
-    }
-    
     public void setAutoformatAxes(boolean autoformatXAxis, boolean autoformatYAxis){
     	this.autoformatXAxis = autoformatXAxis;
     	this.autoformatYAxis = autoformatYAxis;
@@ -1116,7 +1116,7 @@ public class DataGraph extends JPanel
 	    }
 	}
 	
-	private ArrayList<DataProducer> getRunningDataProducers() {
+	public ArrayList<DataProducer> getRunningDataProducers() {
 		ArrayList<DataProducer> list = new ArrayList<DataProducer>();
 		for (Object obj : objList) {
 			DataGraphable dGraphable = (DataGraphable) obj;

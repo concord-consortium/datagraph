@@ -36,6 +36,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.util.ArrayList;
 import java.util.Vector;
 
 import javax.swing.BoxLayout;
@@ -102,7 +103,7 @@ public class OTMultiDataGraphView extends AbstractOTJComponentView
 		graphsPanel.setLayout(grid);
 
 		boolean needFlowToolbar = false;
-		Vector dataFlowObjects = new Vector();
+		ArrayList<DataFlow> dataFlowObjects = new ArrayList<DataFlow>();
 		
         JPanel westPanel = new JPanel();
         // This is weird but we'll try it
@@ -146,7 +147,6 @@ public class OTMultiDataGraphView extends AbstractOTJComponentView
 		   view.setViewContext(viewContext);
 		   DataGraph dataGraph = view.getDataGraph(false, false);
 		   dataGraph.setToolBar(gwToolBar, false);
-		   dataFlowObjects.add(dataGraph);
 	
            graphManagers.add(view.getDataGraphManager());
            
@@ -156,7 +156,7 @@ public class OTMultiDataGraphView extends AbstractOTJComponentView
                // source object.  Otherwise they don't actually 
                // collect data.
 		       needFlowToolbar = true;
-               dataFlowObjects.add(view.getDataGraphManager());
+               dataFlowObjects.add(view.getDataGraphManager().getDataFlow());
 		   }
 		   
 		   graphsPanel.add(dataGraph);
