@@ -817,7 +817,11 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 
 		// TODO we need a way to check if the datastore is running or not
 		// if it is not running then the stop button shoudl be disabled.
-
+		
+		if(valueLabel != null){
+			valueLabel.dispose();
+		}
+		
 		valueLabel = new DataStoreLabel(newSourceGraphable, 1);
 		valueLabel.setColumns(8);
 

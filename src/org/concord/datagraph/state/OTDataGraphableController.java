@@ -38,12 +38,14 @@ import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.ControllableDataGraphableDrawing;
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.datagraph.engine.DataGraphableEx;
+import org.concord.framework.data.stream.DataChannelDescription;
 import org.concord.framework.data.stream.DataListener;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.DataStore;
 import org.concord.framework.data.stream.DataStoreEvent;
 import org.concord.framework.data.stream.DataStoreListener;
 import org.concord.framework.data.stream.DataStreamEvent;
+import org.concord.framework.data.stream.WritableDataStore;
 import org.concord.framework.otrunk.OTObjectService;
 import org.concord.graph.util.state.OTGraphableController;
 
@@ -146,7 +148,7 @@ public class OTDataGraphableController extends OTGraphableController
 		if (model.getControllable() && producer != null){
 			// This is a schema type error
 			// we should give more information about tracking it down
-		    throw new RuntimeException("Can't control a graphable with a data producer");
+		    throw new RuntimeException("A graphable can't be controllable and have a data producer");
 		}
 		
         if(dataStore == null) {
@@ -191,6 +193,26 @@ public class OTDataGraphableController extends OTGraphableController
 			dataStore.addDataStoreListener(dataStoreListener);
 
 			producer.addDataListener(dataProducerListener);
+		}
+		
+		if(model.getControllable()){
+			// make sure the dataStore has the 2 channels that are needed for this.
+			if(model.getYColumn() >= dataStore.getTotalNumChannels() ||
+					model.getXColumn() >= dataStore.getTotalNumChannels()){
+				DataChannelDescription dataChannelDescriptionX = dataStore.getDataChannelDescription(model.getXColumn());
+				DataChannelDescription dataChannelDescriptionY = dataStore.getDataChannelDescription(model.getYColumn());
+				
+				// assume this is a writable datastore
+				WritableDataStore wDataStore = (WritableDataStore) dataStore;
+				if(dataChannelDescriptionX == null){
+					dataChannelDescriptionX = new DataChannelDescription();
+				}
+				wDataStore.setDataChannelDescription(model.getXColumn(), dataChannelDescriptionX);
+				if(dataChannelDescriptionY == null){
+					dataChannelDescriptionY = new DataChannelDescription();
+				}
+				wDataStore.setDataChannelDescription(model.getYColumn(), dataChannelDescriptionY);
+			}
 		}
 		
 		dg.setDataStore(dataStore);
