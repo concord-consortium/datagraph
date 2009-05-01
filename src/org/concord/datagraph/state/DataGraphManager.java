@@ -507,7 +507,9 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		DataGraphable oldGraphable = sourceGraphable;
 		setSourceDataGraphable(dg);
 		updateBottomPanel(oldGraphable, sourceGraphable);
-		startable.update();
+		if(startable != null) {
+			startable.update();
+		}
 		
 		dg.setVisible(visible);
 
