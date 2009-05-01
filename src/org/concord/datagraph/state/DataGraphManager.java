@@ -55,6 +55,7 @@ import org.concord.data.ui.DataFlowControlAction;
 import org.concord.data.ui.DataFlowControlButton;
 import org.concord.data.ui.DataFlowControlToolBar;
 import org.concord.data.ui.DataStoreLabel;
+import org.concord.data.ui.StartableToolBar;
 import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.datagraph.ui.DataAnnotation;
@@ -64,7 +65,6 @@ import org.concord.datagraph.ui.SingleDataAxisGrid;
 import org.concord.framework.data.DataDimension;
 import org.concord.framework.data.DataFlow;
 import org.concord.framework.data.stream.DataProducer;
-import org.concord.framework.data.stream.DataStore;
 import org.concord.framework.data.stream.DefaultMultipleDataProducer;
 import org.concord.framework.otrunk.OTChangeEvent;
 import org.concord.framework.otrunk.OTChangeListener;
@@ -76,6 +76,7 @@ import org.concord.framework.otrunk.OTResourceMap;
 import org.concord.framework.otrunk.view.OTControllerServiceFactory;
 import org.concord.framework.otrunk.view.OTJComponentViewContext;
 import org.concord.framework.otrunk.view.OTViewContext;
+import org.concord.framework.startable.Startable;
 import org.concord.framework.util.CheckedColorTreeModel;
 import org.concord.framework.util.Copyable;
 import org.concord.graph.engine.Drawable;
@@ -111,7 +112,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 	OTDataAxis yOTAxis;
 
 	JPanel bottomPanel;
-	DataFlowControlToolBar toolBar = null;
+	StartableToolBar toolBar = null;
 
 	boolean isCausingOTChange = false;
 	boolean isCausingRealObjChange = false;
@@ -133,6 +134,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 	private OTJComponentViewContext jComponentViewContext;
 	private KeyEventDispatcher treeDispatcher;
 	private DataFlow dataFlow;
+	private DataGraphManagerStartable startable;
 
 	/**
 	 * @param serviceProvider
@@ -200,10 +202,6 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		return otDataGraph;
 	}
 
-	public DataFlowControlToolBar getFlowToolBar() {
-		return toolBar;
-	}
-
 	public DataFlowControlToolBar createFlowToolBar() {
 		setupDataFlow();
 		
@@ -255,7 +253,16 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 
 		return toolbar;
 	}
-
+	
+	private void setupStartable() {
+		// only do this once
+		if(startable != null){
+			return;
+		}
+		
+		startable = new DataGraphManagerStartable(this);
+	}
+	
 	private void setupDataFlow() {
 		// only do this once
 		if(dataFlow != null){
@@ -341,6 +348,11 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 	public DataFlow getDataFlow() {
 		setupDataFlow();
 		return dataFlow;
+	}
+	
+	public Startable getStartable() {
+		setupStartable();
+		return startable;
 	}
 	
 	public void setToolBarEnabled(boolean enabled) {
@@ -472,7 +484,8 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		DataGraphable oldGraphable = sourceGraphable;
 		sourceGraphable = dg;
 		updateBottomPanel(oldGraphable, sourceGraphable);
-
+		startable.update();
+		
 		dg.setVisible(visible);
 
 		if (dg.isLocked()) {
@@ -706,7 +719,12 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 
 			} else if (showDataControls) {
 				bottomPanel = new JPanel(new FlowLayout());
-				toolBar = createFlowToolBar();
+				if(toolBar != null){
+					
+				}
+				toolBar = new StartableToolBar();
+				setupStartable();
+				toolBar.setStartable(startable);
 
 				updateBottomPanel(null, sourceGraphable);
 
@@ -810,14 +828,6 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 			bottomPanel.remove(toolBar);
 		}
 
-		DataStore dataStore = newSourceGraphable.getDataStore();
-		if (dataStore.getTotalNumSamples() > 0) {
-			bStart.setEnabled(false);
-		}
-
-		// TODO we need a way to check if the datastore is running or not
-		// if it is not running then the stop button shoudl be disabled.
-		
 		if(valueLabel != null){
 			valueLabel.dispose();
 		}
@@ -1066,7 +1076,12 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 
 	public void setItemChecked(Object item, boolean checked) {
 		((DataGraphable) item).setVisible(checked);
-
+		if(item == sourceGraphable){
+			if(startable.isRunning()){
+				startable.stop();
+			}
+			startable.update();
+		}
 	}
 
 	public String getItemTypeName() {
