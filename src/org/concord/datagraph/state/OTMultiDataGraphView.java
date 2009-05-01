@@ -37,18 +37,17 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.util.ArrayList;
-import java.util.Vector;
 
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
+import org.concord.data.StartableMultiplexer;
 import org.concord.data.state.OTDataStore;
-import org.concord.data.ui.DataFlowControlToolBar;
+import org.concord.data.ui.StartableToolBar;
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.datagraph.ui.DataGraph;
 import org.concord.datagraph.ui.DataGraphToolbar;
-import org.concord.framework.data.DataFlow;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.DataStore;
 import org.concord.framework.data.stream.DataStoreCollection;
@@ -78,7 +77,7 @@ public class OTMultiDataGraphView extends AbstractOTJComponentView
     OTMultiDataGraph multiDataGraph;
     OTControllerService controllerService;
     
-    Vector graphManagers = new Vector();
+    ArrayList<DataGraphManager> graphManagers = new ArrayList<DataGraphManager>();
 	private OTJComponentViewContext jCompViewContext;
     
     /* (non-Javadoc)
@@ -103,7 +102,7 @@ public class OTMultiDataGraphView extends AbstractOTJComponentView
 		graphsPanel.setLayout(grid);
 
 		boolean needFlowToolbar = false;
-		ArrayList<DataFlow> dataFlowObjects = new ArrayList<DataFlow>();
+		StartableMultiplexer multiplexer = new StartableMultiplexer();
 		
         JPanel westPanel = new JPanel();
         // This is weird but we'll try it
@@ -115,7 +114,7 @@ public class OTMultiDataGraphView extends AbstractOTJComponentView
         mainPanel.add(southPanel, BorderLayout.SOUTH);
         
         OTObjectList plugins = multiDataGraph.getPluginViews();
-        Vector pluginComponents = new Vector();
+        ArrayList<JComponent> pluginComponents = new ArrayList<JComponent>();
         for(int i=0; i<plugins.size(); i++) {
             OTPluginView pluginView = (OTPluginView)plugins.get(i);            
             OTObject pluginControl = pluginView.getControl();
@@ -156,22 +155,18 @@ public class OTMultiDataGraphView extends AbstractOTJComponentView
                // source object.  Otherwise they don't actually 
                // collect data.
 		       needFlowToolbar = true;
-               dataFlowObjects.add(view.getDataGraphManager().getDataFlow());
+		       multiplexer.addStartable(view.getDataGraphManager().getStartable());
 		   }
 		   
 		   graphsPanel.add(dataGraph);
-           for(int j=0; j<pluginComponents.size(); j++) {
-               JComponent pluginComponent = 
-                   (JComponent)pluginComponents.get(j);
+		   for (JComponent pluginComponent : pluginComponents) {
                if(pluginComponent instanceof DataGraphViewPlugin) {
                    ((DataGraphViewPlugin)pluginComponent).addDataCollectorView(view);
-               }
-           }
+               }			
+		   }
 		}
 
-        for(int j=0; j<pluginComponents.size(); j++) {
-            JComponent pluginComponent = 
-                (JComponent)pluginComponents.get(j);
+		for (JComponent pluginComponent : pluginComponents) {
             if(pluginComponent instanceof DataGraphViewPlugin) {                
                 ((DataGraphViewPlugin)pluginComponent).initialize();
             }
@@ -191,11 +186,8 @@ public class OTMultiDataGraphView extends AbstractOTJComponentView
 		mainPanel.add(graphsPanel, BorderLayout.CENTER);
 
 		if(needFlowToolbar) {
-			DataFlowControlToolBar toolBar = new DataFlowControlToolBar();
-			
-			for(int i=0; i<dataFlowObjects.size(); i++) {
-			    toolBar.addDataFlowObject((DataFlow)dataFlowObjects.get(i));
-			}
+			StartableToolBar toolBar = new StartableToolBar();
+			toolBar.setStartable(multiplexer);
 			
 			southPanel.add(toolBar);
 		}
