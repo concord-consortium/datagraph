@@ -291,8 +291,9 @@ public class OTDataGraphableController extends OTGraphableController
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.concord.framework.otrunk.DefaultOTController#dispose()
+	 * @see org.concord.framework.otrunk.DefaultOTController#dispose(Object)
 	 */
+	@Override
 	public void dispose(Object realObject)
 	{
     	OTDataGraphable model = (OTDataGraphable)otObject;
@@ -302,8 +303,10 @@ public class OTDataGraphableController extends OTGraphableController
 
 		// listen to the dataStore so if the data is cleared at some
 		// point then we will reset the producer 
-		// we should be careful not to add a listener twice			
-		dataStore.removeDataStoreListener(dataStoreListener);
+		// we should be careful not to add a listener twice	
+		if(dataStore != null){
+			dataStore.removeDataStoreListener(dataStoreListener);
+		}
 
 		if(producer != null){
 			producer.removeDataListener(dataProducerListener);
