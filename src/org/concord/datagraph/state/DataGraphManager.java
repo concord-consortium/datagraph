@@ -77,6 +77,8 @@ import org.concord.framework.otrunk.view.OTControllerServiceFactory;
 import org.concord.framework.otrunk.view.OTJComponentViewContext;
 import org.concord.framework.otrunk.view.OTViewContext;
 import org.concord.framework.startable.Startable;
+import org.concord.framework.startable.StartableEvent;
+import org.concord.framework.startable.StartableListener;
 import org.concord.framework.util.CheckedColorTreeModel;
 import org.concord.framework.util.Copyable;
 import org.concord.graph.engine.Drawable;
@@ -135,6 +137,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 	private KeyEventDispatcher treeDispatcher;
 	private DataFlow dataFlow;
 	private DataGraphManagerStartable startable;
+	private StartableListener listener;
 
 	/**
 	 * @param serviceProvider
@@ -152,6 +155,14 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		this.viewContext = serviceProvider;
 		this.jComponentViewContext = jComponentViewContext;
 
+		this.listener = new StartableListener(){
+			public void startableEvent(StartableEvent event) {
+				if(startable != null){
+					startable.relayEvent(event);
+				}
+			}					
+		};
+		
 		initialize();
 	}
 
@@ -180,6 +191,18 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		return sourceGraphable;
 	}
 
+	protected void setSourceDataGraphable(DataGraphable sourceGraphable) {
+		DataProducer sourceDataProducer = getSourceDataProducer();
+		if(sourceDataProducer != null){
+			sourceDataProducer.removeStartableListener(listener);
+		}
+		this.sourceGraphable = sourceGraphable;
+		sourceDataProducer = getSourceDataProducer();
+		if(sourceDataProducer != null){
+			sourceDataProducer.addStartableListener(listener);
+		}
+	}
+	
 	public float getLastValue() {
 		if (valueLabel == null) {
 			return Float.NaN;
@@ -482,7 +505,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		}
 
 		DataGraphable oldGraphable = sourceGraphable;
-		sourceGraphable = dg;
+		setSourceDataGraphable(dg);
 		updateBottomPanel(oldGraphable, sourceGraphable);
 		startable.update();
 		
@@ -699,8 +722,8 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 				title = source.getName();
 			}
 
-			sourceGraphable = (DataGraphable) controllerService
-					.getRealObject(source);
+			setSourceDataGraphable((DataGraphable) controllerService
+					.getRealObject(source));
 
 			// dProducer.getDataDescription().setDt(0.1f);
 			if (sourceGraphable instanceof ControllableDataGraphable && showDataControls) {

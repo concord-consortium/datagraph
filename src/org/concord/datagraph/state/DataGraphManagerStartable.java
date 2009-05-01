@@ -10,6 +10,7 @@ import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.DataStore;
 import org.concord.framework.data.stream.DefaultMultipleDataProducer;
 import org.concord.framework.startable.AbstractStartable;
+import org.concord.framework.startable.StartableEvent;
 import org.concord.framework.startable.StartableInfo;
 
 class DataGraphManagerStartable extends AbstractStartable {
@@ -19,6 +20,8 @@ class DataGraphManagerStartable extends AbstractStartable {
 	private final DataGraphManager dataGraphManager;
 	private StartableInfo info = new StartableInfo();
 
+	private ArrayList<Thread> eventThreads = new ArrayList<Thread>();
+	
 	/**
 	 * @param dataGraphManager
 	 */
@@ -44,6 +47,11 @@ class DataGraphManagerStartable extends AbstractStartable {
 	}
 
 	public void reset() {
+		reset(true);
+	}
+	
+	protected void reset(boolean notifySourceProducer) {
+		eventThreads.add(Thread.currentThread());
 		// We bypass the normal dataGraph reset method so only the
 		// selected graphable is cleared.
 		if (dataGraphManager.sourceGraphable != null) {
@@ -64,7 +72,7 @@ class DataGraphManagerStartable extends AbstractStartable {
 			}
 		}
 
-		if(dp != null) {
+		if(dp != null && notifySourceProducer) {
 			dp.reset();
 		}
 				
@@ -73,21 +81,33 @@ class DataGraphManagerStartable extends AbstractStartable {
 		}
 		
 		notifyReset();
+		eventThreads.remove(Thread.currentThread());
 	}
 
 	public void start() {
+		start(true);
+	}
+	
+	protected void start(boolean notifySourceProducer) {
+		eventThreads.add(Thread.currentThread());
 		dataGraphManager.dataGraph.start();
 		DataProducer sourceDataProducer = dataGraphManager.getSourceDataProducer();
-		if(sourceDataProducer != null){
+		if(sourceDataProducer != null && notifySourceProducer){
 			sourceDataProducer.start();
 		}
 		notifyStarted(isInInitialState());
+		eventThreads.remove(Thread.currentThread());
 	}
 
 	public void stop() {
+		stop(true);
+	}	
+	
+	protected void stop(boolean notifySourceProducer) {
+		eventThreads.add(Thread.currentThread());
 		dataGraphManager.dataGraph.stop();
 		DataProducer sourceDataProducer = dataGraphManager.getSourceDataProducer();
-		if(sourceDataProducer != null){
+		if(sourceDataProducer != null && notifySourceProducer){
 			sourceDataProducer.stop();
 		}
 		
@@ -104,6 +124,7 @@ class DataGraphManagerStartable extends AbstractStartable {
 			dataProducer.stop();					
 		}
 		notifyStopped();
+		eventThreads.remove(Thread.currentThread());
 	}
 
 	@Override
@@ -129,5 +150,30 @@ class DataGraphManagerStartable extends AbstractStartable {
 		info.sendsEvents = true;
 		info.startStopLabel = "collecting data";
 		info.resetLabel = "collected data";
+	}
+
+	/**
+	 * FIXME Currently this will cause a event loop
+	 * @param event
+	 */
+	public void relayEvent(StartableEvent event) {		
+		// only relay events if we aren't in the middle of sending one 
+		if(eventThreads.contains(Thread.currentThread())){
+			return;
+		}
+		switch(event.getType()){
+			case RESET:
+				reset(false);
+				break;
+			case STARTED:
+				start(false);
+				break;
+			case STOPPED:
+				stop(false);
+				break;
+			case UPDATED:
+				update();
+				break;		
+		}
 	}
 }
