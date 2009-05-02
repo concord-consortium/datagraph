@@ -150,6 +150,7 @@ class DataGraphManagerStartable extends AbstractStartable {
 		info.sendsEvents = true;
 		info.startStopLabel = "collecting data";
 		info.resetLabel = "collected data";
+		info.canRestartWithoutReset = false;
 	}
 
 	/**
