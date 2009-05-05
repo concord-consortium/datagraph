@@ -35,13 +35,12 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -51,9 +50,6 @@ import javax.swing.event.ChangeListener;
 
 import org.concord.data.Unit;
 import org.concord.data.state.OTDataProducer;
-import org.concord.data.ui.DataFlowControlAction;
-import org.concord.data.ui.DataFlowControlButton;
-import org.concord.data.ui.DataFlowControlToolBar;
 import org.concord.data.ui.DataStoreLabel;
 import org.concord.data.ui.StartableToolBar;
 import org.concord.datagraph.engine.ControllableDataGraphable;
@@ -63,9 +59,7 @@ import org.concord.datagraph.ui.DataGraph;
 import org.concord.datagraph.ui.DataGraphToolbar;
 import org.concord.datagraph.ui.SingleDataAxisGrid;
 import org.concord.framework.data.DataDimension;
-import org.concord.framework.data.DataFlow;
 import org.concord.framework.data.stream.DataProducer;
-import org.concord.framework.data.stream.DefaultMultipleDataProducer;
 import org.concord.framework.otrunk.OTChangeEvent;
 import org.concord.framework.otrunk.OTChangeListener;
 import org.concord.framework.otrunk.OTControllerService;
@@ -100,6 +94,9 @@ import org.concord.view.CheckedColorTreeControler;
  */
 public class DataGraphManager implements OTChangeListener, ChangeListener,
 		CheckedColorTreeModel {
+	private static final Logger logger = Logger
+			.getLogger(DataGraphManager.class.getCanonicalName());
+	
 	OTDataCollector otDataCollector;
 	OTDataGraph otDataGraph;
 	DataGraph dataGraph;
@@ -123,10 +120,6 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 
 	boolean showDataControls;
 
-	DataFlowControlButton bStart;
-	DataFlowControlButton bStop;
-	DataFlowControlButton bClear;
-
 	Color[] colors = { Color.BLUE, Color.CYAN, Color.GRAY, Color.GREEN,
 			Color.MAGENTA, Color.ORANGE, Color.PINK, Color.RED, Color.YELLOW,
 			Color.BLACK };
@@ -135,7 +128,6 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 	private OTViewContext viewContext;
 	private OTJComponentViewContext jComponentViewContext;
 	private KeyEventDispatcher treeDispatcher;
-	private DataFlow dataFlow;
 	private DataGraphManagerStartable startable;
 	private StartableListener listener;
 
@@ -179,6 +171,10 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		// sourceGraphable, this might be different than the current
 		// dataProducer. This is because of how the producerDataStores
 		// interact with dataDescriptions coming from their data Producer
+		if(sourceGraphable == null){
+			return null;
+		}
+		
 		OTDataGraphable otSourceGraphable = (OTDataGraphable) controllerService
 				.getOTObject(sourceGraphable);
 		if (otSourceGraphable == null) {
@@ -225,58 +221,6 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		return otDataGraph;
 	}
 
-	public DataFlowControlToolBar createFlowToolBar() {
-		setupDataFlow();
-		
-		DataFlowControlToolBar toolbar = new DataFlowControlToolBar(false);
-
-		bStart = new DataFlowControlButton(
-				DataFlowControlAction.FLOW_CONTROL_START);
-		toolbar.add(bStart);
-
-		bStop = new DataFlowControlButton(
-				DataFlowControlAction.FLOW_CONTROL_STOP);
-		bStop.setEnabled(false);
-		toolbar.add(bStop);
-
-		bClear = new DataFlowControlButton(
-				DataFlowControlAction.FLOW_CONTROL_RESET);
-		bClear.setText("Clear");
-		toolbar.add(bClear);
-
-		toolbar.addDataFlowObject(dataFlow);
-
-		bStart.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				bClear.setEnabled(true);
-				bStart.setEnabled(false);
-				bStop.setEnabled(true);
-			}
-		});
-
-		bStop.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				bClear.setEnabled(true);
-				if (!instantRestart){
-					bStart.setEnabled(false);
-				} else {
-					bStart.setEnabled(true);
-				}
-				bStop.setEnabled(false);
-			}
-		});
-
-		bClear.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				bClear.setEnabled(false);
-				bStart.setEnabled(true);
-				bStop.setEnabled(false);
-			}
-		});
-
-		return toolbar;
-	}
-	
 	private void setupStartable() {
 		// only do this once
 		if(startable != null){
@@ -286,107 +230,11 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		startable = new DataGraphManagerStartable(this);
 	}
 	
-	private void setupDataFlow() {
-		// only do this once
-		if(dataFlow != null){
-			return;
-		}
-
-		// The below wrapper is to fix the problem where the dataGraph was reset
-		// all of the graphables
-		// because the datagraph doesn't know which is the selected graphable
-		// the DataGraphManager
-		// needs to take care of the reset. However DataGraphManager already
-		// implements DataFlow so
-		// so it can be used in the case of multiple graph panels.
-		// FIXME: this should be cleaned up so that DataGraphManager's
-		// implementation of DataFlow can be used
-		// both in the case of the multiple graphs and single graph.
-		dataFlow = new DataFlow() {
-
-			public void reset() {
-				// We bypass the normal dataGraph reset method so only the
-				// selected graphable is cleared.
-				if (sourceGraphable != null) {
-					sourceGraphable.reset();
-				}
-				
-				// sfentress: If our data producer is a MultipleDataProducer, 
-				// clear should clear all data lines that are being actively 
-				// generated by that data producer, including any graphables 
-				// with the same producer
-				DataProducer dp = getSourceDataProducer();
-				if (dp instanceof DefaultMultipleDataProducer) {
-					if (((DefaultMultipleDataProducer) dp).getClearAll()){
-						ArrayList<DataGraphable> graphablesToReset = getDataGraph().getAllGraphables(dp);
-						for (int i = 0; i < graphablesToReset.size(); i++) {
-	                       graphablesToReset.get(i).reset();
-                        }
-					}
-				}
-
-				
-				if (dataGraph.isAdjustOriginOffsetOnReset()){
-				    dataGraph.resetGraphArea();
-				}
-			}
-
-			public void start() {
-				dataGraph.start();
-				DataProducer sourceDataProducer = getSourceDataProducer();
-				if(sourceDataProducer != null){
-					sourceDataProducer.start();
-				}
-			}
-
-			public void stop() {
-				dataGraph.stop();
-				DataProducer sourceDataProducer = getSourceDataProducer();
-				if(sourceDataProducer != null){
-					sourceDataProducer.stop();
-				}
-				
-				// This might not be necessary but it can't hurt
-				DataProducer oldSourceDataProducer = sourceGraphable.findDataProducer();
-				if(oldSourceDataProducer != null && 
-						oldSourceDataProducer != sourceDataProducer){
-					oldSourceDataProducer.stop();
-				}
-				
-				// and finally we stop all of the running data producers. 
-				ArrayList<DataProducer> runningDataProducers = dataGraph.getRunningDataProducers();
-				for (DataProducer dataProducer : runningDataProducers) {
-					dataProducer.stop();					
-				}
-			}
-
-			public boolean isRunning() {
-				// TODO Auto-generated method stub
-				return false;
-			}
-
-		};
-	}
-
-	public DataFlow getDataFlow() {
-		setupDataFlow();
-		return dataFlow;
-	}
-	
 	public Startable getStartable() {
 		setupStartable();
 		return startable;
 	}
 	
-	public void setToolBarEnabled(boolean enabled) {
-		if (bStart != null)
-			bStart.setEnabled(enabled);
-		if (bStop != null)
-			bStop.setEnabled(enabled);
-		if (bClear != null)
-			bClear.setEnabled(enabled);
-	}
-
 	public void setToolbarVisible(boolean visible) {
 		GraphWindowToolBar gwToolbar = dataGraph.getToolBar();
 		if (gwToolbar != null) {
@@ -499,24 +347,17 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 	}
 
 	protected void setSelectedDataGraphable(DataGraphable dg, boolean visible) {
-		if (dg == null) {
-			setToolBarEnabled(false);
-			return;
-		}
-
 		DataGraphable oldGraphable = sourceGraphable;
 		setSourceDataGraphable(dg);
+
 		updateBottomPanel(oldGraphable, sourceGraphable);
-		if(startable != null) {
-			startable.update();
+
+		if(dg != null){
+			dg.setVisible(visible);
 		}
 		
-		dg.setVisible(visible);
-
-		if (dg.isLocked()) {
-			setToolBarEnabled(false);
-		} else {
-			setToolBarEnabled(visible);
+		if(startable != null) {
+			startable.update();
 		}
 	}
 
@@ -843,30 +684,22 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 			return;
 		}
 
-		Dimension labelSize = null;
-		Point labelLocation = null;
-
-		if (oldSourceGraphable != null) {
-			labelSize = valueLabel.getSize();
-			labelLocation = valueLabel.getLocation();
-			bottomPanel.remove(valueLabel);
-			bottomPanel.remove(toolBar);
-		}
-
+		bottomPanel.removeAll();
+		
 		if(valueLabel != null){
 			valueLabel.dispose();
+			valueLabel = null;
 		}
 		
-		valueLabel = new DataStoreLabel(newSourceGraphable, 1);
-		valueLabel.setColumns(8);
-
 		bottomPanel.setLayout(new FlowLayout());
-		if (oldSourceGraphable != null) {
-			valueLabel.setSize(labelSize);
-			valueLabel.setLocation(labelLocation);
+		if(newSourceGraphable != null){
+			valueLabel = new DataStoreLabel(newSourceGraphable, 1);
+			valueLabel.setColumns(8);
+			bottomPanel.add(valueLabel);
 		}
-		bottomPanel.add(valueLabel);
+		
 		bottomPanel.add(toolBar);
+		bottomPanel.revalidate();
 	}
 
 	/**
@@ -1101,7 +934,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 
 	public void setItemChecked(Object item, boolean checked) {
 		((DataGraphable) item).setVisible(checked);
-		if(item == sourceGraphable){
+		if(item == sourceGraphable && startable != null){
 			if(startable.isRunning()){
 				startable.stop();
 			}

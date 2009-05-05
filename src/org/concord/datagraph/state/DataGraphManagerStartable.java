@@ -140,8 +140,9 @@ class DataGraphManagerStartable extends AbstractStartable {
 	
 	protected void updateInfo() {
 		info.resetVerb = "Clear";
-		if (dataGraphManager.sourceGraphable != null &&
-				(dataGraphManager.sourceGraphable.isLocked() ||
+		if (dataGraphManager.sourceGraphable == null){
+			info.enabled = false;
+		} else if ((dataGraphManager.sourceGraphable.isLocked() ||
 				!dataGraphManager.sourceGraphable.isVisible())) {
 			info.enabled = false;
 		} else {

@@ -50,11 +50,13 @@ import org.concord.datagraph.engine.DataGraphAutoScaler;
 import org.concord.datagraph.engine.DataGraphAutoScroller;
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.datagraph.engine.DataGraphableEx;
-import org.concord.framework.data.DataFlow;
 import org.concord.framework.data.DataFlowCapabilities;
 import org.concord.framework.data.stream.DataConsumer;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.DataStore;
+import org.concord.framework.startable.Startable;
+import org.concord.framework.startable.StartableInfo;
+import org.concord.framework.startable.StartableListener;
 import org.concord.graph.engine.AxisScale;
 import org.concord.graph.engine.CoordinateSystem;
 import org.concord.graph.engine.DefaultCoordinateSystem2D;
@@ -83,7 +85,7 @@ import org.concord.graph.ui.SingleAxisGrid;
  */
 
 public class DataGraph extends JPanel
-	implements DataFlow, DataConsumer, DataFlowCapabilities
+	implements Startable, DataConsumer, DataFlowCapabilities
 {
 	private static final Logger logger = Logger.getLogger(DataGraph.class
 			.getCanonicalName());
@@ -904,7 +906,7 @@ public class DataGraph extends JPanel
 	}
 
 	/**
-	 * @see org.concord.framework.data.DataFlow#stop()
+	 * @see org.concord.framework.startable.Startable#stop()
 	 */
 	public void stop()
 	{
@@ -916,7 +918,7 @@ public class DataGraph extends JPanel
 	}
 
 	/**
-	 * @see org.concord.framework.data.DataFlow#start()
+	 * @see org.concord.framework.startable.Startable#start()
 	 */
 	public void start()
 	{
@@ -930,7 +932,7 @@ public class DataGraph extends JPanel
 	 * scytacki: this method is bypassed by the DataGraphManager so that not all
 	 * of the graphables get reset.  See DataGraphManager.createFlowToolBar()
 	 * 
-	 * @see org.concord.framework.data.DataFlow#reset()
+	 * @see org.concord.framework.startable.Startable#reset()
 	 */
 	public void reset()
 	{
@@ -1135,6 +1137,22 @@ public class DataGraph extends JPanel
 			return true;
 		}
 		return false;
+	}
+
+	public void addStartableListener(StartableListener listener) {
+		logger.warning("not supported");		
+	}
+
+	public StartableInfo getStartableInfo() {
+		return null;
+	}
+
+	public boolean isInInitialState() {
+		return true;
+	}
+
+	public void removeStartableListener(StartableListener listener) {
+		logger.warning("not supported");				
 	}
 
 }
