@@ -435,6 +435,10 @@ public class DataPointLabel extends PointTextLabel
     protected void updateDataPointLabels()
     {
         Point2D p = getDataPoint();
+        if (p == null){
+        	pointLabel = "";
+        	return;
+        }
         float f1 = (float)p.getX();
         float f2 = (float)p.getY();
         NumberFormat nf = NumberFormat.getInstance();
