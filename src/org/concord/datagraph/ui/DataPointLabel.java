@@ -172,7 +172,7 @@ public class DataPointLabel extends PointTextLabel
 	 */
 	public boolean mouseDragged(Point p)
 	{
-		if (mouseInsideDataPoint){
+		if (mouseInsideDataPoint || newEndPoint){
 			findAvailablePointOver(p);
 			notifyChange();
 		}
@@ -195,6 +195,17 @@ public class DataPointLabel extends PointTextLabel
 		}
 		indexPointOver = -1;
 		graphableOver = null;
+		
+		findAvailablePointOver(p);
+		
+		if (indexPointOver != -1 && graphableOver != null){
+    		float f1 = Float.NaN;
+    		float f2 = Float.NaN;
+    
+    		Point2D p2 = getPointDataGraphable(graphableOver, indexPointOver);
+    		setDataPoint(p2);
+    		newEndPoint = false;
+		}
 		return super.mouseReleased(p);
 	}
 	
@@ -252,7 +263,7 @@ public class DataPointLabel extends PointTextLabel
 	 */
 	public void draw(Graphics2D g)
 	{
-		if (newNote || mouseInsideDataPoint){
+		if (newNote || mouseInsideDataPoint || newEndPoint){
 			if (indexPointOver != -1 && graphableOver != null){
 				float f1 = Float.NaN;
 				float f2 = Float.NaN;
