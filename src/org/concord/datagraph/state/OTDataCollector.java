@@ -102,6 +102,10 @@ public interface OTDataCollector
 	public boolean getShowLabelCoordinates();
 	public void setShowLabelCoordinates(boolean showLabelCoordinates);
 	
+	public final static int DEFAULT_labelDecimalPlaces = 2;
+	public int getLabelDecimalPlaces();
+	public void setLabelDecimalPlaces(int labelDecimalPlaces);
+	
 	// Settings for the buttons displayed in the tool bar, and a comma-separated
 	// list of ints. This is used only if useDefaultToolBar is not true. For the 
 	// meaning of the numbers, see the static ints defined in DataGraphToolbar
