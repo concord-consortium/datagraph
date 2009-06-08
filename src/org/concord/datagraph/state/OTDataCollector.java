@@ -98,6 +98,10 @@ public interface OTDataCollector
 	public boolean getUseDefaultToolBar();
 	public void setUseDefaultToolBar(boolean useDefaultToolBar);
 	
+	public final static boolean DEFAULT_showLabelCoordinates = true;
+	public boolean getShowLabelCoordinates();
+	public void setShowLabelCoordinates(boolean showLabelCoordinates);
+	
 	// Settings for the buttons displayed in the tool bar, and a comma-separated
 	// list of ints. This is used only if useDefaultToolBar is not true. For the 
 	// meaning of the numbers, see the static ints defined in DataGraphToolbar
