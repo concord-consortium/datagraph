@@ -91,7 +91,8 @@ public class DataPointLabel extends PointTextLabel
 	protected int yPrecision = 2;
 	protected String pointLabel = null;	// format: (x, y)
 	protected String pointInfoLabel = null;	//format: xlabel: x unit   ylabel: y unit
-	private boolean showCoordinates;
+	private boolean showCoordinates = true;
+	private int coordinateDecimalPlaces;
 	
 	/**
 	 * 
@@ -465,15 +466,7 @@ public class DataPointLabel extends PointTextLabel
         	pointLabel = "";
         	return;
         }
-        float f1 = (float)p.getX();
-        float f2 = (float)p.getY();
-        NumberFormat nf = NumberFormat.getInstance();
-        nf.setMaximumFractionDigits(xPrecision);
-        pointInfoLabel = ((xLabel== null)?"":xLabel) + nf.format(f1) + ((xUnits== null)?"":xUnits) + "        ";
-        pointLabel = "(" + nf.format(f1) + ((xUnits== null)?"":xUnits) + ", ";
-        nf.setMaximumFractionDigits(yPrecision);
-        pointInfoLabel += ((yLabel== null)?"":yLabel) + nf.format(f2) + ((yUnits== null)?"":yUnits);
-        pointLabel += nf.format(f2) + ((yUnits== null)?"":yUnits) + ")";        
+        updateDataPointLabels(p); 
     }
     
 	public void setDataPoint(Point2D p) {
@@ -566,5 +559,12 @@ public class DataPointLabel extends PointTextLabel
 	public boolean getShowCoordinates()
     {
 	    return showCoordinates;
+    }
+
+	public void setCoordinateDecimalPlaces(int coordinateDecimalPlaces)
+    {
+	    this.xPrecision = coordinateDecimalPlaces;
+	    this.yPrecision = coordinateDecimalPlaces;
+	    updateDataPointLabels();
     }	
 }
