@@ -37,8 +37,12 @@ import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.geom.Point2D;
 import java.text.NumberFormat;
+
+import javax.swing.JMenuItem;
 
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.framework.data.stream.DataChannelDescription;
@@ -87,6 +91,7 @@ public class DataPointLabel extends PointTextLabel
 	protected int yPrecision = 2;
 	protected String pointLabel = null;	// format: (x, y)
 	protected String pointInfoLabel = null;	//format: xlabel: x unit   ylabel: y unit
+	private boolean showCoordinates;
 	
 	/**
 	 * 
@@ -116,6 +121,27 @@ public class DataPointLabel extends PointTextLabel
 	public void setGraphableList(GraphableList gList)
 	{
 		this.objList = gList;
+	}
+	
+	/**
+	 * @see org.concord.graph.util.ui.BoxTextLabel#populatePopUpMenu()
+	 */
+	protected void populatePopUpMenu()
+	{
+		super.populatePopUpMenu();
+
+		
+		JMenuItem coordinatesItem = new JMenuItem("Hide coordinates");
+		popUpMenu.add(coordinatesItem);
+		
+		coordinatesItem.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				setDataPoint(null);
+			}
+		});
+		
 	}
 	
 	/**
@@ -503,7 +529,7 @@ public class DataPointLabel extends PointTextLabel
 		///////////////////////////
 		//// Draw uneditable coordinate values
 		double labelWidth = Double.NaN;
-		if(pointLabel != null && pointLabel.length() > 0) {
+		if(pointLabel != null && pointLabel.length() > 0 && getShowCoordinates()) {
 			y+= h;
 			Color oldColor = g.getColor();
 			Color backColor = g.getBackground();
@@ -530,5 +556,15 @@ public class DataPointLabel extends PointTextLabel
 			Dimension d = new Dimension((int)(ww), (int)(y - yIni + 6));
 			setSize(d);
 		}
-	}	
+	}
+
+	public void setShowCoordinates(boolean showCoordinates)
+    {
+	    this.showCoordinates = showCoordinates;
+    }
+
+	public boolean getShowCoordinates()
+    {
+	    return showCoordinates;
+    }	
 }

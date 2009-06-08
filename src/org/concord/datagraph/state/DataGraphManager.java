@@ -57,6 +57,7 @@ import org.concord.datagraph.engine.DataGraphable;
 import org.concord.datagraph.ui.DataAnnotation;
 import org.concord.datagraph.ui.DataGraph;
 import org.concord.datagraph.ui.DataGraphToolbar;
+import org.concord.datagraph.ui.DataPointLabel;
 import org.concord.datagraph.ui.SingleDataAxisGrid;
 import org.concord.framework.data.DataDimension;
 import org.concord.framework.data.stream.DataProducer;
@@ -775,6 +776,10 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 
 		if (label instanceof DataAnnotation) {
 			((DataAnnotation) label).setGraphableList(dataGraph.getObjList());
+		}
+		
+		if (label instanceof DataPointLabel){
+			((DataPointLabel)label).setShowCoordinates(otDataCollector.getShowLabelCoordinates());
 		}
 		notesLayer.add(label);
 
