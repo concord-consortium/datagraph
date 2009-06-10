@@ -132,14 +132,15 @@ public class DataPointLabel extends PointTextLabel
 		super.populatePopUpMenu();
 
 		
-		JMenuItem coordinatesItem = new JMenuItem("Hide coordinates");
-		popUpMenu.add(coordinatesItem);
+		JMenuItem disconnectItem = new JMenuItem("Disconnect");
+		popUpMenu.add(disconnectItem);
 		
-		coordinatesItem.addActionListener(new ActionListener()
+		disconnectItem.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
 			{
 				setDataPoint(null);
+				setDataGraphable(null);
 			}
 		});
 		
@@ -567,4 +568,5 @@ public class DataPointLabel extends PointTextLabel
 	    this.yPrecision = coordinateDecimalPlaces;
 	    updateDataPointLabels();
     }	
+	
 }
