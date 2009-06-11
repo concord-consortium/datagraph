@@ -92,7 +92,6 @@ public class DataPointLabel extends PointTextLabel
 	protected String pointLabel = null;	// format: (x, y)
 	protected String pointInfoLabel = null;	//format: xlabel: x unit   ylabel: y unit
 	private boolean showCoordinates = true;
-	private int coordinateDecimalPlaces;
 	
 	/**
 	 * 

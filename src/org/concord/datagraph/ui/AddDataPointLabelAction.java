@@ -54,23 +54,28 @@ public class AddDataPointLabelAction extends AddLabelAction
 	protected DataStore dataStore;
 	protected GraphableList dataGraphablesList;
 	private GraphWindowToolBar toolBar;
+	private boolean showLabelCoordinates;
+	private int labelDecPlaces;
 	
 	/**
 	 * @param gList
 	 */
 	public AddDataPointLabelAction(GraphableList gList, GraphableList objList)
 	{
-		super(gList);
-		dataGraphablesList = objList;
-		//setName("Note");
-		setIcon("toolbar_icon_note.gif");
+		this(gList, objList, null);
+	}
+	
+	public AddDataPointLabelAction(GraphableList gList, GraphableList objList, GraphWindowToolBar toolBar) {
+		this(gList, objList, toolBar, true, 2);
 	}
 
-	public AddDataPointLabelAction(GraphableList gList, GraphableList objList, GraphWindowToolBar toolBar) {
+	public AddDataPointLabelAction(GraphableList gList, GraphableList objList, GraphWindowToolBar toolBar, boolean showLabelCoordinates, int labelDecPlaces) {
 		super(gList);
 		dataGraphablesList = objList;
 		setIcon("toolbar_icon_note.gif");
 		this.toolBar = toolBar;
+		this.showLabelCoordinates = showLabelCoordinates;
+		this.labelDecPlaces = labelDecPlaces;
 	}
 
 	/**
@@ -81,6 +86,8 @@ public class AddDataPointLabelAction extends AddLabelAction
 		DataPointLabel label = new DataPointLabel(true);
 		label.setGraphableList(dataGraphablesList);
 		label.setMessage("Data Point");
+		label.setShowCoordinates(showLabelCoordinates);
+		label.setCoordinateDecimalPlaces(labelDecPlaces);
 		if (toolBar != null){
 			label.setToolBar(toolBar);
 		}

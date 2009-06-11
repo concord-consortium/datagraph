@@ -150,9 +150,11 @@ public class DataGraphToolbar extends GraphWindowToolBar
     		case ADD_NOTE_BTN:
     			if (dataGraph != null && notesLayer != null){
         			button = new SelectableToggleButton(
-        					new AddDataPointLabelAction(notesLayer, dataGraph
-        							.getObjList(), dataGraph.getToolBar()));
-        			addButton(button, "Add a note to a point in the graph");
+				        new AddDataPointLabelAction(notesLayer, dataGraph
+				                .getObjList(), dataGraph.getToolBar(),
+				                dataGraph.isShowLabelCoordinates(), dataGraph
+				                        .getLabelCoordinatesDecPlaces()));
+				addButton(button, "Add a note to a point in the graph");
     			} else {
     				System.err.println("DataGraph and NotesLayer must be added before add notes button may be added");
     			}

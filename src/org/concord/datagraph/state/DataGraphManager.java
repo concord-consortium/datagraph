@@ -439,6 +439,11 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 
 		notesLayer = new SelectableList();
 		dataGraph.getGraph().add(notesLayer);
+		
+		if (otDataCollector!= null) {
+			dataGraph.setShowLabelCoordinates(otDataCollector.getShowLabelCoordinates());
+			dataGraph.setLabelCoordinatesDecPlaces(otDataCollector.getLabelDecimalPlaces());
+		}
 
 		if (dataGraph.getToolBar() != null && dataGraph.getToolBar() instanceof DataGraphToolbar) {
 			DataGraphToolbar toolbar = (DataGraphToolbar) dataGraph.getToolBar();

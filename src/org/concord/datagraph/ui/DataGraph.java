@@ -133,6 +133,10 @@ public class DataGraph extends JPanel
 
 	private MultiRegionAxisScale axisScale;
 	
+	private boolean isShowLabelCoordinates = true;
+	
+	private int labelCoordinatesDecPlaces = 2;
+	
 	/**
 	 * Creates a default data graph with or without a tool bar
 	 * @param showToolbar	indicates if the toolbar should be visible or not
@@ -1154,5 +1158,25 @@ public class DataGraph extends JPanel
 	public void removeStartableListener(StartableListener listener) {
 		logger.warning("not supported");				
 	}
+
+	public boolean isShowLabelCoordinates()
+    {
+    	return isShowLabelCoordinates;
+    }
+
+	public void setShowLabelCoordinates(boolean isShowLabelCoordinates)
+    {
+    	this.isShowLabelCoordinates = isShowLabelCoordinates;
+    }
+
+	public int getLabelCoordinatesDecPlaces()
+    {
+    	return labelCoordinatesDecPlaces;
+    }
+
+	public void setLabelCoordinatesDecPlaces(int labelCoordinatesDecPlaces)
+    {
+    	this.labelCoordinatesDecPlaces = labelCoordinatesDecPlaces;
+    }
 
 }
