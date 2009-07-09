@@ -544,13 +544,9 @@ public class ControllableDataGraphable extends DataGraphable
 	public boolean mouseMoved(Point p) {
 		if (bNewShape)
 			return false;
-		if (isMouseInside){
-			Cursor move = new Cursor(Cursor.HAND_CURSOR);
-			setCursor(move);
-		} else {
-			Cursor standard = new Cursor(Cursor.DEFAULT_CURSOR);
-			setCursor(standard);
-		}
+		
+		Cursor standard = new Cursor(Cursor.DEFAULT_CURSOR);
+		setCursor(standard);
 		return false;
 	}
 
