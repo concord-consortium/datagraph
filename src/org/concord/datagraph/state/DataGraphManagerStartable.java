@@ -39,7 +39,7 @@ class DataGraphManagerStartable extends AbstractStartable {
 	public boolean isInInitialState() {				
 		if (dataGraphManager.sourceGraphable != null) {
 			DataStore dataStore = dataGraphManager.sourceGraphable.getDataStore();
-			if (dataStore.getTotalNumSamples() > 0) {
+			if (dataStore != null && dataStore.getTotalNumSamples() > 0) {
 				return false;
 			}
 		}				
