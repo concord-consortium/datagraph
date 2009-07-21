@@ -75,6 +75,7 @@ public class ControllableDataGraphableDrawing extends ControllableDataGraphable
 	
 	// FIXME this variable is never read
 	private boolean clickOnBoundingBox = false;
+	private boolean showBoundingBox;
 	
 	/**
 	 * 
@@ -85,6 +86,10 @@ public class ControllableDataGraphableDrawing extends ControllableDataGraphable
 		selectableListeners = new Vector();
 		boundingBox = new Rectangle2D.Double();
 		boundingBoxColor = new Color(100, 100, 100);
+	}
+	
+	public void setShowBoundingBox(boolean showBoundingBox){
+		this.showBoundingBox = showBoundingBox;
 	}
 
 	/**
@@ -133,7 +138,7 @@ public class ControllableDataGraphableDrawing extends ControllableDataGraphable
 	public boolean isShowBoundingBox()
 	{
 		//if (isMouseControlled()){
-		if (isSelected()){
+		if (isSelected() && showBoundingBox){
 			if (!MathUtil.equalsDouble(boundingBox.getHeight(), 0) && 
 					!MathUtil.equalsDouble(boundingBox.getWidth(), 0)){
 				return true;

@@ -39,6 +39,7 @@ import org.concord.framework.data.stream.WritableDataStore;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTObjectService;
 import org.concord.graph.util.engine.DrawingObject;
+import org.concord.graph.util.state.OTDrawingTool;
 import org.concord.graph.util.state.OTDrawingToolView;
 
 /**
@@ -96,6 +97,7 @@ public class OTDataDrawingToolView extends OTDrawingToolView
 		WritableDataStore wDataStore = (WritableDataStore) controllerService.getRealObject(otDataStore);
 		
 		ControllableDataGraphable dg = new ControllableDataGraphableDrawing();
+		((ControllableDataGraphableDrawing)dg).setShowBoundingBox(((OTDrawingTool)tool).getIsVectorStyle());
 		dg.setDrawAlwaysConnected(false);
 		dg.setDataStore(wDataStore, 0, 1);
 		dg.setLineType(ControllableDataGraphable.LINETYPE_FREE);
