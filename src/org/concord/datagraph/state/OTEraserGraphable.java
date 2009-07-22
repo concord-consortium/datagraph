@@ -5,6 +5,7 @@ package org.concord.datagraph.state;
 
 import org.concord.data.state.OTDataStore;
 import org.concord.framework.otrunk.OTObjectInterface;
+import org.concord.framework.otrunk.OTResourceList;
 import org.concord.graph.util.state.OTDrawingEraser;
 
 public interface OTEraserGraphable extends OTObjectInterface
@@ -38,8 +39,7 @@ public interface OTEraserGraphable extends OTObjectInterface
 	public void setLocked(boolean locked);
 	
 	// points are the path that eraser is drawn.
-	public float[] getPoints();
-	public void setPoints(float[] points);
+	public OTResourceList getPoints();
 	
 	// weight is the pixel that the eraser should occupy.
 	public static int DEFAULT_weightX = 1;

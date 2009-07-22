@@ -58,17 +58,13 @@ public class OTEraserGraphableController extends OTGraphableController
 			}
 			
 		}
-		
-		if (eraserBytes == null) {
-			// nothing to initialize
-			return;
-		}
-			
-		ImageIcon eraserIcon = new ImageIcon(eraserBytes);
 
         EraserStamp eraserObj = (EraserStamp)realObject;
-        
-        eraserObj.setImage(eraserIcon);
+		
+		if (eraserBytes != null){
+			ImageIcon eraserIcon = new ImageIcon(eraserBytes);
+	        eraserObj.setImage(eraserIcon);
+		}
         
 		OTDataStore otDataStore = resources.getDataStore();
 		
@@ -88,17 +84,21 @@ public class OTEraserGraphableController extends OTGraphableController
             }
         }
         
-		DataStore dataStore = (DataStore) controllerService.getRealObject(otDataStore) ;
+//		DataStore dataStore = (DataStore) controllerService.getRealObject(otDataStore) ;
 
-		int channels = dataStore.getTotalNumChannels();
-        int samples = dataStore.getTotalNumSamples();
-        float[] points = new float[channels*samples]; 
-        
-        for(int i = 0; i < channels; i++) {
-        	for(int j = 0; j < samples; j++) {
-        		points[i + j*channels] = ((Float)dataStore.getValueAt(j, i)).floatValue();
-        	}
-        }
+//		int channels = dataStore.getTotalNumChannels();
+//        int samples = dataStore.getTotalNumSamples();
+//        float[] points = new float[channels*samples]; 
+//        
+//        for(int i = 0; i < channels; i++) {
+//        	for(int j = 0; j < samples; j++) {
+//        		points[i + j*channels] = ((Float)dataStore.getValueAt(j, i)).floatValue();
+//        	}
+//        }
+        float[] points = new float[resources.getPoints().size()];
+        for (int i = 0; i < points.length; i++) {
+			points[i] = ((Number)resources.getPoints().get(i)).floatValue();
+		}
 
 		eraserObj.setPoints(points);
         eraserObj.setBgColor(new Color(resources.getBgColor()));
@@ -123,7 +123,11 @@ public class OTEraserGraphableController extends OTGraphableController
 		resources.setWeightX(eraserObj.getWeight()[0]);
 		resources.setWeightY(eraserObj.getWeight()[1]);
 		
-        resources.setPoints(eraserObj.getPoints());
+		resources.getPoints().clear();
+		
+		for (int i = 0; i < eraserObj.getPoints().length; i++) {
+			resources.getPoints().add(eraserObj.getPoints()[i]);
+		}
 
 		//Color
 		Color c = eraserObj.getBgColor();
