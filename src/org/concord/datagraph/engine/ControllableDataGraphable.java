@@ -243,6 +243,7 @@ public class ControllableDataGraphable extends DataGraphable
 		mouseClicked = false;
 		lastLocation = lastPointW;
 		lastPointW = null;
+		
 		//startDragX = Float.NaN;
 		return false;
 	}

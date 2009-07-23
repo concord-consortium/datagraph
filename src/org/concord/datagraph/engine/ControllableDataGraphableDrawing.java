@@ -252,7 +252,12 @@ public class ControllableDataGraphableDrawing extends ControllableDataGraphable
 	public boolean mouseReleased(Point p)
 	{
 		clickOnBoundingBox = false;
-		return super.mouseReleased(p);
+		
+		boolean returnValue = super.mouseReleased(p);
+		
+		action.finish();
+		
+		return returnValue;
 	}
 	/**
 	 * @see org.concord.graph.engine.MouseControllable#mouseDragged(java.awt.Point)
@@ -264,8 +269,6 @@ public class ControllableDataGraphableDrawing extends ControllableDataGraphable
 				
 		if (lastPointW != null){
 			dx = lastPointW.getX();
-		}
-		if (lastPointW != null){
 			dy = lastPointW.getY();
 		}
 		

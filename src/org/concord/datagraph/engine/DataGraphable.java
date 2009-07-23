@@ -72,6 +72,7 @@ import org.concord.graph.engine.CoordinateSystem;
 import org.concord.graph.engine.DefaultGraphable;
 import org.concord.graph.engine.Graphable;
 import org.concord.graph.engine.MathUtil;
+import org.concord.swing.SelectableAction;
 
 public class DataGraphable extends DefaultGraphable
 	implements DataStoreListener, DataStore
@@ -161,6 +162,8 @@ public class DataGraphable extends DefaultGraphable
     private Point2D tmpDataPoint = new Point2D.Double();
 
     private boolean useVirtualChannels = false;
+
+	protected SelectableAction action;
     
 	/**
      * Default constructor.
@@ -1358,4 +1361,8 @@ public class DataGraphable extends DefaultGraphable
     {
 	    return internalProducerDataStore;
     }
+	
+	public void setAction(SelectableAction action){
+		this.action = action;
+	}
 }

@@ -53,6 +53,7 @@ import org.concord.graph.engine.DefaultControllable;
 import org.concord.graph.engine.Graphable;
 import org.concord.graph.util.engine.DrawingObject;
 import org.concord.graph.util.ui.ImageStamp;
+import org.concord.swing.SelectableAction;
 
 
 /**
@@ -455,5 +456,10 @@ public class DataFlowingLine extends DefaultControllable
 	
 	public void setCurrentLocationAsOriginal(){
 		originalLocation.setLocation(this.location);
+	}
+
+	public void setAction(SelectableAction action) {
+		// TODO Auto-generated method stub
+		
 	}
 }
