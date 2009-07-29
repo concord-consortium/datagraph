@@ -146,6 +146,18 @@ public class DataPointLabel extends PointTextLabel
 	}
 	
 	/**
+	 * This method is used to see whether this label should be listening
+	 * to mouse actions. In this case, we want the label to only listen to mouse
+	 * actions if the mouse is directly over a data line.
+	 */
+	public boolean isPointInProximity(Point location)
+	{
+
+		findAvailablePointOver(location);
+		return (indexPointOver > -1);
+	}
+	
+	/**
 	 * @see org.concord.graph.engine.MouseMotionReceiver#mouseMoved(java.awt.Point)
 	 */
 	public boolean mouseMoved(Point p)
@@ -183,7 +195,6 @@ public class DataPointLabel extends PointTextLabel
 				}
 			} else {
 				//Found a point!
-				//System.out.println("Found a point!!!");
 				if (index != indexPointOver || dg != graphableOver){
 					indexPointOver = index;
 					graphableOver = dg;
@@ -260,6 +271,7 @@ public class DataPointLabel extends PointTextLabel
 			//super.addAtPoint(pD, pW);
 			setDataGraphable(null);
 			return false;
+			
 		}
 	}
 	
@@ -300,7 +312,6 @@ public class DataPointLabel extends PointTextLabel
 				Point2D pD = cs.transformToDisplay(p);
 				
 				if (p != null){
-					//System.out.println("painting an oval 2");
 					f1 = (float)(p.getX());
 					f2 = (float)(p.getY());
 					fx = f1;
