@@ -154,6 +154,7 @@ public class DataGraphToolbar extends GraphWindowToolBar
 				                .getObjList(), dataGraph.getToolBar(),
 				                dataGraph.isShowLabelCoordinates(), dataGraph
 				                        .getLabelCoordinatesDecPlaces()));
+        			button.setActionCommand("" + MultiRegionAxisScale.DRAGMODE_TRANSLATE_DILATE);
 				addButton(button, "Add a note to a point in the graph");
     			} else {
     				System.err.println("DataGraph and NotesLayer must be added before add notes button may be added");
@@ -195,6 +196,7 @@ public class DataGraphToolbar extends GraphWindowToolBar
     				DrawingAction a = new DrawingAction();
     				a.setDrawingObject((ControllableDataGraphable) sourceGraphable);
     				button = new SelectableToggleButton(a);
+    				button.setActionCommand("" + MultiRegionAxisScale.DRAGMODE_TRANSLATE_DILATE);
     				addButton(button, "Draw a function", 0, false, true);
     			} else {
     				System.err.println("sourceGraphable must be added before drawing button may be added");
