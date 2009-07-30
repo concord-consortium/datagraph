@@ -174,7 +174,7 @@ public class DataGraphToolbar extends GraphWindowToolBar
 				                        .getLabelCoordinatesDecPlaces()));
         			button.setActionCommand("" + MultiRegionAxisScale.DRAGMODE_TRANSLATE_DILATE);
         			button.addActionListener(new DeselectAllActionListener());
-        			button.addActionListener(new SwapManagerActionListener(null));
+        			button.addActionListener(new SwapManagerActionListener(new NotesMouseManager()));
         			addButton(button, "Add a note to a point in the graph");
     			} else {
     				System.err.println("DataGraph and NotesLayer must be added before add notes button may be added");
@@ -355,42 +355,27 @@ public class DataGraphToolbar extends GraphWindowToolBar
 	private class DrawingMouseManager extends DefaultGraphMouseManager{
 		public MouseSensitive getFirstObjectToSelect(Point location, Vector list, boolean checkSelectedFirst)
 		{
-			Object obj;
-			Graphable g;
-			MouseSensitive ms;
-			Selectable s;
-			int i;
-			
-			if (list == null || list.size() <= 0) return null;
-
-			//In the vector aux, we will store the NON-SELECTED elements
+			//In the vector aux, we will store any MultiRegionAxisScale objects
 			Vector scaleObjs = new Vector();
 				
 			// Loop trough all the objects to see which one accepts the mouse click
 			// Look for selection candidate in backwards order
-			for (i = list.size()-1; i>=0; i--){
-				obj = list.elementAt(i);
+			for (int i = list.size()-1; i>=0; i--){
+				Object obj = list.elementAt(i);
 				if (obj instanceof GraphableList){
 
-					ms = getFirstObjectToSelect(location, (GraphableList)obj);
+					MouseSensitive ms = getFirstObjectToSelect(location, (GraphableList)obj);
 					if (ms != null){
 						return ms;
 					}
 				}
 				else{
 					if (obj instanceof Selectable){
-						s = (Selectable)obj;
-						
-						//Don't pay attention to selectables with selection disabled
-						if (!s.isSelectionEnabled()){
-							continue;
-						}
+						Selectable s = (Selectable)obj;
 						
 						if (checkSelectedFirst){
-							//Don't pay attention to non-selected selectables yet
-							// Edit: always consider any selected object to be higher
-							// priority than "selected" MultiRegionAxisScale, so add
-							// any selected MultiRegionAxisScale to second list as well
+							// Ignore everything but ControllableDataGraphables
+							// is there is a MultiRegionAxisScale, save it for the next pass
 							if (!s.isSelected() || !(s instanceof ControllableDataGraphable)){
 								if (s instanceof MultiRegionAxisScale)
 									scaleObjs.add(0,s);
@@ -398,33 +383,80 @@ public class DataGraphToolbar extends GraphWindowToolBar
 							}
 						}
 					}
-					if (obj instanceof Graphable){
-						g = (Graphable)obj;
-						//Don't pay attention to invisible graphables
-						if (!g.isVisible()){
-							continue;
-						}
-					}
-
-					/* BUG. FIXME. I think the intention here is to loop through
-					   the selected objects first. It only checks the non-selected
-					   objects when no selected object claims the click.
-
-					   The problem is when there is a visible graphable in the
-					   list. This graphable will grab the click before the
-					   non-selected selectables have a chance.
-					   
-					   This use of the continue statement is a bit awkward. We
-					   should rewrite this. */
 		
 					if (obj instanceof MouseSensitive){
-						ms = (MouseSensitive)obj;
+						MouseSensitive ms = (MouseSensitive)obj;
 						if (ms.isPointInProximity(location)){
 							return ms;
 						}
 					}
 				}
 			} // for
+			
+			//Now search in the non-selected objects
+			if (scaleObjs.size() > 0){
+				return getFirstObjectToSelect(location, scaleObjs, false); 
+			}
+			
+			return null;
+		}
+
+	}
+	
+	private class NotesMouseManager extends DefaultGraphMouseManager{
+		public MouseSensitive getFirstObjectToSelect(Point location, Vector list, boolean checkSelectedFirst)
+		{
+			//In the vector aux, we will store any MultiRegionAxisScale objects
+			Vector otherLabels = new Vector();
+			
+			//In the vector aux, we will store any MultiRegionAxisScale objects
+			Vector scaleObjs = new Vector();
+				
+			// Loop trough all the objects to see which one accepts the mouse click
+			// Look for selection candidate in backwards order
+			for (int i = list.size()-1; i>=0; i--){
+				Object obj = list.elementAt(i);
+				if (obj instanceof GraphableList){
+
+					MouseSensitive ms = getFirstObjectToSelect(location, (GraphableList)obj);
+					if (ms != null){
+						return ms;
+					}
+				}
+				else{
+					if (obj instanceof Selectable){
+						Selectable s = (Selectable)obj;
+						
+						if (checkSelectedFirst){
+							String pass = checkSelectedFirst ? "first pass: " : "next pass: ";
+							System.out.println(pass+" "+obj);
+							// Ignore everything but ControllableDataGraphables
+							// is there is a MultiRegionAxisScale, save it for the next pass
+							if (!s.isSelected()){
+								if (s instanceof DataPointLabel){
+									otherLabels.add(0,s);
+								} else if (s instanceof MultiRegionAxisScale){
+									scaleObjs.add(0,s);
+								}
+								continue;
+							}
+						}
+					}
+		
+					if (obj instanceof DataPointLabel || obj instanceof MultiRegionAxisScale){
+						MouseSensitive ms = (MouseSensitive)obj;
+						if (ms.isPointInProximity(location)){
+							System.out.println("returning "+obj);
+							return ms;
+						}
+					}
+				}
+			} // for
+			
+			//Now search in the non-selected objects
+			if (otherLabels.size() > 0){
+				return getFirstObjectToSelect(location, otherLabels, false); 
+			}
 			
 			//Now search in the non-selected objects
 			if (scaleObjs.size() > 0){
