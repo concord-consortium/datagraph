@@ -32,8 +32,10 @@
 */
 package org.concord.datagraph.ui;
 
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Vector;
 
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
@@ -41,10 +43,16 @@ import javax.swing.JButton;
 import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.graph.engine.AxisScale;
+import org.concord.graph.engine.Graphable;
+import org.concord.graph.engine.GraphableList;
+import org.concord.graph.engine.MouseControllable;
+import org.concord.graph.engine.MouseSensitive;
 import org.concord.graph.engine.MultiRegionAxisScale;
 import org.concord.graph.engine.Selectable;
 import org.concord.graph.engine.SelectableList;
 import org.concord.graph.examples.GraphWindowToolBar;
+import org.concord.graph.ui.DefaultGraphMouseManager;
+import org.concord.graph.ui.GraphMouseManager;
 import org.concord.graph.util.control.DrawingAction;
 import org.concord.swing.SelectableToggleButton;
 
@@ -64,6 +72,7 @@ public class DataGraphToolbar extends GraphWindowToolBar
 	private SelectableList notesLayer;
 	private DataGraph dataGraph;
 	private DataGraphable sourceGraphable;
+	private GraphMouseManager defaultMouseManager;
 
 	public final static int SELECT_BTN = 0;
 	public final static int ZOOM_IN_BTN = 1;
@@ -136,21 +145,25 @@ public class DataGraphToolbar extends GraphWindowToolBar
     			        "" + MultiRegionAxisScale.DRAGMODE_TRANSLATE_DILATE, 
     			        "Move and Scale graph");
     			button.addActionListener(new DeselectAllActionListener());
+    			button.addActionListener(new SwapManagerActionListener(null));
     			selButton = button;
     			break;
     		case ZOOM_IN_BTN:
     			button = addButton("zoomin.gif", 
         		        "" + AxisScale.DRAGMODE_ZOOM_IN, 
         		        "Zoom in to a point");
+    			button.addActionListener(new SwapManagerActionListener(null));
     			break;
     		case ZOOM_OUT_BTN:
     			button = addButton("zoomout.gif", 
         		        "" + AxisScale.DRAGMODE_ZOOM_OUT, 
         		        "Zoom out from a point");
+    			button.addActionListener(new SwapManagerActionListener(null));
     			break;
     		case RESTORE_SCALE_BTN:
     			button = addButton("restorescale.gif", 
     					"restorescale", "Restore initial scale", false);
+    			button.addActionListener(new SwapManagerActionListener(null));
     			break;
     		case ADD_NOTE_BTN:
     			if (dataGraph != null && notesLayer != null){
@@ -161,6 +174,7 @@ public class DataGraphToolbar extends GraphWindowToolBar
 				                        .getLabelCoordinatesDecPlaces()));
         			button.setActionCommand("" + MultiRegionAxisScale.DRAGMODE_TRANSLATE_DILATE);
         			button.addActionListener(new DeselectAllActionListener());
+        			button.addActionListener(new SwapManagerActionListener(null));
         			addButton(button, "Add a note to a point in the graph");
     			} else {
     				System.err.println("DataGraph and NotesLayer must be added before add notes button may be added");
@@ -172,6 +186,7 @@ public class DataGraphToolbar extends GraphWindowToolBar
     						new AddDataPointLabelActionExt(notesLayer, dataGraph
     								.getObjList(), dataGraph.getToolBar()));
         			button.addActionListener(new DeselectAllActionListener());
+        			button.addActionListener(new SwapManagerActionListener(null));
     				addButton(button, "Add a ruler to a point in the graph");
     			} else {
     				System.err.println("DataGraph and NotesLayer must be added before ruler button may be added");
@@ -179,21 +194,27 @@ public class DataGraphToolbar extends GraphWindowToolBar
 				break;
     		case AUTOSCALE_GRAPH_BTN:
     			if (dataGraph != null){
-    				addButton(new JButton(new AutoScaleAction(dataGraph)), "Autoscale the graph");
+    				button = new JButton(new AutoScaleAction(dataGraph));
+        			button.addActionListener(new SwapManagerActionListener(null));
+    				addButton(button, "Autoscale the graph");
     			} else {
     				System.err.println("DataGraph must be added before autoscale button may be added");
     			}
     			break;
     		case AUTOSCALE_X_BTN:
     			if (dataGraph != null){
-    				addButton(new JButton(new AutoScaleAction(AutoScaleAction.AUTOSCALE_X, dataGraph)), "Autoscale the graph");
+    				button = new JButton(new AutoScaleAction(AutoScaleAction.AUTOSCALE_X, dataGraph));
+        			button.addActionListener(new SwapManagerActionListener(null));
+    				addButton(button, "Autoscale the graph");
     			} else {
     				System.err.println("DataGraph must be added before autoscale button may be added");
     			}
     			break;
     		case AUTOSCALE_Y_BTN:
     			if (dataGraph != null){
-    				addButton(new JButton(new AutoScaleAction(AutoScaleAction.AUTOSCALE_Y, dataGraph)), "Autoscale the graph");
+    				button = new JButton(new AutoScaleAction(AutoScaleAction.AUTOSCALE_Y, dataGraph));
+        			button.addActionListener(new SwapManagerActionListener(null));
+    				addButton(button, "Autoscale the graph");
     			} else {
     				System.err.println("DataGraph must be added before autoscale button may be added");
     			}
@@ -205,7 +226,8 @@ public class DataGraphToolbar extends GraphWindowToolBar
     				button = new SelectableToggleButton(a);
     				button.setActionCommand("" + MultiRegionAxisScale.DRAGMODE_TRANSLATE_DILATE);
         			button.addActionListener(new DeselectAllActionListener());
-    				addButton(button, "Draw a function", 0, false, true);
+        			button.addActionListener(new SwapManagerActionListener(new DrawingMouseManager()));
+        			addButton(button, "Draw a function", 0, false, true);
     			} else {
     				System.err.println("sourceGraphable must be added before drawing button may be added");
     			}
@@ -217,6 +239,28 @@ public class DataGraphToolbar extends GraphWindowToolBar
     		setDefaultButton(button);
     	}
     	return button;
+    }
+    
+    /**
+     * Swap in a new mouse manager. Saves the default manager
+     * the first time this is called. If null is passed in, re-adds
+     * the original default manager.
+     * 
+     * @param manager
+     */
+    private void setMouseManager(GraphMouseManager manager){
+    	if (dataGraph == null || dataGraph.graph == null)
+    		return;
+    	
+    	if (defaultMouseManager == null){
+    		defaultMouseManager = dataGraph.graph.getMouseManager();
+    	}
+    	
+    	if (manager != null){
+    		dataGraph.graph.setMouseManager(manager);
+    	} else {
+    		dataGraph.graph.setMouseManager(defaultMouseManager);
+    	}
     }
     
 	/**
@@ -293,5 +337,102 @@ public class DataGraphToolbar extends GraphWindowToolBar
 				}
 			}
 		}
+	}
+	
+	private class SwapManagerActionListener implements ActionListener{
+		
+		private GraphMouseManager manager;
+
+		public SwapManagerActionListener(GraphMouseManager manager){
+			this.manager = manager;
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			setMouseManager(manager);
+		}
+	}
+	
+	private class DrawingMouseManager extends DefaultGraphMouseManager{
+		public MouseSensitive getFirstObjectToSelect(Point location, Vector list, boolean checkSelectedFirst)
+		{
+			Object obj;
+			Graphable g;
+			MouseSensitive ms;
+			Selectable s;
+			int i;
+			
+			if (list == null || list.size() <= 0) return null;
+
+			//In the vector aux, we will store the NON-SELECTED elements
+			Vector scaleObjs = new Vector();
+				
+			// Loop trough all the objects to see which one accepts the mouse click
+			// Look for selection candidate in backwards order
+			for (i = list.size()-1; i>=0; i--){
+				obj = list.elementAt(i);
+				if (obj instanceof GraphableList){
+
+					ms = getFirstObjectToSelect(location, (GraphableList)obj);
+					if (ms != null){
+						return ms;
+					}
+				}
+				else{
+					if (obj instanceof Selectable){
+						s = (Selectable)obj;
+						
+						//Don't pay attention to selectables with selection disabled
+						if (!s.isSelectionEnabled()){
+							continue;
+						}
+						
+						if (checkSelectedFirst){
+							//Don't pay attention to non-selected selectables yet
+							// Edit: always consider any selected object to be higher
+							// priority than "selected" MultiRegionAxisScale, so add
+							// any selected MultiRegionAxisScale to second list as well
+							if (!s.isSelected() || !(s instanceof ControllableDataGraphable)){
+								if (s instanceof MultiRegionAxisScale)
+									scaleObjs.add(0,s);
+								continue;
+							}
+						}
+					}
+					if (obj instanceof Graphable){
+						g = (Graphable)obj;
+						//Don't pay attention to invisible graphables
+						if (!g.isVisible()){
+							continue;
+						}
+					}
+
+					/* BUG. FIXME. I think the intention here is to loop through
+					   the selected objects first. It only checks the non-selected
+					   objects when no selected object claims the click.
+
+					   The problem is when there is a visible graphable in the
+					   list. This graphable will grab the click before the
+					   non-selected selectables have a chance.
+					   
+					   This use of the continue statement is a bit awkward. We
+					   should rewrite this. */
+		
+					if (obj instanceof MouseSensitive){
+						ms = (MouseSensitive)obj;
+						if (ms.isPointInProximity(location)){
+							return ms;
+						}
+					}
+				}
+			} // for
+			
+			//Now search in the non-selected objects
+			if (scaleObjs.size() > 0){
+				return getFirstObjectToSelect(location, scaleObjs, false); 
+			}
+			
+			return null;
+		}
+
 	}
 }
