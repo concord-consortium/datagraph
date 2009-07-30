@@ -32,6 +32,9 @@
 */
 package org.concord.datagraph.ui;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
 
@@ -39,6 +42,7 @@ import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.graph.engine.AxisScale;
 import org.concord.graph.engine.MultiRegionAxisScale;
+import org.concord.graph.engine.Selectable;
 import org.concord.graph.engine.SelectableList;
 import org.concord.graph.examples.GraphWindowToolBar;
 import org.concord.graph.util.control.DrawingAction;
@@ -131,6 +135,7 @@ public class DataGraphToolbar extends GraphWindowToolBar
     			button = addButton("arrow.gif", 
     			        "" + MultiRegionAxisScale.DRAGMODE_TRANSLATE_DILATE, 
     			        "Move and Scale graph");
+    			button.addActionListener(new DeselectAllActionListener());
     			selButton = button;
     			break;
     		case ZOOM_IN_BTN:
@@ -155,7 +160,8 @@ public class DataGraphToolbar extends GraphWindowToolBar
 				                dataGraph.isShowLabelCoordinates(), dataGraph
 				                        .getLabelCoordinatesDecPlaces()));
         			button.setActionCommand("" + MultiRegionAxisScale.DRAGMODE_TRANSLATE_DILATE);
-				addButton(button, "Add a note to a point in the graph");
+        			button.addActionListener(new DeselectAllActionListener());
+        			addButton(button, "Add a note to a point in the graph");
     			} else {
     				System.err.println("DataGraph and NotesLayer must be added before add notes button may be added");
     			}
@@ -165,6 +171,7 @@ public class DataGraphToolbar extends GraphWindowToolBar
         			button = new SelectableToggleButton(
     						new AddDataPointLabelActionExt(notesLayer, dataGraph
     								.getObjList(), dataGraph.getToolBar()));
+        			button.addActionListener(new DeselectAllActionListener());
     				addButton(button, "Add a ruler to a point in the graph");
     			} else {
     				System.err.println("DataGraph and NotesLayer must be added before ruler button may be added");
@@ -197,6 +204,7 @@ public class DataGraphToolbar extends GraphWindowToolBar
     				a.setDrawingObject((ControllableDataGraphable) sourceGraphable);
     				button = new SelectableToggleButton(a);
     				button.setActionCommand("" + MultiRegionAxisScale.DRAGMODE_TRANSLATE_DILATE);
+        			button.addActionListener(new DeselectAllActionListener());
     				addButton(button, "Draw a function", 0, false, true);
     			} else {
     				System.err.println("sourceGraphable must be added before drawing button may be added");
@@ -264,6 +272,26 @@ public class DataGraphToolbar extends GraphWindowToolBar
 			default:
 				System.err.println("Unknown button type: "+buttonType);
 				return "";
+		}
+	}
+	
+	private class DeselectAllActionListener implements ActionListener{
+
+		public void actionPerformed(ActionEvent e) {
+			if (dataGraph != null){
+				for (int i = 0; i < dataGraph.getObjList().size(); i++) {
+					if (dataGraph.getObjList().get(i) instanceof Selectable){
+						((Selectable)dataGraph.getObjList().get(i)).deselect();
+					}
+				}
+			}
+			if (notesLayer != null){
+				for (int i = 0; i < notesLayer.size(); i++) {
+					if (notesLayer.get(i) instanceof Selectable){
+						((Selectable)notesLayer.get(i)).deselect();
+					}
+				}
+			}
 		}
 	}
 }
