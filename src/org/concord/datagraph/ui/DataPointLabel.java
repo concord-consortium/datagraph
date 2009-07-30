@@ -92,6 +92,7 @@ public class DataPointLabel extends PointTextLabel
 	protected String pointLabel = null;	// format: (x, y)
 	protected String pointInfoLabel = null;	//format: xlabel: x unit   ylabel: y unit
 	private boolean showCoordinates = true;
+	private boolean mouseDown;
 	
 	/**
 	 * 
@@ -152,9 +153,15 @@ public class DataPointLabel extends PointTextLabel
 	 */
 	public boolean isPointInProximity(Point location)
 	{
-
-		findAvailablePointOver(location);
-		return (indexPointOver > -1);
+		if (newNote){
+			findAvailablePointOver(location);
+			return (indexPointOver > -1);
+		} else {
+			if (isSelected() && mouseDown)
+				return true;
+			
+			return super.isPointInProximity(location);
+		}
 	}
 	
 	/**
@@ -217,11 +224,17 @@ public class DataPointLabel extends PointTextLabel
 		return super.mouseDragged(p);
 	}
 	
+	public boolean mousePressed(Point p){
+		mouseDown = true;
+		return super.mousePressed(p);
+	}
+	
 	/**
 	 * @see org.concord.graph.engine.MouseControllable#mouseReleased(java.awt.Point)
 	 */
 	public boolean mouseReleased(Point p)
 	{
+		mouseDown = false;
 		if (dragEnabled){
 			if (indexPointOver != -1 && graphableOver != null){
 				Point2D pW = getPointDataGraphable(graphableOver, indexPointOver);
