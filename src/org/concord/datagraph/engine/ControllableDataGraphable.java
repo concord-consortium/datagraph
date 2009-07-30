@@ -267,6 +267,10 @@ public class ControllableDataGraphable extends DataGraphable
 		
 		if (dragMode == DRAGMODE_NONE) return false;
 		
+		// if point is outside visible area, do not allow drawing
+		if (!graphArea.isDisplayInside(p))
+			return false;
+		
 		if (dragMode == DRAGMODE_MOVEPOINTS || dragMode == DRAGMODE_REMOVEPOINTS){
 			return isPointAValue(p);
 		}
