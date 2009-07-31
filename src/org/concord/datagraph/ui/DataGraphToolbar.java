@@ -428,8 +428,6 @@ public class DataGraphToolbar extends GraphWindowToolBar
 						Selectable s = (Selectable)obj;
 						
 						if (checkSelectedFirst){
-							String pass = checkSelectedFirst ? "first pass: " : "next pass: ";
-							System.out.println(pass+" "+obj);
 							// Ignore everything but ControllableDataGraphables
 							// is there is a MultiRegionAxisScale, save it for the next pass
 							if (!s.isSelected()){
@@ -446,7 +444,6 @@ public class DataGraphToolbar extends GraphWindowToolBar
 					if (obj instanceof DataPointLabel || obj instanceof MultiRegionAxisScale){
 						MouseSensitive ms = (MouseSensitive)obj;
 						if (ms.isPointInProximity(location)){
-							System.out.println("returning "+obj);
 							return ms;
 						}
 					}
