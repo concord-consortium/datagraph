@@ -34,6 +34,8 @@ package org.concord.datagraph.engine;
 
 import java.util.EventObject;
 
+import org.concord.framework.data.stream.DataProducer;
+
 
 
 /**
@@ -70,6 +72,35 @@ public class DataGraphAutoScroller extends DataGraphDaemon
 		super();
 	}
 
+	class Processor {
+		float maxX=0, maxY=0;
+		
+		protected void processGraphable(Object obj)
+		{
+			if (!(obj instanceof DataGraphable)){
+				return;
+			}
+
+			DataGraphable dg = (DataGraphable)obj;
+
+			if(dg.isLocked()){
+				return;
+			}
+
+			DataProducer dataProducer = dg.findDataProducer();
+			if(dataProducer == null || !dataProducer.isRunning()){
+				return;
+			}
+
+			maxX = Math.max(dg.getMaxXValue(), maxX);
+			maxY = Math.max(dg.getMaxYValue(), maxY);
+		}
+		
+		public boolean isValid(){
+			return !Float.isNaN(maxX) && !Float.isNaN(maxY); 
+		}
+	}
+	
 	/**
 	 * 
 	 */
@@ -78,78 +109,69 @@ public class DataGraphAutoScroller extends DataGraphDaemon
 		if (! enabled) {
 			return;
 		}
-		DataGraphable dg;
-		float minX=0, maxX=0, minY=0, maxY=0;
+		float minX=0, minY=0;
+		
+		Processor processor = new Processor();
 		//float val;
 		
 		if (!autoScrollX && !autoScrollY) return;
 		
 		if (e == null) {
 			for (Object obj : graphables){
-				if (obj instanceof DataGraphable){
-					dg = (DataGraphable)obj;
-					
-					if(!dg.isLocked()) {
-						maxX = Math.max(dg.getMaxXValue(), maxX);
-						maxY = Math.max(dg.getMaxYValue(), maxY);
-					}
-				}
+				processor.processGraphable(obj);
 			}
 		} else {
 			Object obj = e.getSource();
-			if (obj instanceof DataGraphable) {
-				dg = (DataGraphable)obj;
-				
-				if(!dg.isLocked()) {
-					maxX = Math.max(dg.getMaxXValue(), maxX);
-					maxY = Math.max(dg.getMaxYValue(), maxY);
-				}
-			}
+			processor.processGraphable(obj);
+		}
+
+		if(!processor.isValid()){
+			return;
 		}
 		
-		if (!Float.isNaN(maxX) && !Float.isNaN(maxY)){
-			
-			//System.out.println(minX + " " + maxX +  " " + minY +  " " + maxY);
-			
-			float worldWidth = (float)(graph.getMaxXAxisWorld() - graph.getMinXAxisWorld());
-			float worldHeight = (float)(graph.getMaxYAxisWorld() - graph.getMinYAxisWorld());
-			
-			float xPaddingMinLocal = xPaddingMin;
-			float xPaddingMaxLocal = xPaddingMax;
-			float yPaddingMinLocal = yPaddingMin;
-			float yPaddingMaxLocal = yPaddingMax;
-			
-			if(!Float.isNaN(xPaddingMinPer)) {
-				xPaddingMinLocal = xPaddingMinPer * worldWidth;
-				xPaddingMaxLocal = xPaddingMaxPer * worldWidth;
+		float maxX = processor.maxX;
+		float maxY = processor.maxY;
+		
+		//System.out.println(minX + " " + maxX +  " " + minY +  " " + maxY);
+
+		float worldWidth = (float)(graph.getMaxXAxisWorld() - graph.getMinXAxisWorld());
+		float worldHeight = (float)(graph.getMaxYAxisWorld() - graph.getMinYAxisWorld());
+
+		float xPaddingMinLocal = xPaddingMin;
+		float xPaddingMaxLocal = xPaddingMax;
+		float yPaddingMinLocal = yPaddingMin;
+		float yPaddingMaxLocal = yPaddingMax;
+
+		if(!Float.isNaN(xPaddingMinPer)) {
+			xPaddingMinLocal = xPaddingMinPer * worldWidth;
+			xPaddingMaxLocal = xPaddingMaxPer * worldWidth;
+		}
+
+		if(!Float.isNaN(yPaddingMinPer)) {
+			yPaddingMinLocal = yPaddingMinPer * worldHeight;
+			yPaddingMaxLocal = yPaddingMaxPer * worldHeight;
+		}
+
+		if (!Float.isNaN(xPaddingMinLocal) && maxX + xPaddingMinLocal - graph.getMinXAxisWorld() < worldWidth){
+			return;
+		}
+		if (!Float.isNaN(yPaddingMinLocal) && maxY + yPaddingMinLocal - graph.getMinYAxisWorld() < worldHeight){
+			return;
+		}
+
+		maxX = maxX + xPaddingMaxLocal;
+		maxY = maxY + yPaddingMaxLocal;
+		minX = maxX - worldWidth;
+		minY = maxY - worldHeight;
+		if (!((!Float.isNaN(minXValue) && minX < minXValue) || (!Float.isNaN(minYValue) && minY < minYValue))){
+			if (autoScrollX && autoScrollY){			
+				graph.setLimitsAxisWorld(minX, maxX, minY, maxY);
 			}
-			
-			if(!Float.isNaN(yPaddingMinPer)) {
-				yPaddingMinLocal = yPaddingMinPer * worldHeight;
-				yPaddingMaxLocal = yPaddingMaxPer * worldHeight;
+			else if (autoScrollX){			
+				graph.setLimitsAxisWorld(minX, maxX, graph.getMinYAxisWorld(), graph.getMaxYAxisWorld());
 			}
-			
-			if (!Float.isNaN(xPaddingMinLocal) && maxX + xPaddingMinLocal - graph.getMinXAxisWorld() < worldWidth){
-				return;
-			}
-			if (!Float.isNaN(yPaddingMinLocal) && maxY + yPaddingMinLocal - graph.getMinYAxisWorld() < worldHeight){
-				return;
-			}
-			
-			maxX = maxX + xPaddingMaxLocal;
-			maxY = maxY + yPaddingMaxLocal;
-			minX = maxX - worldWidth;
-			minY = maxY - worldHeight;
-			if (!((!Float.isNaN(minXValue) && minX < minXValue) || (!Float.isNaN(minYValue) && minY < minYValue))){
-				if (autoScrollX && autoScrollY){			
-					graph.setLimitsAxisWorld(minX, maxX, minY, maxY);
-				}
-				else if (autoScrollX){			
-					graph.setLimitsAxisWorld(minX, maxX, graph.getMinYAxisWorld(), graph.getMaxYAxisWorld());
-				}
-				else if (autoScrollY){			
-					graph.setLimitsAxisWorld(graph.getMinXAxisWorld(), graph.getMaxXAxisWorld(), minY, maxY);
-				}
+			else if (autoScrollY){			
+				graph.setLimitsAxisWorld(graph.getMinXAxisWorld(), graph.getMaxXAxisWorld(), minY, maxY);
 			}
 		}
 	}
