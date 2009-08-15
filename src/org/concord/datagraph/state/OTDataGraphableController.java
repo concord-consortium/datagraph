@@ -141,7 +141,10 @@ public class OTDataGraphableController extends OTGraphableController
         dg.setLocked(model.getLocked());
         dg.setConnectPoints(model.getConnectPoints());
         dg.setVisible(model.getVisible());
-        
+        dg.setShowAllChannels(model.getShowAllChannels());
+		dg.setShowControlButtons(model.getShowControlButtons());
+		dg.setShowToolButtons(model.getShowToolButtons());
+
 		DataProducer producer = getDataProducer(model);
 		DataStore dataStore = getDataStore(model);
 
@@ -244,7 +247,10 @@ public class OTDataGraphableController extends OTGraphableController
 		model.setYColumn(dg.getChannelY());
 		model.setName(dg.getLabel());
 		model.setLineWidth(dg.getLineWidth());
-        
+		model.setShowAllChannels(dg.getShowAllChannels());
+		model.setShowControlButtons(dg.getShowControlButtons());
+		model.setShowToolButtons(dg.getShowToolButtons());
+		
         // This might not be quite right, lets cross our fingers
         // that it doesn't screw anything else up
         DataStore ds = dg.getDataStore();

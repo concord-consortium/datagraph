@@ -79,7 +79,14 @@ public class DataGraphable extends DefaultGraphable
 {
 	protected DataStore dataStore;
 
+	protected boolean showControlButtons = true;
+	protected boolean showToolButtons = true;
+	
+	protected int showSampleLimit = 0;
+	protected boolean showAllChannels = false;
+
 	//By default, it graphs the dt (x axis) and the first channel (y axis) 
+	protected boolean chartByChannelY = false;	// true to use channel number for X axis
 	protected int channelX = -1;
 	protected int channelY = 0;
 	
@@ -205,7 +212,7 @@ public class DataGraphable extends DefaultGraphable
 	 * Sets the data producer of this graphable.
 	 * By default it will graph dt vs channel 0
      * If the data will be shared by more components, this method is not recommended.
-     * Create a ProducerDataStore with the data prodeucer and share the data store with other
+     * Create a ProducerDataStore with the data producer and share the data store with other
      * components. Use setDataStore() instead
 	 */
 	public void setDataProducer(DataProducer dataProducer)
@@ -215,7 +222,7 @@ public class DataGraphable extends DefaultGraphable
 	
 	/**
      * If the data will be shared by more components, this method is not recommended.
-     * Create a ProducerDataStore with the data prodeucer and share the data store with other
+     * Create a ProducerDataStore with the data producer and share the data store with other
      * components. Use setDataStore() instead
 	 * @param dataProducer
 	 * @param channelXAxis
@@ -291,6 +298,39 @@ public class DataGraphable extends DefaultGraphable
 		notifyChange();
 	}
 
+	public void setShowControlButtons(boolean flag)
+	{
+		showControlButtons = flag;
+	}
+	public boolean getShowControlButtons()
+	{
+		return showControlButtons;
+	}
+	public void setShowToolButtons(boolean flag)
+	{
+		showToolButtons = flag;
+	}
+	public boolean getShowToolButtons()
+	{
+		return showToolButtons;
+	}
+
+	/*
+	 * If set, graphable will show data from all channels, rather
+	 * than just one selected channel.
+	 */
+	public void setShowAllChannels(boolean flag)
+	{
+//		System.out.println("setShowAllChannels="+flag);
+		showSampleLimit = 1;
+		showAllChannels = flag;
+		chartByChannelY = flag;
+	}
+	public boolean getShowAllChannels()
+	{
+		return showAllChannels;
+	}
+	
 	/*
 	 * Sets the color of the path drawn on the graph
 	 */
@@ -432,8 +472,12 @@ public class DataGraphable extends DefaultGraphable
 		float px, py;
 		Object objVal;
 
-		objVal = dataStore.getValueAt(rowIndex, getDataStoreChannelX());
-		px = handleValue(objVal);
+		if (!chartByChannelY) {
+			objVal = dataStore.getValueAt(rowIndex, getDataStoreChannelX());
+			px = handleValue(objVal);
+		}
+		else
+			px = getDataStoreChannelY();
 		
 		objVal = dataStore.getValueAt(rowIndex, getDataStoreChannelY());
 		py = handleValue(objVal);
@@ -494,23 +538,11 @@ public class DataGraphable extends DefaultGraphable
      */
     public void update()
 	{		
-		float ppx, ppy;
 		int initialI;
 				
-		//undrawnPoint stores the last point that was "processed" 
-		//which was valid but it wasn't drawn.  If crosses are
-		//being drawn or if points aren't connected then all points are drawn as they
-		//are processed.  Points are not drawn when they are processed, 
-		//if they might be the first point of a line segment.
-		//When the undrawnPoint is recorded the path is movedTo to this undrawn spot
-		Point2D undrawnPoint = null;	
-		
-		Point2D currentPathPoint;
-
 		if (dataStore == null) return;
 		
 		Point2D.Double pathPointHolder = new Point2D.Double();
-		Point2D pathPoint = null;
 		
 		CoordinateSystem coord = getGraphArea().getCoordinateSystem();
 		
@@ -531,14 +563,14 @@ public class DataGraphable extends DefaultGraphable
    		
    		// This is a bit a hack to handle cases that aren't handled correctly
    		// if the points are added atomically.  Then there should never be
-   		// and invalid points.  So this code shouldn't be run, however
+   		// any invalid points.  So this code shouldn't be run, however
    		// some data stores don't add points atomically so this case might
    		// happen sometimes.
 	    if(initialI != 0 && !validPrevPoint) {
 	        System.err.println("last drawn point was invalid");
 	        
 	        // verify that the previous point really is invalid
-	        // it can happen that is it invlaid for a little while while
+	        // it can happen that is it invalid for a little while while
 	        // it is being added to the DataStore.
 	        // if there was an atomic DataStore store add row this wouldn't
 	        // be a problem.  
@@ -566,11 +598,36 @@ public class DataGraphable extends DefaultGraphable
 	        validMinMax = false;
 	    }
 	    
-   		int i;
+	    if (!showAllChannels)
+	    	updateOneChannel(initialI, pathPointHolder, coord);
+	    else {
+	    	int yChannelBase = channelsNeedAdjusting() ? 1 : 0;
+	    	for (int nth = 0; nth < dataStore.getTotalNumChannels(); nth++) {
+	    		setChannelY(nth+yChannelBase);
+	    		updateOneChannel(initialI, pathPointHolder, coord);
+	    	}
+	    }
+	}
+
+    public void updateOneChannel(int initialI, Point2D.Double pathPointHolder, CoordinateSystem coord) {
+		//undrawnPoint stores the last point that was "processed" 
+		//which was valid but it wasn't drawn.  If crosses are
+		//being drawn or if points aren't connected then all points are drawn as they
+		//are processed.  Points are not drawn when they are processed, 
+		//if they might be the first point of a line segment.
+		//When the undrawnPoint is recorded the path is movedTo to this undrawn spot
+		Point2D undrawnPoint = null;	
+		
+		Point2D currentPathPoint;
+
    		int totalNumSamples = dataStore.getTotalNumSamples();
 		float thresholdPointTheSame = (float)(lineWidth/2 - 0.01);
+		int channelColumnN = getDataStoreChannelY()+1;
 		
-		
+		boolean isFirstPoint = true;
+		int nthSample = (showSampleLimit!=1) ? initialI :
+						((totalNumSamples>0) ? (totalNumSamples-1)
+											 : 0);
 		if(connectPoints){
 		    float lastPathX = Float.NaN;
 		    float lastPathY = Float.NaN;
@@ -580,8 +637,9 @@ public class DataGraphable extends DefaultGraphable
 			    lastPathY = (float)currentPathPoint.getY();
 			}
 			
-			for(i=initialI; i < totalNumSamples; i++){
-			    pathPoint = getRowPoint(i, coord, pathPointHolder);
+			Point2D pathPoint = null;
+			for(; nthSample < totalNumSamples; nthSample++){
+			    pathPoint = getRowPoint(nthSample, coord, pathPointHolder);
 
 			    if(pathPoint == null) {
 					//We have found an invalid point.  If there was a valid undrawn point 
@@ -599,6 +657,7 @@ public class DataGraphable extends DefaultGraphable
 					continue;								
 				}
 				
+				float ppx, ppy;
 				ppx = (float)pathPoint.getX();
 				ppy = (float)pathPoint.getY();
 				
@@ -607,11 +666,12 @@ public class DataGraphable extends DefaultGraphable
 					continue;
 				}
 
-				if (validPrevPoint){
+				if (validPrevPoint && (!isFirstPoint || showAllChannels)){
 				    path.lineTo(ppx, ppy);
 				    undrawnPoint = null;					
 				}
 				else{
+					isFirstPoint = false;
 				    path.moveTo(ppx, ppy);
 				    
 				    if (undrawnPoint != null){
@@ -633,12 +693,13 @@ public class DataGraphable extends DefaultGraphable
 				// technically we only care about this if we are connecting points
 				// but it seemed easier to understand if this is done out here
 				validPrevPoint = true;
-				drawPointMarker(ppx, ppy, i);
+				drawPointMarker(ppx, ppy, nthSample);
 			}
 		    
 		} else {
-			for(i=initialI; i < totalNumSamples; i++){
-			    pathPoint = getRowPoint(i, coord, pathPointHolder);
+			Point2D pathPoint = null;
+			for(nthSample=initialI; nthSample < totalNumSamples; nthSample++){
+			    pathPoint = getRowPoint(nthSample, coord, pathPointHolder);
 
 			    if(pathPoint == null) {
 					//We have found an invalid point.  If there was a valid undrawn point 
@@ -656,6 +717,7 @@ public class DataGraphable extends DefaultGraphable
 					continue;								
 				}
 				
+				float ppx, ppy;
 				ppx = (float)pathPoint.getX();
 				ppy = (float)pathPoint.getY();
 
@@ -672,7 +734,7 @@ public class DataGraphable extends DefaultGraphable
 
 				drawPoint(ppx, ppy);
 				
-				drawPointMarker(ppx, ppy, i);
+				drawPointMarker(ppx, ppy, nthSample);
 				
 				// If we made it here then the current point (soon to be the prev point)
 				// is a valid point, so set the flag
@@ -694,7 +756,7 @@ public class DataGraphable extends DefaultGraphable
 			} else {
 				// we we don't need to recalculate then we can remember the last point we
 				// did calculate and start from there next time.
-				lastValueCalculated = i-1;				
+				lastValueCalculated = nthSample-1;				
 			}
 		}
 		

@@ -35,6 +35,18 @@ import org.concord.framework.otrunk.OTObjectInterface;
 
 public interface OTDataGraphable extends OTObjectInterface
 {
+	public static boolean DEFAULT_showControlButtons = true;
+	public void setShowControlButtons(boolean flag);
+	public boolean getShowControlButtons();
+	
+	public static boolean DEFAULT_showToolButtons = true;
+	public void setShowToolButtons(boolean flag);
+	public boolean getShowToolButtons();
+
+	public static boolean DEFAULT_showAllChannels = false;
+	public boolean getShowAllChannels();
+	public void setShowAllChannels(boolean flag);
+	
 	public static int DEFAULT_color = 0x00FF0000;
 	public int getColor();
 	public void setColor(int color);

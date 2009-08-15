@@ -61,6 +61,10 @@ public class DataBarGraphable extends DataGraphable
 		selectableBars = new SelectableList();
 		selectableBars.setSelectionMode(SelectableList.SELECTIONMODE_MULTIPLE);
 		mouseDrawManager = new MouseDrawManagerHandler(selectableBars);
+		
+//		showSampleLimit = 1;
+//		showAllChannels = false;
+//		chartByChannelY = false;
 	}
 	
 	/**
@@ -89,6 +93,8 @@ public class DataBarGraphable extends DataGraphable
 	{
 		//This will call super.setLineWidth()
 		setBarWidth(width);
+
+//		System.out.println("setLineWidth="+width);
 	}
 	
 	protected void updateStroke()
@@ -169,7 +175,10 @@ public class DataBarGraphable extends DataGraphable
 	
 	private boolean addBar(Point2D point, int index)
 	{
-		if (index >= dataStore.getTotalNumSamples()) return false;
+		int totalNumBars = dataStore.getTotalNumSamples();
+		if (showAllChannels)
+			totalNumBars *= dataStore.getTotalNumChannels();
+		if (index >= totalNumBars) return false;
 		
 		DataBarSelectable bar = new DataBarSelectable(this, index);
 		bar.setLocationDisplay(point);
