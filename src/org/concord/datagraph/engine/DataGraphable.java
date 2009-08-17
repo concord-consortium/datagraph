@@ -82,7 +82,7 @@ public class DataGraphable extends DefaultGraphable
 	protected boolean showControlButtons = true;
 	protected boolean showToolButtons = true;
 	
-	protected int showSampleLimit = 0;
+	protected int showSampleLimit = -1;
 	protected boolean showAllChannels = false;
 
 	//By default, it graphs the dt (x axis) and the first channel (y axis) 
@@ -321,8 +321,6 @@ public class DataGraphable extends DefaultGraphable
 	 */
 	public void setShowAllChannels(boolean flag)
 	{
-//		System.out.println("setShowAllChannels="+flag);
-		showSampleLimit = 1;
 		showAllChannels = flag;
 		chartByChannelY = flag;
 	}

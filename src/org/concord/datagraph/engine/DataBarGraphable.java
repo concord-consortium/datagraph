@@ -61,10 +61,7 @@ public class DataBarGraphable extends DataGraphable
 		selectableBars = new SelectableList();
 		selectableBars.setSelectionMode(SelectableList.SELECTIONMODE_MULTIPLE);
 		mouseDrawManager = new MouseDrawManagerHandler(selectableBars);
-		
-//		showSampleLimit = 1;
-//		showAllChannels = false;
-//		chartByChannelY = false;
+		showSampleLimit = 1;
 	}
 	
 	/**
