@@ -78,9 +78,6 @@ public class DataGraphable extends DefaultGraphable
 	implements DataStoreListener, DataStore
 {
 	protected DataStore dataStore;
-
-	protected boolean showControlButtons = true;
-	protected boolean showToolButtons = true;
 	
 	protected int showSampleLimit = -1;
 	protected boolean showAllChannels = false;
@@ -296,23 +293,6 @@ public class DataGraphable extends DefaultGraphable
 		validMinMax = false;
 		
 		notifyChange();
-	}
-
-	public void setShowControlButtons(boolean flag)
-	{
-		showControlButtons = flag;
-	}
-	public boolean getShowControlButtons()
-	{
-		return showControlButtons;
-	}
-	public void setShowToolButtons(boolean flag)
-	{
-		showToolButtons = flag;
-	}
-	public boolean getShowToolButtons()
-	{
-		return showToolButtons;
 	}
 
 	/*
