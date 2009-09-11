@@ -600,9 +600,10 @@ public class DataGraphable extends DefaultGraphable
 
    		int totalNumSamples = dataStore.getTotalNumSamples();
 		float thresholdPointTheSame = (float)(lineWidth/2 - 0.01);
-		int channelColumnN = getDataStoreChannelY()+1;
 		
-		boolean isFirstPoint = true;
+		// If we are iterating through multiple channels, each new channel begins a
+		// new line and with a new starting point.  Otherwise, drawing is continuous.
+		boolean isStartingPoint = showAllChannels;
 		int nthSample = (showSampleLimit!=1) ? initialI :
 						((totalNumSamples>0) ? (totalNumSamples-1)
 											 : 0);
@@ -644,12 +645,12 @@ public class DataGraphable extends DefaultGraphable
 					continue;
 				}
 
-				if (validPrevPoint && (!isFirstPoint || showAllChannels)){
+				if (validPrevPoint && !isStartingPoint){
 				    path.lineTo(ppx, ppy);
 				    undrawnPoint = null;					
 				}
 				else{
-					isFirstPoint = false;
+					isStartingPoint = false;
 				    path.moveTo(ppx, ppy);
 				    
 				    if (undrawnPoint != null){
