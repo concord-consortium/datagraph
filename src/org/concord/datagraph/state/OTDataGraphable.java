@@ -47,6 +47,10 @@ public interface OTDataGraphable extends OTObjectInterface
 	public boolean getShowAllChannels();
 	public void setShowAllChannels(boolean flag);
 	
+	public static int DEFAULT_showSampleLimit = -1;
+	public int getShowSampleLimit();
+	public void setShowSampleLimit(int limit);
+	
 	public static int DEFAULT_color = 0x00FF0000;
 	public int getColor();
 	public void setColor(int color);

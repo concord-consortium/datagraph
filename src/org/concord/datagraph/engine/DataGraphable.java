@@ -79,7 +79,7 @@ public class DataGraphable extends DefaultGraphable
 {
 	protected DataStore dataStore;
 	
-	protected int showSampleLimit = -1;
+	private int showSampleLimit = -1;
 	protected boolean showAllChannels = false;
 
 	//By default, it graphs the dt (x axis) and the first channel (y axis) 
@@ -604,7 +604,7 @@ public class DataGraphable extends DefaultGraphable
 		// If we are iterating through multiple channels, each new channel begins a
 		// new line and with a new starting point.  Otherwise, drawing is continuous.
 		boolean isStartingPoint = showAllChannels;
-		int nthSample = (showSampleLimit!=1) ? initialI :
+		int nthSample = (getShowSampleLimit()!=1) ? initialI :
 						((totalNumSamples>0) ? (totalNumSamples-1)
 											 : 0);
 		if(connectPoints){
@@ -1405,5 +1405,21 @@ public class DataGraphable extends DefaultGraphable
 	
 	public void setAction(SelectableAction action){
 		this.action = action;
+	}
+
+
+	/**
+	 * @param showSampleLimit the showSampleLimit to set
+	 */
+	public void setShowSampleLimit(int showSampleLimit) {
+		this.showSampleLimit = showSampleLimit;
+	}
+
+
+	/**
+	 * @return the showSampleLimit
+	 */
+	public int getShowSampleLimit() {
+		return showSampleLimit;
 	}
 }

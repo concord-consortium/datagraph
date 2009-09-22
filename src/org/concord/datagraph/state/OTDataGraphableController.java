@@ -80,7 +80,7 @@ public class OTDataGraphableController extends OTGraphableController
 
 		public void dataRemoved(DataStoreEvent evt)
 		{
-			DataStore dataStore = (DataStore)evt.getSource();
+			DataStore dataStore = evt.getSource();
 			OTDataGraphable model = (OTDataGraphable)otObject;
 			DataProducer dataProducer = getDataProducer(model);
 
@@ -142,6 +142,7 @@ public class OTDataGraphableController extends OTGraphableController
         dg.setConnectPoints(model.getConnectPoints());
         dg.setVisible(model.getVisible());
         dg.setShowAllChannels(model.getShowAllChannels());
+        dg.setShowSampleLimit(model.getShowSampleLimit());
 
 		DataProducer producer = getDataProducer(model);
 		DataStore dataStore = getDataStore(model);
@@ -161,7 +162,7 @@ public class OTDataGraphableController extends OTGraphableController
             try {
             	
                 OTObjectService objService = model.getOTObjectService();
-                OTDataStore otDataStore = (OTDataStore) objService.createObject(OTDataStore.class);
+                OTDataStore otDataStore = objService.createObject(OTDataStore.class);
                 model.setDataStore(otDataStore);
                 dataStore = getDataStore(model);
             } catch (Exception e) {
