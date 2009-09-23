@@ -60,7 +60,6 @@ import org.concord.datagraph.ui.DataGraphToolbar;
 import org.concord.datagraph.ui.DataPointLabel;
 import org.concord.datagraph.ui.SingleDataAxisGrid;
 import org.concord.framework.data.DataDimension;
-import org.concord.framework.data.stream.DataGraphListener;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.otrunk.OTChangeEvent;
 import org.concord.framework.otrunk.OTChangeListener;
@@ -546,15 +545,15 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 
 		initLabels();
 		
-		if (sourceGraphable != null
-				&& sourceGraphable.findDataProducer() != null
-				&& sourceGraphable.findDataProducer() instanceof DataGraphListener) {
-			((DataGraphListener)sourceGraphable.findDataProducer()).graphInitialized();
-		}
-		for (DataProducer dp : dataGraph.getDataProducers()) {
-			if (dp instanceof DataGraphListener)
-				((DataGraphListener)dp).graphInitialized();
-		}
+//		if (sourceGraphable != null
+//				&& sourceGraphable.findDataProducer() != null
+//				&& sourceGraphable.findDataProducer() instanceof DataGraphListener) {
+//			((DataGraphListener)sourceGraphable.findDataProducer()).graphInitialized();
+//		}
+//		for (DataProducer dp : dataGraph.getDataProducers()) {
+//			if (dp instanceof DataGraphListener)
+//				((DataGraphListener)dp).graphInitialized();
+//		}
 	}
 
 	protected void initGraphables() {
