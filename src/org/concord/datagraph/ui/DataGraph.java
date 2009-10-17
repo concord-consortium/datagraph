@@ -1179,4 +1179,13 @@ public class DataGraph extends JPanel
     	this.labelCoordinatesDecPlaces = labelCoordinatesDecPlaces;
     }
 
+	public void setLockedX(boolean flag)
+	{
+		axisScale.setLockedX(flag);
+	}
+	
+	public void setLockedY(boolean flag)
+	{	
+		axisScale.setLockedY(flag);
+	}
 }

@@ -78,4 +78,8 @@ public interface OTDataAxis
 	 * @return
 	 */
 	public OTResourceMap getCustomGridLabels();
+	
+	public static boolean DEFAULT_locked = false;
+	public boolean isLocked();
+	public void setLocked(boolean locked);
 }

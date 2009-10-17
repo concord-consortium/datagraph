@@ -521,6 +521,9 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		dataGraph.setLimitsAxisWorld(xOTAxis.getMin(), xOTAxis.getMax(),
 				yOTAxis.getMin(), yOTAxis.getMax());
 		
+		dataGraph.setLockedX(xOTAxis.isLocked());
+		dataGraph.setLockedY(yOTAxis.isLocked());		
+		
 		boolean autoformatXAxis = xOTAxis.getLabelFormat().equalsIgnoreCase(OTDataAxis.FORMAT_ENGINEERING);
 		boolean autoformatYAxis = yOTAxis.getLabelFormat().equalsIgnoreCase(OTDataAxis.FORMAT_ENGINEERING);
 
