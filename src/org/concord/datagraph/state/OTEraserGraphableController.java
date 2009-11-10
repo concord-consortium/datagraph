@@ -25,6 +25,7 @@ package org.concord.datagraph.state;
 
 import java.awt.Color;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 
@@ -125,9 +126,12 @@ public class OTEraserGraphableController extends OTGraphableController
 		
 		resources.getPoints().clear();
 		
-		for (int i = 0; i < eraserObj.getPoints().length; i++) {
-			resources.getPoints().add(eraserObj.getPoints()[i]);
+		ArrayList<Float> a = new ArrayList<Float>(eraserObj.getPoints().length);
+		for (Float f : eraserObj.getPoints()) {
+			a.add(f);
 		}
+		resources.getPoints().addAll(a);
+		
 
 		//Color
 		Color c = eraserObj.getBgColor();
