@@ -532,6 +532,10 @@ public class DataGraph extends JPanel
 	    getGraph().getDefaultGraphArea().
 	    	setLimitsAxisWorld(minX, maxX, minY, maxY);	    
 	}
+	
+	public void setAuthoredLimitsAxisWorld(double minX, double maxX, double minY, double maxY) {
+		getGraph().getDefaultGraphArea().setAuthoredLimitsAxisWorld(minX, maxX, minY, maxY);	 
+	}
 
 	/**
 	 * Returns the current minimum x value shown in the X Axis

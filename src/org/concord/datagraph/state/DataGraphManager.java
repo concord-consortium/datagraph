@@ -40,6 +40,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.EventObject;
 import java.util.Vector;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JButton;
@@ -68,6 +69,7 @@ import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTObjectList;
 import org.concord.framework.otrunk.OTObjectService;
 import org.concord.framework.otrunk.OTResourceMap;
+import org.concord.framework.otrunk.OTrunk;
 import org.concord.framework.otrunk.view.OTControllerServiceFactory;
 import org.concord.framework.otrunk.view.OTJComponentViewContext;
 import org.concord.framework.otrunk.view.OTViewContext;
@@ -110,6 +112,9 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 
 	OTDataAxis xOTAxis;
 	OTDataAxis yOTAxis;
+	
+	OTDataAxis authoredXOTAxis;
+	OTDataAxis authoredYOTAxis;
 
 	JPanel bottomPanel;
 	StartableToolBar toolBar = null;
@@ -131,6 +136,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 	private KeyEventDispatcher treeDispatcher;
 	private DataGraphManagerStartable startable;
 	private StartableListener listener;
+	private OTrunk otrunk;
 
 	/**
 	 * @param serviceProvider
@@ -412,6 +418,8 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 	public void initialize() {
 		OTControllerServiceFactory controllerServiceFactory = 
 			getViewService(OTControllerServiceFactory.class);
+		
+		otrunk = otDataGraph.getOTObjectService().getOTrunkService(OTrunk.class);
 
 		controllerService = 
 			controllerServiceFactory.createControllerService(otDataGraph.getOTObjectService());
@@ -466,6 +474,8 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
     			toolbar.addButton(DataGraphToolbar.ZOOM_IN_BTN);
     			toolbar.addButton(DataGraphToolbar.ZOOM_OUT_BTN);
     			toolbar.addButton(DataGraphToolbar.RESTORE_SCALE_BTN);
+    			// not shown by default to maintain backward compatibility
+    			// toolbar.addButton(DataGraphToolbar.RESTORE_AUTHOR_SCALE_BTN);
     			toolbar.addButton(DataGraphToolbar.ADD_NOTE_BTN);
     			if (otDataCollector != null && otDataCollector.getRulerEnabled()) {
     				toolbar.addButton(DataGraphToolbar.RULER_BTN);
@@ -520,6 +530,17 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 
 		dataGraph.setLimitsAxisWorld(xOTAxis.getMin(), xOTAxis.getMax(),
 				yOTAxis.getMin(), yOTAxis.getMax());
+		
+		// store the authored axis info, as well
+		try {
+		  authoredXOTAxis = otrunk.getRuntimeAuthoredObject(xOTAxis);
+		  authoredYOTAxis = otrunk.getRuntimeAuthoredObject(yOTAxis);
+		  
+		  dataGraph.setAuthoredLimitsAxisWorld(authoredXOTAxis.getMin(), authoredXOTAxis.getMax(),
+		                                       authoredYOTAxis.getMin(), authoredYOTAxis.getMax());
+		} catch (Exception e) {
+			logger.log(Level.WARNING, "Couldn't get authored versions of the axis objects!",e);
+		}
 		
 		dataGraph.setLockedX(xOTAxis.isLocked());
 		dataGraph.setLockedY(yOTAxis.isLocked());		

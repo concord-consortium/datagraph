@@ -43,9 +43,7 @@ import javax.swing.JButton;
 import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.graph.engine.AxisScale;
-import org.concord.graph.engine.Graphable;
 import org.concord.graph.engine.GraphableList;
-import org.concord.graph.engine.MouseControllable;
 import org.concord.graph.engine.MouseSensitive;
 import org.concord.graph.engine.MultiRegionAxisScale;
 import org.concord.graph.engine.Selectable;
@@ -84,6 +82,7 @@ public class DataGraphToolbar extends GraphWindowToolBar
 	public final static int AUTOSCALE_X_BTN = 7;
 	public final static int AUTOSCALE_Y_BTN = 8;
 	public final static int DRAWING_BTN = 9;				// not to be added to customization views
+	public final static int RESTORE_AUTHOR_SCALE_BTN = 10;
 	
     public DataGraphToolbar()
     {
@@ -165,6 +164,11 @@ public class DataGraphToolbar extends GraphWindowToolBar
     					"restorescale", "Restore initial scale", false);
     			button.addActionListener(new SwapManagerActionListener(null));
     			break;
+    		case RESTORE_AUTHOR_SCALE_BTN:
+    			button = addButton("restoreauthorscale.gif", 
+    		    					"restoreauthorscale", "Restore authored scale", false);
+    		    			button.addActionListener(new SwapManagerActionListener(null));
+    		    			break;
     		case ADD_NOTE_BTN:
     			if (dataGraph != null && notesLayer != null){
         			button = new SelectableToggleButton(
@@ -284,6 +288,7 @@ public class DataGraphToolbar extends GraphWindowToolBar
 				ZOOM_IN_BTN,
 				ZOOM_OUT_BTN,
 				RESTORE_SCALE_BTN,
+				RESTORE_AUTHOR_SCALE_BTN,
 				ADD_NOTE_BTN,
 				RULER_BTN,
 				AUTOSCALE_GRAPH_BTN,
@@ -303,6 +308,8 @@ public class DataGraphToolbar extends GraphWindowToolBar
 				return "Zoom out";
 			case RESTORE_SCALE_BTN:
 				return "Restore scale";
+			case RESTORE_AUTHOR_SCALE_BTN:
+				return "Restore authored scale";
 			case ADD_NOTE_BTN:
 				return "Add label";
 			case RULER_BTN:
