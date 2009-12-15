@@ -199,4 +199,11 @@ public class OTDataCollectorView extends AbstractOTJComponentView
 			return view.getComponent(dataCollector);
 			
     }
+	
+	public DataGraphManager getGraphManager() {
+		if (view instanceof DataCollectorView) {
+			return ((DataCollectorView) view).getDataGraphManager();
+		}
+		return null;
+	}
 }

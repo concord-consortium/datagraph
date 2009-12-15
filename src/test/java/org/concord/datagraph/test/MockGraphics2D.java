@@ -77,11 +77,15 @@ public class MockGraphics2D extends Graphics2D {
 	public void draw(Shape s) {
 		if (s instanceof Rectangle2D) {
 			Rectangle2D r = (Rectangle2D) s;
-			int c = getColor().getRGB();
+			/*
+			logger.info("Rect: " + r.getMinX() + ", " + r.getMinY() +
+					", " + r.getMaxX() + ", " + r.getMaxY() + " Color: " +
+					getColor());
+			*/
 			shapes.add(new ShapeRec(ShapeId.RECT, s, getColor()));
 		}
 		else {
-			logger.info("Shape");
+			//logger.fine("Shape");
 		}
 	}
 
@@ -475,6 +479,7 @@ public class MockGraphics2D extends Graphics2D {
 
 	@Override
 	public void setColor(Color c) {
+		//logger.info("SetColor: " + c);
 		color = c;
 	}
 

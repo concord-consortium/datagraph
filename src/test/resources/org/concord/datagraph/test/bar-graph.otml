@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <otrunk id="CD47F7EC-5E1F-47F8-81F5-C34CC8FCD83E">
   <imports>
+    <import class="org.concord.data.state.OTAlphaDataProducer"/>
     <import class="org.concord.data.state.OTDataChannelDescription" />
     <import class="org.concord.data.state.OTDataField" />
     <import class="org.concord.data.state.OTDataProducer"/>
@@ -39,6 +40,7 @@
         <OTFolderObject>
           <children>
             <object type="graph" refid="${bar_graph_1}" />
+            <object type="graph" refid="${data_collector_2}" />
           </children>
         </OTFolderObject>
       </root>
@@ -71,6 +73,39 @@
             <OTDataAxis min="0" max="8" label="Y-Axis"/>
           </yDataAxis>
         </OTDataGraph>
+        <OTDataCollector local_id="data_collector_2" 
+            name="Example graph" title="Title" 
+            showLabelCoordinates="true" labelDecimalPlaces="2" 
+            showControlBar="false" useDefaultToolBar="false" 
+            displayButtons="">
+          <source>
+            <OTDataBarGraphable local_id="bar_graphable_2"
+                showSampleLimit="1" name="Numbers that add to sum"
+                connectPoints="true" drawMarks="false" lineWidth="10.0"
+                color="0xff9900" yColumn="5" xColumn="0" showAllChannels="true"
+                showControlButtons="true" showToolButtons="true" 
+                visible="true">
+              <dataStore>
+                <OTDataStore sampleKeepLimit="10" dt="1.0" numberChannels="5">
+                </OTDataStore>
+              </dataStore>
+              <dataProducer>
+                <OTAlphaDataProducer local_id="alpha-producer" numChannels="5" sum="1.0">
+                </OTAlphaDataProducer>
+              </dataProducer>
+            </OTDataBarGraphable>
+          </source>
+          <xDataAxis>
+            <OTDataAxis max="5.0" min="0.0" label="X Axis" labelFormat="Engineering">
+              <customGridLabels />
+            </OTDataAxis>
+          </xDataAxis>
+          <yDataAxis>
+            <OTDataAxis max="1.0" min="0.0" label="Y Axis" labelFormat="Engineering">
+              <customGridLabels />
+            </OTDataAxis>
+          </yDataAxis>
+        </OTDataCollector>
       </library>
     </OTSystem>
   </objects>
