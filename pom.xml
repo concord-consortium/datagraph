@@ -47,6 +47,12 @@
       <artifactId>swing</artifactId>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+    	<groupId>org.concord</groupId>
+    	<artifactId>otrunk</artifactId>
+    	<version>0.2.0-SNAPSHOT</version>
+    	<scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
   <plugins>

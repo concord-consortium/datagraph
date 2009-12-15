@@ -85,6 +85,10 @@ public class OTDataGraphView extends AbstractOTJComponentView implements OTJComp
 		return dataGraph;				    
 	}
 	
+	public DataGraphManager getGraphManager() {
+		return manager;
+	}
+	
     /* (non-Javadoc)
      * @see org.concord.framework.otrunk.view.OTJComponentView#viewClosed()
      */

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<otrunk id="CD47F7EC-5E1F-47F8-81F5-C34CC8FCD83E">
+  <imports>
+    <import class="org.concord.data.state.OTDataChannelDescription" />
+    <import class="org.concord.data.state.OTDataField" />
+    <import class="org.concord.data.state.OTDataProducer"/>
+    <import class="org.concord.data.state.OTDataStore" />
+    <import class="org.concord.data.state.OTDataTable" />
+    <import class="org.concord.datagraph.state.OTDataAxis" />
+    <import class="org.concord.datagraph.state.OTDataBarGraphable" />
+    <import class="org.concord.datagraph.state.OTDataCollector" />
+    <import class="org.concord.datagraph.state.OTDataGraph" />
+    <import class="org.concord.datagraph.state.OTDataGraphable" />
+    <import class="org.concord.datagraph.state.OTDataPointLabel" />
+    <import class="org.concord.datagraph.state.OTMultiDataGraph" />
+    <import class="org.concord.datagraph.state.OTPluginView" />
+    <import class="org.concord.otrunk.OTInclude" />
+    <import class="org.concord.otrunk.OTSystem" />
+    <import class="org.concord.otrunk.ui.OTChoice" />
+    <import class="org.concord.otrunk.ui.OTText" />
+    <import class="org.concord.otrunk.ui.question.OTQuestion" />
+    <import class="org.concord.otrunk.view.OTFolderObject" />
+    <import class="org.concord.otrunk.view.OTViewBundle" />
+    <import class="org.concord.otrunk.view.OTViewChild" />
+    <import class="org.concord.otrunk.view.OTViewEntry" />
+    <import class="org.concord.otrunk.view.OTViewMode" />
+  </imports>
+  <objects>
+    <OTSystem local_id="system">
+      <bundles>
+        <OTViewBundle showLeftPanel="false">
+          <views>
+            <OTViewEntry objectClass="org.concord.datagraph.state.OTDataCollector" viewClass="org.concord.datagraph.state.OTDataCollectorView"/>
+            <OTViewEntry objectClass="org.concord.datagraph.state.OTDataGraph" viewClass="org.concord.datagraph.state.OTDataGraphView"/>
+          </views>
+        </OTViewBundle>
+      </bundles>
+      <root>
+        <OTFolderObject>
+          <children>
+            <object type="graph" refid="${bar_graph_1}" />
+          </children>
+        </OTFolderObject>
+      </root>
+      <library>
+        <OTDataGraph name="Dual Channel Bar Graph 1" local_id="bar_graph_1" showToolbar="false">
+          <graphables>
+            <OTDataBarGraphable local_id="bar_graphable_1" color="0x00b080" lineWidth="30" maxBarsToSelect="2">
+              <dataStore>
+                <OTDataStore numberChannels="2">
+                  <channelDescriptions>
+                   <OTDataChannelDescription name="Color" precision="0"/>
+                    <OTDataChannelDescription name="Count" precision="2"/>
+                  </channelDescriptions>
+                  <valuesString>1 2 2 3 3 7 4 4</valuesString>
+                </OTDataStore>
+              </dataStore>
+            </OTDataBarGraphable>
+          </graphables>
+          <xDataAxis>
+            <OTDataAxis min="0" max="5" label="X-Axis" intervalWorld="1">
+              <customGridLabels>
+                <entry key="1.0"><string>Crimson</string></entry>
+                <entry key="2.0"><string>Turquoise</string></entry>
+                <entry key="3.0"><string>Lavender</string></entry>
+                <entry key="4.0"><string>Indigo</string></entry>
+              </customGridLabels>
+            </OTDataAxis>
+          </xDataAxis>
+          <yDataAxis>
+            <OTDataAxis min="0" max="8" label="Y-Axis"/>
+          </yDataAxis>
+        </OTDataGraph>
+      </library>
+    </OTSystem>
+  </objects>
+</otrunk>
+
