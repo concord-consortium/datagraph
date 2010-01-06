@@ -131,7 +131,7 @@ public class DataGraphable extends DefaultGraphable
 		CROSS_MARKER_PATH.lineTo(crossSize, -crossSize);
 	}
 	
-	private int lastValueCalculated = -1;
+	protected int lastValueCalculated = -1;
 	protected boolean locked = false;
 
 	/*
@@ -140,7 +140,7 @@ public class DataGraphable extends DefaultGraphable
 	 * should be connected.  If there is an invalid point then there
 	 * will be a break in the line drawn.
 	 */
-	private boolean validPrevPoint = false;		
+	protected boolean validPrevPoint = false;		
 
 	protected boolean needUpdate = true;
 	
@@ -152,18 +152,18 @@ public class DataGraphable extends DefaultGraphable
 	
 	protected boolean autoRepaintData = true;
 	
-	private float minXValue;
-	private float maxXValue;
-	private float minYValue;
-	private float maxYValue;
-	private boolean validMinMax;
+	protected float minXValue;
+	protected float maxXValue;
+	protected float minYValue;
+	protected float maxYValue;
+	protected boolean validMinMax;
 	
 	// If this is true then we have internally created a ProducerDataStore
 	// this would be done if someone adds a dataProducer to us.
 	// This is useful for state saving 
-	private boolean internalProducerDataStore = false;
+	protected boolean internalProducerDataStore = false;
 
-    private Point2D tmpDataPoint = new Point2D.Double();
+    protected Point2D tmpDataPoint = new Point2D.Double();
 
     private boolean useVirtualChannels = false;
 
@@ -780,7 +780,7 @@ public class DataGraphable extends DefaultGraphable
 	 * @param ppx
 	 * @param ppy
 	 */
-	private void drawPoint(Point2D p)
+	protected void drawPoint(Point2D p)
 	{
 		//Make a vertical "dot" of 1 pixel
 		drawPoint((float)p.getX(), (float)p.getY());
@@ -1312,9 +1312,11 @@ public class DataGraphable extends DefaultGraphable
 		else if (numChannel == 1){
 			return dataStore.getDataChannelDescription(getDataStoreChannelY());
 		}
+		
+		else return dataStore.getDataChannelDescription(numChannel);
 				
-		throw new ArrayIndexOutOfBoundsException("requested channel: " + numChannel + 
-				" is not valid for DataGraphable");
+//		throw new ArrayIndexOutOfBoundsException("requested channel: " + numChannel + 
+//				" is not valid for DataGraphable");
 	}
 
 	/**
