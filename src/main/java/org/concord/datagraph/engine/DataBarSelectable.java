@@ -99,6 +99,10 @@ public class DataBarSelectable extends DefaultSelectable
 		return dataGraphable.getBarWidth();
 	}
 	
+	public void setBarColor(Color color){
+		barColor = color;
+	}
+	
 	public Color getBarColor()
 	{
 		if (barColor != null) return barColor;
@@ -128,10 +132,7 @@ public class DataBarSelectable extends DefaultSelectable
 			yMax = t;
 		}
 		
-//		System.out.println("is point in prox "+dataIndex+ " "+locDisplay+" "+p+" "+yMin+" "+yMax);
-		
 		if (p.getY() >= yMin && p.getY() <= yMax){
-			//System.out.println("true "+dataIndex);
 			return true;
 		}
 		
@@ -159,7 +160,6 @@ public class DataBarSelectable extends DefaultSelectable
 	 */
 	public void draw(Graphics2D g)
 	{
-		//System.out.println("draw "+dataIndex);
 		
 		g.setColor(getBarColor());
 		g.setStroke(dataGraphable.getStroke());
@@ -193,7 +193,6 @@ public class DataBarSelectable extends DefaultSelectable
 	 */
 	public void select()
 	{
-		//System.out.println("select "+dataIndex);
 		super.select();
 	}
 

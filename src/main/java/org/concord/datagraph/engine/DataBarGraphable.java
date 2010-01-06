@@ -19,6 +19,7 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.util.Vector;
 
+import org.concord.framework.data.stream.DataChannelDescription;
 import org.concord.graph.engine.GraphArea;
 import org.concord.graph.engine.MouseControllable;
 import org.concord.graph.engine.MouseDrawManagerHandler;
@@ -57,7 +58,6 @@ public class DataBarGraphable extends DataGraphable
 	public DataBarGraphable()
 	{
 		super();
-				
 		selectableBars = new SelectableList();
 		selectableBars.setSelectionMode(SelectableList.SELECTIONMODE_MULTIPLE);
 		mouseDrawManager = new MouseDrawManagerHandler(selectableBars);
@@ -89,8 +89,6 @@ public class DataBarGraphable extends DataGraphable
 	{
 		//This will call super.setLineWidth()
 		setBarWidth(width);
-
-//		System.out.println("setLineWidth="+width);
 	}
 	
 	protected void updateStroke()
@@ -143,6 +141,19 @@ public class DataBarGraphable extends DataGraphable
 		//Regenerate the bars 
 		selectableBars.removeAllElements();
 		
+		if (!showAllChannels){	// draw using calculated path
+			generateBarsFromPath();
+		} else {
+			generateBarsFromChannels();
+		}	
+	}
+	
+	/**
+	 * This method uses the original path-based system of generating bars. The
+	 * path is created in DataGraphable, as if it were a line graph. Then we iterate
+	 * through the path segments and replace them with bars.
+	 */
+	protected void generateBarsFromPath(){
 		//Get an interator on the main point path to get each point already calculated
 		//in display coordinates
 		//Hopefully these points coincide with the points in the data store
@@ -166,17 +177,47 @@ public class DataBarGraphable extends DataGraphable
 			
 			pathIter.next();
 		}
-		//		
+	}
+	
+	/**
+	 * This method generates the bars directly from the data, instead of
+	 * from the path. This method will currently only create one bar per channel.
+	 * 
+	 */
+	protected void generateBarsFromChannels(){
+		// for each channel, get value, then calculate coordinates
+		for (int i = 0; i < dataStore.getTotalNumChannels(); i++) {
+			int lastValue = dataStore.getTotalNumSamples()-1;
+			Object value = dataStore.getValueAt(lastValue, i);
+			if (value != null){
+				float px = handleValue(dataStore.getValueAt(i, getDataStoreChannelX()));
+	    		float py = handleValue(value);
+	    		if(Float.isNaN(px) || Float.isNaN(py)) {
+	    		    continue;
+	    		}
+	    		
+	    		Point2D modelPoint = new Point2D.Double(px,py);
+	    		Point2D worldPoint = new Point2D.Double();
+	    		getGraphArea().getCoordinateSystem().transformToDisplay(modelPoint, worldPoint);
+	    		addBar(worldPoint, i);
+			}
+		}
 	}
 	
 	private boolean addBar(Point2D point, int index)
 	{
 		int totalNumBars = dataStore.getTotalNumSamples();
 		if (showAllChannels)
-			totalNumBars *= dataStore.getTotalNumChannels();
+			totalNumBars = dataStore.getTotalNumChannels();
 		if (index >= totalNumBars) return false;
 		
 		DataBarSelectable bar = new DataBarSelectable(this, index);
+		
+		setChannelY(1);		// this has to happen because when we ask for channel 1, we get channel y...
+		DataChannelDescription description = getDataChannelDescription(index);
+		if (description != null)
+			bar.setBarColor(description.getColor());
+		
 		bar.setLocationDisplay(point);
 		selectableBars.add(bar);
 		return true;
