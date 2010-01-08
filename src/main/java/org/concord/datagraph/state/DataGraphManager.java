@@ -33,16 +33,20 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Image;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.EventObject;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -407,7 +411,20 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 			try {
 				double value = Double.parseDouble(strValue);
 				String label = (String) labelMap.get(strValue);
-				sAxis.addGridLabelOverride(value, label);
+				
+				// if it looks like it's an image url, try to add an image to the axis. For now we'll
+				// always keep the numbers as well. Eventually this should be settable.
+				if (label.endsWith(".jpg") || label.endsWith(".jpeg") || label.endsWith(".png") || label.endsWith(".gif")){
+					try {
+						ImageIcon icon = new ImageIcon(new URL(label));
+						sAxis.addGridLabelOverride(value, icon.getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH), true);
+					} catch (MalformedURLException e) {
+						e.printStackTrace();
+						sAxis.addGridLabelOverride(value, label);
+					}
+				} else {
+					sAxis.addGridLabelOverride(value, label);
+				}
 			} catch (NumberFormatException e) {
 				System.err.println("Grid label key -- expected a double, got: " + strValue);
 				e.printStackTrace();
@@ -560,6 +577,9 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		SingleDataAxisGrid sYAxis = (SingleDataAxisGrid) grid.getYGrid();
 		// DataGraphStateManager.setupAxisLabel(sYAxis, yOTAxis);
 		setupAxisLabel(sYAxis, yOTAxis);
+		
+		// reset insets now that axes have been completely initialized
+		dataGraph.setInsets(dataGraph.calcInsets());
 
 		dataGraph.setPreferredSize(new Dimension(400, 320));
 

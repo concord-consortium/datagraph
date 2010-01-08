@@ -221,7 +221,7 @@ public class DataGraph extends JPanel
 		initScaleObject();
 	}
 
-	private Insets calcInsets() {
+	public Insets calcInsets() {
 		double xLabelSpace = grid.getXGrid().getHeight(); 
 		// double yLabelSpace = grid.getYGrid().getWidth();
 		double yLabelSpace = 0.0;
