@@ -75,6 +75,13 @@ public interface OTDataAxis
 	/**
 	 * A resource map, keys are doubles, values are strings.
 	 * The string will replace the default numeric label at that value.
+	 * 
+	 * If it looks like it's an image url, try to add an image to the axis. For now, if
+	 * it's an image, we'll always keep the grid numbers as well. Eventually this should be 
+	 * settable.
+	 * 
+	 * Image urls can contain their size within them. For instance, "example.jpg" will always
+	 * be scaled to 25x25, but "example-50px.jpg" take example.jpg and scale it to 50x50
 	 * @return
 	 */
 	public OTResourceMap getCustomGridLabels();
