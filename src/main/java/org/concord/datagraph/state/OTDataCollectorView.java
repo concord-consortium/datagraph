@@ -134,6 +134,9 @@ public class OTDataCollectorView extends AbstractOTJComponentView
 	        OTObject copy =  otObject.getOTObjectService().copyObject(otObject, -1);
 	        if (copy instanceof OTDataCollector){
 	        	((OTDataCollector)copy).setMultipleGraphableEnabled(false);
+	    		((OTDataCollector)copy).getSource().setControllable(false);
+	    		((OTDataCollector)copy).setAutoScaleEnabled(false);
+	    		((OTDataCollector)copy).setDisplayButtons("4");
 	        }
 	        return copy;
         } catch (Exception e) {
@@ -167,8 +170,8 @@ public class OTDataCollectorView extends AbstractOTJComponentView
 				DataGraph graph = ((DataCollectorView)view).getDataGraph(true, false);
 				graph.setAutoFitMode(DataGraph.AUTO_SCALE_MODE);
 				final DataGraphAutoScaler autoscaler = graph.getAutoScaler();
-		//		autoscaler.setAutoScaleX(true);
-		//		autoscaler.setAutoScaleY(true);
+				autoscaler.setAutoScaleX(true);
+				autoscaler.setAutoScaleY(true);
 				
 				return graph;
 			} else
