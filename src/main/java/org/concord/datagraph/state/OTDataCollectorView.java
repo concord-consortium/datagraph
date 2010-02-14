@@ -162,7 +162,9 @@ public class OTDataCollectorView extends AbstractOTJComponentView
 	 */
 	public JComponent getLabbookView(OTObject otObject)
     {
-		((OTDataCollector)otObject).getSource().setControllable(false);
+		if(((OTDataCollector)otObject).getSource() != null){
+			((OTDataCollector)otObject).getSource().setControllable(false);
+		}
 		
 		setup(otObject);
 		
