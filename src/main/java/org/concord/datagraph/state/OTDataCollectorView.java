@@ -31,7 +31,6 @@ package org.concord.datagraph.state;
 
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.Insets;
 
 import javax.swing.JComponent;
@@ -134,7 +133,9 @@ public class OTDataCollectorView extends AbstractOTJComponentView
 	        OTObject copy =  otObject.getOTObjectService().copyObject(otObject, -1);
 	        if (copy instanceof OTDataCollector){
 	        	((OTDataCollector)copy).setMultipleGraphableEnabled(false);
-	    		((OTDataCollector)copy).getSource().setControllable(false);
+	        	if(((OTDataCollector)copy).getSource() != null){
+	        		((OTDataCollector)copy).getSource().setControllable(false);
+	        	}
 	    		((OTDataCollector)copy).setAutoScaleEnabled(false);
 	    		((OTDataCollector)copy).setDisplayButtons("4");
 	        }
