@@ -185,7 +185,9 @@ public class OTDataCollectorView extends AbstractOTJComponentView
 	 */
 	public JComponent getThumbnailView(OTObject otObject, int height)
     {
-		((OTDataCollector)otObject).getSource().setControllable(false);
+		if(((OTDataCollector)otObject).getSource() != null){
+			((OTDataCollector)otObject).getSource().setControllable(false);
+		}
 		
 		setup(otObject);
 		
