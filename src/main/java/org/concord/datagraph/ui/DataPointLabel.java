@@ -293,7 +293,7 @@ public class DataPointLabel extends PointTextLabel
 	 * @param indexPointOver2
 	 * @return
 	 */
-	protected static Point2D getPointDataGraphable(DataGraphable dg, int index)
+	public static Point2D getPointDataGraphable(DataGraphable dg, int index)
 	{
 		Object objVal;
 		double x,y;

@@ -36,9 +36,11 @@ import java.awt.FlowLayout;
 import java.awt.Image;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.geom.Point2D;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.EventObject;
@@ -82,6 +84,7 @@ import org.concord.framework.startable.StartableEvent;
 import org.concord.framework.startable.StartableListener;
 import org.concord.framework.util.CheckedColorTreeModel;
 import org.concord.framework.util.Copyable;
+import org.concord.graph.engine.CoordinateSystem;
 import org.concord.graph.engine.Drawable;
 import org.concord.graph.engine.Graphable;
 import org.concord.graph.engine.GraphableList;
@@ -394,7 +397,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 			String unitStr = axis.getUnits();
 			Unit unit = Unit.findUnit(unitStr);
 			if (unit == null) {
-				System.err.println("Can't find unit: " + unitStr);
+				logger.fine("Can't find unit: " + unitStr);
 				sAxis.setUnit(new UnknownUnit(unitStr));
 			} else {
 				sAxis.setUnit(unit);
@@ -437,7 +440,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 					sAxis.addGridLabelOverride(value, label);
 				}
 			} catch (NumberFormatException e) {
-				System.err.println("Grid label key -- expected a double, got: " + strValue);
+				logger.warning("Grid label key -- expected a double, got: " + strValue);
 				e.printStackTrace();
 			}
 		}
@@ -732,7 +735,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 			Object realGraphable = controllerService.getRealObject(extraGraphable);
 			
 			if (realGraphable == null){
-				System.err.println("Real object for extra graphable not found: "+extraGraphable);
+				logger.warning("Real object for extra graphable not found: "+extraGraphable);
 				continue;
 			}
 			
@@ -743,7 +746,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 				dataGraph.getGraph().add((GraphableList)realGraphable);
 			}
 			else{
-				System.err.println("Extra graphable cannot be added. Class not supported on a graph: "+realGraphable.getClass().getName());
+				logger.warning("Extra graphable cannot be added. Class not supported on a graph: "+realGraphable.getClass().getName());
 			}
 		}
 		//		
@@ -1168,5 +1171,43 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 	
 	public boolean getInstantRestart(){
 		return instantRestart;
+	}
+	
+	/*
+	 * This is a utility method for easy adding of labels. It adds a new note
+	 * with a set text to a specified data point on a dataGraphable.
+	 */
+	public void addDataPointLabel(String note, DataGraphable dataGraphable, int pointIndex){
+		DataPointLabel label = addDataPointLabel(note, false);
+		label.setDataGraphable(dataGraphable);
+		Point2D p = DataPointLabel.getPointDataGraphable(dataGraphable, pointIndex);
+		CoordinateSystem cs = dataGraph.getGraphArea().getCoordinateSystem();
+		Point2D pD = cs.transformToDisplay(p);
+		
+		// this sets all the properties on label needed for displaying in the right location
+		label.mouseReleased(new Point((int)pD.getX(), (int)pD.getY()));
+
+		label.addAtPoint(null, p);
+	}
+	
+	/*
+	 * This is a utility method for adding labels.
+	 * 
+	 * If newNote is true, this adds a new note to the graph as if the user had
+	 * just clicked the "Add Note" button. The note is then "attached" to the user's
+	 * mouse and if they click on a data line a new note will be added there.
+	 * 
+	 * If newNote is false, a new note is added to the graph as if it had already
+	 * been there. Note that it will not be displayed unless the note then has its
+	 * coordinates set.
+	 */
+	public DataPointLabel addDataPointLabel(String note, boolean newNote){
+		DataPointLabel label = new DataPointLabel(newNote);
+		label.setGraphableList(dataGraph.getObjList());
+		label.setMessage(note);
+		label.setShowCoordinates(otDataCollector.getShowLabelCoordinates());
+		label.setCoordinateDecimalPlaces(otDataCollector.getLabelDecimalPlaces());
+		notesLayer.add(label);
+		return label;
 	}
 }
