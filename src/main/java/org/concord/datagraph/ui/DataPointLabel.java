@@ -37,6 +37,7 @@ import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.Point2D;
@@ -221,6 +222,21 @@ public class DataPointLabel extends PointTextLabel
 			findAvailablePointOver(p);
 			notifyChange();
 		}
+		pointLocationWorld = graphArea.getCoordinateSystem().transformToWorld(p, pointLocationWorld);
+		
+		Point2D newP = new Point2D.Double(originalLocation.getX() + (pointLocationWorld.getX() - clickPointWorld.getX()),
+			originalLocation.getY() + (pointLocationWorld.getY() - clickPointWorld.getY()));
+		
+		Point2D dp = getGraphArea().getCoordinateSystem().transformToDisplay(newP);
+		
+		Dimension gSize = getGraphArea().getSize();
+		Dimension lSize = rectBox.getBounds().getSize();
+
+		// Block label from being dragged outside graph
+		Rectangle bounds = new Rectangle(new Point(lSize.width/2,lSize.height/2), new Dimension(gSize.width - (lSize.width), gSize.height - (lSize.height)));
+		if (!bounds.contains(dp))
+			return false;
+		
 		return super.mouseDragged(p);
 	}
 	
