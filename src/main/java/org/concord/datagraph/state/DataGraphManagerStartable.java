@@ -54,7 +54,7 @@ class DataGraphManagerStartable extends AbstractStartable {
 		eventThreads.add(Thread.currentThread());
 		// We bypass the normal dataGraph reset method so only the
 		// selected graphable is cleared.
-		if (dataGraphManager.sourceGraphable != null) {
+		if (dataGraphManager.sourceGraphable != null && dataGraphManager.sourceGraphable.getDataStore() != null) {
 			dataGraphManager.sourceGraphable.reset();
 		}
 		
