@@ -18,6 +18,7 @@ import java.awt.RenderingHints.Key;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
@@ -29,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.logging.Logger;
 
-enum ShapeId { RECT };
+enum ShapeId { RECT, LINE };
 
 class ShapeRec
 {
@@ -61,6 +62,26 @@ public class MockGraphics2D extends Graphics2D {
 		}
 		return cnt;
 	}
+	
+	public ArrayList<ShapeRec> getAllRects() {
+		ArrayList<ShapeRec> rectangles = new ArrayList<ShapeRec>();
+		for (int i = 0; i < shapes.size(); ++i) {
+			if (shapes.get(i).id == ShapeId.RECT) {
+				rectangles.add(shapes.get(i));
+			}
+		}
+		return rectangles;
+	}
+	
+	public ArrayList<ShapeRec> getAllLines() {
+		ArrayList<ShapeRec> rectangles = new ArrayList<ShapeRec>();
+		for (int i = 0; i < shapes.size(); ++i) {
+			if (shapes.get(i).id == ShapeId.LINE) {
+				rectangles.add(shapes.get(i));
+			}
+		}
+		return rectangles;
+	}
 
 	@Override
 	public void addRenderingHints(Map<?, ?> hints) {
@@ -84,9 +105,10 @@ public class MockGraphics2D extends Graphics2D {
 			*/
 			shapes.add(new ShapeRec(ShapeId.RECT, s, getColor()));
 		}
-		else {
+		else if (s instanceof Line2D){
+			shapes.add(new ShapeRec(ShapeId.LINE, s, getColor()));
 			//logger.fine("Shape");
-		}
+		} 
 	}
 
 	@Override

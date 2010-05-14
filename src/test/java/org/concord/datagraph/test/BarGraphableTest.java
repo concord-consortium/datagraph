@@ -1,7 +1,9 @@
 package org.concord.datagraph.test;
 
 
+import java.awt.Color;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import junit.framework.TestCase;
@@ -80,6 +82,28 @@ public class BarGraphableTest extends TestCase
 		
 		assertTrue(graphManager.getDataGraph().getGraphArea() == graphable.getGraphArea());
 		assertTrue(otdp.getNumChannels() == g.getNumRects());
+	}
+	
+	// Data collector with multiple channels using AlphaDataProducer
+	public void testBarGraphableColor() throws Exception {
+		initOtrunk();
+		OTDataGraph otGraph = (OTDataGraph) getObject("colored_bar_chart", false);
+		OTDataCollectorView view = (OTDataCollectorView) getView(otGraph);
+		DataGraphManager graphManager = view.getGraphManager();
+		OTControllerService controllerService = graphManager.getControllerService();
+		
+		OTDataBarGraphable otGraphable = (OTDataBarGraphable) getObject("colored_bars", false);
+		DataGraphable graphable = (DataGraphable) controllerService.getRealObject(otGraphable);
+		
+		MockGraphics2D g = new MockGraphics2D();
+		graphable.draw(g);
+		
+		ArrayList<ShapeRec> bars = g.getAllLines();
+		Color[] colors = { Color.RED, Color.GREEN, Color.RED };
+		
+		for (int i = 0; i < bars.size(); i++) {
+			assertEquals(colors[i], bars.get(i).color);
+		}
 	}
 	
 	private void initOtrunk() throws Exception {

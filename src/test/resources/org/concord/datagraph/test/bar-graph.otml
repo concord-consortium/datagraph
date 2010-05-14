@@ -41,6 +41,7 @@
           <children>
             <object type="graph" refid="${bar_graph_1}" />
             <object type="graph" refid="${data_collector_2}" />
+            <object type="graph" refid="${colored_bar_chart}" />
           </children>
         </OTFolderObject>
       </root>
@@ -102,6 +103,42 @@
           </xDataAxis>
           <yDataAxis>
             <OTDataAxis max="1.0" min="0.0" label="Y Axis" labelFormat="Engineering">
+              <customGridLabels />
+            </OTDataAxis>
+          </yDataAxis>
+        </OTDataCollector>
+        <OTDataCollector local_id="colored_bar_chart" 
+            name="Example graph" title="Title" 
+            showLabelCoordinates="true" labelDecimalPlaces="2" 
+            showControlBar="false" useDefaultToolBar="false" 
+            displayButtons="">
+          <source>
+            <OTDataBarGraphable local_id="colored_bars" showSampleLimit="1" name="Number of organisms" connectPoints="true" drawMarks="false" lineWidth="10.0" color="192" yColumn="11" xColumn="0" showAllChannels="true" visible="true">
+              <dataStore>
+                <OTDataStore sampleKeepLimit="10" dt="1.0" numberChannels="3">
+                  <channelDescriptions>
+                  	<!-- this is really confusing. Why are these three bars red-green-red? -->
+                    <OTDataChannelDescription numericData="true" color="0xFF0000"/>
+                   	<OTDataChannelDescription numericData="true" color="0x00FF00"/>
+                    <OTDataChannelDescription numericData="true" color="0x0000FF"/>
+                    <OTDataChannelDescription numericData="true" color="0xFF0000"/>
+                  </channelDescriptions>
+                  <values>
+                  	<float>1</float>
+                  	<float>2</float>
+                  	<float>3</float>
+                  </values>
+                </OTDataStore>
+              </dataStore>
+            </OTDataBarGraphable>
+          </source>
+          <xDataAxis>
+            <OTDataAxis max="4.0" min="0.0" label="X Axis" labelFormat="Engineering">
+              <customGridLabels />
+            </OTDataAxis>
+          </xDataAxis>
+          <yDataAxis>
+            <OTDataAxis max="5.0" min="-0.0" label="Y Axis" labelFormat="Engineering">
               <customGridLabels />
             </OTDataAxis>
           </yDataAxis>
