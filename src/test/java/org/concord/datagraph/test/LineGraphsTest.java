@@ -1,6 +1,7 @@
 package org.concord.datagraph.test;
 
 
+import java.awt.Color;
 import java.awt.geom.GeneralPath;
 import java.net.URL;
 import java.util.ArrayList;
@@ -42,6 +43,7 @@ public class LineGraphsTest extends TestCase
 	private DataGraphable source;
 	private DataGraphable second;
 	private MockGraphics2D mockG;
+	private ArrayList<DataGraphable> allGraphables;
 	
 	// Data collector with multiple channels using MultiWaveProducer
 	public void testMultiLinesAreDrawn() throws Exception {
@@ -157,6 +159,63 @@ public class LineGraphsTest extends TestCase
 		assertTrue(((GeneralPath)paths.get(1).shape).getBounds().width == 0);
 	}
 	
+	public void testCreatingNewLearnerLines() throws Exception {
+		initOtrunk();
+		setupObjects("wave-graph", "wave-source", "wave-second");
+		
+		// select one graphable, run dp, and assert that only one line is drawn
+		
+		graphManager.setSelectedItem(source, true);
+		
+		runGraph(graphManager, 300);
+
+		redrawGraphables();
+		
+		ArrayList<ShapeRec> paths = mockG.getAllShapes(ShapeId.PATH);
+		
+		assertTrue(((GeneralPath)paths.get(0).shape).getBounds().width > 0);
+		assertTrue(((GeneralPath)paths.get(1).shape).getBounds().width == 0);
+		
+		// create new graphable from source. There should now be three graphables on graph, with only one drawn
+		
+		DataGraphable newGraphable = (DataGraphable) graphManager.addItem(null, "new", Color.GREEN);
+		allGraphables.add(newGraphable);
+		
+		redrawGraphables();
+		
+		paths = mockG.getAllShapes(ShapeId.PATH);
+		
+		// each time we call redraw, list of shapes in mockGraphics adds to itself. So
+		// after adding a third graphable and drawing it, plus the first two again, we should
+		// have five shapes in the graphics.
+		assertTrue(paths.size() == 5);
+
+		assertTrue(((GeneralPath)paths.get(0).shape).getBounds().width > 0);
+		assertTrue(((GeneralPath)paths.get(1).shape).getBounds().width == 0);
+		assertTrue(((GeneralPath)paths.get(4).shape).getBounds().width == 0);
+		
+		// select new graphable, run dp, and assert that it is drawn
+		
+		graphManager.setSelectedItem(newGraphable, true);
+		
+		runGraph(graphManager, 300);
+
+		redrawGraphables();
+		
+		assertTrue(((GeneralPath)paths.get(0).shape).getBounds().width > 0);
+		assertTrue(((GeneralPath)paths.get(1).shape).getBounds().width == 0);
+		assertTrue(((GeneralPath)paths.get(4).shape).getBounds().width > 0);
+		
+		// clear new graphable
+		graphManager.getStartable().reset();
+
+		redrawGraphables();
+		
+		assertTrue(((GeneralPath)paths.get(0).shape).getBounds().width > 0);
+		assertTrue(((GeneralPath)paths.get(1).shape).getBounds().width == 0);
+		assertTrue(((GeneralPath)paths.get(4).shape).getBounds().width == 0);
+	}
+	
 	private void setupObjects(String graphId, String sourceId, String secondGraphableId) throws Exception {
 		otGraph = (OTDataGraph) getObject(graphId, false);
 		view = (OTDataCollectorView) getView(otGraph);
@@ -168,12 +227,17 @@ public class LineGraphsTest extends TestCase
 		source = (DataGraphable) controllerService.getRealObject(otGraphableSource);
 		second = (DataGraphable) controllerService.getRealObject(otGraphableSecond);
 		
+		allGraphables = new ArrayList<DataGraphable>();
+		allGraphables.add(source);
+		allGraphables.add(second);
+		
 		mockG = new MockGraphics2D();
 	}
 	
 	private void redrawGraphables(){
-		source.draw(mockG);
-		second.draw(mockG);
+		for (DataGraphable graphable : allGraphables) {
+			graphable.draw(mockG);
+		}
 	}
 	
 	private static void runGraph(DataGraphManager manager, long ms){
