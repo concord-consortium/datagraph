@@ -42,7 +42,7 @@ public class LineGraphsTest extends TestCase
 	private OTrunkImpl otrunk;
 	private String documentUUID = "5c7e6035-f50f-49fb-ac6c-6bc71eb3c7ca";
 	
-	// Data collector with multiple channels using AlphaDataProducer
+	// Data collector with multiple channels using MultiWaveProducer
 	public void testMultiLinesAreDrawn() throws Exception {
 		initOtrunk();
 		OTDataGraph otGraph = (OTDataGraph) getObject("multi-wave-graph", false);
@@ -57,15 +57,7 @@ public class LineGraphsTest extends TestCase
 		DataGraphable second = (DataGraphable) controllerService.getRealObject(otGraphableSecond);
 		DataProducer dp = (DataProducer) controllerService.getRealObject(otDp);
 		
-		dp.start();
-		
-		long t0 = System.currentTimeMillis();
-		long t1 = 0;
-		do {
-			t1 = System.currentTimeMillis();
-		} while (t1-t0 < 300);
-		
-		dp.stop();
+		runDp(dp, 300);
 		
 		MockGraphics2D g = new MockGraphics2D();
 		
@@ -80,8 +72,6 @@ public class LineGraphsTest extends TestCase
 		assertTrue(((GeneralPath)paths.get(1).shape).getBounds().width > 0);
 		
 		paths = g.getAllShapes(ShapeId.PATH);
-		System.out.println(paths.size());
-		System.out.println(((GeneralPath)paths.get(0).shape).getBounds());
 
 	}
 	
@@ -99,15 +89,7 @@ public class LineGraphsTest extends TestCase
 		DataGraphable second = (DataGraphable) controllerService.getRealObject(otGraphableSecond);
 		DataProducer dp = (DataProducer) controllerService.getRealObject(otDp);
 		
-		dp.start();
-		
-		long t0 = System.currentTimeMillis();
-		long t1 = 0;
-		do {
-			t1 = System.currentTimeMillis();
-		} while (t1-t0 < 300);
-		
-		dp.stop();
+		runDp(dp, 300);
 		
 		MockGraphics2D g = new MockGraphics2D();
 		
@@ -125,12 +107,22 @@ public class LineGraphsTest extends TestCase
 		
 		source.draw(g);
 		second.draw(g);
-		
-		paths = g.getAllShapes(ShapeId.PATH);
 
 		assertTrue(((GeneralPath)paths.get(0).shape).getBounds().width == 0);
 		assertTrue(((GeneralPath)paths.get(1).shape).getBounds().width == 0);
 
+	}
+	
+	private static void runDp(DataProducer dp, long ms){
+		dp.start();
+		
+		long t0 = System.currentTimeMillis();
+		long t1 = 0;
+		do {
+			t1 = System.currentTimeMillis();
+		} while (t1-t0 < ms);
+		
+		dp.stop();
 	}
 	
 	private void initOtrunk() throws Exception {
