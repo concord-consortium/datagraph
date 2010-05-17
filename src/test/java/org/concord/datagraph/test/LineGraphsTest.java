@@ -2,6 +2,7 @@ package org.concord.datagraph.test;
 
 
 import java.awt.Color;
+import java.awt.geom.GeneralPath;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.logging.Logger;
@@ -9,12 +10,15 @@ import java.util.logging.Logger;
 import junit.framework.TestCase;
 
 import org.concord.data.state.OTAlphaDataProducer;
+import org.concord.data.state.OTDataProducer;
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.datagraph.state.DataGraphManager;
 import org.concord.datagraph.state.OTDataBarGraphable;
 import org.concord.datagraph.state.OTDataCollectorView;
 import org.concord.datagraph.state.OTDataGraph;
 import org.concord.datagraph.state.OTDataGraphView;
+import org.concord.datagraph.state.OTDataGraphable;
+import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.otrunk.OTControllerService;
 import org.concord.framework.otrunk.OTID;
 import org.concord.framework.otrunk.OTObject;
@@ -29,81 +33,104 @@ import org.concord.otrunk.view.OTViewContainerPanel;
 import org.concord.otrunk.view.OTViewerHelper;
 
 
-public class BarGraphableTest extends TestCase
+public class LineGraphsTest extends TestCase
 {
-	private static final Logger logger = Logger.getLogger(BarGraphableTest.class.getCanonicalName());
-	private static URL authoredContent = BarGraphableTest.class.getResource("bar-graph.otml");
+	private static final Logger logger = Logger.getLogger(LineGraphsTest.class.getCanonicalName());
+	private static URL authoredContent = LineGraphsTest.class.getResource("line-graphs.otml");
 	private OTViewerHelper viewerHelper;
 	private OTDatabase mainDb;
 	private OTrunkImpl otrunk;
-	private String documentUUID = "CD47F7EC-5E1F-47F8-81F5-C34CC8FCD83E";
+	private String documentUUID = "5c7e6035-f50f-49fb-ac6c-6bc71eb3c7ca";
+	
+	// Data collector with multiple channels using AlphaDataProducer
+	public void testMultiLinesAreDrawn() throws Exception {
+		initOtrunk();
+		OTDataGraph otGraph = (OTDataGraph) getObject("multi-wave-graph", false);
+		OTDataCollectorView view = (OTDataCollectorView) getView(otGraph);
+		DataGraphManager graphManager = view.getGraphManager();
+		OTControllerService controllerService = graphManager.getControllerService();
+		
+		OTDataGraphable otGraphableSource = (OTDataGraphable) getObject("multi-wave-source", false);
+		OTDataGraphable otGraphableSecond = (OTDataGraphable) getObject("multi-wave-second", false);
+		OTDataProducer otDp = (OTDataProducer) getObject("multi_wave_generator", false);
+		DataGraphable source = (DataGraphable) controllerService.getRealObject(otGraphableSource);
+		DataGraphable second = (DataGraphable) controllerService.getRealObject(otGraphableSecond);
+		DataProducer dp = (DataProducer) controllerService.getRealObject(otDp);
+		
+		dp.start();
+		
+		long t0 = System.currentTimeMillis();
+		long t1 = 0;
+		do {
+			t1 = System.currentTimeMillis();
+		} while (t1-t0 < 300);
+		
+		dp.stop();
+		
+		MockGraphics2D g = new MockGraphics2D();
+		
+		source.draw(g);
+		second.draw(g);
+		
+		ArrayList<ShapeRec> paths = g.getAllShapes(ShapeId.PATH);
+		
+		assertTrue(paths.size() == 2);
+		
+		assertTrue(((GeneralPath)paths.get(0).shape).getBounds().width > 0);
+		assertTrue(((GeneralPath)paths.get(1).shape).getBounds().width > 0);
+		
+		paths = g.getAllShapes(ShapeId.PATH);
+		System.out.println(paths.size());
+		System.out.println(((GeneralPath)paths.get(0).shape).getBounds());
 
-	// Dual channel data graph with data from data store
-	public void testBarGraphable() throws Exception {
-		try {
-			initOtrunk();
-			OTDataGraph otGraph = (OTDataGraph) getObject("bar_graph_1", false);
-			OTDataGraphView view = (OTDataGraphView) getView(otGraph);
-			DataGraphManager graphManager = view.getGraphManager();
-			OTControllerService csvc = graphManager.getControllerService();
-			
-			OTDataBarGraphable otGraphable = (OTDataBarGraphable) getObject("bar_graphable_1", false);
-			DataGraphable graphable = (DataGraphable) csvc.getRealObject(otGraphable);
-			
-			MockGraphics2D g = new MockGraphics2D();
-			graphable.draw(g);
-			
-			assertTrue(graphManager.getDataGraph().getGraphArea() == graphable.getGraphArea());
-			//assertTrue(otGraphable.getDataStore().getValuesString().split("\\s").length == g.getNumRects() * 2);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			throw(e);
-		}
 	}
 	
-	// Data collector with multiple channels using AlphaDataProducer
-	public void testBarGraphable2() throws Exception {
+	public void testMultiLinesAreClearedOnReset() throws Exception {
 		initOtrunk();
-		OTDataGraph otGraph = (OTDataGraph) getObject("data_collector_2", false);
+		OTDataGraph otGraph = (OTDataGraph) getObject("multi-wave-graph", false);
 		OTDataCollectorView view = (OTDataCollectorView) getView(otGraph);
 		DataGraphManager graphManager = view.getGraphManager();
 		OTControllerService controllerService = graphManager.getControllerService();
 		
-		OTDataBarGraphable otGraphable = (OTDataBarGraphable) getObject("bar_graphable_2", false);
-		DataGraphable graphable = (DataGraphable) controllerService.getRealObject(otGraphable);
+		OTDataGraphable otGraphableSource = (OTDataGraphable) getObject("multi-wave-source", false);
+		OTDataGraphable otGraphableSecond = (OTDataGraphable) getObject("multi-wave-second", false);
+		OTDataProducer otDp = (OTDataProducer) getObject("multi_wave_generator", false);
+		DataGraphable source = (DataGraphable) controllerService.getRealObject(otGraphableSource);
+		DataGraphable second = (DataGraphable) controllerService.getRealObject(otGraphableSecond);
+		DataProducer dp = (DataProducer) controllerService.getRealObject(otDp);
 		
-		OTAlphaDataProducer otdp = (OTAlphaDataProducer) otGraphable.getDataProducer();
-		// Incrementing "step" notifies AlphaProducer to add values.
-		otdp.setStep(otdp.getStep() + 1);
+		dp.start();
 		
-		MockGraphics2D g = new MockGraphics2D();
-		graphable.draw(g);
+		long t0 = System.currentTimeMillis();
+		long t1 = 0;
+		do {
+			t1 = System.currentTimeMillis();
+		} while (t1-t0 < 300);
 		
-		assertTrue(graphManager.getDataGraph().getGraphArea() == graphable.getGraphArea());
-		assertTrue(otdp.getNumChannels() == g.getNumRects());
-	}
-	
-	// Data collector with multiple channels using AlphaDataProducer
-	public void testBarGraphableColor() throws Exception {
-		initOtrunk();
-		OTDataGraph otGraph = (OTDataGraph) getObject("colored_bar_chart", false);
-		OTDataCollectorView view = (OTDataCollectorView) getView(otGraph);
-		DataGraphManager graphManager = view.getGraphManager();
-		OTControllerService controllerService = graphManager.getControllerService();
-		
-		OTDataBarGraphable otGraphable = (OTDataBarGraphable) getObject("colored_bars", false);
-		DataGraphable graphable = (DataGraphable) controllerService.getRealObject(otGraphable);
+		dp.stop();
 		
 		MockGraphics2D g = new MockGraphics2D();
-		graphable.draw(g);
 		
-		ArrayList<ShapeRec> bars = g.getAllShapes(ShapeId.LINE);
-		Color[] colors = { Color.RED, Color.GREEN, Color.RED };
+		source.draw(g);
+		second.draw(g);
 		
-		for (int i = 0; i < bars.size(); i++) {
-			assertEquals(colors[i], bars.get(i).color);
-		}
+		ArrayList<ShapeRec> paths = g.getAllShapes(ShapeId.PATH);
+		
+		assertTrue(paths.size() == 2);
+		
+		assertTrue(((GeneralPath)paths.get(0).shape).getBounds().width > 0);
+		assertTrue(((GeneralPath)paths.get(1).shape).getBounds().width > 0);
+		
+		graphManager.getStartable().reset();
+		
+		source.draw(g);
+		second.draw(g);
+		
+		paths = g.getAllShapes(ShapeId.PATH);
+
+		assertTrue(((GeneralPath)paths.get(0).shape).getBounds().width == 0);
+		assertTrue(((GeneralPath)paths.get(1).shape).getBounds().width == 0);
+
 	}
 	
 	private void initOtrunk() throws Exception {
