@@ -1,7 +1,6 @@
 package org.concord.datagraph.test;
 
 
-import java.awt.Color;
 import java.awt.geom.GeneralPath;
 import java.net.URL;
 import java.util.ArrayList;
@@ -9,14 +8,10 @@ import java.util.logging.Logger;
 
 import junit.framework.TestCase;
 
-import org.concord.data.state.OTAlphaDataProducer;
-import org.concord.data.state.OTDataProducer;
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.datagraph.state.DataGraphManager;
-import org.concord.datagraph.state.OTDataBarGraphable;
 import org.concord.datagraph.state.OTDataCollectorView;
 import org.concord.datagraph.state.OTDataGraph;
-import org.concord.datagraph.state.OTDataGraphView;
 import org.concord.datagraph.state.OTDataGraphable;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.otrunk.OTControllerService;
@@ -41,62 +36,39 @@ public class LineGraphsTest extends TestCase
 	private OTDatabase mainDb;
 	private OTrunkImpl otrunk;
 	private String documentUUID = "5c7e6035-f50f-49fb-ac6c-6bc71eb3c7ca";
+	private OTDataGraph otGraph;
+	private OTDataCollectorView view;
+	private DataGraphManager graphManager;
+	private DataGraphable source;
+	private DataGraphable second;
+	private MockGraphics2D mockG;
 	
 	// Data collector with multiple channels using MultiWaveProducer
 	public void testMultiLinesAreDrawn() throws Exception {
 		initOtrunk();
-		OTDataGraph otGraph = (OTDataGraph) getObject("multi-wave-graph", false);
-		OTDataCollectorView view = (OTDataCollectorView) getView(otGraph);
-		DataGraphManager graphManager = view.getGraphManager();
-		OTControllerService controllerService = graphManager.getControllerService();
+		setupObjects("multi-wave-graph", "multi-wave-source", "multi-wave-second");
 		
-		OTDataGraphable otGraphableSource = (OTDataGraphable) getObject("multi-wave-source", false);
-		OTDataGraphable otGraphableSecond = (OTDataGraphable) getObject("multi-wave-second", false);
-		OTDataProducer otDp = (OTDataProducer) getObject("multi_wave_generator", false);
-		DataGraphable source = (DataGraphable) controllerService.getRealObject(otGraphableSource);
-		DataGraphable second = (DataGraphable) controllerService.getRealObject(otGraphableSecond);
-		DataProducer dp = (DataProducer) controllerService.getRealObject(otDp);
+		runGraph(graphManager, 300);
+
+		redrawGraphables();
 		
-		runDp(dp, 300);
-		
-		MockGraphics2D g = new MockGraphics2D();
-		
-		source.draw(g);
-		second.draw(g);
-		
-		ArrayList<ShapeRec> paths = g.getAllShapes(ShapeId.PATH);
+		ArrayList<ShapeRec> paths = mockG.getAllShapes(ShapeId.PATH);
 		
 		assertTrue(paths.size() == 2);
 		
 		assertTrue(((GeneralPath)paths.get(0).shape).getBounds().width > 0);
 		assertTrue(((GeneralPath)paths.get(1).shape).getBounds().width > 0);
-		
-		paths = g.getAllShapes(ShapeId.PATH);
-
 	}
 	
 	public void testMultiLinesAreClearedOnReset() throws Exception {
 		initOtrunk();
-		OTDataGraph otGraph = (OTDataGraph) getObject("multi-wave-graph", false);
-		OTDataCollectorView view = (OTDataCollectorView) getView(otGraph);
-		DataGraphManager graphManager = view.getGraphManager();
-		OTControllerService controllerService = graphManager.getControllerService();
+		setupObjects("multi-wave-graph", "multi-wave-source", "multi-wave-second");
 		
-		OTDataGraphable otGraphableSource = (OTDataGraphable) getObject("multi-wave-source", false);
-		OTDataGraphable otGraphableSecond = (OTDataGraphable) getObject("multi-wave-second", false);
-		OTDataProducer otDp = (OTDataProducer) getObject("multi_wave_generator", false);
-		DataGraphable source = (DataGraphable) controllerService.getRealObject(otGraphableSource);
-		DataGraphable second = (DataGraphable) controllerService.getRealObject(otGraphableSecond);
-		DataProducer dp = (DataProducer) controllerService.getRealObject(otDp);
+		runGraph(graphManager, 300);
+
+		redrawGraphables();
 		
-		runDp(dp, 300);
-		
-		MockGraphics2D g = new MockGraphics2D();
-		
-		source.draw(g);
-		second.draw(g);
-		
-		ArrayList<ShapeRec> paths = g.getAllShapes(ShapeId.PATH);
+		ArrayList<ShapeRec> paths = mockG.getAllShapes(ShapeId.PATH);
 		
 		assertTrue(paths.size() == 2);
 		
@@ -104,13 +76,116 @@ public class LineGraphsTest extends TestCase
 		assertTrue(((GeneralPath)paths.get(1).shape).getBounds().width > 0);
 		
 		graphManager.getStartable().reset();
-		
-		source.draw(g);
-		second.draw(g);
+
+		redrawGraphables();
 
 		assertTrue(((GeneralPath)paths.get(0).shape).getBounds().width == 0);
 		assertTrue(((GeneralPath)paths.get(1).shape).getBounds().width == 0);
 
+	}
+	
+	public void testMultipleLearnerLines() throws Exception {
+		initOtrunk();
+		setupObjects("wave-graph", "wave-source", "wave-second");
+		
+		// select one graphable, run dp, and assert that only one line is drawn
+		
+		graphManager.setSelectedItem(source, true);
+		
+		runGraph(graphManager, 300);
+
+		redrawGraphables();
+		
+		ArrayList<ShapeRec> paths = mockG.getAllShapes(ShapeId.PATH);
+		
+		assertTrue(((GeneralPath)paths.get(0).shape).getBounds().width > 0);
+		assertTrue(((GeneralPath)paths.get(1).shape).getBounds().width == 0);
+		
+		// select second graphable, run dp, and assert that two lines are drawn
+		
+		graphManager.setSelectedItem(second, true);
+		
+		runGraph(graphManager, 300);
+
+		redrawGraphables();
+		
+		assertTrue(((GeneralPath)paths.get(0).shape).getBounds().width > 0);
+		assertTrue(((GeneralPath)paths.get(1).shape).getBounds().width > 0);
+	}
+	
+	public void testMultipleLearnerLinesClearCorrectly() throws Exception {
+		initOtrunk();
+		setupObjects("wave-graph", "wave-source", "wave-second");
+		
+		// select one graphable, run dp
+		
+		graphManager.setSelectedItem(source, true);
+		
+		runGraph(graphManager, 300);
+		
+		// select second graphable, run dp, and assert that two lines are drawn
+		
+		graphManager.setSelectedItem(second, true);
+		
+		runGraph(graphManager, 300);
+		
+		redrawGraphables();
+		
+		ArrayList<ShapeRec> paths = mockG.getAllShapes(ShapeId.PATH);
+		
+		assertTrue(((GeneralPath)paths.get(0).shape).getBounds().width > 0);
+		assertTrue(((GeneralPath)paths.get(1).shape).getBounds().width > 0);
+		
+		// with second graphable still selected, hit reset, and assert only second line is cleared
+		
+		graphManager.getStartable().reset();
+
+		redrawGraphables();
+		
+		assertTrue(((GeneralPath)paths.get(0).shape).getBounds().width > 0);
+		assertTrue(((GeneralPath)paths.get(1).shape).getBounds().width == 0);
+		
+		// select first graphable again, hit reset, and assert first line is also cleared
+		
+		graphManager.setSelectedItem(source, true);
+		
+		graphManager.getStartable().reset();
+
+		redrawGraphables();
+		
+		assertTrue(((GeneralPath)paths.get(0).shape).getBounds().width == 0);
+		assertTrue(((GeneralPath)paths.get(1).shape).getBounds().width == 0);
+	}
+	
+	private void setupObjects(String graphId, String sourceId, String secondGraphableId) throws Exception {
+		otGraph = (OTDataGraph) getObject(graphId, false);
+		view = (OTDataCollectorView) getView(otGraph);
+		graphManager = view.getGraphManager();
+		OTControllerService controllerService = graphManager.getControllerService();
+		
+		OTDataGraphable otGraphableSource = (OTDataGraphable) getObject(sourceId, false);
+		OTDataGraphable otGraphableSecond = (OTDataGraphable) getObject(secondGraphableId, false);
+		source = (DataGraphable) controllerService.getRealObject(otGraphableSource);
+		second = (DataGraphable) controllerService.getRealObject(otGraphableSecond);
+		
+		mockG = new MockGraphics2D();
+	}
+	
+	private void redrawGraphables(){
+		source.draw(mockG);
+		second.draw(mockG);
+	}
+	
+	private static void runGraph(DataGraphManager manager, long ms){
+		manager.getStartable().start();
+
+		long t0 = System.currentTimeMillis();
+		long t1 = 0;
+		do {
+			t1 = System.currentTimeMillis();
+		} while (t1-t0 < ms);
+		
+		manager.getStartable().stop();
 	}
 	
 	private static void runDp(DataProducer dp, long ms){

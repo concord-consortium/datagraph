@@ -311,26 +311,20 @@
                  <OTDrawingStamp src="plus.png" description="plus" alwaysOn="true"/>
                </stamps>
             </OTDrawingTool>
-            <OTDataCollector name="Wave Graph">
+            <OTDataCollector name="Wave Graph" local_id="wave-graph">
               <source>
                 <OTDataGraphable connectPoints="true" color="0x0000ff"
-                  drawMarks="false" name="Pressure1" xColumn="0" yColumn="1">
+                  drawMarks="false" name="Pressure1" xColumn="0" yColumn="1" local_id="wave-source">
                   <dataProducer>
-                    <OTWaveGenerator timeScale="0.2" sampleTime="0.3" amplitude="1"/>
+                    <OTWaveGenerator timeScale="0.2" sampleTime="0.3" amplitude="1" local_id="wave-generator"/>
                   </dataProducer>
                 </OTDataGraphable>
               </source>
               <graphables>
 				<OTDataGraphable connectPoints="true" color="0xff0000"
-                  drawMarks="false" name="Pressure2" xColumn="0" yColumn="1">
+                  drawMarks="false" name="Pressure2" xColumn="0" yColumn="1" local_id="wave-second">
                   <dataProducer>
                     <OTWaveGenerator timeScale="0.4" sampleTime="0.3" amplitude="1.5"/>
-                  </dataProducer>
-                </OTDataGraphable>
-				<OTDataGraphable connectPoints="true" color="0x00ff00"
-                  drawMarks="false" name="Pressure3" xColumn="0" yColumn="1">
-                  <dataProducer>
-                    <OTWaveGenerator timeScale="0.6" sampleTime="0.3" amplitude="2"/>
                   </dataProducer>
                 </OTDataGraphable>
               </graphables>
