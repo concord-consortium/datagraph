@@ -417,21 +417,35 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 				
 				// if it looks like it's an image url, try to add an image to the axis. For now we'll
 				// always keep the numbers as well. Eventually this should be settable.
+				//
 				// Image urls can contain their size within them. For instance, "example.jpg" will
 				// always be scaled to 25x25, but "example-50px.jpg" take example.jpg and scale it to 50x50
+				//
+				// Also, you can set *both* a text override and an image by using, e.g. 'Red::red-image.jpg'. This
+				// will set the text of the label to "Red" and the image to "red-image.jpg."
 				if (label.endsWith(".jpg") || label.endsWith(".jpeg") || label.endsWith(".png") || label.endsWith(".gif")){
 					try {
+						String labelText = null;
+						String[] labelParts = label.split("::");
+						if (labelParts.length == 2){
+							labelText = labelParts[0];
+							label = labelParts[1];
+						}
+						
 						int size = 25;
 						// see if image size is contained in label
 						String strippedLabel = label.substring(0, label.lastIndexOf("."));
-						String[] labelParts = strippedLabel.split("-");
+						labelParts = strippedLabel.split("-");
 						if (labelParts.length > 1 && labelParts[labelParts.length - 1].endsWith("px")){
 							String sizeString = labelParts[labelParts.length - 1];
 							size = Integer.parseInt(sizeString.substring(0, sizeString.length()-2));
 							label = label.replaceAll("-"+sizeString, "");
 						}
+						
 						ImageIcon icon = new ImageIcon(new URL(label));
 						sAxis.addGridLabelOverride(value, icon.getImage().getScaledInstance(size, size, Image.SCALE_SMOOTH), true);
+						if (labelText != null)
+							sAxis.addGridLabelOverride(value, labelText);
 					} catch (MalformedURLException e) {
 						e.printStackTrace();
 						sAxis.addGridLabelOverride(value, label);

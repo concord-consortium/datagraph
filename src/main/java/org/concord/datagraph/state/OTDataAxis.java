@@ -82,6 +82,11 @@ public interface OTDataAxis
 	 * 
 	 * Image urls can contain their size within them. For instance, "example.jpg" will always
 	 * be scaled to 25x25, but "example-50px.jpg" take example.jpg and scale it to 50x50
+	 * 
+	 * Also, you can set *both* a text override and an image by using '::', e.g. 'Red::red-image.jpg'. This
+	 * will set the text of the label to "Red" and the image to "red-image.jpg." At it's most complex, you
+	 * could have 'Big plant::images/big-plant-100px.jpg,' which would set the text of the label to "Big plant," the
+	 * image to 'images/big-plant.jpg,' and scale the image to 100x100 pixels.
 	 * @return
 	 */
 	public OTResourceMap getCustomGridLabels();
