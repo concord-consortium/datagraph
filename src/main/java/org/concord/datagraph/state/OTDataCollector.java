@@ -111,4 +111,6 @@ public interface OTDataCollector
 	// meaning of the numbers, see the static ints defined in DataGraphToolbar
 	public String getDisplayButtons();
 	public void setDisplayButtons(String displayButtons);
+	
+	public OTObject getEventLog();
 }
