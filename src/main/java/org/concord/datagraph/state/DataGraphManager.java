@@ -61,6 +61,8 @@ import org.concord.data.ui.DataStoreLabel;
 import org.concord.data.ui.StartableToolBar;
 import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.DataGraphable;
+import org.concord.datagraph.log.LogHelper;
+import org.concord.datagraph.log.OTEventLog;
 import org.concord.datagraph.ui.DataAnnotation;
 import org.concord.datagraph.ui.DataGraph;
 import org.concord.datagraph.ui.DataGraphToolbar;
@@ -155,8 +157,9 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 			OTViewContext serviceProvider, boolean showDataControls,
 			OTJComponentViewContext jComponentViewContext) {
 		this.otDataGraph = pfObject;
-		if (pfObject instanceof OTDataCollector)
+		if (pfObject instanceof OTDataCollector) {
 			otDataCollector = (OTDataCollector) pfObject;
+		}
 		this.showDataControls = showDataControls;
 		this.viewContext = serviceProvider;
 		this.jComponentViewContext = jComponentViewContext;
@@ -170,6 +173,27 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		};
 		
 		initialize();
+		
+		if (otDataCollector != null) {
+			final OTEventLog log = (OTEventLog) otDataCollector.getEventLog();
+			if (log != null && startable != null) {
+				startable.addStartableListener(new StartableListener() {
+					public void startableEvent(StartableEvent event) {
+						switch(event.getType()) {
+						case RESET:
+							LogHelper.add(log, OTEventLog.RESET);
+							break;
+						case STARTED:
+							LogHelper.add(log, OTEventLog.START);
+							break;
+						case STOPPED:
+							LogHelper.add(log, OTEventLog.STOP);
+							break;
+						}
+					}
+				});
+			}
+		}
 	}
 
 	public <T> T getViewService(Class<T> serviceClass) {
