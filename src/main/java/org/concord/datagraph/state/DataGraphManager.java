@@ -175,6 +175,15 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		initialize();
 		
 		if (otDataCollector != null) {
+			if (otDataCollector.getEventLog() == null) {
+				try {
+					OTEventLog log2 = (OTEventLog) otDataCollector.getOTObjectService().createObject(OTEventLog.class);
+					otDataCollector.setEventLog(log2);
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 			final OTEventLog log = (OTEventLog) otDataCollector.getEventLog();
 			if (log != null && startable != null) {
 				startable.addStartableListener(new StartableListener() {
