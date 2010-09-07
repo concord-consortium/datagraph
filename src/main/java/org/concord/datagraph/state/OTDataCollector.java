@@ -113,4 +113,5 @@ public interface OTDataCollector
 	public void setDisplayButtons(String displayButtons);
 	
 	public OTObject getEventLog();
+	public void setEventLog(OTObject eventLog);
 }

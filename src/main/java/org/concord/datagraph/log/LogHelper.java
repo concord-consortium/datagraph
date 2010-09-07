@@ -5,6 +5,7 @@ import java.util.Date;
 import org.concord.framework.otrunk.OTObjectList;
 
 public class LogHelper {
+	
 	public static void add(OTEventLog log, String name) {
 		add(log, name, null);
 	}
