@@ -71,6 +71,7 @@ public class DataGraphToolbar extends GraphWindowToolBar
 	private DataGraph dataGraph;
 	private DataGraphable sourceGraphable;
 	private GraphMouseManager defaultMouseManager;
+    private DataGraphable selectedGraphable;
 
 	public final static int SELECT_BTN = 0;
 	public final static int ZOOM_IN_BTN = 1;
@@ -82,6 +83,7 @@ public class DataGraphToolbar extends GraphWindowToolBar
 	public final static int AUTOSCALE_X_BTN = 7;
 	public final static int AUTOSCALE_Y_BTN = 8;
 	public final static int DRAWING_BTN = 9;				// not to be added to customization views
+    private DrawingAction drawingAction;
 	
     public DataGraphToolbar()
     {
@@ -219,11 +221,11 @@ public class DataGraphToolbar extends GraphWindowToolBar
     			break;
     		case DRAWING_BTN:
     			if (sourceGraphable != null){
-    				DrawingAction a = new DrawingAction();
-    				a.setDrawingObject((ControllableDataGraphable) sourceGraphable);
-    				button = new SelectableToggleButton(a);
+    				drawingAction = new DrawingAction();
+    				drawingAction.setDrawingObject((ControllableDataGraphable) selectedGraphable);
+    				button = new SelectableToggleButton(drawingAction);
     				button.setActionCommand("" + MultiRegionAxisScale.DRAGMODE_TRANSLATE_DILATE);
-        			button.addActionListener(new DeselectAllActionListener());
+        			// button.addActionListener(new DeselectAllActionListener());
         			button.addActionListener(new SwapManagerActionListener(new DrawingMouseManager()));
         			addButton(button, "Draw a function", 0, false, true);
     			} else {
@@ -267,7 +269,8 @@ public class DataGraphToolbar extends GraphWindowToolBar
 	 * 
 	 * @see org.concord.graph.examples.GraphWindowToolBar#addAxisScale(org.concord.graph.engine.AxisScale)
 	 */
-	public void addAxisScale(AxisScale ax)
+	@Override
+    public void addAxisScale(AxisScale ax)
 	{
 		super.addAxisScale(ax);
 		if (getDefaultButton() != null){
@@ -350,7 +353,8 @@ public class DataGraphToolbar extends GraphWindowToolBar
 	}
 	
 	private class DrawingMouseManager extends DefaultGraphMouseManager{
-		public MouseSensitive getFirstObjectToSelect(Point location, Vector list, boolean checkSelectedFirst)
+		@Override
+        public MouseSensitive getFirstObjectToSelect(Point location, Vector list, boolean checkSelectedFirst)
 		{
 			//In the vector aux, we will store any MultiRegionAxisScale objects
 			Vector scaleObjs = new Vector();
@@ -401,7 +405,8 @@ public class DataGraphToolbar extends GraphWindowToolBar
 	}
 	
 	private class NotesMouseManager extends DefaultGraphMouseManager{
-		public MouseSensitive getFirstObjectToSelect(Point location, Vector list, boolean checkSelectedFirst)
+		@Override
+        public MouseSensitive getFirstObjectToSelect(Point location, Vector list, boolean checkSelectedFirst)
 		{
 			//In the vector aux, we will store any MultiRegionAxisScale objects
 			Vector otherLabels = new Vector();
@@ -461,4 +466,12 @@ public class DataGraphToolbar extends GraphWindowToolBar
 		}
 
 	}
+	
+    public void setSelectedGraphable(DataGraphable selectedGraphable) {
+        this.selectedGraphable = selectedGraphable;
+        if (drawingAction != null && this.selectedGraphable instanceof ControllableDataGraphable) {
+            // System.out.println("Setting new selected graphable: " + this.selectedGraphable.getLabel());
+            drawingAction.setDrawingObject((ControllableDataGraphable) this.selectedGraphable);
+        }
+    }
 }

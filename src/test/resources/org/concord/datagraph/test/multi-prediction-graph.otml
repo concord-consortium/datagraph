@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<otrunk id="33754150-b594-11d9-9669-0800200c9a66">
+  <imports>
+    <import class="org.concord.data.state.OTDataStore" />
+    <import class="org.concord.datagraph.state.OTDataAxis" />
+    <import class="org.concord.datagraph.state.OTDataCollector" />
+    <import class="org.concord.datagraph.state.OTDataGraph" />
+    <import class="org.concord.datagraph.state.OTDataGraphable" />
+    <import class="org.concord.otrunk.view.OTViewBundle" />
+    <import class="org.concord.otrunk.view.OTViewEntry" />
+    <import class="org.concord.otrunk.OTSystem" />
+  </imports>
+  <objects>
+    <OTSystem local_id="system">
+      <bundles>
+        <OTViewBundle showLeftPanel="true">
+          <views>
+            <OTViewEntry objectClass="org.concord.datagraph.state.OTDataCollector"
+              viewClass="org.concord.datagraph.state.OTDataCollectorView" />
+            <OTViewEntry objectClass="org.concord.datagraph.state.OTDataGraph"
+              viewClass="org.concord.datagraph.state.OTDataGraphView" />
+          </views>
+        </OTViewBundle>
+      </bundles>
+      <root>
+        <OTDataCollector name="Prediction"
+          multipleGraphableEnabled="true">
+          <source>
+            <OTDataGraphable connectPoints="true"
+              controllable="true" color="0x0000ff" drawMarks="false"
+              name="Motion" xColumn="0" yColumn="1">
+              <dataStore>
+                <OTDataStore local_id="prediction_data_set2" />
+              </dataStore>
+            </OTDataGraphable>
+          </source>
+
+          <xDataAxis>
+            ds
+            <OTDataAxis min="0" max="60" label="Time" units="s" />
+          </xDataAxis>
+          <yDataAxis>
+            <OTDataAxis min="0" max="5" label="Distance"
+              units="m" />
+          </yDataAxis>
+        </OTDataCollector>
+      </root>
+    </OTSystem>
+  </objects>
+</otrunk>

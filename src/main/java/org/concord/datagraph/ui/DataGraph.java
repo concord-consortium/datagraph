@@ -136,6 +136,8 @@ public class DataGraph extends JPanel
 	private boolean isShowLabelCoordinates = true;
 	
 	private int labelCoordinatesDecPlaces = 2;
+
+    private DataGraphable selectedGraphable;
 	
 	/**
 	 * Creates a default data graph with or without a tool bar
@@ -1192,4 +1194,11 @@ public class DataGraph extends JPanel
 	{	
 		axisScale.setLockedY(flag);
 	}
+
+    public void setSelectedGraphable(DataGraphable sourceGraphable) {
+        this.selectedGraphable = sourceGraphable;
+        if (toolBar != null && toolBar instanceof DataGraphToolbar) {
+            ((DataGraphToolbar) toolBar).setSelectedGraphable(this.selectedGraphable);
+        }
+    }
 }

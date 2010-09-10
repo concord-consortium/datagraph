@@ -177,7 +177,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		if (otDataCollector != null) {
 			if (otDataCollector.getEventLog() == null) {
 				try {
-					OTEventLog log2 = (OTEventLog) otDataCollector.getOTObjectService().createObject(OTEventLog.class);
+					OTEventLog log2 = otDataCollector.getOTObjectService().createObject(OTEventLog.class);
 					otDataCollector.setEventLog(log2);
 				}
 				catch (Exception e) {
@@ -212,18 +212,22 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 	public OTControllerService getControllerService() {
 		return controllerService;
 	}
+	
+	public OTDataGraphable getSourceOTDataGraphable() {
+	    if(sourceGraphable == null){
+            return null;
+        }
+        
+        OTDataGraphable otSourceGraphable = (OTDataGraphable) controllerService.getOTObject(sourceGraphable);
+        return otSourceGraphable;
+	}
 
 	public DataProducer getSourceDataProducer() {
 		// This will return the potential dataProducer of the
 		// sourceGraphable, this might be different than the current
 		// dataProducer. This is because of how the producerDataStores
-		// interact with dataDescriptions coming from their data Producer
-		if(sourceGraphable == null){
-			return null;
-		}
-		
-		OTDataGraphable otSourceGraphable = (OTDataGraphable) controllerService
-				.getOTObject(sourceGraphable);
+		// interact with dataDescriptions coming from their data Producer	
+		OTDataGraphable otSourceGraphable = getSourceOTDataGraphable();
 		if (otSourceGraphable == null) {
 			return null;
 		}
@@ -406,6 +410,8 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		if(startable != null) {
 			startable.update();
 		}
+		
+		dataGraph.setSelectedGraphable(sourceGraphable);
 	}
 
 	private void removeLabelsFrom(DataGraphable dataGraphable,
@@ -695,7 +701,9 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 				JButton clearButton = new JButton("Clear");
 				clearButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						dataGraph.reset();
+					    // only reset the currently selected graphable
+					    getSourceDataGraphable().reset();
+						// dataGraph.reset();
 					}
 				});
 
@@ -978,10 +986,13 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 
 			// Might need to set default values for color
 			// and the name.
+			if (getSourceDataGraphable() instanceof ControllableDataGraphable) {
+			    otGraphable.setControllable(true);
+			}
 		} else {
 			otGraphable = (OTDataGraphable) service.copyObject(prototype, -1);
 		}
-
+		
 		DataGraphable graphable = (DataGraphable) controllerService
 				.getRealObject(otGraphable);
 
