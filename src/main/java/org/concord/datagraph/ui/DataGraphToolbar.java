@@ -221,6 +221,9 @@ public class DataGraphToolbar extends GraphWindowToolBar
     			break;
     		case DRAWING_BTN:
     			if (sourceGraphable != null){
+    			    if (selectedGraphable == null) {
+                        selectedGraphable = sourceGraphable;
+                    }
     				drawingAction = new DrawingAction();
     				drawingAction.setDrawingObject((ControllableDataGraphable) selectedGraphable);
     				button = new SelectableToggleButton(drawingAction);
