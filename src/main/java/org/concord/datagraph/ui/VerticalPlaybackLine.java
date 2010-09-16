@@ -1,7 +1,9 @@
 package org.concord.datagraph.ui;
 
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.geom.Line2D;
@@ -24,10 +26,12 @@ public class VerticalPlaybackLine extends DefaultGraphable implements DataAnnota
     private DataProducer playbackProducer;
     private float currentX = 0;
     
-    private static Stroke stroke = new BasicStroke(1.5f,       // Width
+    private static Stroke lineStroke = new BasicStroke(2.5f,       // Width
                                                    BasicStroke.CAP_SQUARE,     // End cap
                                                    BasicStroke.JOIN_MITER,     // Join style
                                                    1.0f);
+    private static Color lineColor = new Color(0x00ff00); // 0x5058ba
+    private static Composite lineComposite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f);
     
     public VerticalPlaybackLine(DataProducer playbackDataProducer) {
         super();
@@ -89,9 +93,21 @@ public class VerticalPlaybackLine extends DefaultGraphable implements DataAnnota
         Point2D lineStart = cs.transformToDisplay(new Point2D.Double(currentX, bottom));
         Point2D lineEnd = cs.transformToDisplay(new Point2D.Double(currentX, top));
         
-        g.setColor(Color.GREEN);
-        g.setStroke(stroke);
+        Color originalColor = g.getColor();
+        Stroke originalStroke = g.getStroke();
+        Composite originalComposite = g.getComposite();
+        
+        g.setColor(lineColor);
+        g.setStroke(lineStroke);
+        g.setComposite(lineComposite);
+        
         g.draw(new Line2D.Double(lineStart, lineEnd));
+        
+        // TODO Draw indicators (with values?) at each graphables y point for this x value
+        
+        g.setColor(originalColor);
+        g.setStroke(originalStroke);
+        g.setComposite(originalComposite);
     }
 
 }
