@@ -960,6 +960,10 @@ public class DataGraph extends JPanel
 		    resetGraphArea();
 		}
 	}
+	
+	public void setAntialias(boolean enabled) {
+	    graph.setAntialias(enabled);
+	}
 
 	/**
 	 * sets the mode used to resize the graph as new points are added
@@ -1148,6 +1152,17 @@ public class DataGraph extends JPanel
 		}
 		return false;
 	}
+	
+	public boolean isAtEndOfStream() {
+        if (isInInitialState() || isRunning()) {
+            return false;
+        }
+        StartableInfo info = getStartableInfo();
+        if (info != null && info.canRestartWithoutReset) {
+            return false;
+        }
+        return true;
+    }
 
 	public void addStartableListener(StartableListener listener) {
 		logger.warning("not supported");		

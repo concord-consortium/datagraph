@@ -68,6 +68,7 @@ import org.concord.datagraph.ui.DataGraph;
 import org.concord.datagraph.ui.DataGraphToolbar;
 import org.concord.datagraph.ui.DataPointLabel;
 import org.concord.datagraph.ui.SingleDataAxisGrid;
+import org.concord.datagraph.ui.VerticalPlaybackLine;
 import org.concord.framework.data.DataDimension;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.otrunk.OTChangeEvent;
@@ -146,6 +147,8 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 	private DataGraphManagerStartable startable;
 	private StartableListener listener;
 	private OTrunk otrunk;
+
+    private JComponent treeComponent;
 
 	/**
 	 * @param serviceProvider
@@ -513,6 +516,8 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 
 		dataGraph = new DataGraph();
 		
+		dataGraph.setAntialias(otDataGraph.getAntialias());
+		
 		if (otDataGraph.isResourceSet("showToolbar")
 				&& !otDataGraph.getShowToolbar()) {
 			dataGraph.setToolBar(null);
@@ -761,7 +766,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		}
 		if (multiEnabled || (multiAllowed && realGraphables.size() > 1)) {
 			CheckedColorTreeControler dataSetTree = new CheckedColorTreeControler();
-			JComponent treeComponent = dataSetTree.setup(this, true, otDataGraph.getGraphableListEditable());
+			treeComponent = dataSetTree.setup(this, true, otDataGraph.getGraphableListEditable());
 
 			// The source should be the last item because it was setup that
 			// way above. We want it selected
@@ -773,6 +778,22 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 				dataSetTree.setSelectedRow(realGraphables.size() - 1);
 			}
 			dataGraph.add(treeComponent, BorderLayout.WEST);
+		}
+		
+		if (otDataGraph.getPlaybackDataProducer() != null) {
+		    JPanel controlPanel = new JPanel(new BorderLayout());
+		    controlPanel.add(treeComponent, BorderLayout.CENTER);
+		    
+		    DataProducer dataProducer = (DataProducer) controllerService.getRealObject(otDataGraph.getPlaybackDataProducer());
+		    StartableToolBar controls = new StartableToolBar();
+		    controls.setStartable(dataProducer);
+            
+		    controlPanel.add(controls, BorderLayout.SOUTH);
+		    
+		    dataGraph.add(controlPanel, BorderLayout.WEST);
+		    
+		    VerticalPlaybackLine playbackLine = new VerticalPlaybackLine(dataProducer);
+		    dataGraph.getGraph().add(playbackLine);
 		}
 
 		// Listen to the graphable list

@@ -32,6 +32,7 @@
 */
 package org.concord.datagraph.state;
 
+import org.concord.data.state.OTDataProducer;
 import org.concord.framework.otrunk.OTObjectInterface;
 import org.concord.framework.otrunk.OTObjectList;
 
@@ -116,4 +117,10 @@ public interface OTDataGraph extends OTObjectInterface
 	public static int DEFAULT_autoFitMode = 3;
 	public int getAutoFitMode();
 	public void setAutoFitMode(int mode);
+	
+	/** A "playback" data producer, which can read in multiple datastores and play them back in realtime. See OTTimerDataStoreDataProducer. */
+    public OTDataProducer getPlaybackDataProducer();
+    
+    public static boolean DEFAULT_antialias = true;
+    public boolean getAntialias();
 }
