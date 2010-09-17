@@ -782,7 +782,9 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		
 		if (otDataGraph.getPlaybackDataProducer() != null) {
 		    JPanel controlPanel = new JPanel(new BorderLayout());
-		    controlPanel.add(treeComponent, BorderLayout.CENTER);
+		    if (treeComponent != null) {
+		        controlPanel.add(treeComponent, BorderLayout.CENTER);
+		    }
 		    
 		    DataProducer dataProducer = (DataProducer) controllerService.getRealObject(otDataGraph.getPlaybackDataProducer());
 		    StartableToolBar controls = new StartableToolBar();
