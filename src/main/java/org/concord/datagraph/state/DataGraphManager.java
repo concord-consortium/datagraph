@@ -734,9 +734,9 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 			if (sourceGraphable != null) {
 				realGraphables.insertElementAt(sourceGraphable, 0);
 				dataGraph.addDataGraphable(sourceGraphable);
-				setupStartable();
 			}
 		}
+		setupStartable();
 
 		if (title != null) {
 			dataGraph.setTitle(title);
