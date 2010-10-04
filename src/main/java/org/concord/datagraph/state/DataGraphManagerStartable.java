@@ -12,6 +12,7 @@ import org.concord.framework.data.stream.DefaultMultipleDataProducer;
 import org.concord.framework.startable.AbstractStartable;
 import org.concord.framework.startable.StartableEvent;
 import org.concord.framework.startable.StartableInfo;
+import org.concord.graph.examples.GraphWindowToolBar;
 
 class DataGraphManagerStartable extends AbstractStartable {
 	/**
@@ -89,6 +90,13 @@ class DataGraphManagerStartable extends AbstractStartable {
 				
 		if (dataGraphManager.dataGraph.isAdjustOriginOffsetOnReset()){
 		    dataGraphManager.dataGraph.resetGraphArea();
+		}
+		
+		if (dataGraphManager.dataGraph.restoreScaleOnReset()){
+		    GraphWindowToolBar toolbar = dataGraphManager.dataGraph.getToolBar();
+		    if (toolbar != null){
+		    	toolbar.restoreOriginalScale();
+		    }
 		}
 		
 		notifyReset();

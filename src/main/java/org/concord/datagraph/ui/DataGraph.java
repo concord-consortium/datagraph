@@ -111,6 +111,7 @@ public class DataGraph extends JPanel
 	protected GraphableList backgroundList;
 	
 	protected boolean adjustOriginOnReset = true;
+	protected boolean restoreScaleOnReset = true;
 	
 	protected DashedBox selectionBox;
 
@@ -903,6 +904,26 @@ public class DataGraph extends JPanel
 	public void setAdjustOriginOffsetOnReset(boolean adjustOnReset)
 	{
 		this.adjustOriginOnReset = adjustOnReset;
+	}
+	
+	/**
+	 * Returns if the graph should reset the scale to the original scale
+	 * when the graph is reset
+	 * @return 
+	 */
+	public boolean restoreScaleOnReset()
+	{
+		return restoreScaleOnReset;
+	}
+
+	/**
+	 * Sets if the graph should reset the scale to the original scale
+	 * when the graph is reset
+	 * @param adjustOnReset 
+	 */
+	public void setRestoreScaleOnReset(boolean restoreScaleOnReset)
+	{
+		this.restoreScaleOnReset = restoreScaleOnReset;
 	}
 	
 	//Testing purposes

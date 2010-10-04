@@ -540,6 +540,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		if (otDataCollector!= null) {
 			dataGraph.setShowLabelCoordinates(otDataCollector.getShowLabelCoordinates());
 			dataGraph.setLabelCoordinatesDecPlaces(otDataCollector.getLabelDecimalPlaces());
+			dataGraph.setRestoreScaleOnReset(otDataCollector.getRestoreScaleOnReset());
 		}
 
 		if (dataGraph.getToolBar() != null && dataGraph.getToolBar() instanceof DataGraphToolbar) {

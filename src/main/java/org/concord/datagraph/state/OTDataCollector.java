@@ -106,6 +106,10 @@ public interface OTDataCollector
 	public int getLabelDecimalPlaces();
 	public void setLabelDecimalPlaces(int labelDecimalPlaces);
 	
+	public final static boolean DEFAULT_restoreScaleOnReset = false;
+	public boolean getRestoreScaleOnReset();
+	public void setRestoreScaleOnReset(boolean restoreScaleOnReset);
+	
 	// Settings for the buttons displayed in the tool bar, and a comma-separated
 	// list of ints. This is used only if useDefaultToolBar is not true. For the 
 	// meaning of the numbers, see the static ints defined in DataGraphToolbar
