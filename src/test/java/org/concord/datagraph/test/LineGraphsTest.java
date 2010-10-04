@@ -2,7 +2,9 @@ package org.concord.datagraph.test;
 
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.geom.GeneralPath;
+import java.awt.geom.Point2D;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.logging.Logger;
@@ -20,6 +22,7 @@ import org.concord.framework.otrunk.OTID;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTUser;
 import org.concord.framework.otrunk.view.OTView;
+import org.concord.graph.engine.CoordinateSystem;
 import org.concord.otrunk.OTrunkImpl;
 import org.concord.otrunk.datamodel.OTDatabase;
 import org.concord.otrunk.datamodel.OTIDFactory;
@@ -215,6 +218,78 @@ public class LineGraphsTest extends TestCase
 		assertTrue(((GeneralPath)paths.get(1).shape).getBounds().width == 0);
 		assertTrue(((GeneralPath)paths.get(4).shape).getBounds().width == 0);
 	}
+	
+	public void testXAxisResetsOnGraphReset() throws Exception {
+		initOtrunk();
+		setupObjects("multi-wave-graph", "multi-wave-source", "multi-wave-second");
+		
+		CoordinateSystem coord = graphManager.getDataGraph().getGraphArea().getCoordinateSystem();
+		Point2D originOffset = coord.getOriginOffsetDisplay();
+		
+		runGraph(graphManager, 300);
+		
+		coord.setOriginOffsetDisplay(new Point2D.Double(5, 5));
+
+		redrawGraphables();
+		
+		assertTrue(coord.getOriginOffsetDisplay().getX() == 5);
+		
+		graphManager.getDataGraph().reset();
+		
+		assertTrue(coord.getOriginOffsetDisplay().getX() == 0);
+
+	}
+	
+	/**
+	 * Test not working yet...
+	 * 
+	 * @throws Exception
+	 */
+//	public void testScaleCanResetOnGraphReset() throws Exception {
+//		initOtrunk();
+//		setupObjects("multi-wave-graph", "multi-wave-source", "multi-wave-second");
+//		
+//		graphManager.getDataGraph().getGraphArea().setSize(new Dimension(100,100));
+//		
+//		CoordinateSystem coord = graphManager.getDataGraph().getGraphArea().getCoordinateSystem();
+//		Point2D originalScale = coord.getScale();
+//		Point2D originalOffset = coord.getOriginOffsetDisplay();
+//		
+//
+//		System.out.println("coord.getScale() = "+coord.getScale());
+//		System.out.println("coord.getOffset() = "+coord.getOriginOffsetDisplay());
+//		
+//		
+//		runGraph(graphManager, 300);
+//		
+//		graphManager.getDataGraph().getGraphArea().setLimitsAxisWorld(10, 100, 5, 100);
+//		
+//
+//		System.out.println("coord.getScale() = "+coord.getScale());
+//		System.out.println("coord.getOffset() = "+coord.getOriginOffsetDisplay());
+//		
+//		graphManager.getDataGraph().reset();
+//		
+//		System.out.println("coord.getScale() = "+coord.getScale());
+//		System.out.println("coord.getOffset() = "+coord.getOriginOffsetDisplay());
+//		
+//		graphManager.getDataGraph().setRestoreScaleOnReset(true);
+//		
+//		runGraph(graphManager, 300);
+//		
+////		graphManager.getDataGraph().getGraphArea().setLimitsAxisWorld(20, 100, 10, 100);
+//		
+//		System.out.println("coord.getScale() = "+coord.getScale());
+//		System.out.println("coord.getOffset() = "+coord.getOriginOffsetDisplay());
+//		
+//		graphManager.getDataGraph().reset();
+//		
+//		System.out.println("coord.getScale() = "+coord.getScale());
+//		System.out.println("coord.getOffset() = "+coord.getOriginOffsetDisplay());
+//		
+//		assertTrue(coord.getScale().equals(new Point2D.Double(1.0, 1.0)));
+//
+//	}
 	
 	private void setupObjects(String graphId, String sourceId, String secondGraphableId) throws Exception {
 		otGraph = (OTDataGraph) getObject(graphId, false);
