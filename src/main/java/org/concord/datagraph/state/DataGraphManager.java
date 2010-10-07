@@ -178,16 +178,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		initialize();
 		
 		if (otDataCollector != null) {
-			if (otDataCollector.getEventLog() == null) {
-				try {
-					OTEventLog log2 = otDataCollector.getOTObjectService().createObject(OTEventLog.class);
-					otDataCollector.setEventLog(log2);
-				}
-				catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			final OTEventLog log = (OTEventLog) otDataCollector.getEventLog();
+			final OTEventLog log = getEventLog();
 			if (log != null && startable != null) {
 				startable.addStartableListener(new StartableListener() {
 					public void startableEvent(StartableEvent event) {
@@ -206,6 +197,19 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 				});
 			}
 		}
+	}
+	
+	private OTEventLog getEventLog() {
+	    OTEventLog log = otDataCollector.getEventLog();
+	    if (log == null) {
+            try {
+                log = otDataCollector.getOTObjectService().createObject(OTEventLog.class);
+                otDataCollector.setEventLog(log);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return log;
 	}
 
 	public <T> T getViewService(Class<T> serviceClass) {
@@ -797,12 +801,28 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		    
 		    VerticalPlaybackLine playbackLine = new VerticalPlaybackLine(dataProducer);
 		    dataGraph.getGraph().add(playbackLine);
+		    
+		    final OTEventLog log = getEventLog();
+		    dataProducer.addStartableListener(new StartableListener() {
+                public void startableEvent(StartableEvent event) {
+                    switch(event.getType()) {
+                    case RESET:
+                        LogHelper.add(log, OTEventLog.PLAYBACK_RESET);
+                        break;
+                    case STARTED:
+                        LogHelper.add(log, OTEventLog.PLAYBACK_START);
+                        break;
+                    case STOPPED:
+                        LogHelper.add(log, OTEventLog.PLAYBACK_STOP);
+                        break;
+                    }
+                }
+            });
 		}
 
 		// Listen to the graphable list
 		GraphableList graphableList = dataGraph.getObjList();
-		graphableList
-				.addGraphableListListener(new MainLayerGraphableListener());
+		graphableList.addGraphableListListener(new MainLayerGraphableListener());
 		
 		//Take care of the extra graphables
 		OTObjectList otExtraGraphables = otDataGraph.getExtraGraphables();

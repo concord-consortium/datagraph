@@ -30,6 +30,7 @@
 package org.concord.datagraph.state;
 
 import org.concord.data.state.OTDataStore;
+import org.concord.datagraph.log.OTEventLog;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTObjectList;
 
@@ -116,6 +117,6 @@ public interface OTDataCollector
 	public String getDisplayButtons();
 	public void setDisplayButtons(String displayButtons);
 	
-	public OTObject getEventLog();
-	public void setEventLog(OTObject eventLog);
+	public OTEventLog getEventLog();
+	public void setEventLog(OTEventLog eventLog);
 }
