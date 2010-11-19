@@ -107,6 +107,10 @@ public interface OTDataCollector
 	public int getLabelDecimalPlaces();
 	public void setLabelDecimalPlaces(int labelDecimalPlaces);
 	
+	public final static boolean DEFAULT_fillLabelBackground = true;
+    public boolean getFillLabelBackground();
+    public void setFillLabelBackground(boolean fill);
+	
 	public final static boolean DEFAULT_restoreScaleOnReset = false;
 	public boolean getRestoreScaleOnReset();
 	public void setRestoreScaleOnReset(boolean restoreScaleOnReset);

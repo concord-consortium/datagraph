@@ -139,6 +139,8 @@ public class DataGraph extends JPanel
 	private int labelCoordinatesDecPlaces = 2;
 
     private DataGraphable selectedGraphable;
+    
+    private boolean fillLabelBackground = true;
 	
 	/**
 	 * Creates a default data graph with or without a tool bar
@@ -1236,5 +1238,13 @@ public class DataGraph extends JPanel
         if (toolBar != null && toolBar instanceof DataGraphToolbar) {
             ((DataGraphToolbar) toolBar).setSelectedGraphable(this.selectedGraphable);
         }
+    }
+
+    public boolean getFillLabelBackground() {
+        return this.fillLabelBackground;
+    }
+
+    public void setFillLabelBackground(boolean fillLabelBackground) {
+        this.fillLabelBackground = fillLabelBackground;
     }
 }

@@ -545,6 +545,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 			dataGraph.setShowLabelCoordinates(otDataCollector.getShowLabelCoordinates());
 			dataGraph.setLabelCoordinatesDecPlaces(otDataCollector.getLabelDecimalPlaces());
 			dataGraph.setRestoreScaleOnReset(otDataCollector.getRestoreScaleOnReset());
+			dataGraph.setFillLabelBackground(otDataCollector.getFillLabelBackground());
 		}
 
 		if (dataGraph.getToolBar() != null && dataGraph.getToolBar() instanceof DataGraphToolbar) {
@@ -1309,6 +1310,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		label.setMessage(note);
 		label.setShowCoordinates(otDataCollector.getShowLabelCoordinates());
 		label.setCoordinateDecimalPlaces(otDataCollector.getLabelDecimalPlaces());
+		label.setFillBackground(otDataCollector.getFillLabelBackground());
 		notesLayer.add(label);
 		return label;
 	}

@@ -167,11 +167,10 @@ public class DataGraphToolbar extends GraphWindowToolBar
     			break;
     		case ADD_NOTE_BTN:
     			if (dataGraph != null && notesLayer != null){
-        			button = new SelectableToggleButton(
-				        new AddDataPointLabelAction(notesLayer, dataGraph
-				                .getObjList(), dataGraph.getToolBar(),
-				                dataGraph.isShowLabelCoordinates(), dataGraph
-				                        .getLabelCoordinatesDecPlaces()));
+        			AddDataPointLabelAction a = new AddDataPointLabelAction(notesLayer, dataGraph.getObjList(), dataGraph.getToolBar(),
+                            dataGraph.isShowLabelCoordinates(), dataGraph.getLabelCoordinatesDecPlaces());
+        			a.setFillLabelBackground(dataGraph.getFillLabelBackground());
+                    button = new SelectableToggleButton(a);
         			button.setActionCommand("" + MultiRegionAxisScale.DRAGMODE_TRANSLATE_DILATE);
         			button.addActionListener(new DeselectAllActionListener());
         			button.addActionListener(new SwapManagerActionListener(new NotesMouseManager()));

@@ -56,6 +56,7 @@ public class AddDataPointLabelAction extends AddLabelAction
 	private GraphWindowToolBar toolBar;
 	private boolean showLabelCoordinates;
 	private int labelDecPlaces;
+	private boolean fillLabelBackground = true;
 	
 	/**
 	 * @param gList
@@ -81,13 +82,15 @@ public class AddDataPointLabelAction extends AddLabelAction
 	/**
 	 * @see org.concord.graph.util.control.AddLabelAction.createTextLabel
 	 */
-	protected BoxTextLabel createTextLabel()
+	@Override
+    protected BoxTextLabel createTextLabel()
 	{
 		DataPointLabel label = new DataPointLabel(true);
 		label.setGraphableList(dataGraphablesList);
 		label.setMessage("Data Point");
 		label.setShowCoordinates(showLabelCoordinates);
 		label.setCoordinateDecimalPlaces(labelDecPlaces);
+		label.setFillBackground(fillLabelBackground);
 		if (toolBar != null){
 			label.setToolBar(toolBar);
 		}
@@ -109,6 +112,10 @@ public class AddDataPointLabelAction extends AddLabelAction
 	{
 		this.dataStore = dataStore;
 	}
+
+    public void setFillLabelBackground(boolean fillLabelBackground) {
+        this.fillLabelBackground = fillLabelBackground;
+    }
 	
 	/*
 	public void graphableRemoved(EventObject e) {
