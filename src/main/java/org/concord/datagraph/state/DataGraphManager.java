@@ -955,6 +955,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		if (label instanceof DataPointLabel){
 			((DataPointLabel)label).setShowCoordinates(otDataCollector.getShowLabelCoordinates());
 			((DataPointLabel)label).setCoordinateDecimalPlaces(otDataCollector.getLabelDecimalPlaces());
+			((DataPointLabel)label).setFillBackground(otDataCollector.getFillLabelBackground());
 		}
 		notesLayer.add(label);
 
