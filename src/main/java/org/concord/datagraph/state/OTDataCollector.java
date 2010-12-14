@@ -30,9 +30,9 @@
 package org.concord.datagraph.state;
 
 import org.concord.data.state.OTDataStore;
-import org.concord.datagraph.log.OTEventLog;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.OTObjectList;
+import org.concord.otrunk.logging.OTModelLogging;
 
 /**
  * @author scott
@@ -41,7 +41,7 @@ import org.concord.framework.otrunk.OTObjectList;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public interface OTDataCollector
-    extends OTDataGraph
+    extends OTDataGraph, OTModelLogging
 {
     public String getTitle();
     public void setTitle(String title);
@@ -120,7 +120,4 @@ public interface OTDataCollector
 	// meaning of the numbers, see the static ints defined in DataGraphToolbar
 	public String getDisplayButtons();
 	public void setDisplayButtons(String displayButtons);
-	
-	public OTEventLog getEventLog();
-	public void setEventLog(OTEventLog eventLog);
 }

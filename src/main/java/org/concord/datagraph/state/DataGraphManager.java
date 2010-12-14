@@ -61,8 +61,6 @@ import org.concord.data.ui.DataStoreLabel;
 import org.concord.data.ui.StartableToolBar;
 import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.DataGraphable;
-import org.concord.datagraph.log.LogHelper;
-import org.concord.datagraph.log.OTEventLog;
 import org.concord.datagraph.ui.DataAnnotation;
 import org.concord.datagraph.ui.DataGraph;
 import org.concord.datagraph.ui.DataGraphToolbar;
@@ -97,6 +95,8 @@ import org.concord.graph.examples.GraphWindowToolBar;
 import org.concord.graph.ui.GraphTreeView;
 import org.concord.graph.ui.Grid2D;
 import org.concord.graph.ui.SingleAxisGrid;
+import org.concord.otrunk.logging.LogHelper;
+import org.concord.otrunk.logging.OTModelEvent.EventType;
 import org.concord.view.CheckedColorTreeControler;
 
 /**
@@ -177,39 +177,23 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		
 		initialize();
 		
-		if (otDataCollector != null) {
-			final OTEventLog log = getEventLog();
-			if (log != null && startable != null) {
-				startable.addStartableListener(new StartableListener() {
-					public void startableEvent(StartableEvent event) {
-						switch(event.getType()) {
-						case RESET:
-							LogHelper.add(log, OTEventLog.RESET);
-							break;
-						case STARTED:
-							LogHelper.add(log, OTEventLog.START);
-							break;
-						case STOPPED:
-							LogHelper.add(log, OTEventLog.STOP);
-							break;
-						}
+		if (otDataCollector != null && startable != null) {
+			startable.addStartableListener(new StartableListener() {
+				public void startableEvent(StartableEvent event) {
+					switch(event.getType()) {
+					case RESET:
+						LogHelper.add(otDataCollector, EventType.RESET);
+						break;
+					case STARTED:
+						LogHelper.add(otDataCollector, EventType.START);
+						break;
+					case STOPPED:
+						LogHelper.add(otDataCollector, EventType.STOP);
+						break;
 					}
-				});
-			}
+				}
+			});
 		}
-	}
-	
-	private OTEventLog getEventLog() {
-	    OTEventLog log = otDataCollector.getEventLog();
-	    if (log == null) {
-            try {
-                log = otDataCollector.getOTObjectService().createObject(OTEventLog.class);
-                otDataCollector.setEventLog(log);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return log;
 	}
 
 	public <T> T getViewService(Class<T> serviceClass) {
@@ -803,18 +787,17 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		    VerticalPlaybackLine playbackLine = new VerticalPlaybackLine(dataProducer);
 		    dataGraph.getGraph().add(playbackLine);
 		    
-		    final OTEventLog log = getEventLog();
 		    dataProducer.addStartableListener(new StartableListener() {
                 public void startableEvent(StartableEvent event) {
                     switch(event.getType()) {
                     case RESET:
-                        LogHelper.add(log, OTEventLog.PLAYBACK_RESET);
+                        LogHelper.add(otDataCollector, EventType.PLAYBACK_RESET);
                         break;
                     case STARTED:
-                        LogHelper.add(log, OTEventLog.PLAYBACK_START);
+                        LogHelper.add(otDataCollector, EventType.PLAYBACK_START);
                         break;
                     case STOPPED:
-                        LogHelper.add(log, OTEventLog.PLAYBACK_STOP);
+                        LogHelper.add(otDataCollector, EventType.PLAYBACK_STOP);
                         break;
                     }
                 }
