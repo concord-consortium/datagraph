@@ -166,6 +166,7 @@ public class OTDataCollectorView extends AbstractOTJComponentView
 			((OTDataCollector)otObject).getSource().setControllable(false);
 		}
 		
+		((OTDataCollector)otObject).setMultipleGraphableEnabled(true);
 		setup(otObject);
 		
 	     //   view.getComponent(otObject);
@@ -190,7 +191,8 @@ public class OTDataCollectorView extends AbstractOTJComponentView
 		if(((OTDataCollector)otObject).getSource() != null){
 			((OTDataCollector)otObject).getSource().setControllable(false);
 		}
-		
+
+		((OTDataCollector)otObject).setMultipleGraphableEnabled(false);
 		setup(otObject);
 		
      //   view.getComponent(otObject);
