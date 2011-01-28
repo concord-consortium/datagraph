@@ -1124,10 +1124,13 @@ public class DataGraph extends JPanel
 
 	public double getXTickInterval()
     {
+	    if (isAutoTick()) {
+	        return grid.getXGrid().getInterval();
+	    }
 	    return xTickInterval;
     }
 	
-	public void setXTickInterval(int xTickInterval)
+	public void setXTickInterval(double xTickInterval)
     {
 	    this.xTickInterval = xTickInterval;
 	    updateGrid();
@@ -1135,10 +1138,13 @@ public class DataGraph extends JPanel
 
 	public double getYTickInterval()
     {
+	    if (isAutoTick()) {
+            return grid.getYGrid().getInterval();
+        }
 	    return yTickInterval;
     }
 	
-	public void setYTickInterval(int yTickInterval)
+	public void setYTickInterval(double yTickInterval)
     {
 	    this.yTickInterval = yTickInterval;
 	    updateGrid();

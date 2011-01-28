@@ -91,13 +91,13 @@ public interface OTDataGraph extends OTObjectInterface
 	/**
 	 * This set the tick interval. This is read ONLY if autoTick is false.
 	 */
-	public int getXTickInterval();
-	public void setXTickInterval(int xTickInterval);
-	public static int DEFAULT_xTickInterval = 2;
+	public double getXTickInterval();
+	public void setXTickInterval(double xTickInterval);
+	public static double DEFAULT_xTickInterval = 2;
 	
-	public int getYTickInterval();
-	public void setYTickInterval(int yTickInterval);
-	public static int DEFAULT_yTickInterval = 2;
+	public double getYTickInterval();
+	public void setYTickInterval(double yTickInterval);
+	public static double DEFAULT_yTickInterval = 2;
     
 	/** This determines whether the list of graphables in shown to the left of the graph */
 	public boolean getShowGraphableList();

@@ -315,6 +315,10 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 				yOTAxis.setLabel(sYAxis.getAxisLabel());
 			}
 			
+			otDataGraph.setAutoTick(dataGraph.isAutoTick());
+			otDataGraph.setXTickInterval(dataGraph.getXTickInterval());
+			otDataGraph.setYTickInterval(dataGraph.getYTickInterval());
+			
 			// This is a general notification of a change, not one specific to a
 			// property
 			xOTAxis.notifyOTChange(null, null, null, null);
