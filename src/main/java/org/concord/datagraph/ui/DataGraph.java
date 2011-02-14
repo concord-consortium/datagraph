@@ -34,8 +34,11 @@ package org.concord.datagraph.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Vector;
@@ -141,6 +144,12 @@ public class DataGraph extends JPanel
     private DataGraphable selectedGraphable;
     
     private boolean fillLabelBackground = true;
+
+    public enum AspectDimension { WIDTH, HEIGHT }
+    private float aspectRatio;
+    private AspectDimension aspectDimension;
+
+    private ComponentListener resizeListener;
 	
 	/**
 	 * Creates a default data graph with or without a tool bar
@@ -1252,5 +1261,58 @@ public class DataGraph extends JPanel
 
     public void setFillLabelBackground(boolean fillLabelBackground) {
         this.fillLabelBackground = fillLabelBackground;
+    }
+
+    /**
+     * Set and maintain an aspect ratio for the graph area of this graph.
+     * 
+     * Note: The aspect ratio of this DataGraph component may not match the aspect ratio supplied.
+     * The final aspect ratio will depend on what toolbars and axis labels are visible.
+     * @param ratio
+     * @param dim
+     */
+    public void setAspectRatio(float ratio, AspectDimension dim) {
+        this.aspectRatio = ratio;
+        this.aspectDimension = dim;
+        
+        registerResizeListener();
+        adjustDimensions();
+    }
+    
+    private void registerResizeListener() {
+        if (resizeListener == null) {
+            resizeListener = new ComponentListener() {
+                public void componentMoved(ComponentEvent evt) { }
+                public void componentShown(ComponentEvent evt) { }
+                public void componentHidden(ComponentEvent evt) { }
+                public void componentResized(ComponentEvent evt) {
+                    adjustDimensions();
+                }
+            };
+            addComponentListener(resizeListener);
+        }
+    }
+    
+    /**
+     * Adjust the current size to meet a target aspect ratio.
+     * This code assumes that the axis and toolbars remain a constant size.
+     */
+    private void adjustDimensions() {
+        Dimension graphDim = getGraphArea().getSize();
+        int currentHeight = getHeight();
+        int currentWidth = getWidth();
+        if (aspectDimension.equals(AspectDimension.HEIGHT)) {
+            int targetGraphHeight = (int) (graphDim.width / aspectRatio);
+            int heightDelta = targetGraphHeight - graphDim.height;
+            if (targetGraphHeight != currentHeight) {
+                setPreferredSize(new Dimension(currentWidth, currentHeight + heightDelta));
+            }
+        } else if (aspectDimension.equals(AspectDimension.WIDTH)) {
+            int targetGraphWidth = (int) (aspectRatio * graphDim.height);
+            int widthDelta = targetGraphWidth - graphDim.width;
+            if (targetGraphWidth != currentWidth) {
+                setPreferredSize(new Dimension(currentWidth + widthDelta, currentHeight));
+            }
+        }
     }
 }

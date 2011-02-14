@@ -33,6 +33,7 @@
 package org.concord.datagraph.state;
 
 import org.concord.data.state.OTDataProducer;
+import org.concord.datagraph.ui.DataGraph.AspectDimension;
 import org.concord.framework.otrunk.OTObjectInterface;
 import org.concord.framework.otrunk.OTObjectList;
 
@@ -80,9 +81,20 @@ public interface OTDataGraph extends OTObjectInterface
 	public boolean getShowToolbar();
 	public void setShowToolbar(boolean flag);
 	
+	/** Toggle for turning on or off adjusting the size to maintain an aspect ratio */
+	public static boolean DEFAULT_useAspectRatio = true;
+	public boolean getUseAspectRatio();
+	public void setUseAspectRatio(boolean use);
+	
 	/** This sets the desired aspect ratio (X/Y) for the graph component */
 	public static float DEFAULT_aspectRatio = 1.5f;
-	float getAspectRatio();
+	public float getAspectRatio();
+	public void setAspectRatio(float ratio);
+	
+	/** Which dimension we should adjust when maintaining an aspect ratio */
+	public static AspectDimension DEFAULT_aspectDimension = AspectDimension.HEIGHT;
+	public AspectDimension getAspectDimension();
+	public void setAspectDimension(AspectDimension d);
 	
 	public boolean getAutoTick();
 	public void setAutoTick(boolean autoTick);

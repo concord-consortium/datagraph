@@ -32,6 +32,7 @@ package org.concord.datagraph.state;
 import javax.swing.JComponent;
 
 import org.concord.datagraph.ui.DataGraph;
+import org.concord.datagraph.ui.DataGraph.AspectDimension;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.WritableDataStore;
 import org.concord.framework.otrunk.OTObject;
@@ -85,12 +86,21 @@ public class DataCollectorView extends AbstractOTJComponentView implements OTJCo
     		throw new RuntimeException("otObject != dataCollector");
     	}    	
     	
-    	return getDataGraph(showToolBar, controllable);
+    	DataGraph graph = getDataGraph(showToolBar, controllable);
+    	
+        if (dataCollector.getUseAspectRatio()) {
+            float ratio = dataCollector.getAspectRatio();
+            AspectDimension dim = dataCollector.getAspectDimension();
+            graph.setAspectRatio(ratio, dim);
+         }
+    	       
+    	return graph;
     }
 
     /* (non-Javadoc)
      * @see org.concord.framework.otrunk.view.OTJComponentView#viewClosed()
      */
+    @Override
     public void viewClosed()
     {
     	dataGraphManager.viewClosed();

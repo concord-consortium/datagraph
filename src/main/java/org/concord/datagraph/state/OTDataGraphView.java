@@ -38,6 +38,7 @@ import java.util.logging.Logger;
 import javax.swing.JComponent;
 
 import org.concord.datagraph.ui.DataGraph;
+import org.concord.datagraph.ui.DataGraph.AspectDimension;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.framework.otrunk.view.AbstractOTJComponentView;
 import org.concord.framework.otrunk.view.OTJComponentViewContext;
@@ -56,7 +57,7 @@ import org.concord.framework.otrunk.view.OTJComponentViewContextAware;
 public class OTDataGraphView extends AbstractOTJComponentView implements OTJComponentViewContextAware
 {
 	private static final Logger logger = Logger.getLogger(OTDataGraphView.class.getCanonicalName());
-	OTDataGraph pfObject;
+	OTDataGraph otDataGraph;
 	DataGraph dataGraph;
 	DataGraphManager manager;
 	private OTJComponentViewContext jComponentViewContext;
@@ -66,21 +67,21 @@ public class OTDataGraphView extends AbstractOTJComponentView implements OTJComp
 	 */
 	public JComponent getComponent(OTObject otObject)
 	{
-		this.pfObject = (OTDataGraph)otObject;
+		this.otDataGraph = (OTDataGraph)otObject;
 
-		manager = new DataGraphManager(pfObject, viewContext, pfObject.getShowToolbar(), jComponentViewContext);
+		manager = new DataGraphManager(otDataGraph, viewContext, otDataGraph.getShowToolbar(), jComponentViewContext);
 
 		dataGraph = manager.getDataGraph();
 		
 		dataGraph.setAutoFitMode(DataGraph.AUTO_SCROLL_RUNNING_MODE);
-
-		int preferredY = (int)(dataGraph.getWidth() / this.pfObject.getAspectRatio());
-		
-		logger.finer("this.pfObject.getAspectRatio(): " + String.valueOf(this.pfObject.getAspectRatio()));
-		logger.finer("dataGraph.getWidth(): " + String.valueOf(dataGraph.getWidth()));
-		logger.finer("preferredY: " + String.valueOf(preferredY));
 		
 		dataGraph.setPreferredSize(new Dimension(400,320));
+		
+		if (otDataGraph.getUseAspectRatio()) {
+		    float ratio = otDataGraph.getAspectRatio();
+		    AspectDimension dim = otDataGraph.getAspectDimension();
+		    dataGraph.setAspectRatio(ratio, dim);
+		}
 		
 		return dataGraph;				    
 	}
@@ -92,6 +93,7 @@ public class OTDataGraphView extends AbstractOTJComponentView implements OTJComp
     /* (non-Javadoc)
      * @see org.concord.framework.otrunk.view.OTJComponentView#viewClosed()
      */
+    @Override
     public void viewClosed()
     {
     	manager.viewClosed();
