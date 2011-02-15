@@ -37,8 +37,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Vector;
@@ -148,8 +146,7 @@ public class DataGraph extends JPanel
     public enum AspectDimension { WIDTH, HEIGHT }
     private float aspectRatio;
     private AspectDimension aspectDimension;
-
-    private ComponentListener resizeListener;
+    private boolean useAspectRatio;
 	
 	/**
 	 * Creates a default data graph with or without a tool bar
@@ -1274,44 +1271,38 @@ public class DataGraph extends JPanel
     public void setAspectRatio(float ratio, AspectDimension dim) {
         this.aspectRatio = ratio;
         this.aspectDimension = dim;
-        
-        registerResizeListener();
-        adjustDimensions();
+        this.useAspectRatio = true;
     }
     
-    private void registerResizeListener() {
-        if (resizeListener == null) {
-            resizeListener = new ComponentListener() {
-                public void componentMoved(ComponentEvent evt) { }
-                public void componentShown(ComponentEvent evt) { }
-                public void componentHidden(ComponentEvent evt) { }
-                public void componentResized(ComponentEvent evt) {
-                    adjustDimensions();
-                }
-            };
-            addComponentListener(resizeListener);
+    @Override
+    public Dimension getPreferredSize() {
+        // base it on the actual size, since GridLayout will resize via setBounds() rather than manipulating the preferred size
+        Dimension dim = super.getSize();
+        if (!useAspectRatio || dim.width == 0 || dim.height == 0) {
+            return super.getPreferredSize();
         }
+        
+        adjustDimensions(dim);
+        return dim;
     }
     
     /**
      * Adjust the current size to meet a target aspect ratio.
      * This code assumes that the axis and toolbars remain a constant size.
      */
-    private void adjustDimensions() {
-        Dimension graphDim = getGraphArea().getSize();
-        int currentHeight = getHeight();
-        int currentWidth = getWidth();
+    private void adjustDimensions(Dimension current) {
+        Dimension graphDimension = getGraphArea().getSize();
         if (aspectDimension.equals(AspectDimension.HEIGHT)) {
-            int targetGraphHeight = (int) (graphDim.width / aspectRatio);
-            int heightDelta = targetGraphHeight - graphDim.height;
-            if (targetGraphHeight != currentHeight) {
-                setPreferredSize(new Dimension(currentWidth, currentHeight + heightDelta));
+            int targetGraphHeight = (int) (graphDimension.width / aspectRatio);
+            int heightDelta = targetGraphHeight - graphDimension.height;
+            if (heightDelta != 0) {
+                current.height += heightDelta;
             }
         } else if (aspectDimension.equals(AspectDimension.WIDTH)) {
-            int targetGraphWidth = (int) (aspectRatio * graphDim.height);
-            int widthDelta = targetGraphWidth - graphDim.width;
-            if (targetGraphWidth != currentWidth) {
-                setPreferredSize(new Dimension(currentWidth + widthDelta, currentHeight));
+            int targetGraphWidth = (int) (aspectRatio * graphDimension.height);
+            int widthDelta = targetGraphWidth - graphDimension.width;
+            if (widthDelta != 0) {
+                current.width += widthDelta;
             }
         }
     }
