@@ -82,7 +82,7 @@ public interface OTDataGraph extends OTObjectInterface
 	public void setShowToolbar(boolean flag);
 	
 	/** Toggle for turning on or off adjusting the size to maintain an aspect ratio */
-	public static boolean DEFAULT_useAspectRatio = true;
+	public static boolean DEFAULT_useAspectRatio = false;
 	public boolean getUseAspectRatio();
 	public void setUseAspectRatio(boolean use);
 	
