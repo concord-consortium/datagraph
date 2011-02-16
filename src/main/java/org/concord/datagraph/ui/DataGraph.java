@@ -35,10 +35,10 @@ package org.concord.datagraph.ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Insets;
 import java.awt.Rectangle;
-import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.geom.Point2D;
@@ -50,6 +50,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 
 import org.concord.datagraph.engine.DataGraphAutoScaler;
 import org.concord.datagraph.engine.DataGraphAutoScroller;
@@ -1288,22 +1290,53 @@ public class DataGraph extends JPanel
         resizeOnce();
     }
 
+    private class EnhancedComponentListener implements ComponentListener, AncestorListener {
+        private boolean seenFirstResize = false;
+
+        public void ancestorRemoved(AncestorEvent paramAncestorEvent) { }
+        public void ancestorMoved(AncestorEvent paramAncestorEvent) { }
+        public void componentHidden(ComponentEvent paramComponentEvent) { }
+        public void componentMoved(ComponentEvent paramComponentEvent) { }
+        
+        public void ancestorAdded(AncestorEvent paramAncestorEvent) {
+            logger.finest(hex + "Ancestor added");
+            tweak();
+        }
+
+        public void componentResized(ComponentEvent paramComponentEvent) {
+            if (! seenFirstResize) {
+                seenFirstResize = true;
+                logger.finest(hex + "Resized");
+                tweak();
+            }
+        }
+
+        public void componentShown(ComponentEvent paramComponentEvent) {
+            logger.finest(hex + "Shown");
+            tweak();
+        }
+        
+        private void tweak() {
+            EventQueue.invokeLater(new Runnable() {
+                public void run() {
+                    Rectangle r = DataGraph.this.getBounds();
+                    r.height += 2;
+                    DataGraph.this.setBounds(r);
+                    DataGraph.this.revalidate();
+                }
+            });
+        }
+        
+    }
     private String hex = Integer.toHexString(DataGraph.this.hashCode()) + ": ";
     /* This is a hack... when first displayed, often the graph isn't at the correct aspect ratio.
      * By resizing it slightly, we can trigger the layout manager to redo its layout, which fixes
      * aspect ratio.
      */
     private void resizeOnce() {
-        addComponentListener(new ComponentAdapter() {
-            public void componentResized(ComponentEvent arg0) {
-                logger.info(hex + "Resized");
-                DataGraph.this.removeComponentListener(this);
-                Rectangle r = DataGraph.this.getBounds();
-                r.height -= 1;
-                DataGraph.this.setBounds(r);
-                DataGraph.this.revalidate();
-            }
-        });
+        EnhancedComponentListener listener = new EnhancedComponentListener();
+        addComponentListener(listener);
+        addAncestorListener(listener);
     }
 
     @Override
