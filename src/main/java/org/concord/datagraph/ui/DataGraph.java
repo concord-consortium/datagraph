@@ -37,6 +37,10 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
+import java.awt.Rectangle;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Vector;
@@ -143,7 +147,15 @@ public class DataGraph extends JPanel
     
     private boolean fillLabelBackground = true;
 
-    public enum AspectDimension { WIDTH, HEIGHT }
+    /**
+     * The dimension which will be adjusted to maintain an aspect ratio.
+     * WIDTH: adjust the component width
+     * HEIGHT: adjust the component height
+     * BOTH: adjust either the component width or height so the the component size stays within the current bounds
+     * @author aunger
+     *
+     */
+    public enum AspectDimension { WIDTH, HEIGHT, BOTH }
     private float aspectRatio;
     private AspectDimension aspectDimension;
     private boolean useAspectRatio;
@@ -1272,18 +1284,47 @@ public class DataGraph extends JPanel
         this.aspectRatio = ratio;
         this.aspectDimension = dim;
         this.useAspectRatio = true;
+        
+        resizeOnce();
     }
-    
+
+    private String hex = Integer.toHexString(DataGraph.this.hashCode()) + ": ";
+    /* This is a hack... when first displayed, often the graph isn't at the correct aspect ratio.
+     * By resizing it slightly, we can trigger the layout manager to redo its layout, which fixes
+     * aspect ratio.
+     */
+    private void resizeOnce() {
+        addComponentListener(new ComponentAdapter() {
+            public void componentResized(ComponentEvent arg0) {
+                logger.info(hex + "Resized");
+                DataGraph.this.removeComponentListener(this);
+                Rectangle r = DataGraph.this.getBounds();
+                r.height -= 1;
+                DataGraph.this.setBounds(r);
+                DataGraph.this.revalidate();
+            }
+        });
+    }
+
     @Override
     public Dimension getPreferredSize() {
         // base it on the actual size, since GridLayout will resize via setBounds() rather than manipulating the preferred size
-        Dimension dim = super.getSize();
-        if (!useAspectRatio || dim.width == 0 || dim.height == 0) {
-            return super.getPreferredSize();
+        Dimension size = super.getSize();
+        logger.finest(hex + "Original size: " + size.width + "," + size.height);
+        if (!useAspectRatio || size.width == 0 || size.height == 0) {
+            Dimension superSize = super.getPreferredSize();
+            if (useAspectRatio) {
+                adjustDimensions(superSize);
+                logger.finest(hex + "Using aspect ratio but size is 0: returning adjusted preferred size: " + superSize.width + "," + superSize.height);
+            } else {
+                logger.finest(hex + "Not using aspect ratio: returning normal preferred size: " + superSize.width + "," + superSize.height);
+            }
+            return superSize;
         }
         
-        adjustDimensions(dim);
-        return dim;
+        adjustDimensions(size);
+        logger.finest(hex + "Using aspect ratio: returning adjusted size: " + size.width + "," + size.height);
+        return size;
     }
     
     /**
@@ -1291,19 +1332,66 @@ public class DataGraph extends JPanel
      * This code assumes that the axis and toolbars remain a constant size.
      */
     private void adjustDimensions(Dimension current) {
-        Dimension graphDimension = getGraphArea().getSize();
+        Dimension graphDimension = calcGraphDimension();
+        logger.finest(hex + "Current graph size: " + graphDimension.width + "," + graphDimension.height);
         if (aspectDimension.equals(AspectDimension.HEIGHT)) {
-            int targetGraphHeight = (int) (graphDimension.width / aspectRatio);
-            int heightDelta = targetGraphHeight - graphDimension.height;
+            int heightDelta = heightDelta(graphDimension);
+            logger.finest(hex + "Height delta: " + heightDelta);
             if (heightDelta != 0) {
                 current.height += heightDelta;
             }
         } else if (aspectDimension.equals(AspectDimension.WIDTH)) {
-            int targetGraphWidth = (int) (aspectRatio * graphDimension.height);
-            int widthDelta = targetGraphWidth - graphDimension.width;
+            int widthDelta = widthDelta(graphDimension);
             if (widthDelta != 0) {
                 current.width += widthDelta;
             }
+        } else if (aspectDimension.equals(AspectDimension.BOTH)) {
+            int heightDelta = heightDelta(graphDimension);
+            int widthDelta = widthDelta(graphDimension);
+            if (heightDelta < 0) {
+                current.height += heightDelta;
+            } else {
+                current.width += widthDelta;
+            }
         }
+    }
+    
+    private Dimension calcGraphDimension() {
+        // we're having trouble with oscillation when asking the graphArea for it's size
+        // return getGraphArea().getSize();
+        
+        // we'll have to calculate manually, using the insets
+        Dimension size = getSize();
+        Insets graphAreaInsets = graph.getDefaultGraphArea().getInsets();
+        
+        // remove all of the horizontal decorations
+        // y axis
+        size.width -= (graphAreaInsets.left + graphAreaInsets.right);
+        // toolbar
+        if (toolBar != null) {
+            size.width -= toolBar.getPreferredSize().width;
+        }
+        
+        // remove all of the vertical decorations
+        // x axis
+        size.height -= (graphAreaInsets.top + graphAreaInsets.bottom);
+        
+        return size;
+    }
+    
+    private int heightDelta(Dimension size) {
+        return targetHeight(size) - size.height;
+    }
+    
+    private int widthDelta(Dimension size) {
+        return targetWidth(size) - size.width;
+    }
+    
+    private int targetHeight(Dimension size) {
+        return (int) (size.width / aspectRatio);
+    }
+    
+    private int targetWidth(Dimension size) {
+        return (int) (aspectRatio * size.height);
     }
 }
