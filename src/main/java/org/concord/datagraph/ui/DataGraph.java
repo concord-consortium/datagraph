@@ -244,6 +244,8 @@ public class DataGraph extends JPanel
 		////////
 
 		initScaleObject();
+		
+		setupEnhancedComponentListener();
 	}
 
 	public Insets calcInsets() {
@@ -1282,12 +1284,31 @@ public class DataGraph extends JPanel
      * @param ratio
      * @param dim
      */
-    public void setAspectRatio(float ratio, AspectDimension dim) {
+    public void setAspectRatio(float ratio) {
         this.aspectRatio = ratio;
-        this.aspectDimension = dim;
-        this.useAspectRatio = true;
-        
-        resizeOnce();
+        tweak();
+    }
+
+    public float getAspectRatio() {
+        return aspectRatio;
+    }
+    
+    public void setAspectDimension(AspectDimension aspectDimension) {
+        this.aspectDimension = aspectDimension;
+        tweak();
+    }
+    
+    public AspectDimension getAspectDimension() {
+        return aspectDimension;
+    }
+    
+    public void setUseAspectRatio(boolean useAspectRatio) {
+        this.useAspectRatio = useAspectRatio;
+        tweak();
+    }
+    
+    public boolean getUseAspectRatio() {
+        return useAspectRatio;
     }
 
     private class EnhancedComponentListener implements ComponentListener, AncestorListener {
@@ -1315,8 +1336,11 @@ public class DataGraph extends JPanel
             logger.finest(hex + "Shown");
             tweak();
         }
-        
-        private void tweak() {
+    }
+    private String hex = Integer.toHexString(DataGraph.this.hashCode()) + ": ";
+    
+    private void tweak() {
+        if (useAspectRatio) {
             EventQueue.invokeLater(new Runnable() {
                 public void run() {
                     Rectangle r = DataGraph.this.getBounds();
@@ -1326,17 +1350,26 @@ public class DataGraph extends JPanel
                 }
             });
         }
-        
     }
-    private String hex = Integer.toHexString(DataGraph.this.hashCode()) + ": ";
+
+    private EnhancedComponentListener enhancedComponentListener;
     /* This is a hack... when first displayed, often the graph isn't at the correct aspect ratio.
      * By resizing it slightly, we can trigger the layout manager to redo its layout, which fixes
      * aspect ratio.
      */
-    private void resizeOnce() {
-        EnhancedComponentListener listener = new EnhancedComponentListener();
-        addComponentListener(listener);
-        addAncestorListener(listener);
+    private void setupEnhancedComponentListener() {
+        if (enhancedComponentListener == null) {
+            enhancedComponentListener = new EnhancedComponentListener();
+        }
+        addComponentListener(enhancedComponentListener);
+        addAncestorListener(enhancedComponentListener);
+    }
+    
+    private void removeEnhancedComponentListener() {
+        if (enhancedComponentListener != null) {
+            removeComponentListener(enhancedComponentListener);
+            removeAncestorListener(enhancedComponentListener);
+        }
     }
 
     @Override
@@ -1375,15 +1408,20 @@ public class DataGraph extends JPanel
             }
         } else if (aspectDimension.equals(AspectDimension.WIDTH)) {
             int widthDelta = widthDelta(graphDimension);
+            logger.finest(hex + "Width delta: " + widthDelta);
             if (widthDelta != 0) {
                 current.width += widthDelta;
             }
         } else if (aspectDimension.equals(AspectDimension.BOTH)) {
             int heightDelta = heightDelta(graphDimension);
             int widthDelta = widthDelta(graphDimension);
+            logger.finest(hex + "Height delta: " + heightDelta);
+            logger.finest(hex + "Width delta: " + widthDelta);
             if (heightDelta < 0) {
+                logger.finest(hex + "Changing height");
                 current.height += heightDelta;
             } else {
+                logger.finest(hex + "Changing width");
                 current.width += widthDelta;
             }
         }

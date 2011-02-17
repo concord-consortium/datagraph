@@ -91,7 +91,9 @@ public class DataCollectorView extends AbstractOTJComponentView implements OTJCo
         if (dataCollector.getUseAspectRatio()) {
             float ratio = dataCollector.getAspectRatio();
             AspectDimension dim = dataCollector.getAspectDimension();
-            graph.setAspectRatio(ratio, dim);
+            graph.setAspectDimension(dim);
+            graph.setAspectRatio(ratio);
+            graph.setUseAspectRatio(true);
          }
     	       
     	return graph;

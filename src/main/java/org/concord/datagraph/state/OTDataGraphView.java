@@ -80,7 +80,9 @@ public class OTDataGraphView extends AbstractOTJComponentView implements OTJComp
 		if (otDataGraph.getUseAspectRatio()) {
 		    float ratio = otDataGraph.getAspectRatio();
 		    AspectDimension dim = otDataGraph.getAspectDimension();
-		    dataGraph.setAspectRatio(ratio, dim);
+		    dataGraph.setAspectDimension(dim);
+		    dataGraph.setAspectRatio(ratio);
+		    dataGraph.setUseAspectRatio(true);
 		}
 		
 		return dataGraph;				    
