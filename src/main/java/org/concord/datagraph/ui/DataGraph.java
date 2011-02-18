@@ -61,6 +61,7 @@ import org.concord.framework.data.DataFlowCapabilities;
 import org.concord.framework.data.stream.DataConsumer;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.DataStore;
+import org.concord.framework.otrunk.view.PrefersSize;
 import org.concord.framework.startable.Startable;
 import org.concord.framework.startable.StartableInfo;
 import org.concord.framework.startable.StartableListener;
@@ -92,7 +93,7 @@ import org.concord.graph.ui.SingleAxisGrid;
  */
 
 public class DataGraph extends JPanel
-	implements Startable, DataConsumer, DataFlowCapabilities
+	implements Startable, DataConsumer, DataFlowCapabilities, PrefersSize
 {
 	private static final Logger logger = Logger.getLogger(DataGraph.class
 			.getCanonicalName());
@@ -1374,8 +1375,8 @@ public class DataGraph extends JPanel
 
     @Override
     public Dimension getPreferredSize() {
-        // base it on the actual size, since GridLayout will resize via setBounds() rather than manipulating the preferred size
-        Dimension size = super.getSize();
+        // base it on the actual size, since layouts will resize via setBounds()
+        Dimension size = getSize();
         logger.finest(hex + "Original size: " + size.width + "," + size.height);
         if (!useAspectRatio || size.width == 0 || size.height == 0) {
             Dimension superSize = super.getPreferredSize();
@@ -1392,13 +1393,22 @@ public class DataGraph extends JPanel
         logger.finest(hex + "Using aspect ratio: returning adjusted size: " + size.width + "," + size.height);
         return size;
     }
+
+    public Dimension requestPreferredSize(Dimension maxSize) {
+        logger.finest(hex + "Requesting size: max size: " + maxSize.width + "," + maxSize.height);
+        if (useAspectRatio) {
+            adjustDimensions(maxSize);
+        }
+        logger.finest(hex + "Requesting size: max size adjusted: " + maxSize.width + "," + maxSize.height);
+        return maxSize;
+    }
     
     /**
      * Adjust the current size to meet a target aspect ratio.
      * This code assumes that the axis and toolbars remain a constant size.
      */
     private void adjustDimensions(Dimension current) {
-        Dimension graphDimension = calcGraphDimension();
+        Dimension graphDimension = calcGraphDimension(current);
         logger.finest(hex + "Current graph size: " + graphDimension.width + "," + graphDimension.height);
         if (aspectDimension.equals(AspectDimension.HEIGHT)) {
             int heightDelta = heightDelta(graphDimension);
@@ -1427,12 +1437,12 @@ public class DataGraph extends JPanel
         }
     }
     
-    private Dimension calcGraphDimension() {
+    private Dimension calcGraphDimension(Dimension dgSize) {
         // we're having trouble with oscillation when asking the graphArea for it's size
         // return getGraphArea().getSize();
         
+        Dimension size = new Dimension(dgSize);
         // we'll have to calculate manually, using the insets
-        Dimension size = getSize();
         Insets graphAreaInsets = graph.getDefaultGraphArea().getInsets();
         
         // remove all of the horizontal decorations
