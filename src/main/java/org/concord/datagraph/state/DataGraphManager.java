@@ -315,7 +315,12 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 				yOTAxis.setLabel(sYAxis.getAxisLabel());
 			}
 			
-			otDataGraph.setAutoTick(dataGraph.isAutoTick());
+			if (otDataGraph.isResourceSet("autoTick")) {
+			    otDataGraph.setAutoTick(dataGraph.isAutoTick());
+			} else {
+			    otDataGraph.setTickMode(dataGraph.getTickMode());
+			}
+			
 			otDataGraph.setXTickInterval(dataGraph.getXTickInterval());
 			otDataGraph.setYTickInterval(dataGraph.getYTickInterval());
 			
@@ -517,7 +522,11 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 			dataGraph.changeToDataGraphToolbar();
 		}
 		
-		dataGraph.setAutoTick(otDataGraph.getAutoTick());
+		if (otDataGraph.isResourceSet("autoTick")) {
+		    dataGraph.setAutoTick(otDataGraph.getAutoTick());
+		} else {
+		    dataGraph.setTickMode(otDataGraph.getTickMode());
+		}
 		dataGraph.setXTickInterval(otDataGraph.getXTickInterval());
 		dataGraph.setYTickInterval(otDataGraph.getYTickInterval());
 		

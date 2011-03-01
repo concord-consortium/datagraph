@@ -133,8 +133,8 @@ public class DataGraph extends JPanel
 
 	private boolean autoformatYAxis = true; 
 	
-
-	private boolean isAutoTick = true;
+	public static enum TickMode { AUTO, GRID_AUTO_LABELS_FIXED, LABELS_AUTO_GRID_FIXED, FIXED }
+	private TickMode tickMode = TickMode.AUTO;
 
 	private double xTickInterval;
 
@@ -327,12 +327,24 @@ public class DataGraph extends JPanel
 		gr.getXGrid().setDrawGridOnAxis(true);
 		gr.getYGrid().setDrawGridOnAxis(true);
 		
-		if (isAutoTick()){
-			gr.useAutoTickScaling();
-		} else {
-			xAxis.setIntervalCompletelyFixedDisplay(getXTickInterval());
-			yAxis.setIntervalCompletelyFixedDisplay(getYTickInterval());
-		}
+		switch (tickMode) {
+        case AUTO:
+            xAxis.setBestDisplayInterval(SingleAxisGrid.DEFAULT_DISPLAY_INTERVAL);
+            yAxis.setBestDisplayInterval(SingleAxisGrid.DEFAULT_DISPLAY_INTERVAL);
+            break;
+        case GRID_AUTO_LABELS_FIXED:
+            xAxis.setLabelIntervalCompletelyFixedDisplay(xTickInterval);
+            yAxis.setLabelIntervalCompletelyFixedDisplay(yTickInterval);
+            break;
+        case LABELS_AUTO_GRID_FIXED:
+            xAxis.setGridIntervalCompletelyFixedDisplay(xTickInterval);
+            yAxis.setGridIntervalCompletelyFixedDisplay(yTickInterval);
+            break;
+        default:
+            xAxis.setIntervalCompletelyFixedDisplay(xTickInterval);
+            yAxis.setIntervalCompletelyFixedDisplay(yTickInterval);
+            break;
+        }
 		
 		return gr;
 	}
@@ -1134,23 +1146,30 @@ public class DataGraph extends JPanel
 		grid.getYGrid().setAutoFormatLabels(autoformatYAxis);
     }
     
+    @Deprecated
 	public boolean isAutoTick()
     {
-	    return isAutoTick;
+	    return (tickMode.equals(TickMode.AUTO));
     }
 	
+    @Deprecated
 	public void setAutoTick(boolean autoTick)
     {
-	    isAutoTick = autoTick;
+        if (autoTick) {
+            this.tickMode = TickMode.AUTO;
+        } else {
+            this.tickMode = TickMode.FIXED;
+        }
 	    updateGrid();
     }
 
 	public double getXTickInterval()
     {
-	    if (isAutoTick()) {
-	        return grid.getXGrid().getInterval();
-	    }
-	    return xTickInterval;
+	    double interval = getInterval(grid.getXGrid());
+        if (Double.isNaN(interval)) {
+            interval = xTickInterval;
+        }
+        return interval;
     }
 	
 	public void setXTickInterval(double xTickInterval)
@@ -1161,11 +1180,25 @@ public class DataGraph extends JPanel
 
 	public double getYTickInterval()
     {
-	    if (isAutoTick()) {
-            return grid.getYGrid().getInterval();
-        }
-	    return yTickInterval;
+	    double interval = getInterval(grid.getYGrid());
+	    if (Double.isNaN(interval)) {
+	        interval = yTickInterval;
+	    }
+	    return interval;
     }
+	
+	private double getInterval(SingleAxisGrid g) {
+	    switch (tickMode) {
+        case AUTO:
+            return g.getInterval();
+        case GRID_AUTO_LABELS_FIXED:
+            return g.getGridInterval();
+        case LABELS_AUTO_GRID_FIXED:
+            return g.getLabelInterval();
+        default:
+            return Double.NaN;
+        }
+	}
 	
 	public void setYTickInterval(double yTickInterval)
     {
@@ -1474,5 +1507,14 @@ public class DataGraph extends JPanel
     
     private int targetWidth(Dimension size) {
         return (int) (aspectRatio * size.height);
+    }
+    
+    public TickMode getTickMode() {
+        return tickMode;
+    }
+    
+    public void setTickMode(TickMode mode) {
+        this.tickMode = mode;
+        updateGrid();
     }
 }

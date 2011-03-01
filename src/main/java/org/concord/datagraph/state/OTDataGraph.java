@@ -34,6 +34,7 @@ package org.concord.datagraph.state;
 
 import org.concord.data.state.OTDataProducer;
 import org.concord.datagraph.ui.DataGraph.AspectDimension;
+import org.concord.datagraph.ui.DataGraph.TickMode;
 import org.concord.framework.otrunk.OTObjectInterface;
 import org.concord.framework.otrunk.OTObjectList;
 
@@ -96,9 +97,15 @@ public interface OTDataGraph extends OTObjectInterface
 	public AspectDimension getAspectDimension();
 	public void setAspectDimension(AspectDimension d);
 	
+	@Deprecated
 	public boolean getAutoTick();
+	@Deprecated
 	public void setAutoTick(boolean autoTick);
 	public static boolean DEFAULT_autoTick = true;
+	
+	public TickMode getTickMode();
+	public void setTickMode(TickMode mode);
+	public static TickMode DEFAULT_tickMode = TickMode.AUTO;
 	
 	/**
 	 * This set the tick interval. This is read ONLY if autoTick is false.
