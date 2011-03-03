@@ -128,7 +128,8 @@ public class DataPointLabel extends PointTextLabel
 	/**
 	 * @see org.concord.graph.util.ui.BoxTextLabel#populatePopUpMenu()
 	 */
-	protected void populatePopUpMenu()
+	@Override
+    protected void populatePopUpMenu()
 	{
 		super.populatePopUpMenu();
 
@@ -152,7 +153,8 @@ public class DataPointLabel extends PointTextLabel
 	 * to mouse actions. In this case, we want the label to only listen to mouse
 	 * actions if the mouse is directly over a data line.
 	 */
-	public boolean isPointInProximity(Point location)
+	@Override
+    public boolean isPointInProximity(Point location)
 	{
 		if (newNote){
 			findAvailablePointOver(location);
@@ -168,7 +170,8 @@ public class DataPointLabel extends PointTextLabel
 	/**
 	 * @see org.concord.graph.engine.MouseMotionReceiver#mouseMoved(java.awt.Point)
 	 */
-	public boolean mouseMoved(Point p)
+	@Override
+    public boolean mouseMoved(Point p)
 	{
 		if (newNote){
 			findAvailablePointOver(p);
@@ -216,7 +219,8 @@ public class DataPointLabel extends PointTextLabel
 	/**
 	 * @see org.concord.graph.engine.MouseControllable#mouseDragged(java.awt.Point)
 	 */
-	public boolean mouseDragged(Point p)
+	@Override
+    public boolean mouseDragged(Point p)
 	{
 		if (mouseInsideDataPoint || newEndPoint){
 			findAvailablePointOver(p);
@@ -240,7 +244,8 @@ public class DataPointLabel extends PointTextLabel
 		return super.mouseDragged(p);
 	}
 	
-	public boolean mousePressed(Point p){
+	@Override
+    public boolean mousePressed(Point p){
 		mouseDown = true;
 		return super.mousePressed(p);
 	}
@@ -248,7 +253,8 @@ public class DataPointLabel extends PointTextLabel
 	/**
 	 * @see org.concord.graph.engine.MouseControllable#mouseReleased(java.awt.Point)
 	 */
-	public boolean mouseReleased(Point p)
+	@Override
+    public boolean mouseReleased(Point p)
 	{
 		mouseDown = false;
 		if (dragEnabled){
@@ -289,7 +295,8 @@ public class DataPointLabel extends PointTextLabel
 	/**
 	 * @see org.concord.graph.util.ui.BoxTextLabel#addAtPoint(java.awt.Point)
 	 */
-	public boolean addAtPoint(Point2D pD, Point2D pW)
+	@Override
+    public boolean addAtPoint(Point2D pD, Point2D pW)
 	{
 		if (indexPointOver != -1 && graphableOver != null){
 			setDataGraphable(graphableOver);
@@ -329,7 +336,8 @@ public class DataPointLabel extends PointTextLabel
 	/**
 	 * @see org.concord.graph.engine.Drawable#draw(java.awt.Graphics2D)
 	 */
-	public void draw(Graphics2D g)
+	@Override
+    public void draw(Graphics2D g)
 	{
 		if (newNote || mouseInsideDataPoint || newEndPoint){
 			if (indexPointOver != -1 && graphableOver != null){
@@ -426,7 +434,8 @@ public class DataPointLabel extends PointTextLabel
 	/**
 	 * @see org.concord.graph.util.ui.BoxTextLabel#doRemove()
 	 */
-	protected void doRemove()
+	@Override
+    protected void doRemove()
 	{
 		setDataGraphable(null);
 		super.doRemove();
@@ -509,15 +518,19 @@ public class DataPointLabel extends PointTextLabel
         updateDataPointLabels(p); 
     }
     
-	public void setDataPoint(Point2D p) {
-        super.setDataPoint(p);
-        updateDataPointLabels();
+	@Override
+    public void setDataPoint(Point2D p) {
+	    if (! isReadOnly()) {
+	        super.setDataPoint(p);
+	        updateDataPointLabels();
+	    }
 	}
 	
 	/**
 	 * 
 	 */
-	protected void drawMessage(Graphics2D g, boolean bDraw)
+	@Override
+    protected void drawMessage(Graphics2D g, boolean bDraw)
 	{
 		String words[];
 		String word;

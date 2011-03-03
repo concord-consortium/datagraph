@@ -111,6 +111,10 @@ public interface OTDataCollector
 	public final static boolean DEFAULT_fillLabelBackground = true;
     public boolean getFillLabelBackground();
     public void setFillLabelBackground(boolean fill);
+    
+    public final static boolean DEFAULT_readOnlyLabels = false;
+    public void setReadOnlyLabels(boolean readOnly);
+    public boolean getReadOnlyLabels();
 	
 	public final static boolean DEFAULT_restoreScaleOnReset = false;
 	public boolean getRestoreScaleOnReset();

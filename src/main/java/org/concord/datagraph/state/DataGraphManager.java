@@ -949,9 +949,14 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		}
 		
 		if (label instanceof DataPointLabel){
-			((DataPointLabel)label).setShowCoordinates(otDataCollector.getShowLabelCoordinates());
-			((DataPointLabel)label).setCoordinateDecimalPlaces(otDataCollector.getLabelDecimalPlaces());
-			((DataPointLabel)label).setFillBackground(otDataCollector.getFillLabelBackground());
+		    DataPointLabel dpLabel = (DataPointLabel) label;
+		    dpLabel.setShowCoordinates(otDataCollector.getShowLabelCoordinates());
+		    dpLabel.setCoordinateDecimalPlaces(otDataCollector.getLabelDecimalPlaces());
+		    dpLabel.setFillBackground(otDataCollector.getFillLabelBackground());
+			if (otDataCollector.getReadOnlyLabels() || dpLabel.isReadOnly()) {
+			    // set the label as read-only if the label was already read-only, or if we're forcing them to be
+			    dpLabel.setReadOnly(true);
+			}
 		}
 		notesLayer.add(label);
 
@@ -1308,6 +1313,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		label.setShowCoordinates(otDataCollector.getShowLabelCoordinates());
 		label.setCoordinateDecimalPlaces(otDataCollector.getLabelDecimalPlaces());
 		label.setFillBackground(otDataCollector.getFillLabelBackground());
+		label.setReadOnly(otDataCollector.getReadOnlyLabels());
 		notesLayer.add(label);
 		return label;
 	}
