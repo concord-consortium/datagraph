@@ -1192,9 +1192,9 @@ public class DataGraph extends JPanel
         case AUTO:
             return g.getInterval();
         case GRID_AUTO_LABELS_FIXED:
-            return g.getGridInterval();
-        case LABELS_AUTO_GRID_FIXED:
             return g.getLabelInterval();
+        case LABELS_AUTO_GRID_FIXED:
+            return g.getGridInterval();
         default:
             return Double.NaN;
         }
@@ -1515,6 +1515,13 @@ public class DataGraph extends JPanel
     
     public void setTickMode(TickMode mode) {
         this.tickMode = mode;
+        updateGrid();
+    }
+    
+    public void setTickInfo(TickMode mode, double xTickInterval, double yTickInterval) {
+        this.tickMode = mode;
+        this.xTickInterval = xTickInterval;
+        this.yTickInterval = yTickInterval;
         updateGrid();
     }
 }

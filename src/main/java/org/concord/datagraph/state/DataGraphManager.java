@@ -63,6 +63,7 @@ import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.datagraph.ui.DataAnnotation;
 import org.concord.datagraph.ui.DataGraph;
+import org.concord.datagraph.ui.DataGraph.TickMode;
 import org.concord.datagraph.ui.DataGraphToolbar;
 import org.concord.datagraph.ui.DataPointLabel;
 import org.concord.datagraph.ui.SingleDataAxisGrid;
@@ -315,11 +316,8 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 				yOTAxis.setLabel(sYAxis.getAxisLabel());
 			}
 			
-			if (otDataGraph.isResourceSet("autoTick")) {
-			    otDataGraph.setAutoTick(dataGraph.isAutoTick());
-			} else {
-			    otDataGraph.setTickMode(dataGraph.getTickMode());
-			}
+			otDataGraph.setTickMode(dataGraph.getTickMode());
+			otDataGraph.otUnSet(otDataGraph.otClass().getProperty("autoTick"));
 			
 			otDataGraph.setXTickInterval(dataGraph.getXTickInterval());
 			otDataGraph.setYTickInterval(dataGraph.getYTickInterval());
@@ -522,13 +520,20 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 			dataGraph.changeToDataGraphToolbar();
 		}
 		
-		if (otDataGraph.isResourceSet("autoTick")) {
-		    dataGraph.setAutoTick(otDataGraph.getAutoTick());
+		double xTick = otDataGraph.getXTickInterval();
+		double yTick = otDataGraph.getYTickInterval();
+		TickMode mode;
+		if (otDataGraph.isResourceSet("tickMode")) {
+		    mode = otDataGraph.getTickMode();
 		} else {
-		    dataGraph.setTickMode(otDataGraph.getTickMode());
+		    if (otDataGraph.getAutoTick()) {
+                mode = TickMode.AUTO;
+            } else {
+                mode = TickMode.FIXED;
+            }
 		}
-		dataGraph.setXTickInterval(otDataGraph.getXTickInterval());
-		dataGraph.setYTickInterval(otDataGraph.getYTickInterval());
+		otDataGraph.otUnSet(otDataGraph.otClass().getProperty("autoTick"));
+		dataGraph.setTickInfo(mode, xTick, yTick);
 		
 		initGraphables();
 		dataGraph.setAutoFitMode(otDataGraph.getAutoFitMode());
