@@ -132,4 +132,28 @@ public interface OTDataCollector
 	 */
     @Deprecated
     public OTEventLog getEventLog();
+    
+    public final static boolean DEFAULT_logGraphOnStart = false;
+    public boolean getLogGraphOnStart();
+    public void setLogGraphOnStart(boolean b);
+    
+    public final static boolean DEFAULT_logGraphOnStop = false;
+    public boolean getLogGraphOnStop();
+    public void setLogGraphOnStop(boolean b);
+    
+    public final static boolean DEFAULT_logGraphOnReset = false;
+    public boolean getLogGraphOnReset();
+    public void setLogGraphOnReset(boolean b);
+    
+    public final static boolean DEFAULT_logGraphOnPlaybackStart = false;
+    public boolean getLogGraphOnPlaybackStart();
+    public void setLogGraphOnPlaybackStart(boolean b);
+    
+    public final static boolean DEFAULT_logGraphOnPlaybackStop = false;
+    public boolean getLogGraphOnPlaybackStop();
+    public void setLogGraphOnPlaybackStop(boolean b);
+    
+    public final static boolean DEFAULT_logGraphOnPlaybackReset = false;
+    public boolean getLogGraphOnPlaybackReset();
+    public void setLogGraphOnPlaybackReset(boolean b);
 }

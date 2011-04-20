@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<otrunk id="33754150-b594-11d9-9669-0800200c9a66">
+  <imports>
+    <import class="org.concord.otrunk.OTSystem"/>
+    <import class="org.concord.otrunk.view.OTViewEntry"/>
+    <import class="org.concord.otrunk.view.OTViewBundle"/>
+    <import class="org.concord.framework.otrunk.view.OTFrame" />
+    
+    <import class="org.concord.data.state.OTDataInput"/>
+    
+    <import class="org.concord.datagraph.state.OTDataGraph" />
+    <import class="org.concord.datagraph.state.OTDataCollector" />
+    <import class="org.concord.datagraph.state.OTDataAxis" />
+    <import class="org.concord.datagraph.state.OTDataGraphable" />
+    <import class="org.concord.data.state.OTDataStore" />
+    <import class="org.concord.data.state.OTDataChannelDescription" />
+
+    <import class="org.concord.data.state.OTTimerDataStoreDataProducer" />
+  </imports>
+  <objects>
+    <OTSystem>
+      <bundles>
+        <OTViewBundle showLeftPanel="false">
+          <frame>
+            <OTFrame useScrollPane="false" width="1350" height="700" />
+          </frame>
+          <viewEntries>
+            <OTViewEntry local_id="graph-view"
+                objectClass="org.concord.datagraph.state.OTDataCollector"
+                viewClass="org.concord.datagraph.state.OTDataCollectorView" />
+          </viewEntries>
+        </OTViewBundle>
+      </bundles>
+      <root>
+        <OTDataCollector id="cefe3fef-5501-11dd-9991-5952f2563061" name="Data graph" title="Data graph" graphableListEditable="false">
+          <source>
+            <OTDataGraphable name="Car 1" connectPoints="true" controllable="true" yColumn="1" drawMarks="false" color="0x0000ff" xColumn="0" lineWidth="2.0" showAllChannels="false" visible="true">
+              <dataStore>
+                <OTDataStore local_id="ds1" numberChannels="2" />
+              </dataStore>
+            </OTDataGraphable>
+          </source>
+          <xDataAxis>
+            <OTDataAxis max="5" units="s" min="0.0" label="Time" />
+          </xDataAxis>
+          <yDataAxis>
+            <OTDataAxis max="21.0" units="" min="0.0" label="Position" />
+          </yDataAxis>
+          <playbackDataProducer>
+            <OTTimerDataStoreDataProducer local_id="timer_producer" sampleTime="0.05">
+              <dataStores>
+                <object refid="${ds1}" />
+                <object refid="${ds2}" />
+              </dataStores>
+            </OTTimerDataStoreDataProducer>
+          </playbackDataProducer>
+          <graphables>
+            <OTDataGraphable name="Car 2" connectPoints="true" controllable="true" yColumn="1" drawMarks="false" color="0xff0000" xColumn="0" lineWidth="2.0" showAllChannels="false" visible="true">
+              <dataStore>
+                <OTDataStore local_id="ds2" numberChannels="2" />
+              </dataStore>
+            </OTDataGraphable>
+          </graphables>
+        </OTDataCollector>
+      </root>
+    </OTSystem>
+  </objects>
+</otrunk>

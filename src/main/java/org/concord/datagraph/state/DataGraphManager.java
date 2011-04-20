@@ -44,6 +44,7 @@ import java.awt.geom.Point2D;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.EventObject;
+import java.util.HashMap;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -96,6 +97,7 @@ import org.concord.graph.examples.GraphWindowToolBar;
 import org.concord.graph.ui.GraphTreeView;
 import org.concord.graph.ui.Grid2D;
 import org.concord.graph.ui.SingleAxisGrid;
+import org.concord.otrunk.OTrunkUtil;
 import org.concord.otrunk.logging.LogHelper;
 import org.concord.otrunk.logging.OTModelEvent.EventType;
 import org.concord.view.CheckedColorTreeControler;
@@ -788,13 +790,14 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 			dataGraph.add(treeComponent, BorderLayout.WEST);
 		}
 		
-		if (otDataGraph.getPlaybackDataProducer() != null) {
+		final OTDataProducer playbackDataProducer = otDataGraph.getPlaybackDataProducer();
+        if (playbackDataProducer != null) {
 		    JPanel controlPanel = new JPanel(new BorderLayout());
 		    if (treeComponent != null) {
 		        controlPanel.add(treeComponent, BorderLayout.CENTER);
 		    }
 		    
-		    DataProducer dataProducer = (DataProducer) controllerService.getRealObject(otDataGraph.getPlaybackDataProducer());
+		    DataProducer dataProducer = (DataProducer) controllerService.getRealObject(playbackDataProducer);
 		    StartableToolBar controls = new StartableToolBar();
 		    controls.setStartable(dataProducer);
             
@@ -806,18 +809,42 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		    dataGraph.getGraph().add(playbackLine);
 		    
 		    dataProducer.addStartableListener(new StartableListener() {
+		        private OTDataProducer dataProducerCopy = null;
                 public void startableEvent(StartableEvent event) {
+                    HashMap<String, OTObject> extraInfo = new HashMap<String, OTObject>();
                     switch(event.getType()) {
                     case RESET:
-                        LogHelper.add(otDataCollector, EventType.PLAYBACK_RESET);
+                        if (otDataCollector.getLogGraphOnPlaybackReset()) {
+                            extraInfo.put("graph", getGraphCopy());
+                        }
+                        LogHelper.add(otDataCollector, EventType.PLAYBACK_RESET, extraInfo);
                         break;
                     case STARTED:
-                        LogHelper.add(otDataCollector, EventType.PLAYBACK_START);
+                        if (otDataCollector.getLogGraphOnPlaybackStart()) {
+                            extraInfo.put("graph", getGraphCopy());
+                        }
+                        LogHelper.add(otDataCollector, EventType.PLAYBACK_START, extraInfo);
                         break;
                     case STOPPED:
-                        LogHelper.add(otDataCollector, EventType.PLAYBACK_STOP);
+                        if (otDataCollector.getLogGraphOnPlaybackStop()) {
+                            extraInfo.put("graph", getGraphCopy());
+                        }
+                        LogHelper.add(otDataCollector, EventType.PLAYBACK_STOP, extraInfo);
                         break;
                     }
+                }
+                
+                private OTDataProducer getGraphCopy() {
+                    // OTunkUtil returns true if the objects are the same
+                    if (dataProducerCopy == null || ! OTrunkUtil.compareObjects(playbackDataProducer, dataProducerCopy, true)) {
+                        try {
+                            dataProducerCopy = (OTDataProducer) otDataCollector.getOTObjectService().copyObject(playbackDataProducer, -1);
+                        } catch (Exception e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+                    return dataProducerCopy;
                 }
             });
 		}
