@@ -100,7 +100,7 @@ public class PlaybackLoggingTest {
     @Order(40)
     public void detailedLoggingInteraction() {
         model.getLog().clear();
-        model.setLogGraphOnStart(true);
+        model.setLogGraphOnPlaybackStart(true);
         interactWithModel();
     }
     
