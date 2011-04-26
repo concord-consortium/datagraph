@@ -32,6 +32,7 @@ package org.concord.datagraph.state;
 import org.concord.data.state.OTDataProducer;
 import org.concord.data.state.OTDataStore;
 import org.concord.framework.otrunk.OTObjectInterface;
+import org.concord.framework.otrunk.OTObjectList;
 
 public interface OTDataGraphable extends OTObjectInterface
 {
@@ -100,4 +101,11 @@ public interface OTDataGraphable extends OTObjectInterface
 	public static float DEFAULT_lineWidth = 2.0f;
 	public float getLineWidth();
 	public void setLineWidth(float w);
+	
+	/**
+	 * An OTObjectList of OTGraphSegment objects.
+	 * Each OTGraphSegment describes the criteria for determining if a part of the graph is correct or not.
+	 * @return
+	 */
+	public OTObjectList getRubric();
 }
