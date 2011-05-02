@@ -1,4 +1,4 @@
-package org.concord.datagraph.state;
+package org.concord.datagraph.state.rubric;
 
 import org.concord.framework.otrunk.OTObjectInterface;
 

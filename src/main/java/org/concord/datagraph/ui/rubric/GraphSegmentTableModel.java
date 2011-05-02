@@ -1,8 +1,8 @@
-package org.concord.datagraph.ui;
+package org.concord.datagraph.ui.rubric;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.concord.datagraph.state.OTGraphSegment;
+import org.concord.datagraph.state.rubric.OTGraphSegment;
 import org.concord.framework.otrunk.OTObjectList;
 
 public class GraphSegmentTableModel extends AbstractTableModel {
