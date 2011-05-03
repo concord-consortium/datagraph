@@ -27,6 +27,7 @@ public class SegmentCriteriaTable extends JTable {
         propertyChoices.addItem(Property.ENDING_X);
         propertyChoices.addItem(Property.ENDING_Y);
         propertyChoices.addItem(Property.SLOPE);
+        propertyChoices.addItem(Property.DELTA_X);
         
         JComboBox operationChoices = new JComboBox();
         operationChoices.setRenderer(new OperationCellRenderer());

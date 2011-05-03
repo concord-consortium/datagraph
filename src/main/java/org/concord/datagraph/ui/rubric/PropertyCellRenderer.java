@@ -27,6 +27,7 @@ public class PropertyCellRenderer implements ListCellRenderer, TableCellRenderer
         modeToStringMap.put(Property.ENDING_X, "Ending X");
         modeToStringMap.put(Property.ENDING_Y, "Ending Y");
         modeToStringMap.put(Property.SLOPE, "Slope");
+        modeToStringMap.put(Property.DELTA_X, "Delta X");
     }
 
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean hasFocus) {
