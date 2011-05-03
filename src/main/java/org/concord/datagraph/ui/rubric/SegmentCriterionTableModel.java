@@ -10,7 +10,7 @@ import org.concord.framework.otrunk.OTObjectList;
 public class SegmentCriterionTableModel extends AbstractTableModel {
     private static final long serialVersionUID = 1L;
 
-    private String[] columnNames = { "Property", "Operation", "Expected Value", "Points", "Optional?" };
+    private String[] columnNames = { "Property", "Operation", "Expected Value", "Tolerance", "Points", "Optional?" };
 
     private OTObjectList criteria;
 
@@ -40,8 +40,10 @@ public class SegmentCriterionTableModel extends AbstractTableModel {
         case 2:
             return criterion.getExpectedValue();
         case 3:
-            return criterion.getPoints();
+            return criterion.getTolerance();
         case 4:
+            return criterion.getPoints();
+        case 5:
             return criterion.getOptional();
         default:
             return null;
@@ -66,6 +68,8 @@ public class SegmentCriterionTableModel extends AbstractTableModel {
         case 3:
             return Double.class;
         case 4:
+            return Double.class;
+        case 5:
             return Boolean.class;
         default:
             return Object.class;
@@ -93,13 +97,16 @@ public class SegmentCriterionTableModel extends AbstractTableModel {
                 segment.setOperation((Operation) value);
                 break;
             case 2:
-                segment.setExpectedValue(Double.parseDouble((String) value));
+                segment.setExpectedValue(((Double)value).doubleValue());
                 break;
             case 3:
-                segment.setPoints(Double.parseDouble((String) value));
+                segment.setTolerance(((Double)value).doubleValue());
                 break;
             case 4:
-                segment.setOptional(Boolean.parseBoolean((String) value));
+                segment.setPoints(((Double)value).doubleValue());
+                break;
+            case 5:
+                segment.setOptional(((Boolean)value).booleanValue());
                 break;
             default:
                 break;
