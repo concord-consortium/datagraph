@@ -8,7 +8,7 @@ import org.concord.framework.otrunk.OTObjectList;
 public class GraphSegmentTableModel extends AbstractTableModel {
     private static final long serialVersionUID = 1L;
 
-    private String[] columnNames = { "X1", "X2", "A", "B", "C" };
+    private String[] columnNames = { "# of criteria", "Optional?" };
 
     private OTObjectList segments;
 
@@ -32,15 +32,9 @@ public class GraphSegmentTableModel extends AbstractTableModel {
         OTGraphSegment segment = (OTGraphSegment) segments.get(rowIndex);
         switch (columnIndex) {
         case 0:
-            return segment.getX1();
+            return segment.getCriteria().size();
         case 1:
-            return segment.getX2();
-        case 2:
-            return segment.getA();
-        case 3:
-            return segment.getB();
-        case 4:
-            return segment.getC();
+            return segment.getOptional();
         default:
             return null;
         }
@@ -51,10 +45,25 @@ public class GraphSegmentTableModel extends AbstractTableModel {
     {
         return columnNames[col];
     }
+    
+    @Override
+    public Class<?> getColumnClass(int columnIndex) {
+        switch (columnIndex) {
+        case 0:
+            return Integer.class;
+        case 1:
+            return Boolean.class;
+        default:
+            return Object.class;
+        }
+    }
 
     @Override
     public boolean isCellEditable(int row, int col)
     {
+        if (col == 0) {
+            return false;
+        }
         return true;
     }
     
@@ -62,33 +71,15 @@ public class GraphSegmentTableModel extends AbstractTableModel {
     public void setValueAt(Object value, int row, int col) {
         OTGraphSegment segment = getSegmentAt(row);
         
-        try {
-            double val = Double.parseDouble((String) value);
-            
-            switch (col) {
-            case 0:
-                segment.setX1(val);
-                break;
-            case 1:
-                segment.setX2(val);
-                break;
-            case 2:
-                segment.setA(val);
-                break;
-            case 3:
-                segment.setB(val);
-                break;
-            case 4:
-                segment.setC(val);
-                break;
-            default:
-                break;
-            }
-            
-            fireTableCellUpdated(row, col);
-        } catch (NumberFormatException e) {
-            
+        switch (col) {
+        case 1:
+            segment.setOptional(((Boolean)value).booleanValue());
+            break;
+        default:
+            break;
         }
+        
+        fireTableCellUpdated(row, col);
     }
 
     public OTGraphSegment getSegmentAt(int rowIndex) {
