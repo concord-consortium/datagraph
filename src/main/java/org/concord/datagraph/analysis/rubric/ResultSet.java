@@ -204,7 +204,9 @@ public class ResultSet {
         public double getPoints() {
             double score = 0.0;
             for (SegmentResult res : reasons) {
-                score += res.getPoints();
+                if (! res.isOptional()) {
+                    score += res.getPoints();
+                }
             }
             return score;
         }
