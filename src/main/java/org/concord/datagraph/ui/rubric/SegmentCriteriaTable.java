@@ -4,14 +4,13 @@ import java.awt.Color;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
-import javax.swing.JTable;
-import javax.swing.JViewport;
 import javax.swing.ListSelectionModel;
 
 import org.concord.datagraph.state.rubric.OTGraphSegmentCriterion.Operation;
 import org.concord.datagraph.state.rubric.OTGraphSegmentCriterion.Property;
 
-public class SegmentCriteriaTable extends JTable {
+public class SegmentCriteriaTable extends ScrollingTable {
+    private static final long serialVersionUID = 1L;
 
     public SegmentCriteriaTable(SegmentCriterionTableModel tableModel) {
         super(tableModel);
@@ -41,17 +40,5 @@ public class SegmentCriteriaTable extends JTable {
         setDefaultEditor(Property.class, new DefaultCellEditor(propertyChoices));
         setDefaultRenderer(Operation.class, new OperationCellRenderer());
         setDefaultEditor(Operation.class, new DefaultCellEditor(operationChoices));
-    }
-    
-    // Custom viewport height tracking code, adapted from JList's implementation
-    @Override
-    public boolean getScrollableTracksViewportHeight() {
-        if (getRowCount() <= 0) {
-            return true;
-        }
-        if (getParent() instanceof JViewport) {
-            return (((JViewport)getParent()).getHeight() > getPreferredSize().height);
-        }
-        return false;
     }
 }
