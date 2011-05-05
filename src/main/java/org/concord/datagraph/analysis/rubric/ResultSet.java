@@ -1,5 +1,6 @@
 package org.concord.datagraph.analysis.rubric;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
@@ -172,6 +173,23 @@ public class ResultSet {
             res.addFailure(crit);
         }
         return res;
+    }
+    
+    public static Color OPTIONAL_COLOR = new Color(0x000099); // green
+    public static Color CORRECT_COLOR = new Color(0x009900); // green
+    public static Color MODERATELY_CORRECT_COLOR = new Color(0xcc4400); // orangeish
+    public static Color INCORRECT_COLOR = new Color(0x990000); // red
+    
+    public Color getResultColor() {
+        double scorePct = getScorePercent();
+
+        if (scorePct > 79) {
+            return CORRECT_COLOR;
+        } else if (scorePct > 49) {
+            return MODERATELY_CORRECT_COLOR;
+        } else {
+            return INCORRECT_COLOR;
+        }
     }
 
     class Difference {
