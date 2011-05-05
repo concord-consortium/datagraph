@@ -33,6 +33,7 @@ import org.concord.data.state.OTDataProducer;
 import org.concord.data.state.OTDataStore;
 import org.concord.framework.otrunk.OTObjectInterface;
 import org.concord.framework.otrunk.OTObjectList;
+import org.concord.framework.otrunk.OTResourceList;
 
 public interface OTDataGraphable extends OTObjectInterface
 {
@@ -108,4 +109,10 @@ public interface OTDataGraphable extends OTObjectInterface
 	 * @return
 	 */
 	public OTObjectList getRubric();
+	
+	/**
+	 * A list of urls to OTOverlays which contain example graph data which can be used to debug rubrics
+	 * @return
+	 */
+    public OTResourceList getExampleGraphOverlayUrls();
 }
