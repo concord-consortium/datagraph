@@ -33,8 +33,8 @@ public class GraphRubricSegment extends ArrayList<GraphRubricSegmentCriterion> {
 
     public double getPossiblePoints() {
         double points = 0;
-        for (GraphRubricSegmentCriterion crit : this) {
-            if (! crit.isOptional()) {
+        if (! optional) {
+            for (GraphRubricSegmentCriterion crit : this) {
                 points += crit.getPoints();
             }
         }

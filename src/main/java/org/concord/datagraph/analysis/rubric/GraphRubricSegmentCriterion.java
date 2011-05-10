@@ -34,6 +34,9 @@ public class GraphRubricSegmentCriterion {
     }
 
     public double getPoints() {
+        if (optional) {
+            return 0;
+        }
         return points;
     }
 
