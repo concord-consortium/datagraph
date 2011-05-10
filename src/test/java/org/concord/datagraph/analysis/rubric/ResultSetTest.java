@@ -1,4 +1,4 @@
-package org.concord.datagraph.analysis;
+package org.concord.datagraph.analysis.rubric;
 
 import static org.fest.assertions.Assertions.assertThat;
 
