@@ -27,6 +27,7 @@ public class SegmentCriteriaTable extends ScrollingTable {
         propertyChoices.addItem(Property.ENDING_Y);
         propertyChoices.addItem(Property.SLOPE);
         propertyChoices.addItem(Property.DELTA_X);
+        propertyChoices.addItem(Property.DELTA_Y);
         
         JComboBox operationChoices = new JComboBox();
         operationChoices.setRenderer(new OperationCellRenderer());

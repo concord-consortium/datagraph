@@ -5,7 +5,7 @@ import org.concord.framework.otrunk.OTObjectInterface;
 public interface OTGraphSegmentCriterion extends OTObjectInterface {
 
     public static enum Property {
-        BEGINNING_X, BEGINNING_Y, ENDING_X, ENDING_Y, SLOPE, DELTA_X
+        BEGINNING_X, BEGINNING_Y, ENDING_X, ENDING_Y, SLOPE, DELTA_X, DELTA_Y
     }
     
     // positive and negative can be represented by GREATER_THAN 0 and LESS_THAN 0, respectively

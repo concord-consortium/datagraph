@@ -65,6 +65,8 @@ public class GraphRubricSegmentCriterion {
             return graphSegment.getY2();
         case DELTA_X:
             return graphSegment.getX2() - graphSegment.getX1();
+        case DELTA_Y:
+            return graphSegment.getY2() - graphSegment.getY1();
         case SLOPE:
             return graphSegment.getB();
         default:
