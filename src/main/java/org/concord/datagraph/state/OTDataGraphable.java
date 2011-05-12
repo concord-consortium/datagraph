@@ -115,4 +115,8 @@ public interface OTDataGraphable extends OTObjectInterface
 	 * @return
 	 */
     public OTResourceList getExampleGraphOverlayUrls();
+    
+    public static double DEFAULT_segmentingTolerance = 4.4;
+    public void setSegmentingTolerance(double tolerance);
+    public double getSegmentingTolerance();
 }
