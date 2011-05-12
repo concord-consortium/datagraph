@@ -1,5 +1,7 @@
 package org.concord.datagraph.analysis;
 
+import java.awt.Component;
+
 import org.concord.data.state.OTDataStore;
 import org.concord.datagraph.analysis.rubric.GraphRubric;
 import org.concord.datagraph.analysis.rubric.ResultSet;
@@ -10,4 +12,5 @@ public interface GraphAnalyzer {
     public GraphRubric buildRubric(OTObjectList rubric);
     public ResultSet compareGraphs(GraphRubric expected, Graph received);
     public String getHtmlReasons(ResultSet results);
+    public void displayHtmlReasonsPopup(Component parent, ResultSet results);
 }
