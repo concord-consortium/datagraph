@@ -36,7 +36,7 @@ import java.awt.Color;
 
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.datagraph.ui.DataPointMarker;
-import org.concord.framework.otrunk.DefaultOTController;
+import org.concord.graph.util.state.OTGraphableController;
 
 
 /**
@@ -48,7 +48,7 @@ import org.concord.framework.otrunk.DefaultOTController;
  * @author scott<p>
  *
  */
-public class OTDataPointMarkerController extends DefaultOTController
+public class OTDataPointMarkerController extends OTGraphableController
 {
 	public final static Class [] realObjectClasses = {DataPointMarker.class};
 	public final static Class otObjectClass = OTDataPointMarker.class;
@@ -69,11 +69,6 @@ public class OTDataPointMarkerController extends DefaultOTController
         marker.setXValue(otMarker.getX());
         marker.setVisible(otMarker.getVisible());
         marker.setShape(otMarker.getShape());
-    }
-
-    public void registerRealObject(Object realObject) {
-        // TODO Auto-generated method stub
-        
     }
 
     public void saveRealObject(Object realObject) {
