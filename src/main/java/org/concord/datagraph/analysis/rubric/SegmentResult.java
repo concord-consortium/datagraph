@@ -66,4 +66,16 @@ public class SegmentResult {
     public boolean isOptional() {
         return this.isOptional;
     }
+
+    public double getPossiblePoints() {
+        // sum of all the failed and passed criterion
+        double points = 0;
+        for (GraphRubricSegmentCriterion crit : getFailures()) {
+            points += crit.getPoints();
+        }
+        for (GraphRubricSegmentCriterion crit : getSuccesses()) {
+            points += crit.getPoints();
+        }
+        return points;
+    }
 }
