@@ -139,6 +139,7 @@ public interface OTDataGraph extends OTObjectInterface
 	
 	/** A "playback" data producer, which can read in multiple datastores and play them back in realtime. See OTTimerDataStoreDataProducer. */
     public OTDataProducer getPlaybackDataProducer();
+    public void setPlaybackDataProducer(OTDataProducer dp);
     
     public static boolean DEFAULT_antialias = true;
     public boolean getAntialias();
