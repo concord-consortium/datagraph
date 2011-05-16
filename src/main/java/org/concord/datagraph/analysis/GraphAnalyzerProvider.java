@@ -8,7 +8,7 @@ public abstract class GraphAnalyzerProvider {
     public static enum Type { ANY, NETLOGO }
     public abstract GraphAnalyzer getAnalyzer(Type preferredType);
     
-    public static GraphAnalyzer findAnalyzer(Type preferredType) {
+    public static synchronized GraphAnalyzer findAnalyzer(Type preferredType) {
         // ServiceRegistry actually just wraps sun.misc.Service.providers(), and doesn't require compiler tweaks.
         // If we ever move to 1.6, this should get changed to use java.util.ServiceLoader
         Iterator<?> providers = ServiceRegistry.lookupProviders(GraphAnalyzerProvider.class);
