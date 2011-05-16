@@ -24,11 +24,12 @@ public class OTDatagraphPackage
 	{
 		// get controller registry and register our controllers
 		OTControllerRegistry registry =
-			(OTControllerRegistry)otrunk.getService(OTControllerRegistry.class);
+			otrunk.getService(OTControllerRegistry.class);
 
 		registry.registerControllerClass(OTDataPointLabelController.class);
 		registry.registerControllerClass(OTDataRegionLabelController.class);
 		registry.registerControllerClass(OTDataPointRulerController.class);
+        registry.registerControllerClass(OTDataPointMarkerController.class);
 		registry.registerControllerClass(OTDataGraphableController.class);
 		registry.registerControllerClass(OTDataBarGraphableController.class);
 		registry.registerControllerClass(OTEraserGraphableController.class);
@@ -49,6 +50,7 @@ public class OTDatagraphPackage
 				OTDataBarGraphable.class,
 				OTDataPointLabel.class,
 				OTDataPointRuler.class,
+                OTDataPointMarker.class,
 				OTEraserGraphable.class,
 				OTMultiDataGraph.class,
 				OTMultiDataSetControl.class,
