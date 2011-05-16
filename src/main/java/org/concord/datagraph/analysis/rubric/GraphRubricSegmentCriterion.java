@@ -54,6 +54,9 @@ public class GraphRubricSegmentCriterion {
     }
     
     public double getPropertyValue(GraphSegment graphSegment) {
+        if (property == null) {
+            return Double.NEGATIVE_INFINITY;
+        }
         switch (property) {
         case BEGINNING_X:
             return graphSegment.getX1();
@@ -75,11 +78,14 @@ public class GraphRubricSegmentCriterion {
     }
     
     private boolean compareValue(double value) {
+        if (operation == null) {
+            return false;
+        }
         switch (operation) {
         case LESS_THAN:
             return ((value-tolerance) < expectedValue);
         case EQUAL_TO:
-            return (Math.abs(value - expectedValue) < tolerance);
+            return (Math.abs(value - expectedValue) <= tolerance);
         case GREATER_THAN:
             return ((value+tolerance) > expectedValue);
         case LESS_THAN_OR_EQUAL_TO:
