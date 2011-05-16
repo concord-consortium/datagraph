@@ -44,27 +44,29 @@ public class DataPointMarker extends DefaultGraphable implements DataAnnotation 
     }
 
     public void draw(Graphics2D gOrig) {
-        CoordinateSystem cs = graphArea.getCoordinateSystem();
-        Point2D point = interpolatePoint();
-        
-        Graphics2D g = (Graphics2D) gOrig.create();
-        
-        if (point != null) {
-            Point2D intersection = cs.transformToDisplay(point);
+        if (graphable.isVisible() && isVisible()) {
+            CoordinateSystem cs = graphArea.getCoordinateSystem();
+            Point2D point = interpolatePoint();
             
-            g.translate(intersection.getX()-5, intersection.getY()-5);
+            Graphics2D g = (Graphics2D) gOrig.create();
             
-            g.setColor(color);
-            g.setStroke(lineStroke);
-            
-            switch (shape) {
-            case TRIANGLE:
-                g.draw(triShape);
-                break;
-            
-            default:
-                g.draw(xShape);
-                break;
+            if (point != null) {
+                Point2D intersection = cs.transformToDisplay(point);
+                
+                g.translate(intersection.getX()-5, intersection.getY()-5);
+                
+                g.setColor(color);
+                g.setStroke(lineStroke);
+                
+                switch (shape) {
+                case TRIANGLE:
+                    g.draw(triShape);
+                    break;
+                
+                default:
+                    g.draw(xShape);
+                    break;
+                }
             }
         }
     }
