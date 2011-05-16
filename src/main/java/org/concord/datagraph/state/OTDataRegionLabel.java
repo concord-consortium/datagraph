@@ -22,4 +22,8 @@ public interface OTDataRegionLabel
 	public static boolean DEFAULT_showHighlight = true;
 	public boolean getShowHighlight();
 	public void setShowHighlight(boolean flag);
+	
+	public static int DEFAULT_opacity = 200;
+	public int getOpacity();
+	public void setOpacity(int opacity);
 }

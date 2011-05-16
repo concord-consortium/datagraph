@@ -30,6 +30,8 @@ public class DataRegionLabel extends DataPointLabel
 	private boolean showLabel = true;
 	private boolean showHighlight = true;
 	
+	private int opacity;
+	
 	@Override
     public void draw(Graphics2D g)
 	{
@@ -54,7 +56,7 @@ public class DataRegionLabel extends DataPointLabel
 			highlighter.setChannelX(dataGraphable.getChannelX());
 			highlighter.setChannelY(dataGraphable.getChannelY());
 			highlighter.setLineWidth(12);
-			Color color = new Color(getBackground().getRed(), getBackground().getGreen(), getBackground().getBlue(), 200);
+			Color color = new Color(getBackground().getRed(), getBackground().getGreen(), getBackground().getBlue(), opacity);
 			highlighter.setColor(color);
 			highlighter.draw(g);
 		}
@@ -203,4 +205,12 @@ public class DataRegionLabel extends DataPointLabel
 		super.dataChanged(evt);
 		dsNeedsUpdate = true;
 	}
+
+    public void setOpacity(int opacity) {
+        this.opacity = opacity;
+    }
+
+    public int getOpacity() {
+        return opacity;
+    }
 }
