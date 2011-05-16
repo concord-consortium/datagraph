@@ -68,6 +68,7 @@ public class OTDataPointMarkerController extends DefaultOTController
         marker.setColor(new Color(otMarker.getColor()));
         marker.setXValue(otMarker.getX());
         marker.setVisible(otMarker.getVisible());
+        marker.setShape(otMarker.getShape());
     }
 
     public void registerRealObject(Object realObject) {
@@ -88,5 +89,6 @@ public class OTDataPointMarkerController extends DefaultOTController
         otMarker.setX(marker.getXValue());
         otMarker.setColor(marker.getColor().getRGB());
         otMarker.setVisible(marker.isVisible());
+        otMarker.setShape(marker.getShape());
     }
 }
