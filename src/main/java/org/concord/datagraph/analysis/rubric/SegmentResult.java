@@ -43,8 +43,8 @@ public class SegmentResult {
     
     public double getPoints() {
         double points = 0.0;
-        for (GraphRubricSegmentCriterion crit : successes) {
-            if (! crit.isOptional()) {
+        if (! isOptional) {
+            for (GraphRubricSegmentCriterion crit : successes) {
                 points += crit.getPoints();
             }
         }
