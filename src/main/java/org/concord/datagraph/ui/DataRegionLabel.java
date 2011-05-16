@@ -2,13 +2,9 @@ package org.concord.datagraph.ui;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.Stroke;
-import java.awt.color.ColorSpace;
 import java.awt.geom.Point2D;
 import java.text.NumberFormat;
 
-import org.concord.data.stream.ProducerDataStore;
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.framework.data.stream.DataStore;
 import org.concord.framework.data.stream.DataStoreEvent;
@@ -34,7 +30,8 @@ public class DataRegionLabel extends DataPointLabel
 	private boolean showLabel = true;
 	private boolean showHighlight = true;
 	
-	public void draw(Graphics2D g)
+	@Override
+    public void draw(Graphics2D g)
 	{
 		if (dsNeedsUpdate){
 			processDataStore(dataGraphable);
@@ -72,32 +69,80 @@ public class DataRegionLabel extends DataPointLabel
 		float middleDifference = Float.POSITIVE_INFINITY;
 		float middle = xLowerBounds + ((xUpperBounds - xLowerBounds) / 2);
 		Float xValue = null;
+		Float yValue = null;
+		
+		Float tooLowX = null;
+		Float tooLowY = null;
+		
+		Float tooHighX = null;
+		Float tooHighY = null;
+		
+		boolean firstPointFound = false;
+		
 		for (int i = 0; i < dataStore.getTotalNumSamples(); i++) {
 			xValue = (Float) dataStore.getValueAt(i, 0);
-			if (xValue.floatValue() <= xUpperBounds && xValue.floatValue() >= xLowerBounds){
-	        	Float yValue = yValue = (Float) dataStore.getValueAt(i, 1);
+			float currentX = xValue.floatValue();
+			
+            yValue = (Float) dataStore.getValueAt(i, 1);
+            float currentY = yValue.floatValue();
+            
+            if (currentX < xLowerBounds) {
+                // this point is out of bounds, too low
+                tooLowX = currentX;
+                tooLowY = currentY;
+            } else if (currentX <= xUpperBounds){
+                // this point is in-bounds
+			    // if this is the first qualifying point, check to see if the previous point is closer than the current point
+			    // if so, include it in the highlight region
+			    if (! firstPointFound) {
+			        if (i > 0) {
+			            float currentDiff = Math.abs(currentX - xLowerBounds);
+			            float prevDiff = Math.abs(tooLowX - xLowerBounds);
+			            if (prevDiff < currentDiff) {
+			                highliterDataStore.setValueAt(i-1, 0, tooLowX);
+			                highliterDataStore.setValueAt(i-1, 1, tooLowY);
+			            }
+			            
+			        }
+			        firstPointFound = true;
+			    }
+			    
+
 
 	        	highliterDataStore.setValueAt(i, 0, xValue);
 	        	highliterDataStore.setValueAt(i, 1, yValue);
 	        	
-	        	if (xValue.floatValue() < x1){
-	        		x1 = xValue.floatValue();
-	        		y1 = yValue.floatValue();
-	        	} else if (xValue.floatValue() > x2){
-	        		x2 = xValue.floatValue();
-	        		y2 = yValue.floatValue();
+                if (currentX < x1){
+	        		x1 = currentX;
+	        		y1 = currentY;
+	        	} else if (currentX > x2){
+	        		x2 = currentX;
+	        		y2 = currentY;
 	        	}
 	        	
-	        	if (Math.abs(xValue.floatValue() - middle) < Math.abs(middleDifference)){
-	        		xMiddle = xValue.floatValue();
-	        		yMiddle = yValue.floatValue();
+	        	if (Math.abs(currentX - middle) < Math.abs(middleDifference)){
+	        		xMiddle = currentX;
+	        		yMiddle = currentY;
 	        		middleDifference = xMiddle - middle;
 	        	}
+	        } else {
+	            // this point it out-of-bounds, too high
+                if (i < dataStore.getTotalNumSamples()-1) {
+                    float currentDiff = Math.abs(currentX - xUpperBounds);
+                    float prevDiff = Math.abs((Float)dataStore.getValueAt(i-1, 0) - xUpperBounds);
+                    if (currentDiff < prevDiff) {
+                        highliterDataStore.setValueAt(i, 0, xValue);
+                        highliterDataStore.setValueAt(i, 1, yValue);
+                    }
+                }
+                // no need to process any more points
+                break;
 	        }
         }
 	}
 	
-	protected void updateDataPointLabels()
+	@Override
+    protected void updateDataPointLabels()
     {
         NumberFormat nf = NumberFormat.getInstance();
         nf.setMaximumFractionDigits(xPrecision);
@@ -152,7 +197,8 @@ public class DataRegionLabel extends DataPointLabel
 	/**
 	 * @see org.concord.framework.data.stream.DataStoreListener#dataChanged(org.concord.framework.data.stream.DataStoreEvent)
 	 */
-	public void dataChanged(DataStoreEvent evt)
+	@Override
+    public void dataChanged(DataStoreEvent evt)
 	{
 		super.dataChanged(evt);
 		dsNeedsUpdate = true;
