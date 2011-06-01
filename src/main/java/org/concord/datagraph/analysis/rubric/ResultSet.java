@@ -117,7 +117,7 @@ public class ResultSet {
     private Difference createReplace(SegmentResult result, Difference diagonal) {
         ArrayList<SegmentResult> reasons = (ArrayList<SegmentResult>) diagonal.getReasons().clone();
         reasons.add(result);
-        Difference diff = new Difference(diagonal.getDistance() + result.getFailedPoints(), reasons);
+        Difference diff = new Difference(diagonal.getDistance() + (result.getFailedPoints()/result.getPossiblePoints()), reasons);
         return diff;
     }
 
@@ -125,7 +125,7 @@ public class ResultSet {
     private Difference createExtra(GraphSegment rec, Difference left, GraphRubricSegment exp) {
         ArrayList<SegmentResult> reasons = (ArrayList<SegmentResult>) left.getReasons().clone();
         reasons.add(new SegmentResult(rec, false));
-        Difference diff = new Difference(left.getDistance() + exp.getPossiblePoints(), reasons);
+        Difference diff = new Difference(left.getDistance() + 1, reasons);
         return diff;
     }
 
@@ -133,7 +133,7 @@ public class ResultSet {
     private Difference createMissing(GraphRubricSegment exp, Difference up) {
         ArrayList<SegmentResult> reasons = (ArrayList<SegmentResult>) up.getReasons().clone();
         reasons.add(getMissingResult(exp));
-        Difference diff = new Difference(up.getDistance() + exp.getPossiblePoints(), reasons);
+        Difference diff = new Difference(up.getDistance() + 1, reasons);
         return diff;
     }
 
