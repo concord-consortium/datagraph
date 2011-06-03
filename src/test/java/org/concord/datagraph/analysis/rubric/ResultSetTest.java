@@ -6,11 +6,6 @@ import java.util.ArrayList;
 
 import org.concord.datagraph.analysis.Graph;
 import org.concord.datagraph.analysis.GraphSegment;
-import org.concord.datagraph.analysis.rubric.GraphRubric;
-import org.concord.datagraph.analysis.rubric.GraphRubricSegment;
-import org.concord.datagraph.analysis.rubric.GraphRubricSegmentCriterion;
-import org.concord.datagraph.analysis.rubric.ResultSet;
-import org.concord.datagraph.analysis.rubric.SegmentResult;
 import org.concord.datagraph.state.rubric.OTGraphSegmentCriterion.Operation;
 import org.concord.datagraph.state.rubric.OTGraphSegmentCriterion.Property;
 import org.junit.BeforeClass;
@@ -91,6 +86,23 @@ public class ResultSetTest {
         int i = 0;
         assertThat(results.get(i++).getFailedPoints()).as("Segment " + i + " results").isEqualTo(2.0);
         assertThat(results.get(i++).getFailedPoints()).as("Segment " + i + " results").isEqualTo(0.0);
+        assertThat(results.get(i++).getFailedPoints()).as("Segment " + i + " results").isEqualTo(0.0);
+        assertThat(results.get(i++).getFailedPoints()).as("Segment " + i + " results").isEqualTo(0.0);
+    }
+    
+    @Test
+    public void evaluateBadOppositeSignSlopeGraph() throws Exception {
+        Graph expectedGraph = new Graph();
+        expectedGraph.add(new GraphSegment(4.98, 24.2, 0, 0.25, -0.2475));
+        expectedGraph.add(new GraphSegment(24.2, 29.8, 0, 0.498, 15.344));
+        expectedGraph.add(new GraphSegment(29.8, 43.7, 0, 0.031, -0.411));
+        expectedGraph.add(new GraphSegment(43.7, 60, 0, 0.126, -4.57));
+        
+        ArrayList<SegmentResult> results = new ResultSet(buildRubric(expectedGraph), receivedGraph).getReasons();
+        
+        int i = 0;
+        assertThat(results.get(i++).getFailedPoints()).as("Segment " + i + " results").isEqualTo(2.0);
+        assertThat(results.get(i++).getFailedPoints()).as("Segment " + i + " results").isEqualTo(3.0);
         assertThat(results.get(i++).getFailedPoints()).as("Segment " + i + " results").isEqualTo(0.0);
         assertThat(results.get(i++).getFailedPoints()).as("Segment " + i + " results").isEqualTo(0.0);
     }

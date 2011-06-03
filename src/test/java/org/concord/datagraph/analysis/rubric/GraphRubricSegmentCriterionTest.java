@@ -50,6 +50,22 @@ public class GraphRubricSegmentCriterionTest {
         GraphRubricSegmentCriterion crit = new GraphRubricSegmentCriterion(p, o, expectedValue, 0.0, 1, false);
         assertThat(crit.matches(graphSegment)).as("Equal - p: " + p + ", o: " + o + ", v: " + expectedValue + ", v: " + defaultExpectedValue).isEqualTo(expectedResult);
         
+        // Opposite sign
+        expectedValue = 0 - defaultExpectedValue;
+        if (expectedValue == 0.0) {
+            expectedResult = true;
+            if (o.equals(Operation.GREATER_THAN) || o.equals(Operation.LESS_THAN)) {
+                expectedResult = false;
+            }
+        } else {
+            expectedResult = false;
+            if (o.equals(Operation.GREATER_THAN) || o.equals(Operation.GREATER_THAN_OR_EQUAL_TO)) {
+                expectedResult = true;
+            }
+        }
+        crit = new GraphRubricSegmentCriterion(p, o, expectedValue, 0.0, 1, false);
+        assertThat(crit.matches(graphSegment)).as("Opposite sign - p: " + p + ", o: " + o + ", ev: " + expectedValue + ", rv: " + defaultExpectedValue).isEqualTo(expectedResult);
+        
         // Too low
         expectedValue = defaultExpectedValue+0.7;
         expectedResult = false;
