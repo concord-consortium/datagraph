@@ -623,12 +623,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		focusManager.addKeyEventDispatcher(treeDispatcher);
 
 		xOTAxis = otDataGraph.getXDataAxis();
-		xOTAxis.addOTChangeListener(this);
 		yOTAxis = otDataGraph.getYDataAxis();
-		yOTAxis.addOTChangeListener(this);
-
-		dataGraph.setLimitsAxisWorld(xOTAxis.getMin(), xOTAxis.getMax(),
-				yOTAxis.getMin(), yOTAxis.getMax());
 		
 		// store the authored axis info, as well
 		try {
@@ -640,6 +635,39 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		} catch (Exception e) {
 			logger.log(Level.WARNING, "Couldn't get authored versions of the axis objects!",e);
 		}
+		
+		float xMin = xOTAxis.getMin();
+		float xMax = xOTAxis.getMax();
+		float yMin = yOTAxis.getMin();
+		float yMax = yOTAxis.getMax();
+
+		// NaN and infinite aren't very useful values, so reset the axis value if we encounter one
+		if (authoredXOTAxis != null) {
+    		if (Float.isNaN(xMin) || Float.isInfinite(xMin)) {
+    		    xMin = authoredXOTAxis.getMin();
+    		    xOTAxis.setMin(xMin);
+    		}
+    		if (Float.isNaN(xMax) || Float.isInfinite(xMax)) {
+    		    xMax = authoredXOTAxis.getMax();
+                xOTAxis.setMax(xMax);
+    		}
+		}
+		if (authoredYOTAxis != null) {
+    		if (Float.isNaN(yMin) || Float.isInfinite(yMin)) {
+    		    yMin = authoredYOTAxis.getMin();
+                yOTAxis.setMin(yMin);
+    		}
+    		if (Float.isNaN(yMax) || Float.isInfinite(yMax)) {
+    		    yMax = authoredYOTAxis.getMax();
+                yOTAxis.setMax(yMax);
+    		}
+		}
+
+        xOTAxis.addOTChangeListener(this);
+        yOTAxis.addOTChangeListener(this);
+        
+        dataGraph.setLimitsAxisWorld(xOTAxis.getMin(), xOTAxis.getMax(),
+                yOTAxis.getMin(), yOTAxis.getMax());
 		
 		dataGraph.setLockedX(xOTAxis.isLocked());
 		dataGraph.setLockedY(yOTAxis.isLocked());		
