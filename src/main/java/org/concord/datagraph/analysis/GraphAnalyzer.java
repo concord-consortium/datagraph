@@ -18,5 +18,5 @@ public interface GraphAnalyzer {
     public String getHtmlReasons(ResultSet results);
     public void displayHtmlReasonsPopup(Component parent, ResultSet results);
     public ArrayList<OTHideableAnnotation> annotateResults(OTDataCollector dataCollector, ResultSet scoreResults);
-    public OTDataGraphable drawSegmentResults(OTDataCollector dataCollector, Graph graph);
+    public ArrayList<OTDataGraphable> drawSegmentResults(OTDataCollector dataCollector, Graph graph);
 }

@@ -26,7 +26,9 @@ public class ScoreLabel extends JLabel {
     private OTDataGraphable graphable;
     private ResultSet results;
     private ArrayList<OTHideableAnnotation> graphAnalysisAnnotations = new ArrayList<OTHideableAnnotation>();
+    private ArrayList<OTDataGraphable> graphAnalysisSegments = new ArrayList<OTDataGraphable>();
     private boolean annotationsVisible = false;
+    private boolean segmentsVisible = false;
     private Graph segments;
 
     public ScoreLabel(OTDataCollector dataCollector) {
@@ -66,11 +68,17 @@ public class ScoreLabel extends JLabel {
         annotationsVisible = show;
         refreshAnnotations();
     }
+    
+    public void setGraphAnalysisSegmentsVisible(boolean show) {
+        segmentsVisible = show;
+        refreshSegments();
+    }
 
     public void calculateScore() {
         // Need graph analysis service...
         if (graphAnalyzer != null && graphable.getRubric().size() > 0) {
             clearAnnotations();
+            clearSegments();
             
             segments = graphAnalyzer.getSegments(graphable.getDataStore(), 0, 1, graphable.getSegmentingTolerance());
             GraphRubric rubric = graphAnalyzer.buildRubric(graphable.getRubric());
@@ -112,6 +120,26 @@ public class ScoreLabel extends JLabel {
                 dataCollector.getLabels().remove(ann);
             }
             graphAnalysisAnnotations.clear();
+        }
+    }
+    
+    private void refreshSegments() {
+        if (graphAnalysisSegments != null && graphAnalysisSegments.size() > 0) {
+            for (OTDataGraphable seg : graphAnalysisSegments) {
+                seg.setVisible(segmentsVisible);
+            }
+        } else if (segmentsVisible && results != null) {
+            graphAnalysisSegments = graphAnalyzer.drawSegmentResults(dataCollector, segments);
+        }
+    }
+    
+    private void clearSegments() {
+        if (graphAnalysisSegments != null && graphAnalysisSegments.size() > 0) {
+            for (OTDataGraphable seg : graphAnalysisSegments) {
+                seg.setVisible(false);
+                dataCollector.getGraphables().remove(seg);
+            }
+            graphAnalysisSegments.clear();
         }
     }
 }
