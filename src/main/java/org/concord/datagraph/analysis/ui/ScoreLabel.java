@@ -27,6 +27,7 @@ public class ScoreLabel extends JLabel {
     private ResultSet results;
     private ArrayList<OTHideableAnnotation> graphAnalysisAnnotations = new ArrayList<OTHideableAnnotation>();
     private boolean annotationsVisible = false;
+    private Graph segments;
 
     public ScoreLabel(OTDataCollector dataCollector) {
         this.dataCollector = dataCollector;
@@ -71,7 +72,7 @@ public class ScoreLabel extends JLabel {
         if (graphAnalyzer != null && graphable.getRubric().size() > 0) {
             clearAnnotations();
             
-            Graph segments = graphAnalyzer.getSegments(graphable.getDataStore(), 0, 1, graphable.getSegmentingTolerance());
+            segments = graphAnalyzer.getSegments(graphable.getDataStore(), 0, 1, graphable.getSegmentingTolerance());
             GraphRubric rubric = graphAnalyzer.buildRubric(graphable.getRubric());
             results = graphAnalyzer.compareGraphs(rubric, segments);
             double scorePct = results.getScorePercent();
@@ -88,6 +89,10 @@ public class ScoreLabel extends JLabel {
     
     public ResultSet getResults() {
         return results;
+    }
+    
+    public Graph getSegments() {
+        return segments;
     }
     
     private void refreshAnnotations() {
