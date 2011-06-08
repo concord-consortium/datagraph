@@ -16,11 +16,12 @@ import org.concord.graph.engine.Graphable;
 import org.concord.graph.engine.GraphableList;
 
 public class DataPointMarker extends DefaultGraphable implements DataAnnotation {
-    public static enum MarkerShape { X, TRIANGLE }
+    public static enum MarkerShape { X, TRIANGLE, CIRCLE, TEXT_ABOVE, TEXT_BELOW }
     private DataGraphable graphable;
     private double xValue = 0.0;
     private Color color;
     private MarkerShape shape = MarkerShape.X;
+    private String text = "text";
     
     private static Stroke lineStroke = new BasicStroke(2.5f,       // Width
                                                        BasicStroke.CAP_SQUARE,     // End cap
@@ -62,7 +63,15 @@ public class DataPointMarker extends DefaultGraphable implements DataAnnotation 
                 case TRIANGLE:
                     g.draw(triShape);
                     break;
-                
+                case CIRCLE:
+                    g.fillOval(1, 1, 8, 8);
+                    break;
+                case TEXT_ABOVE:
+                    g.drawString(text, -17, 0);
+                    break;
+                case TEXT_BELOW:
+                    g.drawString(text, -17, 20);
+                    break;
                 default:
                     g.draw(xShape);
                     break;
@@ -97,6 +106,10 @@ public class DataPointMarker extends DefaultGraphable implements DataAnnotation 
                 // point-slope formula: y = m(x - x1) + y1
                 double yValue = m * (xValue - x) + y;
                 return new Point2D.Double(xValue, yValue);
+            } else if (i == (dataStore.getTotalNumSamples() - 1)) {
+                // this is the last sample, and we're still on the left of the expected x.
+                // just return this point
+                return new Point2D.Float(x, y);
             }
         }
         return null;
@@ -136,6 +149,14 @@ public class DataPointMarker extends DefaultGraphable implements DataAnnotation 
 
     public MarkerShape getShape() {
         return shape;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public String getText() {
+        return text;
     }
 
 }

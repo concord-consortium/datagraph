@@ -20,4 +20,8 @@ public interface OTDataPointMarker extends OTObjectInterface,OTHideableAnnotatio
     public static MarkerShape DEFAULT_shape = MarkerShape.X;
     public MarkerShape getShape();
     public void setShape(MarkerShape shape);
+    
+    public static String DEFAULT_text = "text";
+    public String getText();
+    public void setText(String text);
 }
