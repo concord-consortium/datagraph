@@ -7,6 +7,7 @@ import org.concord.data.state.OTDataStore;
 import org.concord.datagraph.analysis.rubric.GraphRubric;
 import org.concord.datagraph.analysis.rubric.ResultSet;
 import org.concord.datagraph.state.OTDataCollector;
+import org.concord.datagraph.state.OTDataGraphable;
 import org.concord.framework.otrunk.OTObjectList;
 import org.concord.graph.util.state.OTHideableAnnotation;
 
@@ -16,5 +17,6 @@ public interface GraphAnalyzer {
     public ResultSet compareGraphs(GraphRubric expected, Graph received);
     public String getHtmlReasons(ResultSet results);
     public void displayHtmlReasonsPopup(Component parent, ResultSet results);
-    public ArrayList<OTHideableAnnotation> annotateResults(OTDataCollector studentObject, ResultSet scoreResults);
+    public ArrayList<OTHideableAnnotation> annotateResults(OTDataCollector dataCollector, ResultSet scoreResults);
+    public OTDataGraphable drawSegmentResults(OTDataCollector dataCollector, Graph graph);
 }
