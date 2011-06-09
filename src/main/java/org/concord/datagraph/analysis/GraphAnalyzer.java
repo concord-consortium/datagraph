@@ -12,11 +12,12 @@ import org.concord.framework.otrunk.OTObjectList;
 import org.concord.graph.util.state.OTHideableAnnotation;
 
 public interface GraphAnalyzer {
+    public enum AnnotationStyle { ONE, TWO }
     public Graph getSegments(OTDataStore dataStore, int xChannel, int yChannel, double tolerance) throws IndexOutOfBoundsException;
     public GraphRubric buildRubric(OTObjectList rubric);
     public ResultSet compareGraphs(GraphRubric expected, Graph received);
     public String getHtmlReasons(ResultSet results);
     public void displayHtmlReasonsPopup(Component parent, ResultSet results);
-    public ArrayList<OTHideableAnnotation> annotateResults(OTDataCollector dataCollector, ResultSet scoreResults);
+    public ArrayList<OTHideableAnnotation> annotateResults(OTDataCollector dataCollector, ResultSet scoreResults, AnnotationStyle style);
     public ArrayList<OTDataGraphable> drawSegmentResults(OTDataCollector dataCollector, Graph graph);
 }

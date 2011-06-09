@@ -4,12 +4,14 @@ import java.awt.EventQueue;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 import javax.swing.JLabel;
 
 import org.concord.datagraph.analysis.Graph;
 import org.concord.datagraph.analysis.GraphAnalyzer;
+import org.concord.datagraph.analysis.GraphAnalyzer.AnnotationStyle;
 import org.concord.datagraph.analysis.GraphAnalyzerProvider;
 import org.concord.datagraph.analysis.GraphAnalyzerProvider.Type;
 import org.concord.datagraph.analysis.rubric.GraphRubric;
@@ -25,9 +27,10 @@ public class ScoreLabel extends JLabel {
     private OTDataCollector dataCollector;
     private OTDataGraphable graphable;
     private ResultSet results;
-    private ArrayList<OTHideableAnnotation> graphAnalysisAnnotations = new ArrayList<OTHideableAnnotation>();
+    private HashMap<GraphAnalyzer.AnnotationStyle, ArrayList<OTHideableAnnotation>> graphAnalysisAnnotations = new HashMap<GraphAnalyzer.AnnotationStyle, ArrayList<OTHideableAnnotation>>();
     private ArrayList<OTDataGraphable> graphAnalysisSegments = new ArrayList<OTDataGraphable>();
     private boolean annotationsVisible = false;
+    private boolean annotations2Visible = false;
     private boolean segmentsVisible = false;
     private Graph segments;
 
@@ -66,7 +69,12 @@ public class ScoreLabel extends JLabel {
 
     public void setGraphAnalysisAnnotationsVisible(boolean show) {
         annotationsVisible = show;
-        refreshAnnotations();
+        refreshAnnotations(AnnotationStyle.ONE, annotationsVisible);
+    }
+    
+    public void setGraphAnalysisAnnotations2Visible(boolean show) {
+        annotations2Visible = show;
+        refreshAnnotations(AnnotationStyle.TWO, annotations2Visible);
     }
     
     public void setGraphAnalysisSegmentsVisible(boolean show) {
@@ -77,7 +85,8 @@ public class ScoreLabel extends JLabel {
     public void calculateScore() {
         // Need graph analysis service...
         if (graphAnalyzer != null && graphable.getRubric().size() > 0) {
-            clearAnnotations();
+            clearAnnotations(AnnotationStyle.ONE);
+            clearAnnotations(AnnotationStyle.TWO);
             clearSegments();
             
             segments = graphAnalyzer.getSegments(graphable.getDataStore(), 0, 1, graphable.getSegmentingTolerance());
@@ -88,7 +97,8 @@ public class ScoreLabel extends JLabel {
 
             setForeground(results.getResultColor());
             
-            refreshAnnotations();
+            refreshAnnotations(AnnotationStyle.ONE, annotationsVisible);
+            refreshAnnotations(AnnotationStyle.TWO, annotations2Visible);
         } else {
             setText("??");
         }
@@ -103,23 +113,26 @@ public class ScoreLabel extends JLabel {
         return segments;
     }
     
-    private void refreshAnnotations() {
-        if (graphAnalysisAnnotations != null && graphAnalysisAnnotations.size() > 0) {
-            for (OTHideableAnnotation ann : graphAnalysisAnnotations) {
-                ann.setVisible(annotationsVisible);
+    private void refreshAnnotations(AnnotationStyle style, boolean visible) {
+        ArrayList<OTHideableAnnotation> annotations = graphAnalysisAnnotations.get(style);
+        if (annotations != null && annotations.size() > 0) {
+            for (OTHideableAnnotation ann : annotations) {
+                ann.setVisible(visible);
             }
         } else if (annotationsVisible && results != null) {
-            graphAnalysisAnnotations = graphAnalyzer.annotateResults(dataCollector, results);
+            annotations = graphAnalyzer.annotateResults(dataCollector, results, style);
+            graphAnalysisAnnotations.put(style, annotations);
         }
     }
     
-    private void clearAnnotations() {
-        if (graphAnalysisAnnotations != null && graphAnalysisAnnotations.size() > 0) {
-            for (OTHideableAnnotation ann : graphAnalysisAnnotations) {
+    private void clearAnnotations(AnnotationStyle style) {
+        ArrayList<OTHideableAnnotation> annotations = graphAnalysisAnnotations.get(style);
+        if (annotations != null && annotations.size() > 0) {
+            for (OTHideableAnnotation ann : annotations) {
                 ann.setVisible(false);
                 dataCollector.getLabels().remove(ann);
             }
-            graphAnalysisAnnotations.clear();
+            annotations.clear();
         }
     }
     
