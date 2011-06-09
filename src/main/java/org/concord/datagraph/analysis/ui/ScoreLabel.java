@@ -123,7 +123,7 @@ public class ScoreLabel extends JLabel {
             for (OTHideableAnnotation ann : annotations) {
                 ann.setVisible(visible);
             }
-        } else if (annotationsVisible && results != null) {
+        } else if (visible && results != null) {
             annotations = graphAnalyzer.annotateResults(dataCollector, results, style);
             graphAnalysisAnnotations.put(style, annotations);
         }
