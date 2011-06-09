@@ -67,14 +67,18 @@ public class ScoreLabel extends JLabel {
         t.start();
     }
 
-    public void setGraphAnalysisAnnotationsVisible(boolean show) {
-        annotationsVisible = show;
-        refreshAnnotations(AnnotationStyle.ONE, annotationsVisible);
-    }
-    
-    public void setGraphAnalysisAnnotations2Visible(boolean show) {
-        annotations2Visible = show;
-        refreshAnnotations(AnnotationStyle.TWO, annotations2Visible);
+    public void setGraphAnalysisAnnotationsVisible(boolean show, AnnotationStyle style) {
+        switch (style) {
+        case ONE:
+            annotationsVisible = show;
+            break;
+        case TWO:
+            annotations2Visible = show;
+            break;
+        default:
+            break;
+        }
+        refreshAnnotations(style, show);
     }
     
     public void setGraphAnalysisSegmentsVisible(boolean show) {
