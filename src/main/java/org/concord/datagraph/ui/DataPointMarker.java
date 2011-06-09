@@ -2,6 +2,7 @@ package org.concord.datagraph.ui;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.geom.GeneralPath;
@@ -67,16 +68,29 @@ public class DataPointMarker extends DefaultGraphable implements DataAnnotation 
                     g.fillOval(1, 1, 8, 8);
                     break;
                 case TEXT_ABOVE:
-                    g.drawString(text, -17, 0);
+                    drawString(g, text, 1);
                     break;
                 case TEXT_BELOW:
-                    g.drawString(text, -17, 20);
+                    drawString(g, text, -1);
                     break;
                 default:
                     g.draw(xShape);
                     break;
                 }
             }
+        }
+    }
+    
+    private void drawString(Graphics2D g, String str, int verticalShift) {
+        // 5,5 in the graphics obj is the point on the graph where this marker corresponds
+        FontMetrics fontMetrics = g.getFontMetrics();
+        int width = fontMetrics.stringWidth(str);
+        float gap = fontMetrics.getLeading()/2.0f;
+        if (verticalShift > 0) {
+            // shift up
+            g.drawString(text, 5 - (width/2.0f), 5-(fontMetrics.getDescent()+gap));
+        } else {
+            g.drawString(text, 5 - (width/2.0f), Math.round(5 + gap + fontMetrics.getAscent()));
         }
     }
 
