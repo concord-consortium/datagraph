@@ -3,6 +3,7 @@ package org.concord.datagraph.analysis.rubric;
 import java.util.ArrayList;
 
 import org.concord.datagraph.analysis.GraphSegment;
+import org.concord.datagraph.state.rubric.OTGraphSegmentCriterion.Property;
 
 public class SegmentResult {
     private GraphSegment received;
@@ -11,6 +12,8 @@ public class SegmentResult {
     private ArrayList<GraphRubricSegmentCriterion> failures = new ArrayList<GraphRubricSegmentCriterion>();
     private ArrayList<GraphRubricSegmentCriterion> optionalFailures = new ArrayList<GraphRubricSegmentCriterion>();
     private ArrayList<GraphRubricSegmentCriterion> successes = new ArrayList<GraphRubricSegmentCriterion>();
+    
+    private ArrayList<Property> failedProperties = new ArrayList<Property>();
 
     public SegmentResult(GraphSegment received, boolean isOptional) {
         this.received = received;
@@ -22,6 +25,7 @@ public class SegmentResult {
             optionalFailures.add(criterion);
         } else {
             failures.add(criterion);
+            failedProperties.add(criterion.getProperty());
         }
     }
     
@@ -77,5 +81,9 @@ public class SegmentResult {
             points += crit.getPoints();
         }
         return points;
+    }
+    
+    public boolean isFailed(Property property) {
+        return failedProperties.contains(property);
     }
 }
