@@ -67,7 +67,7 @@ public class ScoreLabel extends JLabel {
     }
 
     public void setGraphAnalysisAnnotationsVisible(boolean show, AnnotationStyle style) {
-        annotationsVisible = style;
+        annotationsVisible = (show ? style : null);
         refreshAnnotations();
     }
     
