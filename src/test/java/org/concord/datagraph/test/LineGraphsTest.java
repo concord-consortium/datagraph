@@ -2,12 +2,10 @@ package org.concord.datagraph.test;
 
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.logging.Logger;
 
 import junit.framework.TestCase;
 
@@ -18,28 +16,14 @@ import org.concord.datagraph.state.OTDataGraph;
 import org.concord.datagraph.state.OTDataGraphable;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.otrunk.OTControllerService;
-import org.concord.framework.otrunk.OTID;
-import org.concord.framework.otrunk.OTObject;
-import org.concord.framework.otrunk.OTUser;
-import org.concord.framework.otrunk.view.OTView;
 import org.concord.graph.engine.CoordinateSystem;
-import org.concord.otrunk.OTrunkImpl;
-import org.concord.otrunk.datamodel.OTDatabase;
-import org.concord.otrunk.datamodel.OTIDFactory;
-import org.concord.otrunk.datamodel.OTTransientMapID;
-import org.concord.otrunk.view.OTConfig;
-import org.concord.otrunk.view.OTViewContainerPanel;
-import org.concord.otrunk.view.OTViewerHelper;
+import org.concord.otrunk.test.OtmlTestHelper;
 
 
 public class LineGraphsTest extends TestCase
 {
-	private static final Logger logger = Logger.getLogger(LineGraphsTest.class.getCanonicalName());
 	private static URL authoredContent = LineGraphsTest.class.getResource("line-graphs.otml");
-	private OTViewerHelper viewerHelper;
-	private OTDatabase mainDb;
-	private OTrunkImpl otrunk;
-	private String documentUUID = "5c7e6035-f50f-49fb-ac6c-6bc71eb3c7ca";
+	
 	private OTDataGraph otGraph;
 	private OTDataCollectorView view;
 	private DataGraphManager graphManager;
@@ -50,8 +34,9 @@ public class LineGraphsTest extends TestCase
 	
 	// Data collector with multiple channels using MultiWaveProducer
 	public void testMultiLinesAreDrawn() throws Exception {
-		initOtrunk();
-		setupObjects("multi-wave-graph", "multi-wave-source", "multi-wave-second");
+		OtmlTestHelper helper = new OtmlTestHelper();
+		helper.initOtrunk(authoredContent);
+		setupObjects(helper, "multi-wave-graph", "multi-wave-source", "multi-wave-second");
 		
 		runGraph(graphManager, 300);
 
@@ -66,8 +51,9 @@ public class LineGraphsTest extends TestCase
 	}
 	
 	public void testMultiLinesAreClearedOnReset() throws Exception {
-		initOtrunk();
-		setupObjects("multi-wave-graph", "multi-wave-source", "multi-wave-second");
+		OtmlTestHelper helper = new OtmlTestHelper();
+		helper.initOtrunk(authoredContent);
+		setupObjects(helper, "multi-wave-graph", "multi-wave-source", "multi-wave-second");
 		
 		runGraph(graphManager, 300);
 
@@ -90,8 +76,9 @@ public class LineGraphsTest extends TestCase
 	}
 	
 	public void testMultipleLearnerLines() throws Exception {
-		initOtrunk();
-		setupObjects("wave-graph", "wave-source", "wave-second");
+		OtmlTestHelper helper = new OtmlTestHelper();
+		helper.initOtrunk(authoredContent);
+		setupObjects(helper, "wave-graph", "wave-source", "wave-second");
 		
 		// select one graphable, run dp, and assert that only one line is drawn
 		
@@ -119,8 +106,9 @@ public class LineGraphsTest extends TestCase
 	}
 	
 	public void testMultipleLearnerLinesClearCorrectly() throws Exception {
-		initOtrunk();
-		setupObjects("wave-graph", "wave-source", "wave-second");
+		OtmlTestHelper helper = new OtmlTestHelper();
+		helper.initOtrunk(authoredContent);
+		setupObjects(helper, "wave-graph", "wave-source", "wave-second");
 		
 		// select one graphable, run dp
 		
@@ -163,8 +151,9 @@ public class LineGraphsTest extends TestCase
 	}
 	
 	public void testCreatingNewLearnerLines() throws Exception {
-		initOtrunk();
-		setupObjects("wave-graph", "wave-source", "wave-second");
+		OtmlTestHelper helper = new OtmlTestHelper();
+		helper.initOtrunk(authoredContent);
+		setupObjects(helper, "wave-graph", "wave-source", "wave-second");
 		
 		// select one graphable, run dp, and assert that only one line is drawn
 		
@@ -220,8 +209,9 @@ public class LineGraphsTest extends TestCase
 	}
 	
 	public void testXAxisResetsOnGraphReset() throws Exception {
-		initOtrunk();
-		setupObjects("multi-wave-graph", "multi-wave-source", "multi-wave-second");
+		OtmlTestHelper helper = new OtmlTestHelper();
+		helper.initOtrunk(authoredContent);
+		setupObjects(helper, "multi-wave-graph", "multi-wave-source", "multi-wave-second");
 		
 		CoordinateSystem coord = graphManager.getDataGraph().getGraphArea().getCoordinateSystem();
 		Point2D originOffset = coord.getOriginOffsetDisplay();
@@ -291,14 +281,14 @@ public class LineGraphsTest extends TestCase
 //
 //	}
 	
-	private void setupObjects(String graphId, String sourceId, String secondGraphableId) throws Exception {
-		otGraph = (OTDataGraph) getObject(graphId, false);
-		view = (OTDataCollectorView) getView(otGraph);
+	private void setupObjects(OtmlTestHelper helper, String graphId, String sourceId, String secondGraphableId) throws Exception {
+		otGraph = (OTDataGraph) helper.getObject(graphId, false);
+		view = (OTDataCollectorView) helper.getView(otGraph);
 		graphManager = view.getGraphManager();
 		OTControllerService controllerService = graphManager.getControllerService();
 		
-		OTDataGraphable otGraphableSource = (OTDataGraphable) getObject(sourceId, false);
-		OTDataGraphable otGraphableSecond = (OTDataGraphable) getObject(secondGraphableId, false);
+		OTDataGraphable otGraphableSource = (OTDataGraphable) helper.getObject(sourceId, false);
+		OTDataGraphable otGraphableSecond = (OTDataGraphable) helper.getObject(secondGraphableId, false);
 		source = (DataGraphable) controllerService.getRealObject(otGraphableSource);
 		second = (DataGraphable) controllerService.getRealObject(otGraphableSecond);
 		
@@ -337,43 +327,5 @@ public class LineGraphsTest extends TestCase
 		} while (t1-t0 < ms);
 		
 		dp.stop();
-	}
-	
-	private void initOtrunk() throws Exception {
-		logger.finer("loading otrunk");
-		System.setProperty(OTConfig.NO_USER_PROP, "true");
-	    viewerHelper = new OTViewerHelper();
-		mainDb = viewerHelper.loadOTDatabase(authoredContent);
-		viewerHelper.loadOTrunk(mainDb, null);
-		otrunk = (OTrunkImpl) viewerHelper.getOtrunk();
-	}
-	
-	private OTView getView(OTObject object) throws Exception {
-		OTViewContainerPanel panel = viewerHelper.createViewContainerPanel();
-		panel.setCurrentObject(object);
-		Thread.sleep(2000);
-		return panel.getView();
-	}
-	
-	private OTObject getObject(String localId, boolean userVersion) throws Exception {
-		// load in the first argument as an otml file
-		// assume the root object is a folder, and then 
-		// get the first child of the folder and
-		// copy it and store the copy as the second
-		// object in the folder
-
-		// GET THE OBJECT
-		logger.fine("Getting object");
-		// OTFolder root = (OTFolder)viewerHelper.getRootObject();
-		// OTObject first = (OTObject)root.getChild(firstIndex);
-		OTID objectId = OTIDFactory.createOTID(documentUUID + "!/" + localId);
-		OTObject first = otrunk.getRootObjectService().getOTObject(objectId);
-		if (userVersion) {
-    		OTUser user = otrunk.getUsers().get(0);
-    		first = otrunk.getUserRuntimeObject(first, user);
-    		assertTrue(first.getGlobalId() instanceof OTTransientMapID);
-		}
-
-		return first;
 	}
 }
