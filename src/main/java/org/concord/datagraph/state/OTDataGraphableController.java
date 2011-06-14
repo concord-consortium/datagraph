@@ -33,18 +33,15 @@ import java.awt.Color;
 
 import org.concord.data.state.OTDataProducer;
 import org.concord.data.state.OTDataStore;
-import org.concord.data.stream.ProducerDataStore;
+import org.concord.data.stream.LazySyncProducerDataStore;
+import org.concord.data.stream.LazySyncProducerDataStore.DataProducerAndDataStoreProvider;
 import org.concord.datagraph.engine.ControllableDataGraphable;
 import org.concord.datagraph.engine.ControllableDataGraphableDrawing;
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.datagraph.engine.DataGraphableEx;
 import org.concord.framework.data.stream.DataChannelDescription;
-import org.concord.framework.data.stream.DataListener;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.DataStore;
-import org.concord.framework.data.stream.DataStoreEvent;
-import org.concord.framework.data.stream.DataStoreListener;
-import org.concord.framework.data.stream.DataStreamEvent;
 import org.concord.framework.data.stream.WritableDataStore;
 import org.concord.framework.otrunk.OTObjectService;
 import org.concord.graph.util.state.OTGraphableController;
@@ -64,69 +61,17 @@ public class OTDataGraphableController extends OTGraphableController
 	
 	public static Class otObjectClass = OTDataGraphable.class;    
 	
-	DataStoreListener dataStoreListener = new DataStoreListener(){
-
-		public void dataAdded(DataStoreEvent evt){}
-
-		public void dataChanged(DataStoreEvent evt){}
-
-		public void dataChannelDescChanged(DataStoreEvent evt)
-		{
-			// TODO we should verify that this is coming from
-			// the producer, if the description is coming
-			// from somewhere else then it isn't clear what
-			// should happen to the producer.
-		}
-
-		public void dataRemoved(DataStoreEvent evt)
-		{
-			DataStore dataStore = evt.getSource();
-			OTDataGraphable model = (OTDataGraphable)otObject;
-			DataProducer dataProducer = getDataProducer(model);
-
-			if(dataProducer != null && dataStore.getTotalNumSamples() == 0){
-				if(dataStore instanceof ProducerDataStore){
-					ProducerDataStore pDataStore = (ProducerDataStore) dataStore;
-					pDataStore.setDataProducer(dataProducer);
-				}
-			}
-		}
-	};
-	
-	DataListener dataProducerListener = new DataListener(){
-		boolean started = false;
+	LazySyncProducerDataStore dataStoreSyncer = 
+		new LazySyncProducerDataStore(new DataProducerAndDataStoreProvider() {
 		
-		public void dataReceived(DataStreamEvent dataEvent)
-        {
-			if(started){
-				return;
-			}
-
-			started = true;
-			// Check if this dataProducer has already been added to the 
-			// datastore, if not then add it.
-			// This will modify the list of dataListeners in the dataStore
-			// while it is iterating over it.  It seems like this will
-			// work ok though
-			// This will happen whenever data arrives so we should 
-			// remove ourselves from the list but we can't safely do that
-			// while in the method.  So we have the boolean above instead.
-			OTDataGraphable model = (OTDataGraphable)otObject;
-			DataProducer modelDataProducer = getDataProducer(model);
-			DataStore dataStore = getDataStore(model);
-			
-			if(dataStore instanceof ProducerDataStore){
-				ProducerDataStore pDataStore = (ProducerDataStore) dataStore;
-				DataProducer oldDataProducer = pDataStore.getDataProducer();
-				if(oldDataProducer != modelDataProducer){
-					pDataStore.setDataProducer(modelDataProducer);
-				}
-			}
-        }			
-
-		public void dataStreamEvent(DataStreamEvent dataEvent){}
+		public DataStore getDataStore() {
+			return OTDataGraphableController.this.getDataStore((OTDataGraphable)otObject);
+		}
 		
-	};
+		public DataProducer getDataProducer() {
+			return OTDataGraphableController.this.getDataProducer((OTDataGraphable)otObject);
+		}
+	});
 	
     public void loadRealObject(Object realObject)
     {
@@ -173,30 +118,12 @@ public class OTDataGraphableController extends OTGraphableController
         
         // now we can safely assume dataStore != null
         // however we should not set the producer onto the datastore
+        //    ((ProducerDataStore)dataStore).setDataProducer(producer);
         // if there is data in the data store, this could possibly
-        // mess up the data that is in the data store, because the data
-        // description of the data in the data store might be different
-        // from the data description in the producer.
-        // instead we need to listen to the dataStore and dataproducer
-        // and when the datastore is cleared, or the producer is started
-        // then we set the producer on the datastore.
-        // cleared, or the start 
-		if (producer != null){
-			if(dataStore.getTotalNumSamples() == 0){
-				if(dataStore instanceof ProducerDataStore){
-					ProducerDataStore pDataStore = (ProducerDataStore) dataStore;
-					pDataStore.setDataProducer(producer);
-				}
-			} 
-			
-			// listen to the dataStore so if the data is cleared at some
-			// point then we will reset the producer 
-			// we should be careful not to add a listener twice			
-			dataStore.addDataStoreListener(dataStoreListener);
-
-			producer.addDataListener(dataProducerListener);
-		}
-		
+        // mess up the data that is in the data store
+        // so use the lazy syncer to handle this for us
+        dataStoreSyncer.init();
+        		
 		if(model.getControllable()){
 			// make sure the dataStore has the 2 channels that are needed for this.
 			if(model.getYColumn() >= dataStore.getTotalNumChannels() ||
@@ -299,21 +226,7 @@ public class OTDataGraphableController extends OTGraphableController
 	@Override
 	public void dispose(Object realObject)
 	{
-    	OTDataGraphable model = (OTDataGraphable)otObject;
-        
-		DataProducer producer = getDataProducer(model);
-		DataStore dataStore = getDataStore(model);
-
-		// listen to the dataStore so if the data is cleared at some
-		// point then we will reset the producer 
-		// we should be careful not to add a listener twice	
-		if(dataStore != null){
-			dataStore.removeDataStoreListener(dataStoreListener);
-		}
-
-		if(producer != null){
-			producer.removeDataListener(dataProducerListener);
-		}
+		dataStoreSyncer.dispose();
 
 		// our realObject should be a DataGraphable
 		DataGraphable dataGraphable = (DataGraphable) realObject;
