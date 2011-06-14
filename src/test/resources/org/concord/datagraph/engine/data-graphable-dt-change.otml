@@ -1,0 +1,27 @@
+<otrunk>
+  <imports>
+    <import class="org.concord.data.state.OTDataProducer" />
+    <import class="org.concord.data.state.OTDataStore" />
+    <import class="org.concord.data.state.OTDataChannelDescription" />
+    <import class="org.concord.datagraph.state.OTDataGraphable" />
+    <import class="org.concord.data.state.OTWaveGenerator" />
+  </imports>
+  <objects>
+    <OTDataGraphable local_id="data_graphable">
+      <dataProducer>
+        <OTWaveGenerator />
+      </dataProducer>
+      <dataStore>
+        <OTDataStore numberChannels="1">
+          <channelDescriptions>
+            <OTDataChannelDescription name="Time"
+              precision="0" unit="s" />
+            <OTDataChannelDescription name="Temperature"
+              precision="-1" unit="degC" />
+          </channelDescriptions>
+          <valuesString>1 30 2 31 3 30 4 29</valuesString>
+        </OTDataStore>
+      </dataStore>
+    </OTDataGraphable>
+  </objects>
+</otrunk>
