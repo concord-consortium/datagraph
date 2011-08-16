@@ -38,7 +38,7 @@ public class LineGraphsTest extends TestCase
 		helper.initOtrunk(authoredContent);
 		setupObjects(helper, "multi-wave-graph", "multi-wave-source", "multi-wave-second");
 		
-		runGraph(graphManager, 300);
+		runGraph(graphManager);
 
 		redrawGraphables();
 		
@@ -55,7 +55,7 @@ public class LineGraphsTest extends TestCase
 		helper.initOtrunk(authoredContent);
 		setupObjects(helper, "multi-wave-graph", "multi-wave-source", "multi-wave-second");
 		
-		runGraph(graphManager, 300);
+		runGraph(graphManager);
 
 		redrawGraphables();
 		
@@ -84,7 +84,7 @@ public class LineGraphsTest extends TestCase
 		
 		graphManager.setSelectedItem(source, true);
 		
-		runGraph(graphManager, 300);
+		runGraph(graphManager);
 
 		redrawGraphables();
 		
@@ -97,7 +97,7 @@ public class LineGraphsTest extends TestCase
 		
 		graphManager.setSelectedItem(second, true);
 		
-		runGraph(graphManager, 300);
+		runGraph(graphManager);
 
 		redrawGraphables();
 		
@@ -114,13 +114,13 @@ public class LineGraphsTest extends TestCase
 		
 		graphManager.setSelectedItem(source, true);
 		
-		runGraph(graphManager, 300);
+		runGraph(graphManager);
 		
 		// select second graphable, run dp, and assert that two lines are drawn
 		
 		graphManager.setSelectedItem(second, true);
 		
-		runGraph(graphManager, 300);
+		runGraph(graphManager);
 		
 		redrawGraphables();
 		
@@ -159,7 +159,7 @@ public class LineGraphsTest extends TestCase
 		
 		graphManager.setSelectedItem(source, true);
 		
-		runGraph(graphManager, 300);
+		runGraph(graphManager);
 
 		redrawGraphables();
 		
@@ -190,7 +190,7 @@ public class LineGraphsTest extends TestCase
 		
 		graphManager.setSelectedItem(newGraphable, true);
 		
-		runGraph(graphManager, 300);
+		runGraph(graphManager);
 
 		redrawGraphables();
 		
@@ -216,7 +216,7 @@ public class LineGraphsTest extends TestCase
 		CoordinateSystem coord = graphManager.getDataGraph().getGraphArea().getCoordinateSystem();
 		Point2D originOffset = coord.getOriginOffsetDisplay();
 		
-		runGraph(graphManager, 300);
+		runGraph(graphManager);
 		
 		coord.setOriginOffsetDisplay(new Point2D.Double(5, 5));
 
@@ -303,6 +303,10 @@ public class LineGraphsTest extends TestCase
 		for (DataGraphable graphable : allGraphables) {
 			graphable.draw(mockG);
 		}
+	}
+	
+	private static void runGraph(DataGraphManager manager){
+		runGraph(manager, 500);
 	}
 	
 	private static void runGraph(DataGraphManager manager, long ms){
