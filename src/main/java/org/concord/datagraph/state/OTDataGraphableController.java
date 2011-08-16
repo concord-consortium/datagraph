@@ -108,7 +108,17 @@ public class OTDataGraphableController extends OTGraphableController
             	
                 OTObjectService objService = model.getOTObjectService();
                 OTDataStore otDataStore = objService.createObject(OTDataStore.class);
+                
+                // this is a dangerous because the loadRealObject method we are in 
+                // is called when the model (OTObject) changes.
+                // The listener that calls loadRealObject (defined in super class) 
+                // tries to be smart and not go recursive, but it doesn't handle the case
+                // where a call to loadRealObject changes the model (OTObject)
+                // by wrapping this with the bOTObjectChanging code that will prevent
+                // the recursion.
+                bOTObjectChanging = true;
                 model.setDataStore(otDataStore);
+                bOTObjectChanging = false;
                 dataStore = getDataStore(model);
             } catch (Exception e) {
                 // we can't handle this
