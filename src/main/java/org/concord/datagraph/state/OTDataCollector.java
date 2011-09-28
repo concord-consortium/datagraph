@@ -141,11 +141,11 @@ public interface OTDataCollector
     public boolean getLogGraphOnStop();
     public void setLogGraphOnStop(boolean b);
     
-    public final static boolean DEFAULT_logGraphOnReset = false;
-    public boolean getLogGraphOnReset();
-    public void setLogGraphOnReset(boolean b);
+    public final static boolean DEFAULT_logGraphOnClear = true;
+    public boolean getLogGraphOnClear();
+    public void setLogGraphOnClear(boolean b);
     
-    public final static boolean DEFAULT_logGraphOnPlaybackStart = false;
+    public final static boolean DEFAULT_logGraphOnPlaybackStart = true;
     public boolean getLogGraphOnPlaybackStart();
     public void setLogGraphOnPlaybackStart(boolean b);
     
