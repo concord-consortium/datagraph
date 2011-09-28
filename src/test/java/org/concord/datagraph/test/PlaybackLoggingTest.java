@@ -63,6 +63,8 @@ public class PlaybackLoggingTest {
     @Test
     @Order(0)
     public void nonDetailedLoggingInteraction() {
+    	model.setLogGraphOnPlaybackStart(false);
+    	model.setLogGraphOnClear(false);
         interactWithModel();
     }
     
