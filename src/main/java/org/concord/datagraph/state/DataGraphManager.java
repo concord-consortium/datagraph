@@ -747,6 +747,10 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 					    // only reset the currently selected graphable
 					    getSourceDataGraphable().reset();
 						// dataGraph.reset();
+					    // Log the event
+					    if (otDataCollector != null) {
+					    	LogHelper.add(otDataCollector, EventType.RESET);
+					    }
 					}
 				});
 
