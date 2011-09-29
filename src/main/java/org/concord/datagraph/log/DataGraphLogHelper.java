@@ -23,7 +23,7 @@ public class DataGraphLogHelper {
         }
     }
     
-    public static int getNumCollections(OTEventLog log) {
+    public static int getNumStarts(OTEventLog log) {
         OTObjectList items = log.getItems();
         int cnt = 0;
         for (int i = 0; i < items.size(); ++i) {
