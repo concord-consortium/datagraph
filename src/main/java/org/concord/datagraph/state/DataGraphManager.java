@@ -182,16 +182,32 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		
 		if (otDataCollector != null && startable != null) {
 			startable.addStartableListener(new StartableListener() {
+				OTDataGraphable lastCopy = null;
+				
+				@SuppressWarnings("deprecation")
 				public void startableEvent(StartableEvent event) {
+					HashMap<String, OTObject> extraInfo = new HashMap<String, OTObject>();
 					switch(event.getType()) {
 					case RESET:
-						LogHelper.add(otDataCollector, EventType.RESET);
+                        if (otDataCollector.getLogGraphOnClear() || otDataCollector.getLogGraphOnReset()) {
+                        	lastCopy = getGraphCopy(otDataCollector.getSource(), lastCopy);
+                            extraInfo.put("graph", lastCopy);
+                        }
+						LogHelper.add(otDataCollector, EventType.RESET, extraInfo);
 						break;
 					case STARTED:
-						LogHelper.add(otDataCollector, EventType.START);
+                        if (otDataCollector.getLogGraphOnStart()) {
+                        	lastCopy = getGraphCopy(otDataCollector.getSource(), lastCopy);
+                            extraInfo.put("graph", lastCopy);
+                        }
+						LogHelper.add(otDataCollector, EventType.START, extraInfo);
 						break;
 					case STOPPED:
-						LogHelper.add(otDataCollector, EventType.STOP);
+                        if (otDataCollector.getLogGraphOnStop()) {
+                        	lastCopy = getGraphCopy(otDataCollector.getSource(), lastCopy);
+                            extraInfo.put("graph", lastCopy);
+                        }
+						LogHelper.add(otDataCollector, EventType.STOP, extraInfo);
 						break;
 					}
 				}
@@ -847,36 +863,26 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
                     switch(event.getType()) {
                     case RESET:
                         if (otDataCollector.getLogGraphOnPlaybackReset()) {
-                            extraInfo.put("graph", getGraphCopy());
+                        	dataProducerCopy = getGraphCopy(playbackDataProducer, dataProducerCopy);
+                            extraInfo.put("graph", dataProducerCopy);
                         }
                         LogHelper.add(otDataCollector, EventType.PLAYBACK_RESET, extraInfo);
                         break;
                     case STARTED:
                         if (otDataCollector.getLogGraphOnPlaybackStart()) {
-                            extraInfo.put("graph", getGraphCopy());
+                        	dataProducerCopy = getGraphCopy(playbackDataProducer, dataProducerCopy);
+                            extraInfo.put("graph", dataProducerCopy);
                         }
                         LogHelper.add(otDataCollector, EventType.PLAYBACK_START, extraInfo);
                         break;
                     case STOPPED:
                         if (otDataCollector.getLogGraphOnPlaybackStop()) {
-                            extraInfo.put("graph", getGraphCopy());
+                        	dataProducerCopy = getGraphCopy(playbackDataProducer, dataProducerCopy);
+                            extraInfo.put("graph", dataProducerCopy);
                         }
                         LogHelper.add(otDataCollector, EventType.PLAYBACK_STOP, extraInfo);
                         break;
                     }
-                }
-                
-                private OTDataProducer getGraphCopy() {
-                    // OTunkUtil returns true if the objects are the same
-                    if (dataProducerCopy == null || ! OTrunkUtil.compareObjects(playbackDataProducer, dataProducerCopy, true)) {
-                        try {
-                            dataProducerCopy = (OTDataProducer) otDataCollector.getOTObjectService().copyObject(playbackDataProducer, -1);
-                        } catch (Exception e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                    }
-                    return dataProducerCopy;
                 }
             });
 		}
@@ -912,6 +918,20 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		//		
 		
 	}
+	
+	@SuppressWarnings("unchecked")
+	private <T extends OTObject> T getGraphCopy(T dp, T lastCopied) {
+        // OTunkUtil returns true if the objects are the same
+        if (lastCopied == null || ! OTrunkUtil.compareObjects(dp, lastCopied, true)) {
+            try {
+            	lastCopied = (T) otDataCollector.getOTObjectService().copyObject(dp, -1);
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        return lastCopied;
+    }
 
 	protected void updateBottomPanel(DataGraphable oldSourceGraphable,
 			DataGraphable newSourceGraphable) {

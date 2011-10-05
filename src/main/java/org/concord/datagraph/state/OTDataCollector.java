@@ -141,6 +141,10 @@ public interface OTDataCollector
     public boolean getLogGraphOnStop();
     public void setLogGraphOnStop(boolean b);
     
+    // This is superseded by logGraphOnClear
+    @Deprecated
+    public boolean getLogGraphOnReset();
+    
     public final static boolean DEFAULT_logGraphOnClear = true;
     public boolean getLogGraphOnClear();
     public void setLogGraphOnClear(boolean b);
