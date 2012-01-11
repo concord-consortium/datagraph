@@ -12,7 +12,7 @@
         <OTWaveGenerator />
       </dataProducer>
       <dataStore>
-        <OTDataStore numberChannels="1">
+        <OTDataStore numberChannels="2">
           <channelDescriptions>
             <OTDataChannelDescription name="Time"
               precision="0" unit="s" />
