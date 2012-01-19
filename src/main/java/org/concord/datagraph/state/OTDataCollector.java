@@ -104,6 +104,10 @@ public interface OTDataCollector
 	public boolean getShowLabelCoordinates();
 	public void setShowLabelCoordinates(boolean showLabelCoordinates);
 	
+	public final static boolean DEFAULT_showInfoLabel = false;
+	public boolean getShowInfoLabel();
+	public void setShowInfoLabel(boolean showInfoLabel);
+	
 	public final static int DEFAULT_labelDecimalPlaces = 2;
 	public int getLabelDecimalPlaces();
 	public void setLabelDecimalPlaces(int labelDecimalPlaces);

@@ -168,7 +168,7 @@ public class DataGraphToolbar extends GraphWindowToolBar
     		case ADD_NOTE_BTN:
     			if (dataGraph != null && notesLayer != null){
         			AddDataPointLabelAction a = new AddDataPointLabelAction(notesLayer, dataGraph.getObjList(), dataGraph.getToolBar(),
-                            dataGraph.isShowLabelCoordinates(), dataGraph.getLabelCoordinatesDecPlaces());
+                            dataGraph.isShowLabelCoordinates(), dataGraph.getLabelCoordinatesDecPlaces(), dataGraph.getShowInfoLabel());
         			a.setFillLabelBackground(dataGraph.getFillLabelBackground());
                     button = new SelectableToggleButton(a);
         			button.setActionCommand("" + MultiRegionAxisScale.DRAGMODE_TRANSLATE_DILATE);

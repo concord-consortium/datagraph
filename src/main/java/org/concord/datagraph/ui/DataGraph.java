@@ -144,6 +144,8 @@ public class DataGraph extends JPanel
 	
 	private boolean isShowLabelCoordinates = true;
 	
+	private boolean showInfoLabel = false;
+	
 	private int labelCoordinatesDecPlaces = 2;
 
     private DataGraphable selectedGraphable;
@@ -1274,6 +1276,14 @@ public class DataGraph extends JPanel
     {
     	this.isShowLabelCoordinates = isShowLabelCoordinates;
     }
+
+	public boolean getShowInfoLabel() {
+		return showInfoLabel;
+	}
+
+	public void setShowInfoLabel(boolean isShowInfoLabel) {
+		this.showInfoLabel = isShowInfoLabel;
+	}
 
 	public int getLabelCoordinatesDecPlaces()
     {

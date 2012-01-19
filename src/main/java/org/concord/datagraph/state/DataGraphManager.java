@@ -566,6 +566,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 			dataGraph.setLabelCoordinatesDecPlaces(otDataCollector.getLabelDecimalPlaces());
 			dataGraph.setRestoreScaleOnReset(otDataCollector.getRestoreScaleOnReset());
 			dataGraph.setFillLabelBackground(otDataCollector.getFillLabelBackground());
+			dataGraph.setShowInfoLabel(otDataCollector.getShowInfoLabel());
 		}
 
 		if (dataGraph.getToolBar() != null && dataGraph.getToolBar() instanceof DataGraphToolbar) {
@@ -1035,6 +1036,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		if (label instanceof DataPointLabel){
 		    DataPointLabel dpLabel = (DataPointLabel) label;
 		    dpLabel.setShowCoordinates(otDataCollector.getShowLabelCoordinates());
+			dpLabel.setShowInfoLabel(otDataCollector.getShowInfoLabel());
 		    dpLabel.setCoordinateDecimalPlaces(otDataCollector.getLabelDecimalPlaces());
 		    dpLabel.setFillBackground(otDataCollector.getFillLabelBackground());
 			if (otDataCollector.getReadOnlyLabels() || dpLabel.isReadOnly()) {
@@ -1395,6 +1397,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		label.setGraphableList(dataGraph.getObjList());
 		label.setMessage(note);
 		label.setShowCoordinates(otDataCollector.getShowLabelCoordinates());
+		label.setShowInfoLabel(otDataCollector.getShowInfoLabel());
 		label.setCoordinateDecimalPlaces(otDataCollector.getLabelDecimalPlaces());
 		label.setFillBackground(otDataCollector.getFillLabelBackground());
 		label.setReadOnly(otDataCollector.getReadOnlyLabels());

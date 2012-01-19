@@ -93,6 +93,7 @@ public class DataPointLabel extends PointTextLabel
 	protected String pointLabel = null;	// format: (x, y)
 	protected String pointInfoLabel = null;	//format: xlabel: x unit   ylabel: y unit
 	private boolean showCoordinates = true;
+	private boolean showInfoLabel = false;
 	private boolean mouseDown;
 	
 	/**
@@ -362,11 +363,13 @@ public class DataPointLabel extends PointTextLabel
 			}
 		}
 		if(isSelected()) {
-			int pointInfoLabelLeft = graphArea.getInsets().left + 20;
-			int pointInfoLabelTop = Math.max(graphArea.getInsets().top, 20);
 			g.setColor(foreColor);
-			if(pointInfoLabel != null)
-				g.drawString(pointInfoLabel, pointInfoLabelLeft, pointInfoLabelTop);
+			if (getShowInfoLabel()) {
+				int pointInfoLabelLeft = graphArea.getInsets().left + 20;
+				int pointInfoLabelTop = Math.max(graphArea.getInsets().top, 20);
+				if(pointInfoLabel != null)
+					g.drawString(pointInfoLabel, pointInfoLabelLeft, pointInfoLabelTop);
+			}
 		}
 		
 		// If the graphable is null we draw ourselves no matter what
@@ -614,6 +617,14 @@ public class DataPointLabel extends PointTextLabel
     {
 	    return showCoordinates;
     }
+
+	public boolean getShowInfoLabel() {
+		return showInfoLabel;
+	}
+
+	public void setShowInfoLabel(boolean showInfoLabel) {
+		this.showInfoLabel = showInfoLabel;
+	}
 
 	public void setCoordinateDecimalPlaces(int coordinateDecimalPlaces)
     {
