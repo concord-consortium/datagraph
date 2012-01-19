@@ -413,7 +413,7 @@ public class DataPointLabel extends PointTextLabel
 			if(dcd1.getUnit() != null) xUnits = dcd1.getUnit().getDimension();
 			else xUnits = "";
 
-			if(dcd1.isUsePrecision()) xPrecision = dcd1.getPrecision() + 1;
+			if(dcd1.isUsePrecision()) xPrecision = Math.abs(dcd1.getPrecision()) + 1;
 			else xPrecision = 2;
 			
 			yLabel = dcd2.getName();
@@ -421,7 +421,7 @@ public class DataPointLabel extends PointTextLabel
 			else yLabel = yLabel + ": ";
 			if(dcd2.getUnit() != null) yUnits = dcd2.getUnit().getDimension();
 			else yUnits = "";
-			if(dcd2.isUsePrecision()) yPrecision = dcd2.getPrecision() + 1;
+			if(dcd2.isUsePrecision()) yPrecision = Math.abs(dcd2.getPrecision()) + 1;
 			else yPrecision = 2;
             
             Point2D point = getDataPoint();
