@@ -411,6 +411,7 @@ public class DataPointLabel extends PointTextLabel
 			else xLabel = xLabel +": ";
 			
 			if(dcd1.getUnit() != null) xUnits = dcd1.getUnit().getDimension();
+			else if (dcd1.getName().equals("time") || dcd1.getName().equals("dt")) xUnits = "s";
 			else xUnits = "";
 
 			if(dcd1.isUsePrecision()) xPrecision = Math.abs(dcd1.getPrecision()) + 1;
