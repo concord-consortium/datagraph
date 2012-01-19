@@ -90,6 +90,7 @@ public class DataPointLabel extends PointTextLabel
 	protected String yUnits = null;
 	protected int xPrecision = 2;
 	protected int yPrecision = 2;
+	protected boolean precisionOverridden = false;
 	protected String pointLabel = null;	// format: (x, y)
 	protected String pointInfoLabel = null;	//format: xlabel: x unit   ylabel: y unit
 	private boolean showCoordinates = true;
@@ -417,16 +418,20 @@ public class DataPointLabel extends PointTextLabel
 			else if (dcd1.getName().equals("time") || dcd1.getName().equals("dt")) xUnits = "s";
 			else xUnits = "";
 
-			if(dcd1.isUsePrecision()) xPrecision = Math.abs(dcd1.getPrecision()) + 1;
-			else xPrecision = 2;
+			if (!precisionOverridden) {
+				if(dcd1.isUsePrecision()) xPrecision = Math.abs(dcd1.getPrecision()) + 1;
+				else xPrecision = 2;
+			}
 			
 			yLabel = dcd2.getName();
 			if(yLabel == null || yLabel.length() == 0) yLabel = "";
 			else yLabel = yLabel + ": ";
 			if(dcd2.getUnit() != null) yUnits = dcd2.getUnit().getDimension();
 			else yUnits = "";
-			if(dcd2.isUsePrecision()) yPrecision = Math.abs(dcd2.getPrecision()) + 1;
-			else yPrecision = 2;
+			if (!precisionOverridden) {
+				if(dcd2.isUsePrecision()) yPrecision = Math.abs(dcd2.getPrecision()) + 1;
+				else yPrecision = 2;
+			}
             
             Point2D point = getDataPoint();
             if(point != null) {
@@ -628,6 +633,7 @@ public class DataPointLabel extends PointTextLabel
 
 	public void setCoordinateDecimalPlaces(int coordinateDecimalPlaces)
     {
+		this.precisionOverridden  = true;
 	    this.xPrecision = coordinateDecimalPlaces;
 	    this.yPrecision = coordinateDecimalPlaces;
 	    updateDataPointLabels();
