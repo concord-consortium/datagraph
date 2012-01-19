@@ -153,6 +153,8 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 
     private JComponent treeComponent;
 
+	private JButton clearButton;
+
 	/**
 	 * @param serviceProvider
 	 * @param jComponentViewContext
@@ -758,7 +760,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 			// dProducer.getDataDescription().setDt(0.1f);
 			if (sourceGraphable instanceof ControllableDataGraphable && showDataControls) {
 				bottomPanel = new JPanel(new FlowLayout());
-				JButton clearButton = new JButton("Clear");
+				clearButton = new JButton("Clear");
 				clearButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 					    // only reset the currently selected graphable
@@ -937,6 +939,9 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 	protected void updateBottomPanel(DataGraphable oldSourceGraphable,
 			DataGraphable newSourceGraphable) {
 		if (toolBar == null) {
+			if (clearButton != null) {
+				clearButton.setEnabled(!newSourceGraphable.isLocked());
+			}
 			return;
 		}
 
