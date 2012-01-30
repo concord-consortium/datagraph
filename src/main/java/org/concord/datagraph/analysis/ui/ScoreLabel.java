@@ -18,7 +18,7 @@ import org.concord.datagraph.analysis.rubric.GraphRubric;
 import org.concord.datagraph.analysis.rubric.ResultSet;
 import org.concord.datagraph.state.OTDataCollector;
 import org.concord.datagraph.state.OTDataGraphable;
-import org.concord.graph.util.state.OTHideableAnnotation;
+import org.concord.graph.util.state.OTVisibleGraphable;
 
 public class ScoreLabel extends JLabel {
     private static final long serialVersionUID = 1L;
@@ -27,8 +27,8 @@ public class ScoreLabel extends JLabel {
     private OTDataCollector dataCollector;
     private OTDataGraphable graphable;
     private ResultSet results;
-    private HashMap<AnnotationStyle, ArrayList<OTHideableAnnotation>> graphAnalysisAnnotations = new HashMap<AnnotationStyle, ArrayList<OTHideableAnnotation>>();
-    private ArrayList<OTDataGraphable> graphAnalysisSegments = new ArrayList<OTDataGraphable>();
+    private HashMap<AnnotationStyle, ArrayList<OTVisibleGraphable>> graphAnalysisAnnotations = new HashMap<AnnotationStyle, ArrayList<OTVisibleGraphable>>();
+    private ArrayList<OTVisibleGraphable> graphAnalysisSegments = new ArrayList<OTVisibleGraphable>();
     private AnnotationStyle annotationsVisible;
     private boolean segmentsVisible = false;
     private Graph segments;
@@ -108,9 +108,9 @@ public class ScoreLabel extends JLabel {
     private void refreshAnnotations() {
         for (AnnotationStyle style : AnnotationStyle.values()) {
             boolean isVisible = style.equals(annotationsVisible);
-            ArrayList<OTHideableAnnotation> annotations = graphAnalysisAnnotations.get(style);
+            ArrayList<OTVisibleGraphable> annotations = graphAnalysisAnnotations.get(style);
             if (annotations != null && annotations.size() > 0) {
-                for (OTHideableAnnotation ann : annotations) {
+                for (OTVisibleGraphable ann : annotations) {
                     ann.setVisible(isVisible);
                 }
             } else if (isVisible && results != null) {
@@ -122,9 +122,9 @@ public class ScoreLabel extends JLabel {
     
     private void clearAnnotations() {
         for (AnnotationStyle style : AnnotationStyle.values()) {
-            ArrayList<OTHideableAnnotation> annotations = graphAnalysisAnnotations.get(style);
+            ArrayList<OTVisibleGraphable> annotations = graphAnalysisAnnotations.get(style);
             if (annotations != null && annotations.size() > 0) {
-                for (OTHideableAnnotation ann : annotations) {
+                for (OTVisibleGraphable ann : annotations) {
                     ann.setVisible(false);
                     dataCollector.getLabels().remove(ann);
                 }
@@ -135,7 +135,7 @@ public class ScoreLabel extends JLabel {
     
     private void refreshSegments() {
         if (graphAnalysisSegments != null && graphAnalysisSegments.size() > 0) {
-            for (OTDataGraphable seg : graphAnalysisSegments) {
+            for (OTVisibleGraphable seg : graphAnalysisSegments) {
                 seg.setVisible(segmentsVisible);
             }
         } else if (segmentsVisible && results != null) {
@@ -145,7 +145,7 @@ public class ScoreLabel extends JLabel {
     
     private void clearSegments() {
         if (graphAnalysisSegments != null && graphAnalysisSegments.size() > 0) {
-            for (OTDataGraphable seg : graphAnalysisSegments) {
+            for (OTVisibleGraphable seg : graphAnalysisSegments) {
                 seg.setVisible(false);
                 dataCollector.getGraphables().remove(seg);
             }

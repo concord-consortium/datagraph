@@ -2,9 +2,9 @@ package org.concord.datagraph.state;
 
 import org.concord.datagraph.ui.DataPointMarker.MarkerShape;
 import org.concord.framework.otrunk.OTObjectInterface;
-import org.concord.graph.util.state.OTHideableAnnotation;
+import org.concord.graph.util.state.OTVisibleGraphable;
 
-public interface OTDataPointMarker extends OTObjectInterface,OTHideableAnnotation {
+public interface OTDataPointMarker extends OTObjectInterface,OTVisibleGraphable {
 
     public static double DEFAULT_x = 0.0;
     public double getX();

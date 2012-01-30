@@ -31,11 +31,11 @@ package org.concord.datagraph.state;
 
 import org.concord.data.state.OTDataProducer;
 import org.concord.data.state.OTDataStore;
-import org.concord.framework.otrunk.OTObjectInterface;
 import org.concord.framework.otrunk.OTObjectList;
 import org.concord.framework.otrunk.OTResourceList;
+import org.concord.graph.util.state.OTVisibleGraphable;
 
-public interface OTDataGraphable extends OTObjectInterface
+public interface OTDataGraphable extends OTVisibleGraphable
 {
 	public static boolean DEFAULT_showControlButtons = true;
 	public void setShowControlButtons(boolean flag);
@@ -76,10 +76,6 @@ public interface OTDataGraphable extends OTObjectInterface
 	public static boolean DEFAULT_allowHide = true;
 	public boolean getAllowHide();
 	public void setAllowHide(boolean flag);
-	
-	public static boolean DEFAULT_visible = true;
-	public boolean getVisible();
-	public void setVisible(boolean flag);
 		
 	public OTDataStore getDataStore();
 	public void setDataStore(OTDataStore store);

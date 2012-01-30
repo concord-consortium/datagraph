@@ -7,9 +7,8 @@ import org.concord.data.state.OTDataStore;
 import org.concord.datagraph.analysis.rubric.GraphRubric;
 import org.concord.datagraph.analysis.rubric.ResultSet;
 import org.concord.datagraph.state.OTDataCollector;
-import org.concord.datagraph.state.OTDataGraphable;
 import org.concord.framework.otrunk.OTObjectList;
-import org.concord.graph.util.state.OTHideableAnnotation;
+import org.concord.graph.util.state.OTVisibleGraphable;
 
 public interface GraphAnalyzer {
     public enum AnnotationStyle { ONE, TWO, THREE, FOUR }
@@ -18,6 +17,6 @@ public interface GraphAnalyzer {
     public ResultSet compareGraphs(GraphRubric expected, Graph received);
     public String getHtmlReasons(ResultSet results);
     public void displayHtmlReasonsPopup(Component parent, ResultSet results);
-    public ArrayList<OTHideableAnnotation> annotateResults(OTDataCollector dataCollector, ResultSet scoreResults, AnnotationStyle style);
-    public ArrayList<OTDataGraphable> drawSegmentResults(OTDataCollector dataCollector, Graph graph);
+    public ArrayList<OTVisibleGraphable> annotateResults(OTDataCollector dataCollector, ResultSet scoreResults, AnnotationStyle style);
+    public ArrayList<OTVisibleGraphable> drawSegmentResults(OTDataCollector dataCollector, Graph graph);
 }
