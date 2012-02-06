@@ -938,7 +938,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 
 	protected void updateBottomPanel(DataGraphable oldSourceGraphable,
 			DataGraphable newSourceGraphable) {
-		if (toolBar == null) {
+		if (toolBar == null && newSourceGraphable != null) {
 			if (clearButton != null) {
 				clearButton.setEnabled(!newSourceGraphable.isLocked());
 			}
