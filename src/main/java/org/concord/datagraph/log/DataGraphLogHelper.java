@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.concord.framework.otrunk.OTObjectList;
 
+@SuppressWarnings("deprecation") 
 public class DataGraphLogHelper {
     
     public static void add(OTEventLog log, String name) {
