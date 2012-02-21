@@ -765,12 +765,18 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 				clearButton = new JButton("Clear");
 				clearButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-					    // only reset the currently selected graphable
-					    getSourceDataGraphable().reset();
+						HashMap<String, OTObject> extraInfo = new HashMap<String, OTObject>();
+                        if (otDataCollector.getLogGraphOnClear() || otDataCollector.getLogGraphOnReset()) {
+    					    OTDataGraphable sourceOTDataGraphable = getSourceOTDataGraphable();
+                        	OTDataGraphable lastCopy = getGraphCopy(sourceOTDataGraphable, null);
+                            extraInfo.put(SAVED_GRAPH_COPY, lastCopy);
+                        }
+					    
+                        getSourceDataGraphable().reset();
 						// dataGraph.reset();
 					    // Log the event
 					    if (otDataCollector != null) {
-					    	LogHelper.add(otDataCollector, EventType.RESET);
+					    	LogHelper.add(otDataCollector, EventType.RESET, extraInfo);
 					    }
 					}
 				});
