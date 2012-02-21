@@ -36,6 +36,18 @@ public class DataGraphLogHelper {
         return cnt;
     }
     
+    public static int getNumResets(OTEventLog log) {
+        OTObjectList items = log.getItems();
+        int cnt = 0;
+        for (int i = 0; i < items.size(); ++i) {
+            OTEventLogItem item = (OTEventLogItem) items.get(i);
+            if (item.getName().equals(OTEventLog.RESET)) {
+                ++cnt;
+            }
+        }
+        return cnt;
+    }
+    
     public static long getTotalCollectionTime(OTEventLog log) {
         OTObjectList items = log.getItems();
         long sum = 0;
