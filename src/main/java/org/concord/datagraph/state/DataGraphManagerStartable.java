@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import org.concord.datagraph.engine.DataGraphable;
 import org.concord.framework.data.stream.DataProducer;
 import org.concord.framework.data.stream.DataStore;
-import org.concord.framework.data.stream.DefaultMultipleDataProducer;
 import org.concord.framework.startable.AbstractStartable;
 import org.concord.framework.startable.StartableEvent;
 import org.concord.framework.startable.StartableInfo;
@@ -52,6 +51,7 @@ class DataGraphManagerStartable extends AbstractStartable {
 	}
 	
 	protected void reset(boolean notifySourceProducer) {
+		notifyPreReset();
 		eventThreads.add(Thread.currentThread());
 		// We bypass the normal dataGraph reset method so only the
 		// selected graphable is cleared.

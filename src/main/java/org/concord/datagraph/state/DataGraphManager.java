@@ -110,6 +110,8 @@ import org.concord.view.CheckedColorTreeControler;
  */
 public class DataGraphManager implements OTChangeListener, ChangeListener,
 		CheckedColorTreeModel {
+	public static final String SAVED_GRAPH_COPY = "graph";
+
 	private static final Logger logger = Logger
 			.getLogger(DataGraphManager.class.getCanonicalName());
 	
@@ -190,24 +192,24 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 				public void startableEvent(StartableEvent event) {
 					HashMap<String, OTObject> extraInfo = new HashMap<String, OTObject>();
 					switch(event.getType()) {
-					case RESET:
+					case PRE_RESET: // react on pre-reset so that the data is still intact
                         if (otDataCollector.getLogGraphOnClear() || otDataCollector.getLogGraphOnReset()) {
                         	lastCopy = getGraphCopy(otDataCollector.getSource(), lastCopy);
-                            extraInfo.put("graph", lastCopy);
+                            extraInfo.put(SAVED_GRAPH_COPY, lastCopy);
                         }
 						LogHelper.add(otDataCollector, EventType.RESET, extraInfo);
 						break;
 					case STARTED:
                         if (otDataCollector.getLogGraphOnStart()) {
                         	lastCopy = getGraphCopy(otDataCollector.getSource(), lastCopy);
-                            extraInfo.put("graph", lastCopy);
+                            extraInfo.put(SAVED_GRAPH_COPY, lastCopy);
                         }
 						LogHelper.add(otDataCollector, EventType.START, extraInfo);
 						break;
 					case STOPPED:
                         if (otDataCollector.getLogGraphOnStop()) {
                         	lastCopy = getGraphCopy(otDataCollector.getSource(), lastCopy);
-                            extraInfo.put("graph", lastCopy);
+                            extraInfo.put(SAVED_GRAPH_COPY, lastCopy);
                         }
 						LogHelper.add(otDataCollector, EventType.STOP, extraInfo);
 						break;
@@ -864,24 +866,24 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
                 public void startableEvent(StartableEvent event) {
                     HashMap<String, OTObject> extraInfo = new HashMap<String, OTObject>();
                     switch(event.getType()) {
-                    case RESET:
+                    case PRE_RESET: // react on pre-reset so that the data is still intact
                         if (otDataCollector.getLogGraphOnPlaybackReset()) {
                         	dataProducerCopy = getGraphCopy(playbackDataProducer, dataProducerCopy);
-                            extraInfo.put("graph", dataProducerCopy);
+                            extraInfo.put(SAVED_GRAPH_COPY, dataProducerCopy);
                         }
                         LogHelper.add(otDataCollector, EventType.PLAYBACK_RESET, extraInfo);
                         break;
                     case STARTED:
                         if (otDataCollector.getLogGraphOnPlaybackStart()) {
                         	dataProducerCopy = getGraphCopy(playbackDataProducer, dataProducerCopy);
-                            extraInfo.put("graph", dataProducerCopy);
+                            extraInfo.put(SAVED_GRAPH_COPY, dataProducerCopy);
                         }
                         LogHelper.add(otDataCollector, EventType.PLAYBACK_START, extraInfo);
                         break;
                     case STOPPED:
                         if (otDataCollector.getLogGraphOnPlaybackStop()) {
                         	dataProducerCopy = getGraphCopy(playbackDataProducer, dataProducerCopy);
-                            extraInfo.put("graph", dataProducerCopy);
+                            extraInfo.put(SAVED_GRAPH_COPY, dataProducerCopy);
                         }
                         LogHelper.add(otDataCollector, EventType.PLAYBACK_STOP, extraInfo);
                         break;
