@@ -872,7 +872,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
                 public void startableEvent(StartableEvent event) {
                     HashMap<String, OTObject> extraInfo = new HashMap<String, OTObject>();
                     switch(event.getType()) {
-                    case PRE_RESET: // react on pre-reset so that the data is still intact
+                    case RESET:
                         if (otDataCollector.getLogGraphOnPlaybackReset()) {
                         	dataProducerCopy = getGraphCopy(playbackDataProducer, dataProducerCopy);
                             extraInfo.put(SAVED_GRAPH_COPY, dataProducerCopy);
