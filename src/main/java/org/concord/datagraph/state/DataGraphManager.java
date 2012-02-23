@@ -186,7 +186,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		
 		if (otDataCollector != null && startable != null) {
 			startable.addStartableListener(new StartableListener() {
-				OTDataGraphable lastCopy = null;
+				OTDataCollector lastCopy = null;
 				
 				@SuppressWarnings("deprecation")
 				public void startableEvent(StartableEvent event) {
@@ -194,21 +194,21 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 					switch(event.getType()) {
 					case PRE_RESET: // react on pre-reset so that the data is still intact
                         if (otDataCollector.getLogGraphOnClear() || otDataCollector.getLogGraphOnReset()) {
-                        	lastCopy = getGraphCopy(otDataCollector.getSource(), lastCopy);
+                        	lastCopy = getGraphSnapshot(lastCopy);
                             extraInfo.put(SAVED_GRAPH_COPY, lastCopy);
                         }
 						LogHelper.add(otDataCollector, EventType.RESET, extraInfo);
 						break;
 					case STARTED:
                         if (otDataCollector.getLogGraphOnStart()) {
-                        	lastCopy = getGraphCopy(otDataCollector.getSource(), lastCopy);
+                        	lastCopy = getGraphSnapshot(lastCopy);
                             extraInfo.put(SAVED_GRAPH_COPY, lastCopy);
                         }
 						LogHelper.add(otDataCollector, EventType.START, extraInfo);
 						break;
 					case STOPPED:
                         if (otDataCollector.getLogGraphOnStop()) {
-                        	lastCopy = getGraphCopy(otDataCollector.getSource(), lastCopy);
+                        	lastCopy = getGraphSnapshot(lastCopy);
                             extraInfo.put(SAVED_GRAPH_COPY, lastCopy);
                         }
 						LogHelper.add(otDataCollector, EventType.STOP, extraInfo);
@@ -767,8 +767,7 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 					public void actionPerformed(ActionEvent e) {
 						HashMap<String, OTObject> extraInfo = new HashMap<String, OTObject>();
                         if (otDataCollector.getLogGraphOnClear() || otDataCollector.getLogGraphOnReset()) {
-    					    OTDataGraphable sourceOTDataGraphable = getSourceOTDataGraphable();
-                        	OTDataGraphable lastCopy = getGraphCopy(sourceOTDataGraphable, null);
+                        	OTDataCollector lastCopy = getGraphSnapshot(null);
                             extraInfo.put(SAVED_GRAPH_COPY, lastCopy);
                         }
 					    
@@ -868,28 +867,28 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		    dataGraph.getGraph().add(playbackLine);
 		    
 		    dataProducer.addStartableListener(new StartableListener() {
-		        private OTDataProducer dataProducerCopy = null;
+		        private OTDataCollector dataCollectorCopy = null;
                 public void startableEvent(StartableEvent event) {
                     HashMap<String, OTObject> extraInfo = new HashMap<String, OTObject>();
                     switch(event.getType()) {
                     case RESET:
                         if (otDataCollector.getLogGraphOnPlaybackReset()) {
-                        	dataProducerCopy = getGraphCopy(playbackDataProducer, dataProducerCopy);
-                            extraInfo.put(SAVED_GRAPH_COPY, dataProducerCopy);
+                        	dataCollectorCopy = getGraphSnapshot(dataCollectorCopy);
+                            extraInfo.put(SAVED_GRAPH_COPY, dataCollectorCopy);
                         }
                         LogHelper.add(otDataCollector, EventType.PLAYBACK_RESET, extraInfo);
                         break;
                     case STARTED:
                         if (otDataCollector.getLogGraphOnPlaybackStart()) {
-                        	dataProducerCopy = getGraphCopy(playbackDataProducer, dataProducerCopy);
-                            extraInfo.put(SAVED_GRAPH_COPY, dataProducerCopy);
+                        	dataCollectorCopy = getGraphSnapshot(dataCollectorCopy);
+                            extraInfo.put(SAVED_GRAPH_COPY, dataCollectorCopy);
                         }
                         LogHelper.add(otDataCollector, EventType.PLAYBACK_START, extraInfo);
                         break;
                     case STOPPED:
                         if (otDataCollector.getLogGraphOnPlaybackStop()) {
-                        	dataProducerCopy = getGraphCopy(playbackDataProducer, dataProducerCopy);
-                            extraInfo.put(SAVED_GRAPH_COPY, dataProducerCopy);
+                        	dataCollectorCopy = getGraphSnapshot(dataCollectorCopy);
+                            extraInfo.put(SAVED_GRAPH_COPY, dataCollectorCopy);
                         }
                         LogHelper.add(otDataCollector, EventType.PLAYBACK_STOP, extraInfo);
                         break;
@@ -931,17 +930,20 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 	}
 	
 	@SuppressWarnings("unchecked")
-	private <T extends OTObject> T getGraphCopy(T dp, T lastCopied) {
+	private OTDataCollector getGraphSnapshot(OTDataCollector lastSnapshot) {
+		boolean snapshotComplete = false;
+		OTDataCollector snapshot = null;
         // OTunkUtil returns true if the objects are the same
-        if (lastCopied == null || ! OTrunkUtil.compareObjects(dp, lastCopied, true)) {
-            try {
-            	lastCopied = (T) otDataCollector.getOTObjectService().copyObject(dp, -1);
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+        try {
+        	if (lastSnapshot == null || ! OTrunkUtil.compareObjects(otDataCollector, lastSnapshot)) {
+        		snapshot = (OTDataCollector) otDataCollector.getOTObjectService().copyObject(otDataCollector, -1);
+        	}
+        	snapshot.getLog().clear();
+        	snapshotComplete = true;
+        } catch (Exception e) {
+        	logger.log(Level.WARNING, "Couldn't get graph snapshot!", e);
         }
-        return lastCopied;
+        return (snapshotComplete ? snapshot : lastSnapshot);
     }
 
 	protected void updateBottomPanel(DataGraphable oldSourceGraphable,
