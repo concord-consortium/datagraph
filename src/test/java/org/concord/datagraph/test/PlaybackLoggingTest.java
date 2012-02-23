@@ -4,7 +4,6 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-import org.concord.data.state.OTTimerDataStoreDataProducer;
 import org.concord.datagraph.state.OTDataCollector;
 import org.concord.framework.otrunk.OTObject;
 import org.concord.otrunk.OTrunkImpl;
@@ -114,12 +113,12 @@ public class PlaybackLoggingTest {
         for (OTModelEvent event : events) {
             OTObject graphObject = event.getInfo().getObject("graph");
             Assertions.assertThat(graphObject).isNotNull();
-            Assertions.assertThat(graphObject).isInstanceOf(OTTimerDataStoreDataProducer.class);
+            Assertions.assertThat(graphObject).isInstanceOf(OTDataCollector.class);
         }
         
-        OTTimerDataStoreDataProducer firstEventGraph = (OTTimerDataStoreDataProducer) events.get(0).getInfo().getObject("graph");
-        OTTimerDataStoreDataProducer secondEventGraph = (OTTimerDataStoreDataProducer) events.get(1).getInfo().getObject("graph");
-        OTTimerDataStoreDataProducer thirdEventGraph = (OTTimerDataStoreDataProducer) events.get(2).getInfo().getObject("graph");
+        OTDataCollector firstEventGraph = (OTDataCollector) events.get(0).getInfo().getObject("graph");
+        OTDataCollector secondEventGraph = (OTDataCollector) events.get(1).getInfo().getObject("graph");
+        OTDataCollector thirdEventGraph = (OTDataCollector) events.get(2).getInfo().getObject("graph");
         
         // the first and second graphs should be the same object, since we didn't change the graph in between those play presses
         Assertions.assertThat(firstEventGraph).as("The graph object shouldn't be copied twice if the graph doesn't change between play presses").isSameAs(secondEventGraph);

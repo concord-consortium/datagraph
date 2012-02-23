@@ -935,11 +935,12 @@ public class DataGraphManager implements OTChangeListener, ChangeListener,
 		OTDataCollector snapshot = null;
         // OTunkUtil returns true if the objects are the same
         try {
-        	if (lastSnapshot == null || ! OTrunkUtil.compareObjects(otDataCollector, lastSnapshot)) {
-        		snapshot = (OTDataCollector) otDataCollector.getOTObjectService().copyObject(otDataCollector, -1);
-        	}
+        	snapshot = (OTDataCollector) otDataCollector.getOTObjectService().copyObject(otDataCollector, -1);
         	snapshot.getLog().clear();
-        	snapshotComplete = true;
+        	if (lastSnapshot == null || ! OTrunkUtil.compareObjects(snapshot, lastSnapshot)) {
+        		// only use the snapshot if it's different than the last snapshot
+        		snapshotComplete = true;
+        	}
         } catch (Exception e) {
         	logger.log(Level.WARNING, "Couldn't get graph snapshot!", e);
         }
