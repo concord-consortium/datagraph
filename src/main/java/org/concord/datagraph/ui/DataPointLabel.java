@@ -224,6 +224,10 @@ public class DataPointLabel extends PointTextLabel
 	@Override
     public boolean mouseDragged(Point p)
 	{
+		if (! isSelected()) {
+			// don't respond to drags if we're not selected
+			return false;
+		}
 		if (mouseInsideDataPoint || newEndPoint){
 			findAvailablePointOver(p);
 			notifyChange();
